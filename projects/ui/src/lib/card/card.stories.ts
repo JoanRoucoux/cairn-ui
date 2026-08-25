@@ -10,7 +10,7 @@ type CardArgs = {
 };
 
 const meta: Meta<CardArgs> = {
-  title: 'Components/Card',
+  title: 'Surfaces/Card',
   decorators: [moduleMetadata({ imports: [UiCard] })],
   render: (args) => ({
     props: args,

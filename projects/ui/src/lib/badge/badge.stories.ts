@@ -9,7 +9,7 @@ type BadgeArgs = {
 };
 
 const meta: Meta<BadgeArgs> = {
-  title: 'Components/Badge',
+  title: 'Data display/Badge',
   decorators: [moduleMetadata({ imports: [UiBadge] })],
   render: (args) => ({
     props: args,

@@ -12,7 +12,7 @@ type ButtonArgs = {
 };
 
 const meta: Meta<ButtonArgs> = {
-  title: 'Components/Button',
+  title: 'Inputs/Button',
   decorators: [moduleMetadata({ imports: [UiButton] })],
   render: (args) => ({
     props: args,

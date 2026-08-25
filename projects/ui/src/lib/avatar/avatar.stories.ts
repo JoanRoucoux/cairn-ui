@@ -10,7 +10,7 @@ type AvatarArgs = {
 };
 
 const meta: Meta<AvatarArgs> = {
-  title: 'Components/Avatar',
+  title: 'Data display/Avatar',
   decorators: [moduleMetadata({ imports: [UiAvatar] })],
   render: (args) => ({
     props: args,

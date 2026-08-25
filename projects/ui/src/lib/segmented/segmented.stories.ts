@@ -10,7 +10,7 @@ type SegmentedArgs = {
 };
 
 const meta: Meta<SegmentedArgs> = {
-  title: 'Components/Segmented',
+  title: 'Inputs/Segmented',
   decorators: [moduleMetadata({ imports: [UiSegmented] })],
   render: (args) => ({
     props: args,

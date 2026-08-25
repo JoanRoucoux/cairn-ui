@@ -11,7 +11,7 @@ type MeterArgs = {
 };
 
 const meta: Meta<MeterArgs> = {
-  title: 'Components/Meter',
+  title: 'Data display/Meter',
   decorators: [moduleMetadata({ imports: [UiMeter] })],
   render: (args) => ({
     props: args,

@@ -12,13 +12,18 @@ const preview: Preview = {
         light: 'light',
         dark: 'dark',
       },
-      defaultTheme: 'light',
+      defaultTheme: 'dark',
       attributeName: 'data-theme',
       parentSelector: 'html',
     }),
   ],
   parameters: {
     controls: { expanded: true },
+    options: {
+      storySort: {
+        order: ['Foundations', 'Inputs', 'Data display', 'Surfaces', 'Feedback'],
+      },
+    },
   },
   tags: ['autodocs'],
 };

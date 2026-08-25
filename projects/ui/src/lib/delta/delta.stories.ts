@@ -10,7 +10,7 @@ type DeltaArgs = {
 };
 
 const meta: Meta<DeltaArgs> = {
-  title: 'Components/Delta',
+  title: 'Data display/Delta',
   decorators: [moduleMetadata({ imports: [UiDelta] })],
   render: (args) => ({
     props: args,

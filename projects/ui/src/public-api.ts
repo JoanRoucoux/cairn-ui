@@ -14,3 +14,4 @@ export { METER_TONES, UiMeter, type MeterTone } from './lib/meter/meter';
 export { UiSegmented, type SegmentedOption } from './lib/segmented/segmented';
 export { UiSelect } from './lib/select/select';
 export { UiSkeleton } from './lib/skeleton/skeleton';
+export { CELL_BREAKPOINTS, UiTable, UiTd, UiTh, type CellBreakpoint } from './lib/table/table';

@@ -11,7 +11,7 @@ type InputArgs = {
 };
 
 const meta: Meta<InputArgs> = {
-  title: 'Components/Input',
+  title: 'Inputs/Input',
   decorators: [moduleMetadata({ imports: [UiInput, UiTextarea] })],
   render: (args) => ({
     props: args,
