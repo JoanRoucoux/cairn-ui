@@ -1,7 +1,8 @@
 import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 
-const tokens = readFileSync(join(process.cwd(), 'projects', 'ui', 'styles', 'tokens.css'), 'utf8');
+const testPath = expect.getState().testPath ?? '';
+const tokens = readFileSync(join(dirname(testPath), '..', 'styles', 'tokens.css'), 'utf8');
 
 describe('design tokens', () => {
   it.each([
