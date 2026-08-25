@@ -4,32 +4,62 @@ import { Meta } from '@storybook/addon-docs/blocks';
 
 # Colors
 
-The library ships a single token sheet, `styles/tokens.css` (published as `dist/ui/styles/tokens.css`), following the
-[shadcn/ui](https://ui.shadcn.com/docs/theming) semantic naming convention on a neutral zinc scale.
+The library ships a single token sheet, `styles/tokens.css` (published as `dist/ui/styles/tokens.css`).
 
-Every token declares both of its values with `light-dark()`: the active scheme follows the OS preference, unless the
-host application forces one by setting `data-theme="light"` or `data-theme="dark"` on `<html>` (that is exactly what
-the theme switcher in the Storybook toolbar does).
+Cairn is **monochrome**: the brand carries no hue, which leaves semantic color - a gain, a loss, a stale quote - as
+the only color in the interface. That is the point of the direction, not a limitation of it: a green figure on a
+screen where nothing else is colored is impossible to miss.
 
-Components never hardcode colors — they consume the tokens through Tailwind arbitrary-value utilities such as
-`bg-(--primary)` or `border-(--border)`, so retheming the whole system means editing one CSS file.
+Every token declares both of its values with `light-dark()`. The active scheme follows the OS preference, unless the
+host application forces one by setting `data-theme="light"` or `data-theme="dark"` on `<html>`.
+
+## Measured contrast
+
+These ratios were computed, not eyeballed. Every text token clears the WCAG AA threshold of 4.5:1 against all three
+possible grounds - `--background`, `--card` and `--elevated`. The tightest values are the ones to watch when editing:
+
+| Token                                    | Light, worst ground | Dark, worst ground |
+| ---------------------------------------- | ------------------- | ------------------ |
+| `--foreground`                           | 17.41:1             | 15.58:1            |
+| `--muted-foreground`                     | 5.45:1              | 5.77:1             |
+| `--subtle-foreground`                    | 4.77:1              | 4.98:1             |
+| `--positive`                             | 4.77:1              | 7.76:1             |
+| `--negative`                             | 4.79:1              | 5.33:1             |
+| `--stale`                                | 4.72:1              | 6.42:1             |
+| `--primary-foreground` on `--primary-to` | 11.37:1             | 12.37:1            |
+
+`--positive`, `--negative` and `--stale` are **darker in light mode than in dark mode**. This is not an
+inconsistency: a mid-tone green that reads at 7.76:1 on a near-black ground only reaches 4.07:1 on white, which
+fails. The role is what stays fixed across schemes, never the hex.
+
+## The neutral ramp
+
+`--ramp-1` through `--ramp-6` paint allocation bars. A categorical palette would contradict the monochrome premise,
+so luminance is the only variable left; adjacent steps separate by at least 1.44:1 in dark and 1.36:1 in light.
+Because each category gets its own bar rather than a segment in a stacked strip, that separation only has to make
+the steps distinguishable, never identifiable on its own - the label sits next to every bar.
 
 export const tokens = [
   ['background', 'Page background'],
   ['foreground', 'Default text on background'],
-  ['card', 'Elevated surface background'],
+  ['card', 'Card and panel surface'],
   ['card-foreground', 'Text on card'],
-  ['border', 'Borders, dividers, outline badge'],
-  ['primary', 'Primary actions'],
+  ['elevated', 'Recessed surface: table group rows, inactive segments, meter tracks'],
+  ['border', 'Borders and dividers'],
+  ['hairline', 'Row separators inside a card'],
+  ['muted-foreground', 'Secondary text'],
+  ['subtle-foreground', 'Tertiary text and unknown values'],
+  ['primary', 'Primary actions and active states'],
+  ['primary-to', 'Far end of the primary gradient'],
   ['primary-foreground', 'Text on primary'],
-  ['secondary', 'Secondary actions'],
-  ['secondary-foreground', 'Text on secondary'],
-  ['muted', 'Subdued surfaces'],
-  ['muted-foreground', 'Placeholder and secondary text'],
-  ['accent', 'Hover state of ghost elements'],
-  ['accent-foreground', 'Text on accent'],
-  ['destructive', 'Destructive actions and error states'],
-  ['destructive-foreground', 'Text on destructive'],
+  ['soft', 'Primary at low opacity: active nav item, avatar background'],
+  ['glow', 'Ambient gradient at the top of a screen'],
+  ['ring', 'Focus outline'],
+  ['positive', 'Gain'],
+  ['negative', 'Loss and destructive actions'],
+  ['stale', 'Quote older than the freshness rule allows'],
+  ['ramp-1', 'Allocation bar, largest share'],
+  ['ramp-6', 'Allocation bar, smallest share'],
 ];
 
 export const Swatch = ({ token, scheme }) => (
