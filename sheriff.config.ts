@@ -4,6 +4,9 @@ import type { SheriffConfig } from '@softarc/sheriff-core';
  * Enforces the design-system boundaries: each component folder is an isolated
  * module, and components must not import each other — shared building blocks
  * belong in their own module (e.g. a future `internal/` utilities module).
+ * The one exception is `select`, which reuses `input`'s shared control classes
+ * (`CONTROL_BASE_CLASSES`, `CONTROL_SIZE_CLASSES`, `ControlSize`) rather than
+ * duplicating them.
  *
  * Modules are barrel-less: files are importable directly (no index.ts needed);
  * put files a module wants to keep private in an `internal/` subdirectory.
@@ -18,5 +21,6 @@ export const config: SheriffConfig = {
   depRules: {
     root: ['component:*'],
     'component:*': [],
+    'component:select': ['component:input'],
   },
 };
