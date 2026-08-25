@@ -1,0 +1,20 @@
+/*
+ * Preview-only stylesheet: Tailwind + the library tokens + minimal body chrome.
+ * Anything a consumer app would define globally belongs here, NOT in tokens.css
+ * (which must remain a pure, shippable token sheet).
+ */
+
+@import 'tailwindcss';
+@import '../projects/ui/styles/tokens.css';
+
+body {
+  margin: 0;
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    sans-serif;
+  color: var(--foreground);
+  background-color: var(--background);
+}

@@ -1,0 +1,83 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Foundations/Colors" />
+
+# Colors
+
+The library ships a single token sheet, `styles/tokens.css` (published as `dist/ui/styles/tokens.css`), following the
+[shadcn/ui](https://ui.shadcn.com/docs/theming) semantic naming convention on a neutral zinc scale.
+
+Every token declares both of its values with `light-dark()`: the active scheme follows the OS preference, unless the
+host application forces one by setting `data-theme="light"` or `data-theme="dark"` on `<html>` (that is exactly what
+the theme switcher in the Storybook toolbar does).
+
+Components never hardcode colors — they consume the tokens through Tailwind arbitrary-value utilities such as
+`bg-(--primary)` or `border-(--border)`, so retheming the whole system means editing one CSS file.
+
+export const tokens = [
+  ['background', 'Page background'],
+  ['foreground', 'Default text on background'],
+  ['card', 'Elevated surface background'],
+  ['card-foreground', 'Text on card'],
+  ['border', 'Borders, dividers, outline badge'],
+  ['primary', 'Primary actions'],
+  ['primary-foreground', 'Text on primary'],
+  ['secondary', 'Secondary actions'],
+  ['secondary-foreground', 'Text on secondary'],
+  ['muted', 'Subdued surfaces'],
+  ['muted-foreground', 'Placeholder and secondary text'],
+  ['accent', 'Hover state of ghost elements'],
+  ['accent-foreground', 'Text on accent'],
+  ['destructive', 'Destructive actions and error states'],
+  ['destructive-foreground', 'Text on destructive'],
+];
+
+export const Swatch = ({ token, scheme }) => (
+  <div
+    style={{
+      colorScheme: scheme,
+      background: 'var(--background)',
+      border: '1px solid var(--border)',
+      borderRadius: 6,
+      padding: 8,
+    }}>
+    <div
+      style={{
+        height: 28,
+        borderRadius: 4,
+        border: '1px solid var(--border)',
+        background: `var(--${token})`,
+      }}
+    />
+  </div>
+);
+
+<table style={{ width: '100%' }}>
+  <thead>
+    <tr>
+      <th style={{ textAlign: 'left' }}>Token</th>
+      <th style={{ textAlign: 'left' }}>Role</th>
+      <th style={{ textAlign: 'left', width: '20%' }}>Light</th>
+      <th style={{ textAlign: 'left', width: '20%' }}>Dark</th>
+    </tr>
+  </thead>
+  <tbody>
+    {tokens.map(([token, role]) => (
+      <tr key={token}>
+        <td>
+          <code>--{token}</code>
+        </td>
+        <td>{role}</td>
+        <td>
+          <Swatch token={token} scheme="light" />
+        </td>
+        <td>
+          <Swatch token={token} scheme="dark" />
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
+> Both columns render from the same custom properties: `light-dark()` resolves against each swatch's own
+> `color-scheme`, which is how the whole system switches themes with a single attribute.

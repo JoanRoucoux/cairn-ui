@@ -1,0 +1,70 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Foundations/Typography" />
+
+# Typography
+
+The library does not ship fonts: it relies on the host's system font stack, applied on `body` by the consuming
+application (Storybook does the same in `.storybook/preview.css`):
+
+```css
+font-family:
+  ui-sans-serif,
+  system-ui,
+  -apple-system,
+  'Segoe UI',
+  sans-serif;
+```
+
+## Sizes
+
+Components use the default Tailwind type scale:
+
+<table style={{ width: '100%' }}>
+  <thead>
+    <tr>
+      <th style={{ textAlign: 'left' }}>Usage</th>
+      <th style={{ textAlign: 'left' }}>Class</th>
+      <th style={{ textAlign: 'left' }}>Sample</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        Badges, small buttons (<code>sm</code>)
+      </td>
+      <td>
+        <code>text-xs</code>
+      </td>
+      <td>
+        <span className="text-xs">Sample</span>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        Buttons (<code>md</code>), inputs
+      </td>
+      <td>
+        <code>text-sm</code>
+      </td>
+      <td>
+        <span className="text-sm">Sample</span>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        Large buttons (<code>lg</code>), body text
+      </td>
+      <td>
+        <code>text-base</code>
+      </td>
+      <td>
+        <span className="text-base">Sample</span>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+## Radius
+
+Two radii are used across the system: `rounded-md` (buttons, inputs, cards) and `rounded-full` (badges, avatars).
