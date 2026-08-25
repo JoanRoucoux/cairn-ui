@@ -1,30 +1,59 @@
 /*
- * Design tokens of the ui library — shipped with the package (dist/ui/styles/tokens.css).
+ * Design tokens of the Cairn ui library - shipped with the package (dist/ui/styles/tokens.css).
  * This file must stay a pure token sheet: no resets, no element styles, so consumers
  * can import it without side effects.
  *
- * Tokens follow the shadcn/ui convention. Each token declares its light and dark value
- * with light-dark(); the active scheme follows the OS preference unless the host app
- * forces one by setting data-theme on <html>.
+ * Monochrome direction: the brand carries no hue, so semantic color is the only color in the
+ * interface. Every text token clears 4.5:1 against --background, --card and --elevated in both
+ * schemes; the ratios are recorded in projects/ui/docs/colors.mdx. Do not edit a value without
+ * recomputing them.
  */
 
 :root {
   color-scheme: light dark;
-  --background: light-dark(hsl(0 0% 100%), hsl(240 10% 3.9%));
-  --foreground: light-dark(hsl(240 10% 3.9%), hsl(0 0% 98%));
-  --card: light-dark(hsl(0 0% 100%), hsl(240 10% 5.5%));
-  --card-foreground: light-dark(hsl(240 10% 3.9%), hsl(0 0% 98%));
-  --border: light-dark(hsl(240 5.9% 90%), hsl(240 3.7% 15.9%));
-  --primary: light-dark(hsl(240 5.9% 10%), hsl(0 0% 98%));
-  --primary-foreground: light-dark(hsl(0 0% 98%), hsl(240 5.9% 10%));
-  --secondary: light-dark(hsl(240 4.8% 95.9%), hsl(240 3.7% 15.9%));
-  --secondary-foreground: light-dark(hsl(240 5.9% 10%), hsl(0 0% 98%));
-  --muted: light-dark(hsl(240 4.8% 95.9%), hsl(240 3.7% 15.9%));
-  --muted-foreground: light-dark(hsl(240 3.8% 46.1%), hsl(240 5% 64.9%));
-  --accent: light-dark(hsl(240 4.8% 95.9%), hsl(240 3.7% 15.9%));
-  --accent-foreground: light-dark(hsl(240 5.9% 10%), hsl(0 0% 98%));
-  --destructive: light-dark(hsl(0 84.2% 45%), hsl(0 62.8% 30.6%));
-  --destructive-foreground: light-dark(hsl(0 0% 98%), hsl(0 0% 98%));
+
+  /* Surfaces */
+  --background: light-dark(#f7f8f8, #0a0b0b);
+  --foreground: light-dark(#111414, #edefee);
+  --card: light-dark(#ffffff, #151717);
+  --card-foreground: light-dark(#111414, #edefee);
+  --elevated: light-dark(#f1f3f2, #101111);
+  --border: light-dark(#e2e5e4, #242726);
+  --hairline: light-dark(#edefee, #1e2020);
+
+  /* Text */
+  --muted-foreground: light-dark(#5c6462, #8e9391);
+  --subtle-foreground: light-dark(#656d6b, #828886);
+
+  /* Brand - no hue: --primary is a near-black on light, a near-white on dark */
+  --primary: light-dark(#161918, #f2f4f3);
+  --primary-to: light-dark(#333937, #c9cecc);
+  --primary-foreground: light-dark(#fafbfa, #0a0b0b);
+  --soft: light-dark(rgb(22 25 24 / 0.07), rgb(242 244 243 / 0.1));
+  --glow: light-dark(rgb(22 25 24 / 0.05), rgb(242 244 243 / 0.07));
+  --ring: light-dark(#161918, #f2f4f3);
+
+  /* Semantics - these roles never change meaning, in any theme */
+  --positive: light-dark(#0c7a5a, #3fbf8f);
+  --negative: light-dark(#b8443c, #e0665c);
+  --stale: light-dark(#8a6614, #c4922a);
+
+  /* Neutral ramp - allocation bars, where a categorical palette would break the monochrome premise */
+  --ramp-1: light-dark(#161918, #f2f4f3);
+  --ramp-2: light-dark(#3d4341, #c9cecc);
+  --ramp-3: light-dark(#646b69, #a2a9a6);
+  --ramp-4: light-dark(#8b9290, #7c8380);
+  --ramp-5: light-dark(#b0b6b4, #5a605e);
+  --ramp-6: light-dark(#ced3d1, #3b403e);
+
+  /* Kept from the starter so its reference components still resolve */
+  --secondary: light-dark(#f1f3f2, #1e2020);
+  --secondary-foreground: light-dark(#111414, #edefee);
+  --muted: light-dark(#f1f3f2, #1e2020);
+  --accent: light-dark(#f1f3f2, #1e2020);
+  --accent-foreground: light-dark(#111414, #edefee);
+  --destructive: light-dark(#b8443c, #a33a33);
+  --destructive-foreground: light-dark(#fafbfa, #fafbfa);
 }
 
 :root[data-theme='light'] {
