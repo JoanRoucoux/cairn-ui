@@ -70,6 +70,7 @@ export class UiDialog {
 
   constructor() {
     effect(() => {
+      // viewChild.required can't target a #private field (NG1053); safe because the template has exactly one <dialog>.
       const dialog = this.#host.nativeElement.querySelector('dialog') as HTMLDialogElement;
 
       if (this.open() && !dialog.open) {

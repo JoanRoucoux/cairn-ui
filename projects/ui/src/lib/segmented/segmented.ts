@@ -1,4 +1,4 @@
-import { Component, ElementRef, computed, input, model, viewChildren } from '@angular/core';
+import { Component, ElementRef, input, model, viewChildren } from '@angular/core';
 
 export type SegmentedOption = {
   value: string;
@@ -44,11 +44,10 @@ export class UiSegmented {
   readonly label = input.required<string>();
   readonly value = model.required<string>();
 
-  protected readonly selected = computed(() => this.value());
   protected readonly radios = viewChildren<ElementRef<HTMLButtonElement>>('radio');
 
   protected optionClasses(optionValue: string): string {
-    return `${OPTION_CLASSES} ${optionValue === this.selected() ? SELECTED_CLASSES : UNSELECTED_CLASSES}`;
+    return `${OPTION_CLASSES} ${optionValue === this.value() ? SELECTED_CLASSES : UNSELECTED_CLASSES}`;
   }
 
   protected tabIndexFor(optionValue: string): number {

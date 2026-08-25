@@ -43,7 +43,7 @@ describe('UiSkeleton', () => {
     expect(screen.queryByRole('status')).not.toBeInTheDocument();
   });
 
-  it('stops pulsing when the reader asked for less motion', async () => {
+  it('applies the motion-safe pulse class', async () => {
     const { container } = await render('<ui-skeleton />', { imports: [UiSkeleton] });
 
     expect(container.querySelector('ui-skeleton > span')).toHaveClass('motion-safe:animate-pulse');

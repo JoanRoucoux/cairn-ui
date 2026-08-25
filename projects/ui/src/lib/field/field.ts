@@ -46,6 +46,7 @@ export class UiField {
 
   constructor() {
     afterRenderEffect(() => {
+      // querySelector, not viewChild.required, so the "no control found" guard below stays reachable and testable.
       const control = this.#host.nativeElement.querySelector<HTMLElement>('input, select, textarea');
 
       if (!control) {
