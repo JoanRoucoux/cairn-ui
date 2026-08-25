@@ -17,19 +17,14 @@ const TEXT_CLASSES: Record<Sign, string> = {
   unknown: 'text-(--subtle-foreground)',
 };
 
-const PILL_BACKGROUND_CLASSES: Record<Sign, string> = {
-  positive: 'bg-(--positive)/12',
-  negative: 'bg-(--negative)/12',
-  neutral: 'bg-(--muted)',
-  unknown: 'bg-(--muted)',
-};
+const PILL_BACKGROUND_CLASS = 'bg-(--muted)';
 
 /**
  * Signed amount whose sign carries meaning: a gain, a loss, or an unknown.
  *
- * A null value is not a zero - twelve of Cairn's twenty-six holdings have no cost basis, so an
- * unknown gain renders as a dash rather than as 0.00. Color never carries the sign on its own:
- * the projected text must already contain a + or a minus sign.
+ * A null value is not a zero: a holding with no cost basis exists, and showing 0 would falsely
+ * claim a known gain of zero. Color never carries the sign on its own: the projected text must
+ * already contain a + or a minus sign.
  *
  * @example
  * <ui-delta [value]="holding.dayChangeEur" unknownLabel="Not available">
@@ -72,8 +67,7 @@ export class UiDelta {
 
   protected readonly classes = computed(() => {
     const sign = this.sign();
-    const background =
-      this.emphasis() === 'pill' ? `${PILL_CLASSES} ${PILL_BACKGROUND_CLASSES[sign]}` : 'bg-transparent';
+    const background = this.emphasis() === 'pill' ? `${PILL_CLASSES} ${PILL_BACKGROUND_CLASS}` : 'bg-transparent';
 
     return `${BASE_CLASSES} ${TEXT_CLASSES[sign]} ${background}`;
   });

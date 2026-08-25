@@ -50,7 +50,7 @@ describe('UiDelta', () => {
 
   it.each<[DeltaEmphasis, string]>([
     ['text', 'bg-transparent'],
-    ['pill', 'bg-(--positive)/12'],
+    ['pill', 'bg-(--muted)'],
   ])('applies the %s emphasis', async (emphasis, expectedClass) => {
     const { container } = await renderDelta(316.54, emphasis);
 

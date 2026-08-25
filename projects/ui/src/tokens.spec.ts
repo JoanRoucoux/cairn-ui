@@ -13,6 +13,7 @@ describe('design tokens', () => {
     '--elevated',
     '--border',
     '--hairline',
+    '--muted',
     '--muted-foreground',
     '--subtle-foreground',
     '--primary',
