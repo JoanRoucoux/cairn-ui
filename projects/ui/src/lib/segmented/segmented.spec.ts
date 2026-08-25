@@ -49,4 +49,51 @@ describe('UiSegmented', () => {
 
     expect(screen.getByRole('radio', { name: '1D' })).toHaveClass('min-h-11');
   });
+
+  it('keeps only the selected option in the tab sequence', async () => {
+    await renderSegmented('1m');
+
+    expect(screen.getByRole('radio', { name: '1M' })).toHaveAttribute('tabindex', '0');
+    expect(screen.getByRole('radio', { name: '1D' })).toHaveAttribute('tabindex', '-1');
+    expect(screen.getByRole('radio', { name: 'Max' })).toHaveAttribute('tabindex', '-1');
+  });
+
+  it('falls back to the first option as the tab stop when value matches no option', async () => {
+    await renderSegmented('unknown');
+
+    expect(screen.getByRole('radio', { name: '1D' })).toHaveAttribute('tabindex', '0');
+    expect(screen.getByRole('radio', { name: '1M' })).toHaveAttribute('tabindex', '-1');
+  });
+
+  it('moves focus and selection to the next option with ArrowRight, wrapping at the end', async () => {
+    const user = userEvent.setup();
+    await renderSegmented('max');
+
+    screen.getByRole('radio', { name: 'Max' }).focus();
+    await user.keyboard('{ArrowRight}');
+
+    expect(screen.getByRole('radio', { name: '1D' })).toBeChecked();
+    expect(screen.getByRole('radio', { name: '1D' })).toHaveFocus();
+  });
+
+  it('moves focus and selection to the previous option with ArrowLeft, wrapping at the start', async () => {
+    const user = userEvent.setup();
+    await renderSegmented('1d');
+
+    screen.getByRole('radio', { name: '1D' }).focus();
+    await user.keyboard('{ArrowLeft}');
+
+    expect(screen.getByRole('radio', { name: 'Max' })).toBeChecked();
+    expect(screen.getByRole('radio', { name: 'Max' })).toHaveFocus();
+  });
+
+  it('ignores keys other than the arrow keys', async () => {
+    const user = userEvent.setup();
+    await renderSegmented('1d');
+
+    screen.getByRole('radio', { name: '1D' }).focus();
+    await user.keyboard('a');
+
+    expect(screen.getByRole('radio', { name: '1D' })).toBeChecked();
+  });
 });
