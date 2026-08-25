@@ -7,7 +7,8 @@ import type { SheriffConfig } from '@softarc/sheriff-core';
  * The one exception is `select`, which reuses `input`'s shared control classes
  * (`CONTROL_BASE_CLASSES`, `CONTROL_SIZE_CLASSES`, `ControlSize`) rather than
  * duplicating them. `field` projects an unrelated native control and needs
- * `input`/`select` only to render one in its own tests and story.
+ * `input`/`select` only to render one in its own tests and story. `dialog`
+ * needs `button` only to render one in its own story.
  *
  * Modules are barrel-less: files are importable directly (no index.ts needed);
  * put files a module wants to keep private in an `internal/` subdirectory.
@@ -24,5 +25,6 @@ export const config: SheriffConfig = {
     'component:*': [],
     'component:select': ['component:input'],
     'component:field': ['component:input', 'component:select'],
+    'component:dialog': ['component:button'],
   },
 };
