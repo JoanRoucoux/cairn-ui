@@ -30,6 +30,11 @@ Before considering a change done, run the same pipeline as CI: `format:check`, `
 - `projects/ui/styles/tokens.css` — the design tokens, shipped as a package asset (`dist/ui/styles/tokens.css`). It must stay a **pure token sheet**: no resets, no element styles. Preview-only chrome belongs in `.storybook/preview.css`.
 - `projects/ui/docs/` — Storybook "Foundations" MDX pages (colors, typography).
 - Module boundaries are enforced at lint time by Sheriff ([sheriff.config.ts](sheriff.config.ts)): **components never import each other** — shared building blocks get their own module. Modules are barrel-less: no `index.ts`, import files directly; private files go in an `internal/` subdirectory (`public-api.ts` is the ng-packagr entry, not a barrel).
+- The palette is **monochrome**: `--primary` carries no hue, which leaves `--positive`,
+  `--negative` and `--stale` as the only colors in the interface. Their light values are darker
+  than their dark values on purpose - a green that reads at 7.76:1 on near-black only reaches
+  4.07:1 on white. The role is fixed across schemes, never the hex. Measured ratios live in
+  `projects/ui/docs/colors.mdx`; `projects/ui/src/tokens.spec.ts` guards the token names.
 
 ## Conventions
 
