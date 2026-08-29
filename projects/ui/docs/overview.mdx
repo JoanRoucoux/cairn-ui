@@ -1,0 +1,105 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Foundations/Overview" />
+
+# Cairn UI
+
+Cairn UI is the component library behind Cairn, a personal wealth tracker. It ships as a publishable
+Angular package (`projects/ui`) and is developed entirely through this Storybook: there is no demo
+application, so what you browse here is exactly what a consuming application gets.
+
+The library is deliberately small. It covers the controls and surfaces Cairn actually uses, and each
+one wraps a native element rather than replacing it, so keyboard behaviour, forms integration and
+assistive technology support come from the platform instead of being rebuilt.
+
+## Get started
+
+- **Browse the components** in the sidebar. Each one opens on its Docs page: what it is for, when to
+  reach for it, its accessibility contract, and a table of every input it accepts.
+- **Try them out.** Every story is live. Change any input under **Controls** in the side panel and
+  the story rerenders.
+- **Read the code.** The **Code** panel under a story shows the exact template that produced it.
+- **Switch schemes.** The paintbrush in the toolbar renders any story in light or dark, or leaves it
+  on the operating system preference. Themes are explained below.
+
+## Installation
+
+```bash
+pnpm add cairn-ui
+```
+
+Two steps are needed beyond installing the package, because it ships CSS that a JavaScript import
+cannot pull in on its own.
+
+Import the token sheet from the application's global stylesheet:
+
+```css
+@import 'cairn-ui/styles/tokens.css';
+```
+
+Then register the package as a Tailwind source, since Tailwind does not scan `node_modules`:
+
+```css
+@source '../node_modules/cairn-ui';
+```
+
+## Themes
+
+Every token declares both of its values at once with
+[`light-dark()`](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/light-dark), so the
+active scheme is decided by the `color-scheme` in effect rather than by a second set of variables.
+
+An application that does nothing inherits the operating system preference and is already correct in
+both schemes. An application that offers its own `system | light | dark` setting forces the two
+explicit cases by stamping `data-theme` on `<html>`:
+
+<table style={{ width: '100%' }}>
+  <thead>
+    <tr>
+      <th style={{ textAlign: 'left' }}>Preference</th>
+      <th style={{ textAlign: 'left' }}>Attribute on &lt;html&gt;</th>
+      <th style={{ textAlign: 'left' }}>Scheme in effect</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <code>system</code>
+      </td>
+      <td>none</td>
+      <td>whichever one the operating system asks for</td>
+    </tr>
+    <tr>
+      <td>
+        <code>light</code>
+      </td>
+      <td>
+        <code>data-theme="light"</code>
+      </td>
+      <td>light</td>
+    </tr>
+    <tr>
+      <td>
+        <code>dark</code>
+      </td>
+      <td>
+        <code>data-theme="dark"</code>
+      </td>
+      <td>dark</td>
+    </tr>
+  </tbody>
+</table>
+
+Leaving the attribute off is what makes `system` work, so a preference store must remove it rather
+than write an empty value or a third theme name. That is the whole contract: one attribute, no
+JavaScript theme object, no class list to keep in sync.
+
+See [Colors](?path=/docs/foundations-colors--docs) for every token this resolves and its measured
+contrast at both ends.
+
+## Contributing a component
+
+Components live one per folder in `projects/ui/src/lib/`, each with its implementation, its spec and
+its stories side by side, and each exported from `projects/ui/src/public-api.ts`. `badge`, `button`
+and `input` are the reference implementations to copy the shape from: standalone, zoneless, signal
+`input()`s, and Tailwind utilities that read the tokens instead of hardcoding a color.

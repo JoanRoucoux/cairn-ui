@@ -6,8 +6,8 @@ import { Meta } from '@storybook/addon-docs/blocks';
 
 The library ships a single token sheet, `styles/tokens.css` (published as `dist/ui/styles/tokens.css`).
 
-Cairn is **monochrome**: the brand carries no hue, which leaves semantic color - a gain, a loss, a stale quote - as
-the only color in the interface. That is the point of the direction, not a limitation of it: a green figure on a
+Cairn is **monochrome**. The brand carries no hue, which leaves semantic color (a gain, a loss, a stale quote) as the
+only color in the interface. That is the point of the direction rather than a limitation of it: a green figure on a
 screen where nothing else is colored is impossible to miss.
 
 Every token declares both of its values with `light-dark()`. The active scheme follows the OS preference, unless the
@@ -36,9 +36,8 @@ export const ContrastSwatch = ({ token, ground, ratio, scheme }) => (
 ## Measured contrast
 
 These ratios were computed, not eyeballed. Every text token clears the WCAG AA threshold of 4.5:1 against all three
-possible grounds - `--background`, `--card` and `--elevated`. The tightest values are the ones to watch when editing
-
-- shown here against their worst ground, rendered rather than just quoted so a change to a token shows up here too:
+possible grounds: `--background`, `--card` and `--elevated`. Each row below renders its token against the worst of the
+three, so a change to a value shows up here rather than only in a number someone has to trust.
 
 export const contrastTokens = [
   ['foreground', 'background', 'Default text on background', '16.62:1', '15.58:1'],
@@ -86,7 +85,7 @@ fails. The role is what stays fixed across schemes, never the hex.
 `--ramp-1` through `--ramp-6` paint allocation bars. A categorical palette would contradict the monochrome premise,
 so luminance is the only variable left; adjacent steps separate by at least 1.44:1 in dark and 1.36:1 in light.
 Because each category gets its own bar rather than a segment in a stacked strip, that separation only has to make
-the steps distinguishable, never identifiable on its own - the label sits next to every bar.
+the steps distinguishable, never identifiable on its own, since the label sits next to every bar.
 
 export const tokens = [
   ['background', 'Page background'],

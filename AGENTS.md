@@ -50,11 +50,17 @@ Before considering a change done, run the same pipeline as CI: `format:check`, `
 ## Storybook
 
 - Stories are CSF3, co-located with their component, with manual `argTypes` (compodoc is not used). Attribute-selector components need a `render` with a `template` and a `moduleMetadata` decorator.
+- Compodoc being off, Storybook infers no prose: every component carries a `parameters.docs.description.component` and every `argType` a `description`, or the Docs page ships an empty props table. Descriptions follow one shape, taken from `@grafana/ui`: a sentence saying what the component is, then **When to use**, **When not to use** and **Accessibility** as `####` sections.
 - Test utilities (`fn`, `userEvent`, `within`, `expect`) are imported from the **`storybook/test`** subpath.
 - `autodocs` is enabled globally via `tags` in `.storybook/preview.ts` — do not re-tag individual stories.
-- The light/dark switcher is `withThemeByDataAttribute` toggling `data-theme` on `<html>`; tokens resolve via `light-dark()`. Never bypass it with story-level colors.
+- The theme control is `withThemeByDataAttribute` stamping `data-theme` on `<html>`; tokens resolve via `light-dark()`. Never bypass it with story-level colors. `system` is the default and maps to an **empty** attribute value, which is what lets `:root`'s own `color-scheme: light dark` decide.
+- That control only reaches the preview iframe. Storybook's own chrome (sidebar, toolbar, Docs prose and tables) is styled by Storybook, so `.storybook/theme.ts` restates the tokens as a `ThemeVars`, applied to the manager in `.storybook/manager.ts` and to Docs pages through `parameters.docs.theme`.
+- Both read `getPreferredColorScheme()` once at load, so **the chrome follows the OS and the toolbar drives the stories**. The two halves always agree with each other, which is the point: a light Docs page beside a dark sidebar is what this replaced. `@grafana/ui` splits it the same way.
+- **Do not try to make the chrome follow the toolbar.** It was measured, not assumed: once the manager is running neither `setConfig` nor `api.setOptions` re-themes it, and a Docs page never re-renders on a globals change, so even a getter on `docs.theme` is read only once. What is left is a custom `docs.container`, which is a React component this repo will not own and which would not fix the sidebar anyway, or reloading the window on every switch, which was tried and felt worse than the problem.
+- Should a globals listener ever be needed in the manager, it is `addons.register('id', (api) => api.on('updateGlobals', ...))`. `addons.getChannel().on('updateGlobals')` receives nothing there.
+- Editing a color in `styles/tokens.css` means editing its twin in `.storybook/theme.ts`, otherwise the chrome and the components drift apart.
 - Interaction tests are `play` functions, executed in CI by `@storybook/test-runner` against the built Storybook. The Storybook **Vitest addon is not an option**: it does not support Angular.
-- Foundations MDX pages live in `projects/ui/docs/` and use `Meta` from `@storybook/addon-docs/blocks`.
+- Foundations MDX pages live in `projects/ui/docs/` and use `Meta` from `@storybook/addon-docs/blocks`. `Overview` is the landing page and is pinned first by `storySort`.
 
 ## Testing
 
