@@ -1,0 +1,16 @@
+<!--
+  Storybook reloads the preview iframe whenever a global changes on a Docs page. That is its own
+  behaviour, measured on an untouched configuration, and not something this one can turn off. The
+  reload used to flash white: preview.css arrives with the JavaScript bundle, so until then the
+  document has no background of its own.
+
+  This style ships with the document instead, so the reload repaints in the scheme already on
+  screen and stops reading as a flash. It follows the OS, like the sidebar and the Docs chrome do,
+  and stays out of the way of the [data-theme] the decorator sets on top for the stories.
+-->
+<style>
+  html {
+    color-scheme: light dark;
+    background-color: light-dark(#f7f8f8, #0a0b0b);
+  }
+</style>
