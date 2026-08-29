@@ -25,7 +25,7 @@ assistive technology support come from the platform instead of being rebuilt.
 ## Installation
 
 ```bash
-pnpm add cairn-ui
+pnpm add @joanroucoux/cairn-ui
 ```
 
 Two steps are needed beyond installing the package, because it ships CSS that a JavaScript import
@@ -34,13 +34,13 @@ cannot pull in on its own.
 Import the token sheet from the application's global stylesheet:
 
 ```css
-@import 'cairn-ui/styles/tokens.css';
+@import '@joanroucoux/cairn-ui/styles/tokens.css';
 ```
 
 Then register the package as a Tailwind source, since Tailwind does not scan `node_modules`:
 
 ```css
-@source '../node_modules/cairn-ui';
+@source '../node_modules/@joanroucoux/cairn-ui';
 ```
 
 ## Themes
