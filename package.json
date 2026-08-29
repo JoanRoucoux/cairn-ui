@@ -2,6 +2,28 @@
   "name": "cairn-ui",
   "version": "0.1.0",
   "description": "Cairn UI — Angular design system generated from angular-starter-ui.",
+  "keywords": [
+    "angular",
+    "design-system",
+    "component-library",
+    "cairn",
+    "typescript",
+    "storybook",
+    "tailwindcss"
+  ],
+  "homepage": "https://github.com/JoanRoucoux/cairn-ui#readme",
+  "bugs": {
+    "url": "https://github.com/JoanRoucoux/cairn-ui/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JoanRoucoux/cairn-ui.git"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Joan Roucoux",
+    "email": "joan.roucoux@gmail.com"
+  },
   "scripts": {
     "ng": "ng",
     "start": "storybook dev -p 6006",

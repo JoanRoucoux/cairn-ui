@@ -1,6 +1,29 @@
 {
   "name": "@joanroucoux/cairn-ui",
   "version": "0.1.0",
+  "description": "Cairn UI — a monochrome, accessible Angular design system.",
+  "keywords": [
+    "angular",
+    "design-system",
+    "component-library",
+    "cairn",
+    "typescript",
+    "storybook",
+    "tailwindcss"
+  ],
+  "homepage": "https://github.com/JoanRoucoux/cairn-ui#readme",
+  "bugs": {
+    "url": "https://github.com/JoanRoucoux/cairn-ui/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JoanRoucoux/cairn-ui.git"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Joan Roucoux",
+    "email": "joan.roucoux@gmail.com"
+  },
   "publishConfig": {
     "access": "public"
   },
@@ -9,7 +32,7 @@
     "@angular/core": "^22.0.0"
   },
   "dependencies": {
-    "tslib": "^2.3.0"
+    "tslib": "2.8.1"
   },
   "sideEffects": false,
   "exports": {
