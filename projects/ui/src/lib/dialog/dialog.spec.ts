@@ -7,9 +7,9 @@ const renderDialog = (open = true): Promise<RenderResult<unknown> & { onDismisse
   const onDismissed = vi.fn();
 
   return render(
-    `<ui-dialog heading="Saisir un cours" [open]="open" (dismissed)="onDismissed()">
+    `<ui-dialog heading="Enter a price" [open]="open" (dismissed)="onDismissed()">
        <p>Corps</p>
-       <button dialogActions type="button">Annuler</button>
+       <button dialogActions type="button">Cancel</button>
      </ui-dialog>`,
     { imports: [UiDialog], componentProperties: { open, onDismissed } },
   ).then((result) => ({ ...result, onDismissed }));
@@ -35,26 +35,26 @@ describe('UiDialog', () => {
     const heading = container.querySelector('h2');
 
     expect(dialog).toHaveAttribute('aria-labelledby', heading?.id);
-    expect(heading).toHaveTextContent('Saisir un cours');
+    expect(heading).toHaveTextContent('Enter a price');
   });
 
   it('projects the body and the actions in separate slots', async () => {
     await renderDialog();
 
     expect(screen.getByText('Corps')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Annuler' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
   });
 
   it('describes the dialog when a description is given', async () => {
     const { container } = await render(
-      `<ui-dialog heading="Supprimer" description="Cette action est definitive." [open]="true"></ui-dialog>`,
+      `<ui-dialog heading="Delete" description="This cannot be undone." [open]="true"></ui-dialog>`,
       { imports: [UiDialog] },
     );
 
     const dialog = container.querySelector('dialog');
     const describedBy = dialog?.getAttribute('aria-describedby');
 
-    expect(container.querySelector(`#${describedBy}`)).toHaveTextContent('Cette action est definitive.');
+    expect(container.querySelector(`#${describedBy}`)).toHaveTextContent('This cannot be undone.');
   });
 
   it('reports a close the reader triggered', async () => {

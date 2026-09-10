@@ -58,7 +58,7 @@ validation state on its own, so a form field needs no binding here at all.
     `,
   }),
   args: {
-    label: 'Prix de revient unitaire',
+    label: 'Average unit cost',
     hint: '',
     error: '',
   },
@@ -79,11 +79,11 @@ type Story = StoryObj<FieldArgs>;
 export const Default: Story = {};
 
 export const WithHint: Story = {
-  args: { hint: 'Laisser vide si vous ne le connaissez pas.' },
+  args: { hint: 'Leave empty if you do not know it.' },
 };
 
 export const WithError: Story = {
-  args: { error: 'Le prix doit etre positif.' },
+  args: { error: 'The price must be positive.' },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
@@ -95,10 +95,10 @@ export const InARow: Story = {
   render: () => ({
     template: `
       <div class="flex items-start gap-3">
-        <ui-field class="grow" label="Quantite">
+        <ui-field class="grow" label="Quantity">
           <input uiInput type="number" />
         </ui-field>
-        <ui-field class="grow" label="Prix" error="Le prix doit etre positif.">
+        <ui-field class="grow" label="Price" error="The price must be positive.">
           <input uiInput type="number" />
         </ui-field>
       </div>
@@ -107,8 +107,8 @@ export const InARow: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    const valid = canvas.getByLabelText('Quantite');
-    const refused = canvas.getByLabelText('Prix');
+    const valid = canvas.getByLabelText('Quantity');
+    const refused = canvas.getByLabelText('Price');
 
     await expect(valid.getBoundingClientRect().top).toBeCloseTo(refused.getBoundingClientRect().top, 0);
   },

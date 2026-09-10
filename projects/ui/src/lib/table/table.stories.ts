@@ -44,8 +44,8 @@ viewport is wide enough for it, which keeps a narrow screen honest instead of tr
         <thead>
           <tr>
             <th uiTh>Ligne</th>
-            <th uiTh numeric from="md">Quantite</th>
-            <th uiTh numeric from="lg">Prix de revient</th>
+            <th uiTh numeric from="md">Quantity</th>
+            <th uiTh numeric from="lg">Average cost</th>
             <th uiTh numeric>Valeur</th>
           </tr>
         </thead>
@@ -57,7 +57,7 @@ viewport is wide enough for it, which keeps a narrow screen honest instead of tr
             <td uiTd numeric>22 515,47</td>
           </tr>
           <tr>
-            <td uiTd>Livret A</td>
+            <td uiTd>Savings account</td>
             <td uiTd numeric from="md">20 010</td>
             <td uiTd numeric from="lg">&mdash;</td>
             <td uiTd numeric>20 010,00</td>

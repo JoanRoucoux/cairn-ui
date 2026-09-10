@@ -13,7 +13,7 @@ const renderTable = (attributes = ''): Promise<RenderResult<unknown>> =>
        </thead>
        <tbody>
          <tr>
-           <td uiTd>Livret A</td>
+           <td uiTd>Savings account</td>
            <td uiTd numeric ${attributes}>20 010,00 EUR</td>
          </tr>
        </tbody>

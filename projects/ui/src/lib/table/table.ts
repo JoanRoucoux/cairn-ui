@@ -32,7 +32,7 @@ const cellClasses = (base: string, numeric: boolean, from: CellBreakpoint | null
  * secondary column back until the viewport is wide enough for it.
  *
  * @example
- * <th uiTh numeric from="md">Prix de revient</th>
+ * <th uiTh numeric from="md">Average cost</th>
  */
 @Directive({
   selector: 'th[uiTh]',

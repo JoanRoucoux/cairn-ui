@@ -51,15 +51,15 @@ buttons. Put the dismissing action first, so it sits on the left.
       <button ui-button (click)="open = true">Ouvrir</button>
       <ui-dialog [heading]="heading" [width]="width" [open]="open" (dismissed)="open = false">
         <p class="text-sm text-(--muted-foreground)">
-          Le cours saisi remplace la derniere valeur connue jusqu'au prochain rafraichissement.
+          The price you enter replaces the last known value until the next refresh.
         </p>
-        <button dialogActions ui-button variant="outline" (click)="open = false">Annuler</button>
-        <button dialogActions ui-button (click)="open = false">Enregistrer</button>
+        <button dialogActions ui-button variant="outline" (click)="open = false">Cancel</button>
+        <button dialogActions ui-button (click)="open = false">Save</button>
       </ui-dialog>
     `,
   }),
   args: {
-    heading: 'Saisir un cours',
+    heading: 'Enter a price',
     width: 'md',
     open: false,
   },
@@ -84,7 +84,7 @@ export const Opens: Story = {
 
     await userEvent.click(canvas.getByRole('button', { name: 'Ouvrir' }));
 
-    await expect(canvas.getByRole('dialog', { name: 'Saisir un cours' })).toBeVisible();
+    await expect(canvas.getByRole('dialog', { name: 'Enter a price' })).toBeVisible();
   },
 };
 
