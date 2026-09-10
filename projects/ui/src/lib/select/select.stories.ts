@@ -17,13 +17,16 @@ const meta: Meta<SelectArgs> = {
       description: {
         component: `Styled native \`<select>\`, drop-down list included.
 
-It is never rebuilt as a listbox. Where the browser offers a customizable select - Chrome and Edge
-from 135, Safari from 27 - the control opts into it, which is what lets the list carry the same
-surface, border, radius and spacing as the rest of the library instead of being drawn by the
-operating system. Everywhere else, including Firefox, the platform draws the list exactly as before.
+It is never rebuilt as a listbox. Where the browser supports a customizable select, the control
+opts into it, so the list carries the same surface, border, radius and spacing as the rest of the
+library rather than being drawn by the operating system. Where it does not, the platform draws the
+list as it always has.
 
-That opt-in stops at \`pointer: fine\`. On a phone the native picker is what makes the control usable
-at all, so a touch screen keeps it.
+The opt-in stops at \`pointer: fine\`, since on a phone the native picker is what makes the control
+usable at all.
+
+The list always opens downwards. Where there is not enough room below it shrinks to the space left
+and scrolls, rather than flipping above the control.
 
 #### When to use
 

@@ -7,7 +7,7 @@ export const CONTROL_SIZES = ['sm', 'md'] as const;
 export type ControlSize = (typeof CONTROL_SIZES)[number];
 
 export const CONTROL_BASE_CLASSES =
-  'w-full rounded-md border border-(--border) bg-transparent px-3 text-sm text-(--foreground) transition-colors placeholder:text-(--muted-foreground) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring) disabled:cursor-not-allowed disabled:opacity-50';
+  'w-full rounded-md border border-(--border) bg-transparent px-3 text-sm text-(--foreground) transition-colors placeholder:text-(--muted-foreground) enabled:hover:outline-2 enabled:hover:outline-offset-2 enabled:hover:outline-(--ring) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring) disabled:cursor-not-allowed disabled:opacity-50';
 
 export const CONTROL_SIZE_CLASSES: Record<ControlSize, string> = {
   sm: 'h-9',
