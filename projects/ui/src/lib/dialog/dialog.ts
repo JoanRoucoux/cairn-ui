@@ -63,7 +63,7 @@ export class UiDialog {
 
   protected readonly classes = computed(
     () =>
-      `w-full ${WIDTH_CLASSES[this.width()]} rounded-xl border border-(--border) bg-(--card) p-6 text-(--foreground) backdrop:bg-black/60`,
+      `w-full m-auto ${WIDTH_CLASSES[this.width()]} rounded-xl border border-(--border) bg-(--card) p-6 text-(--foreground) backdrop:bg-black/60`,
   );
 
   readonly #host = inject<ElementRef<HTMLElement>>(ElementRef);

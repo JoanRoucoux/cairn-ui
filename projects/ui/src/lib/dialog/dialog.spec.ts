@@ -84,4 +84,10 @@ describe('UiDialog', () => {
 
     expect(container.querySelector('dialog')).toHaveAttribute('open');
   });
+
+  it('centres itself, which Tailwind preflight would otherwise prevent', async () => {
+    const { container } = await renderDialog();
+
+    expect(container.querySelector('dialog')).toHaveClass('m-auto');
+  });
 });
