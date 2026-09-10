@@ -4,14 +4,13 @@ import type { SheriffConfig } from '@softarc/sheriff-core';
  * Enforces the design-system boundaries: each component folder is an isolated
  * module, and components must not import each other — shared building blocks
  * belong in their own module (e.g. a future `internal/` utilities module).
- * There are four exceptions. `select` reuses `input`'s shared control classes
+ * There are three exceptions. `select` reuses `input`'s shared control classes
  * (`CONTROL_BASE_CLASSES`, `CONTROL_SIZE_CLASSES`, `ControlSize`) rather than
- * duplicating them. `field`, `dialog` and `control` grant access only because
- * their spec/story files need to render a sibling component (`input`/`select`,
- * `button`, and `input`/`select` again, respectively) for testing - Sheriff
- * has no test-only lens, so those grants technically widen the production
- * import surface too, even though nothing in production code currently uses
- * them that way.
+ * duplicating them. `field` and `dialog` grant access only because their
+ * spec/story files need to render a sibling component (`input`/`select`, and
+ * `button`, respectively) for testing - Sheriff has no test-only lens, so
+ * those two grants technically widen the production import surface too, even
+ * though nothing in production code currently uses them that way.
  *
  * Modules are barrel-less: files are importable directly (no index.ts needed);
  * put files a module wants to keep private in an `internal/` subdirectory.
@@ -34,6 +33,5 @@ export const config: SheriffConfig = {
     'component:select': ['component:input', 'component:control'],
     'component:field': ['component:input', 'component:select', 'component:control'],
     'component:dialog': ['component:button'],
-    'component:control': ['component:input', 'component:select'],
   },
 };

@@ -1,6 +1,9 @@
+import { By } from '@angular/platform-browser';
+
 import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
+import { UI_CONTROL } from '../control/control';
 import { type ControlSize, UiInput, UiTextarea } from './input';
 
 describe('UiInput', () => {
@@ -44,6 +47,23 @@ describe('UiInput', () => {
 
     expect(screen.getByRole('textbox', { name: 'Search' })).toHaveClass('w-52', 'h-11');
   });
+
+  it('resolves UI_CONTROL to itself', async () => {
+    const { fixture } = await render('<input uiInput aria-label="Email" />', { imports: [UiInput] });
+
+    const host = fixture.debugElement.query(By.directive(UiInput));
+
+    expect(host.injector.get(UI_CONTROL)).toBe(host.injector.get(UiInput));
+  });
+
+  it('starts untouched and errorless', async () => {
+    const { fixture } = await render('<input uiInput aria-label="Email" />', { imports: [UiInput] });
+
+    const control = fixture.debugElement.query(By.directive(UiInput)).injector.get(UI_CONTROL);
+
+    expect(control.errors()).toEqual([]);
+    expect(control.touched()).toBe(false);
+  });
 });
 
 describe('UiTextarea', () => {
@@ -62,5 +82,26 @@ describe('UiTextarea', () => {
     await render('<textarea uiTextarea aria-label="Notes"></textarea>', { imports: [UiTextarea] });
 
     expect(screen.getByRole('textbox', { name: 'Notes' })).not.toHaveClass('h-11');
+  });
+
+  it('resolves UI_CONTROL to itself', async () => {
+    const { fixture } = await render('<textarea uiTextarea aria-label="Notes"></textarea>', {
+      imports: [UiTextarea],
+    });
+
+    const host = fixture.debugElement.query(By.directive(UiTextarea));
+
+    expect(host.injector.get(UI_CONTROL)).toBe(host.injector.get(UiTextarea));
+  });
+
+  it('starts untouched and errorless', async () => {
+    const { fixture } = await render('<textarea uiTextarea aria-label="Notes"></textarea>', {
+      imports: [UiTextarea],
+    });
+
+    const control = fixture.debugElement.query(By.directive(UiTextarea)).injector.get(UI_CONTROL);
+
+    expect(control.errors()).toEqual([]);
+    expect(control.touched()).toBe(false);
   });
 });

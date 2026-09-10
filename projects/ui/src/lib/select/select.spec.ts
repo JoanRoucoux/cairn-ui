@@ -1,6 +1,9 @@
+import { By } from '@angular/platform-browser';
+
 import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
+import { UI_CONTROL } from '../control/control';
 import { type ControlSize } from '../input/input';
 import { UiSelect } from './select';
 
@@ -44,5 +47,26 @@ describe('UiSelect', () => {
     await render(`<select uiSelect aria-label="Envelope">${OPTIONS}</select>`, { imports: [UiSelect] });
 
     expect(screen.getByRole('combobox', { name: 'Envelope' })).not.toHaveClass('appearance-none');
+  });
+
+  it('resolves UI_CONTROL to itself', async () => {
+    const { fixture } = await render(`<select uiSelect aria-label="Envelope">${OPTIONS}</select>`, {
+      imports: [UiSelect],
+    });
+
+    const host = fixture.debugElement.query(By.directive(UiSelect));
+
+    expect(host.injector.get(UI_CONTROL)).toBe(host.injector.get(UiSelect));
+  });
+
+  it('starts untouched and errorless', async () => {
+    const { fixture } = await render(`<select uiSelect aria-label="Envelope">${OPTIONS}</select>`, {
+      imports: [UiSelect],
+    });
+
+    const control = fixture.debugElement.query(By.directive(UiSelect)).injector.get(UI_CONTROL);
+
+    expect(control.errors()).toEqual([]);
+    expect(control.touched()).toBe(false);
   });
 });

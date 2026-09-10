@@ -66,7 +66,7 @@ Before considering a change done, run the same pipeline as CI: `format:check`, `
 
 - Component tests use Angular Testing Library (`render`, `screen`, `userEvent`) with template-string rendering (`render('<button ui-button>…</button>', { imports: [UiButton] })`): query by role or label, not by CSS selectors. jest-dom matchers are set up in `projects/ui/src/test-setup.ts`.
 - Cover every variant/size branch of the class-record maps — that is what keeps coverage at 100%.
-- Coverage is at 100% and must stay there; the CI thresholds (85/80/70/85) are intentionally lower so downstream users of the starter are not blocked — do not raise them. `*.stories.ts` files are excluded from coverage (`coverageExclude` in angular.json).
+- Lines and branches are at 100% and must stay there; statements and functions sit just under it, because Angular attributes some generated code — the `forwardRef` arrows in decorator metadata, the `contentChild` query factory — to source positions no test can reach. A drop in **lines** is a real gap; a drop in statements alone, with lines still at 100%, is not. The CI thresholds (85/80/70/85) are intentionally lower so downstream users of the starter are not blocked — do not raise them. `*.stories.ts` files are excluded from coverage (`coverageExclude` in angular.json).
 
 ## Generator
 
