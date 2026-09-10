@@ -21,6 +21,8 @@ const SELECT_CLASSES = 'pr-8';
 const PICKER_CLASSES = [
   'pointer-fine:supports-[appearance:base-select]:[appearance:base-select]',
   'pointer-fine:supports-[appearance:base-select]:pr-3',
+  // base-select turns the button into a flex container, which stops centring the text on its own.
+  'pointer-fine:supports-[appearance:base-select]:items-center',
   'pointer-fine:supports-[appearance:base-select]:[&_option]:rounded-md',
   'pointer-fine:supports-[appearance:base-select]:[&_option]:px-2.5',
   'pointer-fine:supports-[appearance:base-select]:[&_option]:py-2',
@@ -29,6 +31,7 @@ const PICKER_CLASSES = [
   'pointer-fine:supports-[appearance:base-select]:[&_option:focus]:bg-(--soft)',
   'pointer-fine:supports-[appearance:base-select]:[&_option:checked]:font-medium',
   '[&::picker-icon]:text-(--muted-foreground)',
+  '[&::picker-icon]:text-[11px]',
   '[&::picker(select)]:[appearance:base-select]',
   '[&::picker(select)]:mt-1.5',
   '[&::picker(select)]:rounded-lg',
