@@ -15,10 +15,15 @@ const meta: Meta<SelectArgs> = {
   parameters: {
     docs: {
       description: {
-        component: `Styled native \`<select>\`.
+        component: `Styled native \`<select>\`, drop-down list included.
 
-It deliberately keeps the platform's own chevron and picker rather than rebuilding a listbox. On a
-phone, that native picker is what makes the control usable at all.
+It is never rebuilt as a listbox. Where the browser offers a customizable select - Chrome and Edge
+from 135, Safari from 27 - the control opts into it, which is what lets the list carry the same
+surface, border, radius and spacing as the rest of the library instead of being drawn by the
+operating system. Everywhere else, including Firefox, the platform draws the list exactly as before.
+
+That opt-in stops at \`pointer: fine\`. On a phone the native picker is what makes the control usable
+at all, so a touch screen keeps it.
 
 #### When to use
 

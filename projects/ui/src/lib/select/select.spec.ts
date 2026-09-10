@@ -45,10 +45,19 @@ describe('UiSelect', () => {
     expect(screen.getByRole('combobox', { name: 'Envelope' })).toHaveClass(expectedClass);
   });
 
-  it('leaves the native chevron and the native picker alone', async () => {
+  it('never blanks the control out with appearance-none', async () => {
     await render(`<select uiSelect aria-label="Envelope">${OPTIONS}</select>`, { imports: [UiSelect] });
 
     expect(screen.getByRole('combobox', { name: 'Envelope' })).not.toHaveClass('appearance-none');
+  });
+
+  it('styles its own drop-down list where the browser has a customizable one', async () => {
+    await render(`<select uiSelect aria-label="Envelope">${OPTIONS}</select>`, { imports: [UiSelect] });
+
+    const select = screen.getByRole('combobox', { name: 'Envelope' });
+
+    expect(select).toHaveClass('pointer-fine:supports-[appearance:base-select]:[appearance:base-select]');
+    expect(select).toHaveClass('[&::picker(select)]:bg-(--card)');
   });
 
   it('resolves UI_CONTROL to itself', async () => {
