@@ -38,11 +38,9 @@ const nextId = (() => {
         <span class="text-[11.5px] text-(--subtle-foreground)" [id]="hintId">{{ hint() }}</span>
       }
 
-      <div class="min-h-[1lh] text-[11.5px]">
-        @if (message()) {
-          <p class="text-(--negative)" role="alert" [id]="errorId">{{ message() }}</p>
-        }
-      </div>
+      @if (message()) {
+        <p class="text-[11.5px] text-(--negative)" role="alert" [id]="errorId">{{ message() }}</p>
+      }
     </div>
   `,
 })
