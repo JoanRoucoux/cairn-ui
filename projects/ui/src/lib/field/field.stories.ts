@@ -22,6 +22,11 @@ The control stays a plain native element such as \`uiInput\` or \`uiSelect\`. Th
 its own projected content and wires the ARIA attributes onto it, instead of replacing it with a
 custom component that would have to reimplement every native forms behaviour.
 
+A field shows a message from one of two places. \`error\` is the caller's own, and always wins. Where
+none is set, the field shows the first message among the projected control's \`errors\`, once that
+control is touched: Angular's \`[formField]\` fills a \`uiInput\`, \`uiSelect\` or \`uiTextarea\` with its
+validation state on its own, so a form field needs no binding here at all.
+
 #### When to use
 
 * Around every form control the user is expected to fill in.
@@ -39,7 +44,8 @@ custom component that would have to reimplement every native forms behaviour.
   the label focuses the control.
 * \`hint\` and \`error\` are joined into the control's \`aria-describedby\`.
 * A non empty \`error\` marks the control \`aria-invalid\` and renders the message with \`role="alert"\`,
-  so a screen reader announces it as soon as it appears.`,
+  so a screen reader announces it as soon as it appears.
+* A control outside a field shows no message. It has nowhere to put one.`,
       },
     },
   },

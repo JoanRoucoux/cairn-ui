@@ -76,4 +76,53 @@ describe('UiField', () => {
 
     expect(container.querySelector('label')).not.toHaveAttribute('for');
   });
+
+  it('shows nothing while an invalid control is still untouched', async () => {
+    await render(`<ui-field label="Quantite"><input uiInput [errors]="errors" /></ui-field>`, {
+      imports: [UiField, UiInput],
+      componentProperties: { errors: [{ message: 'Quantite obligatoire' }] },
+    });
+
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(screen.getByLabelText('Quantite')).not.toHaveAttribute('aria-invalid');
+  });
+
+  it('shows the control error once the control is touched', async () => {
+    await render(`<ui-field label="Quantite"><input uiInput [errors]="errors" [touched]="true" /></ui-field>`, {
+      imports: [UiField, UiInput],
+      componentProperties: { errors: [{ message: 'Quantite obligatoire' }] },
+    });
+
+    expect(screen.getByRole('alert')).toHaveTextContent('Quantite obligatoire');
+    expect(screen.getByLabelText('Quantite')).toHaveAttribute('aria-invalid', 'true');
+  });
+
+  it('skips an error that carries no message', async () => {
+    await render(`<ui-field label="Quantite"><input uiInput [errors]="errors" [touched]="true" /></ui-field>`, {
+      imports: [UiField, UiInput],
+      componentProperties: { errors: [{}, { message: 'Quantite obligatoire' }] },
+    });
+
+    expect(screen.getByRole('alert')).toHaveTextContent('Quantite obligatoire');
+  });
+
+  it('lets the caller override the control with an explicit error', async () => {
+    await render(
+      `<ui-field label="Quantite" error="Saisir une quantite"><input uiInput [errors]="errors" [touched]="true" /></ui-field>`,
+      {
+        imports: [UiField, UiInput],
+        componentProperties: { errors: [{ message: 'Quantite obligatoire' }] },
+      },
+    );
+
+    expect(screen.getByRole('alert')).toHaveTextContent('Saisir une quantite');
+  });
+
+  it('shows nothing when a touched control has no error at all', async () => {
+    await render(`<ui-field label="Quantite"><input uiInput [touched]="true" /></ui-field>`, {
+      imports: [UiField, UiInput],
+    });
+
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
 });
