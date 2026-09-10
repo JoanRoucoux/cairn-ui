@@ -1,4 +1,6 @@
-import { Directive, computed, input } from '@angular/core';
+import { Directive, computed, forwardRef, input } from '@angular/core';
+
+import { UI_CONTROL, type UiControl, type UiControlError } from '../control/control';
 
 /** Available control sizes. `md` is the 44px touch target. */
 export const CONTROL_SIZES = ['sm', 'md'] as const;
@@ -17,6 +19,9 @@ export const CONTROL_SIZE_CLASSES: Record<ControlSize, string> = {
  * stays a plain <input>: every forms flavor (ngModel, reactive, signal forms)
  * and every native attribute keep working without any plumbing.
  *
+ * Declares the `errors` and `touched` inputs Angular's `[formField]` fills, so a `ui-field` around
+ * it can show the message without any binding here.
+ *
  * @example
  * <input uiInput type="email" placeholder="you@example.com" />
  */
@@ -25,9 +30,12 @@ export const CONTROL_SIZE_CLASSES: Record<ControlSize, string> = {
   host: {
     '[class]': 'classes()',
   },
+  providers: [{ provide: UI_CONTROL, useExisting: forwardRef(() => UiInput) }],
 })
-export class UiInput {
+export class UiInput implements UiControl {
   readonly size = input<ControlSize>('md');
+  readonly errors = input<readonly UiControlError[]>([]);
+  readonly touched = input(false);
 
   protected readonly classes = computed(() => `${CONTROL_BASE_CLASSES} ${CONTROL_SIZE_CLASSES[this.size()]}`);
 }
@@ -37,6 +45,9 @@ export class UiInput {
  * classes; it takes no size, since a textarea grows from a floor instead of sitting
  * at a fixed height.
  *
+ * Declares the `errors` and `touched` inputs Angular's `[formField]` fills, so a `ui-field` around
+ * it can show the message without any binding here.
+ *
  * @example
  * <textarea uiTextarea maxlength="280"></textarea>
  */
@@ -45,5 +56,9 @@ export class UiInput {
   host: {
     class: `${CONTROL_BASE_CLASSES} min-h-24 py-2`,
   },
+  providers: [{ provide: UI_CONTROL, useExisting: forwardRef(() => UiTextarea) }],
 })
-export class UiTextarea {}
+export class UiTextarea implements UiControl {
+  readonly errors = input<readonly UiControlError[]>([]);
+  readonly touched = input(false);
+}
