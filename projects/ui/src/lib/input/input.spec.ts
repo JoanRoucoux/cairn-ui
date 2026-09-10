@@ -18,6 +18,15 @@ describe('UiInput', () => {
     expect(input).toHaveValue('jane@example.com');
   });
 
+  it('draws the focus ring on hover, from the control and from the field around it', async () => {
+    await render('<input uiInput aria-label="Email" />', { imports: [UiInput] });
+
+    const input = screen.getByRole('textbox', { name: 'Email' });
+
+    expect(input).toHaveClass('enabled:hover:outline-2', 'enabled:hover:outline-(--ring)');
+    expect(input).toHaveClass('enabled:group-hover:outline-2', 'enabled:group-hover:outline-(--ring)');
+  });
+
   it('keeps the native disabled behavior', async () => {
     await render('<input uiInput aria-label="Email" disabled />', { imports: [UiInput] });
 

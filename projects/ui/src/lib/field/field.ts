@@ -28,7 +28,7 @@ const nextId = (() => {
 @Component({
   selector: 'ui-field',
   template: `
-    <div class="flex flex-col gap-1.5">
+    <div class="group flex flex-col gap-1.5">
       <!-- eslint-disable-next-line @angular-eslint/template/label-has-associated-control -- htmlFor is wired at runtime, once the projected control's id is known -->
       <label class="text-[13px] font-medium text-(--foreground)">{{ label() }}</label>
 

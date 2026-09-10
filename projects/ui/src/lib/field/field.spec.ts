@@ -132,4 +132,10 @@ describe('UiField', () => {
     expect(container.querySelector('ui-field > div > div')).toHaveClass('min-h-[1lh]');
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
+
+  it('is one hover group, so the gap between the label and the control is not a dead zone', async () => {
+    const { container } = await renderField();
+
+    expect(container.querySelector('ui-field > div')).toHaveClass('group');
+  });
 });
