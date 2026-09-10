@@ -125,4 +125,11 @@ describe('UiField', () => {
 
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
+
+  it('holds the message line open while there is nothing to say, so a row of fields stays aligned', async () => {
+    const { container } = await renderField();
+
+    expect(container.querySelector('ui-field > div > div')).toHaveClass('min-h-[1lh]');
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
 });

@@ -20,6 +20,8 @@ describe('UiSelect', () => {
 
     const select = screen.getByRole('combobox', { name: 'Envelope' });
     expect(select).toHaveClass('border-(--border)');
+    // The select carries no fill of its own: it has to read as the same control as the input beside it.
+    expect(select).not.toHaveClass('bg-(--elevated)');
 
     await user.selectOptions(select, 'pea');
     expect(select).toHaveValue('pea');

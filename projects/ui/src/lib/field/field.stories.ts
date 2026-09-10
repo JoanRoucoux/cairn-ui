@@ -27,6 +27,10 @@ none is set, the field shows the first message among the projected control's \`e
 control is touched: Angular's \`[formField]\` fills a \`uiInput\`, \`uiSelect\` or \`uiTextarea\` with its
 validation state on its own, so a form field needs no binding here at all.
 
+The line that message occupies is reserved whether or not there is one. A field that grew only when
+refused would push the controls beside it out of line, so a row of fields would stop being a row the
+moment one of them was filled in wrong.
+
 #### When to use
 
 * Around every form control the user is expected to fill in.
@@ -88,5 +92,28 @@ export const WithError: Story = {
     const canvas = within(canvasElement);
 
     await expect(canvas.getByRole('spinbutton')).toHaveAttribute('aria-invalid', 'true');
+  },
+};
+
+export const InARow: Story = {
+  render: () => ({
+    template: `
+      <div class="flex items-end gap-3">
+        <ui-field class="grow" label="Quantite">
+          <input uiInput type="number" />
+        </ui-field>
+        <ui-field class="grow" label="Prix" error="Le prix doit etre positif.">
+          <input uiInput type="number" />
+        </ui-field>
+      </div>
+    `,
+  }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    const valid = canvas.getByLabelText('Quantite');
+    const refused = canvas.getByLabelText('Prix');
+
+    await expect(valid.getBoundingClientRect().top).toBeCloseTo(refused.getBoundingClientRect().top, 0);
   },
 };

@@ -38,9 +38,12 @@ const nextId = (() => {
         <span class="text-[11.5px] text-(--subtle-foreground)" [id]="hintId">{{ hint() }}</span>
       }
 
-      @if (message()) {
-        <p class="text-[11.5px] text-(--negative)" role="alert" [id]="errorId">{{ message() }}</p>
-      }
+      <!-- Held open even when empty: a field that grows on refusal drags the controls beside it out of line. -->
+      <div class="min-h-[1lh] text-[11.5px]">
+        @if (message()) {
+          <p class="text-(--negative)" role="alert" [id]="errorId">{{ message() }}</p>
+        }
+      </div>
     </div>
   `,
 })

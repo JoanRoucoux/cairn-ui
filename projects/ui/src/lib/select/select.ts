@@ -3,7 +3,7 @@ import { Directive, computed, forwardRef, input } from '@angular/core';
 import { UI_CONTROL, type UiControl, type UiControlError } from '../control/control';
 import { CONTROL_BASE_CLASSES, CONTROL_SIZE_CLASSES, type ControlSize } from '../input/input';
 
-const SELECT_CLASSES = 'bg-(--elevated) pr-8';
+const SELECT_CLASSES = 'pr-8';
 
 /**
  * Styled native select. Deliberately keeps the platform's own chevron and picker:
