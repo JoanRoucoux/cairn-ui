@@ -6,6 +6,7 @@ import { UiField } from './field';
 
 type FieldArgs = {
   label: string;
+  labelHidden: boolean;
   hint: string;
   error: string;
 };
@@ -31,17 +32,19 @@ validation state on its own, so a form field needs no binding here at all.
 
 * Around every form control the user is expected to fill in.
 * Whenever a control needs a hint or can show a validation error.
+* With \`labelHidden\`, around a control whose purpose the page already makes plain, such as a
+  search box above the list it filters. The label is still what a screen reader announces.
 
 #### When not to use
 
-* Around a control whose purpose is already obvious from an adjacent heading, where a second label
-  would only repeat it.
 * Around more than one control. One field wires one control.
 
 #### Accessibility
 
 * The label's \`for\` points at the control's id, generated when the control has none, so clicking
   the label focuses the control.
+* \`labelHidden\` hides the label from sight only: it stays in the accessibility tree and keeps
+  naming the control. A placeholder is not a substitute for it, it disappears as soon as the user types.
 * \`hint\` and \`error\` are joined into the control's \`aria-describedby\`.
 * A non empty \`error\` marks the control \`aria-invalid\` and renders the message with \`role="alert"\`,
   so a screen reader announces it as soon as it appears.
@@ -52,18 +55,23 @@ validation state on its own, so a form field needs no binding here at all.
   render: (args) => ({
     props: args,
     template: `
-      <ui-field [label]="label" [hint]="hint" [error]="error">
+      <ui-field [label]="label" [labelHidden]="labelHidden" [hint]="hint" [error]="error">
         <input uiInput type="number" step="0.0001" />
       </ui-field>
     `,
   }),
   args: {
     label: 'Average unit cost',
+    labelHidden: false,
     hint: '',
     error: '',
   },
   argTypes: {
     label: { control: 'text', description: "The field's label, wired to the control via `for`/`id`." },
+    labelHidden: {
+      control: 'boolean',
+      description: 'Hides the label from sight while it keeps naming the control for assistive technologies.',
+    },
     hint: { control: 'text', description: 'Optional helper text below the control, joined into `aria-describedby`.' },
     error: {
       control: 'text',
@@ -88,6 +96,25 @@ export const WithError: Story = {
     const canvas = within(canvasElement);
 
     await expect(canvas.getByRole('spinbutton')).toHaveAttribute('aria-invalid', 'true');
+  },
+};
+
+export const LabelHidden: Story = {
+  render: () => ({
+    template: `
+      <ui-field label="Search holdings" labelHidden>
+        <input uiInput type="search" placeholder="Instrument or account" />
+      </ui-field>
+    `,
+  }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    const search = canvas.getByRole('searchbox', { name: 'Search holdings' });
+    const label = canvasElement.querySelector('label')!;
+
+    await expect(search).toBeVisible();
+    await expect(label.getBoundingClientRect().width).toBeLessThanOrEqual(1);
   },
 };
 

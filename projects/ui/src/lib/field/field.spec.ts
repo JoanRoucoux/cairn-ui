@@ -126,6 +126,19 @@ describe('UiField', () => {
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
+  it('shows its label by default', async () => {
+    const { container } = await renderField();
+
+    expect(container.querySelector('label')).not.toHaveClass('sr-only');
+  });
+
+  it('hides the label from sight but keeps it as the name of the control', async () => {
+    const { container } = await renderField('labelHidden');
+
+    expect(container.querySelector('label')).toHaveClass('sr-only');
+    expect(screen.getByLabelText('Quantity')).toBeInTheDocument();
+  });
+
   it('is one hover group, so the gap between the label and the control is not a dead zone', async () => {
     const { container } = await renderField();
 

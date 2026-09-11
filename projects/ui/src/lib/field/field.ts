@@ -1,4 +1,13 @@
-import { Component, ElementRef, afterRenderEffect, computed, contentChild, inject, input } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  afterRenderEffect,
+  booleanAttribute,
+  computed,
+  contentChild,
+  inject,
+  input,
+} from '@angular/core';
 
 import { UI_CONTROL } from '../control/control';
 
@@ -24,13 +33,18 @@ const nextId = (() => {
  * <ui-field label="ISIN or name" [error]="blank() ? 'Enter an ISIN' : undefined">
  *   <input uiInput type="search" />
  * </ui-field>
+ *
+ * @example
+ * <ui-field label="Search holdings" labelHidden>
+ *   <input uiInput type="search" placeholder="Instrument or account" />
+ * </ui-field>
  */
 @Component({
   selector: 'ui-field',
   template: `
     <div class="group flex flex-col gap-1.5">
       <!-- eslint-disable-next-line @angular-eslint/template/label-has-associated-control -- htmlFor is wired at runtime, once the projected control's id is known -->
-      <label class="text-[13px] font-medium text-(--foreground)">{{ label() }}</label>
+      <label [class]="labelClasses()">{{ label() }}</label>
 
       <ng-content />
 
@@ -46,6 +60,7 @@ const nextId = (() => {
 })
 export class UiField {
   readonly label = input.required<string>();
+  readonly labelHidden = input(false, { transform: booleanAttribute });
   readonly hint = input<string>();
   readonly error = input<string>();
 
@@ -54,6 +69,10 @@ export class UiField {
   protected readonly errorId = `${this.#id}-error`;
   readonly #host = inject<ElementRef<HTMLElement>>(ElementRef);
   protected readonly control = contentChild(UI_CONTROL);
+
+  protected readonly labelClasses = computed(() =>
+    this.labelHidden() ? 'sr-only' : 'text-[13px] font-medium text-(--foreground)',
+  );
 
   /**
    * The caller's own `error` wins: it is the only way to report something the control does not
