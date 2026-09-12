@@ -1,5 +1,9 @@
 version: 2
 updates:
+  # One pull request for the whole npm tree, not one per family: the halves are coupled
+  # anyway (a Storybook bump pulls Vite, a Playwright bump moves the browser its runner
+  # launches), so reviewing them apart means merging them in an order nobody chose.
+  # Dependabot cannot group two ecosystems together, so actions keep their own.
   - package-ecosystem: npm
     directory: /
     schedule:
@@ -10,25 +14,15 @@ updates:
       - dependency-name: 'typescript'
         versions: ['>=7']
     groups:
-      angular:
+      dependencies:
         patterns:
-          - '@angular/*'
-          - 'angular-eslint'
-      storybook:
-        patterns:
-          - 'storybook'
-          - '@storybook/*'
-          - 'eslint-plugin-storybook'
-      dev-dependencies:
-        dependency-type: development
-        exclude-patterns:
-          - '@angular/*'
-          - 'angular-eslint'
-          - 'storybook'
-          - '@storybook/*'
-          - 'eslint-plugin-storybook'
+          - '*'
 
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
+    groups:
+      actions:
+        patterns:
+          - '*'
