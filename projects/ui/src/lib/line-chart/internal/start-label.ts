@@ -58,7 +58,11 @@ export const placeStartLabel = (
     }
   }
 
-  const { anchor, x, y } = best!.slot;
+  if (!best) {
+    return { anchor: 'end', x: box.width, y: label.height };
+  }
+
+  const { anchor, x, y } = best.slot;
 
   return { anchor, x, y };
 };

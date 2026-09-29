@@ -65,3 +65,13 @@ describe('placeStartLabel', () => {
     expect(placed).toEqual({ x: 400, y: label.height, anchor: 'end' });
   });
 });
+
+describe('placeStartLabel in a box with no room yet', () => {
+  it('falls back to the top-right corner instead of throwing', () => {
+    expect(placeStartLabel([], 0, { width: 300, height: 0 }, { width: 130, height: 17 })).toEqual({
+      anchor: 'end',
+      x: 300,
+      y: 17,
+    });
+  });
+});
