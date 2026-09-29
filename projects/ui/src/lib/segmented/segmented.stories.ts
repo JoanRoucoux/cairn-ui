@@ -81,3 +81,16 @@ export const SelectsOnClick: Story = {
     await expect(canvas.getByRole('radio', { name: 'Max' })).toBeChecked();
   },
 };
+
+export const InAFlexHeaderWithNoWidth: Story = {
+  name: 'In a flex header, with no width given',
+  render: (args) => ({
+    props: args,
+    template: `
+      <div class="flex items-center justify-between gap-4">
+        <span class="text-title font-semibold">Performance</span>
+        <ui-segmented [options]="options" [label]="label" [(value)]="value" />
+      </div>
+    `,
+  }),
+};

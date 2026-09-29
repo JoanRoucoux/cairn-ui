@@ -6,10 +6,7 @@ export type SegmentedOption = {
 };
 
 const OPTION_CLASSES =
-  // The visible track stays the handoff's 36px; the hit area still reaches --row-min (44px touch,
-  // 40px pointer: fine) through an ::after enlarged only vertically, centered on the option, and
-  // constrained to its own horizontal bounds so it never reaches into a neighboring option.
-  "relative z-10 min-h-9 flex-1 cursor-pointer text-label font-medium transition-colors after:absolute after:inset-x-0 after:top-1/2 after:h-(--row-min) after:-translate-y-1/2 after:content-[''] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring)";
+  "relative z-10 min-h-9 flex-1 cursor-pointer px-3 text-label font-medium transition-colors after:absolute after:inset-x-0 after:top-1/2 after:h-(--row-min) after:-translate-y-1/2 after:content-[''] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring)";
 
 const SELECTED_CLASSES = 'text-(--foreground)';
 
@@ -65,7 +62,6 @@ export class UiSegmented {
 
   protected readonly radios = viewChildren<ElementRef<HTMLButtonElement>>('radio');
 
-  // 1-based so 0 (falsy) reliably means "no match", letting @if skip the thumb entirely.
   protected readonly thumbIndex = computed(() => {
     const index = this.options().findIndex((option) => option.value === this.value());
 

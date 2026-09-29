@@ -17,9 +17,6 @@ const TEXT_CLASSES: Record<Sign, string> = {
   unknown: 'text-(--subtle-foreground)',
 };
 
-// The handoff's `Cairn Composants.dc.html` uses --soft here, but --positive text on --soft only
-// reaches 4.33:1 (axe flags it): --soft is a touch darker than --background, and --positive sits
-// right at the edge of AA at 4.77:1 against --background alone. --muted keeps the chip legible.
 const PILL_BACKGROUND_CLASS = 'bg-(--muted)';
 
 /**

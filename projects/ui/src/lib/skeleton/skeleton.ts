@@ -6,18 +6,13 @@ export type SkeletonShape = (typeof SKELETON_SHAPES)[number];
 
 const LAST_LINE_WIDTH = '62%';
 
-// Declared here, not in tokens.css (a pure token sheet holds no element styles or keyframes).
 const PULSE_ANIMATION = 'cairn-pulse var(--pulse-duration) var(--ease-out) infinite alternate';
 
 const BAR_CLASSES = 'block rounded-control bg-(--muted)';
 
 /**
- * Decorative placeholder for content that is still loading, at the shape of the content it stands
- * in for. Deliberately hidden from assistive technology: the calling screen keeps its own
- * `role="status"` sentence.
- *
- * Pulses opacity from 1 to 0.45 and back over `--pulse-duration`, which `tokens.css` sets to `0ms`
- * under `prefers-reduced-motion: reduce`: the pulse stops there with no branching in this component.
+ * Decorative, pulsing placeholder for content that is still loading, at the shape of the content
+ * it stands in for.
  *
  * @example
  * <ui-skeleton shape="figure" />

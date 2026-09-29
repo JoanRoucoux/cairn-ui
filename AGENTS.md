@@ -84,6 +84,9 @@ Keep them in sync with the starter:
 
 - `typescript` is pinned to `~6.0.2`: TypeScript 7 breaks `typescript-eslint` (via `ts-api-utils`). Do not bump until typescript-eslint supports TS 7. (This is also why the Storybook framework is `@storybook/angular-vite` — the webpack `@storybook/angular` peer range only allows TS ≤5.)
 - `pnpm-workspace.yaml` `allowBuilds` is required for native postinstall scripts (esbuild, ...) — do not remove it.
+- `fonts.css` must be loaded by the consumer's own build (a Vite import in `.storybook/preview.ts`, an `angular.json` `styles` entry in an app), never through Tailwind's `@import`, which does not rebase its `url()`s.
+- jsdom ships the Popover API's default stylesheet (`[popover]:not(:popover-open) { display: none }`) but neither its JS methods nor the `:popover-open` pseudo-class those rules key off; `test-setup.ts` shims `showPopover`/`hidePopover` by flipping an inline `display` instead, which wins over that UA rule regardless of the pseudo-class.
+- `UiMenu.close()` only calls `hidePopover()` when the menu was open: `hidePopover()` throws on a closed popover, and it fires the `toggle` event that calls `close()` again.
 - GitHub Actions in `.github/workflows/ci.yml` are pinned by commit SHA (Dependabot keeps them updated) — when adding one, pin it the same way.
 - npm consumers of the published library must add `@source '../node_modules/<pkg>'` to their Tailwind CSS — templates in `node_modules` are not scanned by default. Keep this documented in the README.
 - The root package version (release-please) is the starter's version; the library's own version lives in `projects/ui/package.json` and is bumped manually before publishing `dist/ui`.

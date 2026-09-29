@@ -1,5 +1,5 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
 
 import { UiButton } from '../button/button';
 import { DIALOG_WIDTHS, type DialogWidth, UiDialog } from './dialog';
@@ -19,6 +19,10 @@ const meta: Meta<DialogArgs> = {
         component: `Modal dialog built on the native \`<dialog>\`. The focus trap, the return of focus to the
 trigger, closing on Escape and the top layer all come from the platform rather than from custom
 JavaScript.
+
+Under \`64rem\` it rises from the bottom as a sheet, with a drag handle and its footer clear of the
+home indicator; above that width it is centered. Its body scrolls on its own when the content is
+taller than the screen, so the heading and the footer stay in place.
 
 Content goes in two slots: the default one for the body, and \`[dialogActions]\` for the footer
 buttons. Put the dismissing action first, so it sits on the left.
@@ -84,10 +88,39 @@ export const Opens: Story = {
 
     await userEvent.click(canvas.getByRole('button', { name: 'Ouvrir' }));
 
-    await expect(canvas.getByRole('dialog', { name: 'Enter a price' })).toBeVisible();
+    await waitFor(() => expect(canvas.getByRole('dialog', { name: 'Enter a price' })).toBeVisible());
   },
 };
 
 export const Wide: Story = {
   args: { width: 'lg', open: true },
+};
+
+export const SheetOnAnIPhone: Story = {
+  name: 'Sheet on a 390px viewport',
+  parameters: {
+    viewport: { width: 390, height: 844 },
+  },
+  render: (args) => ({
+    props: { ...args, rows: Array.from({ length: 60 }, (_, index) => index + 1) },
+    template: `
+      <ui-dialog [heading]="heading" [open]="true" (dismissed)="open = false">
+        @for (row of rows; track row) {
+          <p class="text-label text-(--muted-foreground)">Row {{ row }} of a body taller than the screen.</p>
+        }
+        <button dialogActions ui-button variant="outline" (click)="open = false">Cancel</button>
+        <button dialogActions ui-button (click)="open = false">Save</button>
+      </ui-dialog>
+    `,
+  }),
+  args: { open: true },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const dialog = canvas.getByRole('dialog', { name: 'Enter a price' });
+    const footer = dialog.querySelector('[data-dialog-footer]') as HTMLElement;
+    const body = dialog.querySelector('[data-dialog-body]') as HTMLElement;
+
+    await waitFor(() => expect(footer.getBoundingClientRect().bottom).toBeLessThanOrEqual(window.innerHeight));
+    await expect(body.scrollHeight).toBeGreaterThan(body.clientHeight);
+  },
 };

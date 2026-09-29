@@ -69,7 +69,6 @@ export class UiField {
   readonly labelHidden = input(false, { transform: booleanAttribute });
   readonly hint = input<string>();
   readonly error = input<string>();
-  /** Unit shown inside the control's right edge, such as `EUR` or `parts`. Not part of the control's value. */
   readonly unit = input<string>();
 
   readonly #id = nextId();
