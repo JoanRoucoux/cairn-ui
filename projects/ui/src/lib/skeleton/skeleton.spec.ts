@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/angular';
 
-import { UiSkeleton } from './skeleton';
+import { type SkeletonShape, UiSkeleton } from './skeleton';
 
 describe('UiSkeleton', () => {
   it('draws a single bar by default', async () => {
@@ -43,9 +43,30 @@ describe('UiSkeleton', () => {
     expect(screen.queryByRole('status')).not.toBeInTheDocument();
   });
 
-  it('applies the motion-safe pulse class', async () => {
+  it('pulses through the duration and curve tokens, so reduced motion silences it without a media query here', async () => {
     const { container } = await render('<ui-skeleton />', { imports: [UiSkeleton] });
+    const bar = container.querySelector<HTMLElement>('ui-skeleton > span');
 
-    expect(container.querySelector('ui-skeleton > span')).toHaveClass('motion-safe:animate-pulse');
+    expect(bar?.style.animation).toBe('cairn-pulse var(--pulse-duration) var(--ease-out) infinite alternate');
+  });
+
+  it.each<[SkeletonShape, string]>([
+    ['figure', 'h-11'],
+    ['row', 'h-14'],
+    ['chart', 'h-48'],
+    ['ring', 'rounded-pill'],
+  ])('draws the %s shape', async (shape, expectedClass) => {
+    const { fixture } = await render('<ui-skeleton [shape]="shape" />', {
+      imports: [UiSkeleton],
+      componentProperties: { shape },
+    });
+
+    expect(fixture.nativeElement.querySelector('span')).toHaveClass(expectedClass);
+  });
+
+  it('defaults to the text shape, which keeps the lines and height behaviour', async () => {
+    const { container } = await render('<ui-skeleton [lines]="2" />', { imports: [UiSkeleton] });
+
+    expect(container.querySelectorAll('ui-skeleton > span')).toHaveLength(2);
   });
 });

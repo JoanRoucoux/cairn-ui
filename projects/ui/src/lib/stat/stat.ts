@@ -5,11 +5,11 @@ export const STAT_SIZES = ['hero', 'tile'] as const;
 export type StatSize = (typeof STAT_SIZES)[number];
 
 const VALUE_CLASSES: Record<StatSize, string> = {
-  hero: 'text-[48px] leading-[1.1] font-semibold text-(--foreground)',
-  tile: 'text-2xl font-semibold text-(--foreground)',
+  hero: 'text-display font-semibold text-(--foreground)',
+  tile: 'text-title font-semibold text-(--foreground)',
 };
 
-const LABEL_CLASSES = 'text-[13px] font-medium text-(--subtle-foreground)';
+const LABEL_CLASSES = 'text-label font-medium text-(--subtle-foreground)';
 
 /**
  * Label, figure and a named period of change, at two sizes: a `hero` for a screen's single
@@ -38,7 +38,7 @@ const LABEL_CLASSES = 'text-[13px] font-medium text-(--subtle-foreground)';
           </dd>
         </dl>
 
-        <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-(--muted-foreground)">
+        <div class="text-label flex flex-wrap items-center gap-x-2 gap-y-1 text-(--muted-foreground)">
           <ng-content select="[uiStatDelta]" />
           <ng-content select="[uiStatCaption]" />
         </div>

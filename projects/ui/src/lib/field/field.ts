@@ -46,14 +46,20 @@ const nextId = (() => {
       <!-- eslint-disable-next-line @angular-eslint/template/label-has-associated-control -- htmlFor is wired at runtime, once the projected control's id is known -->
       <label [class]="labelClasses()">{{ label() }}</label>
 
-      <ng-content />
+      <div class="relative flex items-center">
+        <ng-content />
+
+        @if (unit()) {
+          <span class="text-label pointer-events-none absolute right-3 text-(--subtle-foreground)">{{ unit() }}</span>
+        }
+      </div>
 
       @if (hint()) {
-        <span class="text-[11.5px] text-(--subtle-foreground)" [id]="hintId">{{ hint() }}</span>
+        <span class="text-label text-(--muted-foreground)" [id]="hintId">{{ hint() }}</span>
       }
 
       @if (message()) {
-        <p class="text-[11.5px] text-(--negative)" role="alert" [id]="errorId">{{ message() }}</p>
+        <p class="text-label font-medium text-(--negative)" role="alert" [id]="errorId">{{ message() }}</p>
       }
     </div>
   `,
@@ -63,6 +69,8 @@ export class UiField {
   readonly labelHidden = input(false, { transform: booleanAttribute });
   readonly hint = input<string>();
   readonly error = input<string>();
+  /** Unit shown inside the control's right edge, such as `EUR` or `parts`. Not part of the control's value. */
+  readonly unit = input<string>();
 
   readonly #id = nextId();
   protected readonly hintId = `${this.#id}-hint`;
@@ -71,7 +79,7 @@ export class UiField {
   protected readonly control = contentChild(UI_CONTROL);
 
   protected readonly labelClasses = computed(() =>
-    this.labelHidden() ? 'sr-only' : 'text-[13px] font-medium text-(--foreground)',
+    this.labelHidden() ? 'sr-only' : 'text-label font-medium text-(--muted-foreground)',
   );
 
   /**

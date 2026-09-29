@@ -12,19 +12,26 @@ describe('UiInput', () => {
     await render('<input uiInput aria-label="Email" />', { imports: [UiInput] });
 
     const input = screen.getByRole('textbox', { name: 'Email' });
-    expect(input).toHaveClass('border-(--border)');
+    expect(input).toHaveClass('shadow-[inset_0_0_0_1px_var(--border)]', 'text-body');
 
     await user.type(input, 'jane@example.com');
     expect(input).toHaveValue('jane@example.com');
   });
 
-  it('draws the focus ring on hover, from the control and from the field around it', async () => {
+  it('draws a 2px focus ring from the ring token', async () => {
     await render('<input uiInput aria-label="Email" />', { imports: [UiInput] });
 
-    const input = screen.getByRole('textbox', { name: 'Email' });
+    expect(screen.getByRole('textbox', { name: 'Email' })).toHaveClass(
+      'focus-visible:shadow-[inset_0_0_0_2px_var(--ring)]',
+    );
+  });
 
-    expect(input).toHaveClass('enabled:hover:outline-2', 'enabled:hover:outline-(--ring)');
-    expect(input).toHaveClass('enabled:group-hover:outline-2', 'enabled:group-hover:outline-(--ring)');
+  it('draws a 2px negative ring when marked invalid', async () => {
+    await render('<input uiInput aria-label="Email" aria-invalid="true" />', { imports: [UiInput] });
+
+    expect(screen.getByRole('textbox', { name: 'Email' })).toHaveClass(
+      'aria-invalid:shadow-[inset_0_0_0_2px_var(--negative)]',
+    );
   });
 
   it('keeps the native disabled behavior', async () => {
@@ -35,7 +42,7 @@ describe('UiInput', () => {
 
   it.each<[ControlSize, string]>([
     ['sm', 'h-9'],
-    ['md', 'h-11'],
+    ['md', 'min-h-(--row-min)'],
   ])('applies the %s size classes', async (size, expectedClass) => {
     await render('<input uiInput aria-label="Email" [size]="size" />', {
       imports: [UiInput],
@@ -45,16 +52,16 @@ describe('UiInput', () => {
     expect(screen.getByRole('textbox', { name: 'Email' })).toHaveClass(expectedClass);
   });
 
-  it('reaches the 44px touch target by default', async () => {
+  it('reaches the touch target by default', async () => {
     await render('<input uiInput aria-label="Email" />', { imports: [UiInput] });
 
-    expect(screen.getByRole('textbox', { name: 'Email' })).toHaveClass('h-11');
+    expect(screen.getByRole('textbox', { name: 'Email' })).toHaveClass('min-h-(--row-min)');
   });
 
   it('keeps the classes the template put on the element', async () => {
     await render('<input uiInput aria-label="Search" class="w-52" />', { imports: [UiInput] });
 
-    expect(screen.getByRole('textbox', { name: 'Search' })).toHaveClass('w-52', 'h-11');
+    expect(screen.getByRole('textbox', { name: 'Search' })).toHaveClass('w-52', 'min-h-(--row-min)');
   });
 
   it('resolves UI_CONTROL to itself', async () => {
@@ -81,7 +88,7 @@ describe('UiTextarea', () => {
     await render('<textarea uiTextarea aria-label="Notes"></textarea>', { imports: [UiTextarea] });
 
     const textarea = screen.getByRole('textbox', { name: 'Notes' });
-    expect(textarea).toHaveClass('border-(--border)', 'min-h-24');
+    expect(textarea).toHaveClass('shadow-[inset_0_0_0_1px_var(--border)]', 'min-h-24');
 
     await user.type(textarea, 'A tracker on the S&P 500.');
     expect(textarea).toHaveValue('A tracker on the S&P 500.');
@@ -90,7 +97,7 @@ describe('UiTextarea', () => {
   it('grows from a floor rather than sitting at a fixed height', async () => {
     await render('<textarea uiTextarea aria-label="Notes"></textarea>', { imports: [UiTextarea] });
 
-    expect(screen.getByRole('textbox', { name: 'Notes' })).not.toHaveClass('h-11');
+    expect(screen.getByRole('textbox', { name: 'Notes' })).not.toHaveClass('min-h-(--row-min)');
   });
 
   it('resolves UI_CONTROL to itself', async () => {

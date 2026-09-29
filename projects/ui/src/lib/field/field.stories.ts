@@ -9,6 +9,7 @@ type FieldArgs = {
   labelHidden: boolean;
   hint: string;
   error: string;
+  unit: string;
 };
 
 const meta: Meta<FieldArgs> = {
@@ -22,6 +23,9 @@ const meta: Meta<FieldArgs> = {
 The control stays a plain native element such as \`uiInput\` or \`uiSelect\`. The field finds it in
 its own projected content and wires the ARIA attributes onto it, instead of replacing it with a
 custom component that would have to reimplement every native forms behaviour.
+
+\`unit\` renders a unit such as \`EUR\` or \`parts\` inside the control's right edge. It is decorative
+text, not part of the control's value.
 
 A field shows a message from one of two places. \`error\` is the caller's own, and always wins. Where
 none is set, the field shows the first message among the projected control's \`errors\`, once that
@@ -55,7 +59,7 @@ validation state on its own, so a form field needs no binding here at all.
   render: (args) => ({
     props: args,
     template: `
-      <ui-field [label]="label" [labelHidden]="labelHidden" [hint]="hint" [error]="error">
+      <ui-field [label]="label" [labelHidden]="labelHidden" [hint]="hint" [error]="error" [unit]="unit">
         <input uiInput type="number" step="0.0001" />
       </ui-field>
     `,
@@ -65,6 +69,7 @@ validation state on its own, so a form field needs no binding here at all.
     labelHidden: false,
     hint: '',
     error: '',
+    unit: '',
   },
   argTypes: {
     label: { control: 'text', description: "The field's label, wired to the control via `for`/`id`." },
@@ -78,6 +83,7 @@ validation state on its own, so a form field needs no binding here at all.
       description:
         'Optional validation message. When set, also marks the control `aria-invalid` and renders with `role="alert"`.',
     },
+    unit: { control: 'text', description: "Unit shown inside the control's right edge, such as `EUR` or `parts`." },
   },
 };
 
@@ -88,6 +94,10 @@ export const Default: Story = {};
 
 export const WithHint: Story = {
   args: { hint: 'Leave empty if you do not know it.' },
+};
+
+export const WithUnit: Story = {
+  args: { label: 'Quantity sold', unit: 'parts' },
 };
 
 export const WithError: Story = {

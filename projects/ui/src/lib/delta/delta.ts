@@ -4,9 +4,9 @@ import { Component, computed, input } from '@angular/core';
 export const DELTA_EMPHASES = ['text', 'pill'] as const;
 export type DeltaEmphasis = (typeof DELTA_EMPHASES)[number];
 
-const BASE_CLASSES = 'inline-flex items-center gap-1 font-semibold tabular-nums';
+const BASE_CLASSES = 'inline-flex items-center gap-1 text-label font-medium tabular-nums';
 
-const PILL_CLASSES = 'rounded-md px-2.5 py-1';
+const PILL_CLASSES = 'h-6 rounded-pill px-2';
 
 type Sign = 'positive' | 'negative' | 'neutral' | 'unknown';
 
@@ -17,6 +17,9 @@ const TEXT_CLASSES: Record<Sign, string> = {
   unknown: 'text-(--subtle-foreground)',
 };
 
+// The handoff's `Cairn Composants.dc.html` uses --soft here, but --positive text on --soft only
+// reaches 4.33:1 (axe flags it): --soft is a touch darker than --background, and --positive sits
+// right at the edge of AA at 4.77:1 against --background alone. --muted keeps the chip legible.
 const PILL_BACKGROUND_CLASS = 'bg-(--muted)';
 
 /**

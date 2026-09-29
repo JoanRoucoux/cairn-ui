@@ -34,10 +34,10 @@ const nextId = (() => {
       [class]="classes()"
       (close)="onNativeClose()"
     >
-      <h2 class="text-lg font-semibold tracking-tight" [id]="headingId">{{ heading() }}</h2>
+      <h2 class="text-title font-semibold" [id]="headingId">{{ heading() }}</h2>
 
       @if (description()) {
-        <p class="mt-2 text-sm text-(--muted-foreground)" [id]="descriptionId">{{ description() }}</p>
+        <p class="text-label mt-2 text-(--muted-foreground)" [id]="descriptionId">{{ description() }}</p>
       }
 
       <!-- empty:hidden keeps a body-less dialog from carrying the body's top margin. -->
@@ -63,7 +63,7 @@ export class UiDialog {
 
   protected readonly classes = computed(
     () =>
-      `w-full m-auto ${WIDTH_CLASSES[this.width()]} rounded-xl border border-(--border) bg-(--card) p-6 text-(--foreground) backdrop:bg-black/60`,
+      `w-full m-auto ${WIDTH_CLASSES[this.width()]} rounded-container border border-(--border) bg-(--card) p-6 text-(--foreground) backdrop:bg-black/60`,
   );
 
   readonly #host = inject<ElementRef<HTMLElement>>(ElementRef);

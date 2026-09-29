@@ -1,4 +1,4 @@
-import { Component, ElementRef, input, model, viewChildren } from '@angular/core';
+import { Component, ElementRef, computed, input, model, viewChildren } from '@angular/core';
 
 export type SegmentedOption = {
   value: string;
@@ -6,14 +6,18 @@ export type SegmentedOption = {
 };
 
 const OPTION_CLASSES =
-  'min-h-11 flex-1 cursor-pointer rounded-md px-3 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring)';
+  // The visible track stays the handoff's 36px; the hit area still reaches --row-min (44px touch,
+  // 40px pointer: fine) through an ::after enlarged only vertically, centered on the option, and
+  // constrained to its own horizontal bounds so it never reaches into a neighboring option.
+  "relative z-10 min-h-9 flex-1 cursor-pointer text-label font-medium transition-colors after:absolute after:inset-x-0 after:top-1/2 after:h-(--row-min) after:-translate-y-1/2 after:content-[''] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring)";
 
-const SELECTED_CLASSES = 'bg-(--primary) bg-linear-135 from-(--primary) to-(--primary-to) text-(--primary-foreground)';
+const SELECTED_CLASSES = 'text-(--foreground)';
 
-const UNSELECTED_CLASSES = 'bg-(--elevated) text-(--muted-foreground) hover:text-(--foreground)';
+const UNSELECTED_CLASSES = 'text-(--muted-foreground) hover:text-(--foreground)';
 
 /**
- * Exclusive choice within a small, known set: a time range, a unit, a mode.
+ * Exclusive choice within a small, known set: a time range, a unit, a mode. The selected option's
+ * background is a single thumb that slides under it in `transform`, instead of being redrawn.
  *
  * @example
  * <ui-segmented [options]="ranges" label="Time range" [(value)]="range" />
@@ -21,7 +25,22 @@ const UNSELECTED_CLASSES = 'bg-(--elevated) text-(--muted-foreground) hover:text
 @Component({
   selector: 'ui-segmented',
   template: `
-    <div class="flex gap-1" role="radiogroup" [attr.aria-label]="label()">
+    <div
+      class="rounded-control relative grid bg-(--muted) p-0.5"
+      role="radiogroup"
+      [attr.aria-label]="label()"
+      [style.grid-template-columns]="'repeat(' + options().length + ', 1fr)'"
+    >
+      @if (thumbIndex(); as index) {
+        <span
+          aria-hidden="true"
+          class="absolute top-0.5 bottom-0.5 left-0.5 rounded-[calc(var(--radius-control)-2px)] bg-(--card) shadow-[0_1px_2px_rgb(0_0_0/0.08)] transition-transform duration-(--duration-fast) ease-out"
+          data-thumb
+          [style.transform]="'translateX(' + (index - 1) * 100 + '%)'"
+          [style.width]="'calc(100% / ' + options().length + ')'"
+        ></span>
+      }
+
       @for (option of options(); track option.value) {
         <button
           #radio
@@ -45,6 +64,13 @@ export class UiSegmented {
   readonly value = model.required<string>();
 
   protected readonly radios = viewChildren<ElementRef<HTMLButtonElement>>('radio');
+
+  // 1-based so 0 (falsy) reliably means "no match", letting @if skip the thumb entirely.
+  protected readonly thumbIndex = computed(() => {
+    const index = this.options().findIndex((option) => option.value === this.value());
+
+    return index === -1 ? 0 : index + 1;
+  });
 
   protected optionClasses(optionValue: string): string {
     return `${OPTION_CLASSES} ${optionValue === this.value() ? SELECTED_CLASSES : UNSELECTED_CLASSES}`;

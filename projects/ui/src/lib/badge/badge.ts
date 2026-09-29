@@ -1,23 +1,21 @@
 import { Component, computed, input } from '@angular/core';
 
 /** Available badge variants. `BadgeVariant` is derived from this tuple. */
-export const BADGE_VARIANTS = ['primary', 'secondary', 'destructive', 'outline'] as const;
+export const BADGE_VARIANTS = ['neutral', 'outline'] as const;
 export type BadgeVariant = (typeof BADGE_VARIANTS)[number];
 
-const BASE_CLASSES = 'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium';
+const BASE_CLASSES = 'inline-flex h-6 items-center rounded-pill px-2.5 text-caption font-medium';
 
 const VARIANT_CLASSES: Record<BadgeVariant, string> = {
-  primary: 'bg-(--primary) text-(--primary-foreground)',
-  secondary: 'bg-(--secondary) text-(--secondary-foreground)',
-  destructive: 'bg-(--destructive) text-(--destructive-foreground)',
-  outline: 'border border-(--border) text-(--foreground)',
+  neutral: 'bg-(--muted) text-(--foreground)',
+  outline: 'shadow-[inset_0_0_0_1px_var(--border)] text-(--foreground)',
 };
 
 /**
- * Small status descriptor for counts, states or labels.
+ * Small status descriptor for counts, states or labels, such as an instrument's asset class.
  *
  * @example
- * <ui-badge variant="secondary">Draft</ui-badge>
+ * <ui-badge>ETF</ui-badge>
  */
 @Component({
   selector: 'ui-badge',
@@ -27,7 +25,7 @@ const VARIANT_CLASSES: Record<BadgeVariant, string> = {
   },
 })
 export class UiBadge {
-  readonly variant = input<BadgeVariant>('primary');
+  readonly variant = input<BadgeVariant>('neutral');
 
   protected readonly classes = computed(() => `${BASE_CLASSES} ${VARIANT_CLASSES[this.variant()]}`);
 }

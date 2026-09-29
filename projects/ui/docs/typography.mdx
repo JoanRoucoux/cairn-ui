@@ -4,67 +4,77 @@ import { Meta } from '@storybook/addon-docs/blocks';
 
 # Typography
 
-The library does not ship fonts: it relies on the host's system font stack, applied on `body` by the consuming
-application (Storybook does the same in `.storybook/preview.css`):
+The library self-hosts **Rubik**, the only family used for both the logotype and the interface. Import it once
+alongside the tokens:
 
 ```css
-font-family:
-  ui-sans-serif,
-  system-ui,
-  -apple-system,
-  'Segoe UI',
-  sans-serif;
+@import 'tailwindcss';
+@import '@joanroucoux/cairn-ui/styles/tokens.css';
+@import '@joanroucoux/cairn-ui/styles/theme.css';
+@import '@joanroucoux/cairn-ui/styles/fonts.css';
 ```
+
+`theme.css` registers `font-sans`, so `var(--font-sans)` and the Tailwind default font stack both resolve to Rubik
+with the same system fallbacks.
 
 ## Sizes
 
-Components use the default Tailwind type scale:
+Exactly six sizes, each with its own line height baked in: `text-{size}` sets both. `theme.css` also removes
+Tailwind's default scale, so `text-sm`, `text-lg`, `text-xl`... no longer exist. A size a component does not use is a
+size that cannot be reached.
+
+export const Sample = ({ className, children }) => <span className={className}>{children}</span>;
+
+export const sizes = [
+  ['text-caption', '12 / 17', 'Badges, price dates, table headers, the "when to use" table you are reading'],
+  ['text-label', '14 / 20', 'Labels, secondary text, table cells, segmented options, buttons'],
+  ['text-body', '16 / 24', 'Rows, body copy, inputs: 16px is the floor iOS does not zoom on focus'],
+  ['text-title', '20 / 28', 'Card and section titles'],
+  ['text-heading', '28 / 34', 'The page title in the header'],
+  ['text-display', '40 / 44', 'The one dominant figure on a screen, such as net worth'],
+];
 
 <table style={{ width: '100%' }}>
   <thead>
     <tr>
-      <th style={{ textAlign: 'left' }}>Usage</th>
       <th style={{ textAlign: 'left' }}>Class</th>
+      <th style={{ textAlign: 'left' }}>Size / line height</th>
+      <th style={{ textAlign: 'left' }}>Use</th>
       <th style={{ textAlign: 'left' }}>Sample</th>
     </tr>
   </thead>
   <tbody>
-    <tr>
-      <td>
-        Badges, small buttons (<code>sm</code>)
-      </td>
-      <td>
-        <code>text-xs</code>
-      </td>
-      <td>
-        <span className="text-xs">Sample</span>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        Buttons (<code>md</code>), inputs
-      </td>
-      <td>
-        <code>text-sm</code>
-      </td>
-      <td>
-        <span className="text-sm">Sample</span>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        Large buttons (<code>lg</code>), body text
-      </td>
-      <td>
-        <code>text-base</code>
-      </td>
-      <td>
-        <span className="text-base">Sample</span>
-      </td>
-    </tr>
+    {sizes.map(([className, axes, use]) => (
+      <tr key={className}>
+        <td>
+          <code>{className}</code>
+        </td>
+        <td>{axes}</td>
+        <td>{use}</td>
+        <td>
+          <Sample className={className}>Cairn</Sample>
+        </td>
+      </tr>
+    ))}
   </tbody>
 </table>
 
-## Radius
+`text-heading` and `text-display` also carry a tighter tracking (`--tracking-display`, -0.02em); `text-caption`
+opens up slightly (`--tracking-caption`, 0.01em) to stay legible at 12px.
 
-Two radii are used across the system: `rounded-md` (buttons, inputs, cards) and `rounded-full` (badges, avatars).
+## Weights
+
+Four weights, each with a fixed role, never chosen for its own sake:
+
+| Weight | Role                               |
+| ------ | ---------------------------------- |
+| 400    | Body text                          |
+| 500    | Labels and buttons                 |
+| 600    | Titles and the one dominant figure |
+| 700    | The logotype, and nothing else     |
+
+## Tabular figures
+
+`--numeric` sets `font-variant-numeric: tabular-nums`. Apply it wherever digits sit in a column and have to line up:
+tables, lists, a figure next to its own delta. The one dominant figure on a screen (a `text-display` net worth, a
+`ui-stat` hero) stays proportional instead: it reads better on its own than a column of tabular digits does.

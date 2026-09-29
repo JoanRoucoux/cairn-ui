@@ -2,6 +2,14 @@ import { withThemeByDataAttribute } from '@storybook/addon-themes';
 import type { Preview } from '@storybook/angular-vite';
 import { getPreferredColorScheme } from 'storybook/theming';
 
+/*
+ * A plain (non-Tailwind) import: Vite processes this CSS on its own and rebases the relative
+ * `url(./fonts/...)` in each `@font-face` to a hashed asset path it actually emits. Routing this
+ * file through Tailwind's `@import` in preview.css instead (as tokens.css and theme.css are)
+ * leaves those `url()`s untouched relative to the wrong file, so the browser requests a path
+ * that was never emitted and silently falls back to the system font.
+ */
+import '../projects/ui/styles/fonts.css';
 import './preview.css';
 import { cairnStorybookTheme } from './theme';
 

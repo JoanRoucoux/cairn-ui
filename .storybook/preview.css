@@ -1,20 +1,22 @@
 /*
- * Preview-only stylesheet: Tailwind + the library tokens + minimal body chrome.
+ * Preview-only stylesheet: Tailwind + the library tokens and theme + minimal body chrome.
  * Anything a consumer app would define globally belongs here, NOT in tokens.css
  * (which must remain a pure, shippable token sheet).
+ *
+ * fonts.css is deliberately NOT imported here: routing an `@font-face` sheet through Tailwind's
+ * own `@import` leaves its relative `url(./fonts/...)` unrebased, so the browser requests a path
+ * Vite never emits. It is imported as a plain CSS module from preview.ts instead, before this
+ * file, so Vite processes and rebases it on its own.
  */
 
 @import 'tailwindcss';
 @import '../projects/ui/styles/tokens.css';
+@import '../projects/ui/styles/theme.css';
 
 body {
   margin: 0;
-  font-family:
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    'Segoe UI',
-    sans-serif;
+  font-family: var(--font-sans);
   color: var(--foreground);
   background-color: var(--background);
+  -webkit-font-smoothing: antialiased;
 }

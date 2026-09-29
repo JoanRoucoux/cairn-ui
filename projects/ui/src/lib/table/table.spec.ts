@@ -1,6 +1,6 @@
 import { type RenderResult, render, screen } from '@testing-library/angular';
 
-import { UiTable, UiTd, UiTh } from './table';
+import { UiTable, UiTd, UiTh, UiTr } from './table';
 
 const renderTable = (attributes = ''): Promise<RenderResult<unknown>> =>
   render(
@@ -36,6 +36,15 @@ describe('UiTable', () => {
     expect(screen.getByRole('table')).toHaveClass('w-full');
   });
 
+  it('styles headers as captions in the subtle color', async () => {
+    await render(`<table uiTable><thead><tr><th uiTh>Line</th></tr></thead></table>`, { imports: [UiTable, UiTh] });
+
+    expect(screen.getByRole('columnheader', { name: 'Line' })).toHaveClass(
+      'text-caption',
+      'text-(--subtle-foreground)',
+    );
+  });
+
   it('aligns a numeric column to the right and lines up its digits', async () => {
     await renderTable();
 
@@ -47,6 +56,23 @@ describe('UiTable', () => {
     await renderTable();
 
     expect(screen.getByRole('columnheader', { name: 'Ligne' })).toHaveClass('text-left');
+  });
+
+  it('draws a group row as a muted banner', async () => {
+    await render(`<table uiTable><tbody><tr uiTr group><td uiTd>Saxo Investor</td></tr></tbody></table>`, {
+      imports: [UiTable, UiTd, UiTr],
+    });
+
+    expect(screen.getByRole('row')).toHaveClass('bg-(--muted)');
+  });
+
+  it('leaves an ordinary row unstyled by default', async () => {
+    await render(`<table uiTable><tbody><tr uiTr><td uiTd>Ferrari</td></tr></tbody></table>`, {
+      imports: [UiTable, UiTd, UiTr],
+    });
+
+    expect(screen.getByRole('row')).not.toHaveClass('bg-(--muted)');
+    expect(screen.getByRole('row')).toHaveClass('hover:bg-(--glow)');
   });
 
   it('holds a secondary column back until its breakpoint', async () => {

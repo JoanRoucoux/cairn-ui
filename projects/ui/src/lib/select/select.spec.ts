@@ -19,7 +19,7 @@ describe('UiSelect', () => {
     await render(`<select uiSelect aria-label="Envelope">${OPTIONS}</select>`, { imports: [UiSelect] });
 
     const select = screen.getByRole('combobox', { name: 'Envelope' });
-    expect(select).toHaveClass('border-(--border)');
+    expect(select).toHaveClass('shadow-[inset_0_0_0_1px_var(--border)]');
     // The select carries no fill of its own: it has to read as the same control as the input beside it.
     expect(select).not.toHaveClass('bg-(--elevated)');
 
@@ -35,7 +35,7 @@ describe('UiSelect', () => {
 
   it.each<[ControlSize, string]>([
     ['sm', 'h-9'],
-    ['md', 'h-11'],
+    ['md', 'min-h-(--row-min)'],
   ])('applies the %s size classes', async (size, expectedClass) => {
     await render(`<select uiSelect aria-label="Envelope" [size]="size">${OPTIONS}</select>`, {
       imports: [UiSelect],

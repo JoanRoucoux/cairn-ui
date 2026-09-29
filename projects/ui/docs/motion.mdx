@@ -1,0 +1,52 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Foundations/Motion" />
+
+# Motion
+
+Only `transform` and `opacity` animate anywhere in Cairn. Never `ease-in`: something that appears or moves always
+eases out, so it settles rather than lunges. Exits are faster than entries. Nothing animates on page entry: the
+dashboard opens several times a day, and a screen that replays its own arrival every time reads as slow.
+
+## Durations
+
+| Token              | Value | For                                                     |
+| ------------------ | ----- | ------------------------------------------------------- |
+| `--duration-press` | 120ms | Press feedback, on pointer down                         |
+| `--duration-fast`  | 180ms | Menus, the segmented control's thumb                    |
+| `--duration-base`  | 260ms | Dialogs, sheets, list-to-detail, a chart's range change |
+| `--duration-exit`  | 180ms | Every exit                                              |
+
+## Curves
+
+| Token          | Value                            | For                                                        |
+| -------------- | -------------------------------- | ---------------------------------------------------------- |
+| `--ease-out`   | `cubic-bezier(0.23, 1, 0.32, 1)` | Anything that appears or moves                             |
+| `--ease-sheet` | `cubic-bezier(0.32, 0.72, 0, 1)` | Sheets rising from the bottom of the screen, and back down |
+
+## Scales
+
+| Token              | Value  | For                                                                                  |
+| ------------------ | ------ | ------------------------------------------------------------------------------------ |
+| `--press-scale`    | 0.97   | A pressed control, on `:active`: `scale(var(--press-scale))` over `--duration-press` |
+| `--enter-scale`    | 0.95   | Dialogs and menus, which start at this scale and opacity 0, never at `scale(0)`      |
+| `--pulse-duration` | 1600ms | The skeleton's opacity pulse, from 1 to 0.45 and back, alternating                   |
+
+## Reduced motion
+
+`tokens.css` neutralizes all three under `prefers-reduced-motion: reduce`, with no component-side branching:
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --press-scale: 1; /* a press no longer scales */
+    --enter-scale: 1; /* a dialog or menu fades in instead of scaling up */
+    --duration-base: 150ms; /* slides and scales become short fades */
+    --pulse-duration: 0ms; /* the skeleton stops pulsing */
+  }
+}
+```
+
+Because every animated component reads its scale, duration and curve from these custom properties instead of a
+hardcoded value, asking for reduced motion turns every scale into a no-op and every pulse into a static fill without
+a single `@media` query inside a component.

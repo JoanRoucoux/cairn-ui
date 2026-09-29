@@ -10,8 +10,8 @@ const FROM_CLASSES: Record<CellBreakpoint, string> = {
 };
 
 const TH_CLASSES =
-  'px-3 py-2 align-bottom text-[11px] font-medium uppercase tracking-[0.05em] text-(--subtle-foreground)';
-const TD_CLASSES = 'border-t border-(--hairline) px-3 py-2.5 align-middle text-sm';
+  'h-9 px-2 align-bottom text-caption font-medium text-(--subtle-foreground) shadow-[inset_0_-1px_0_var(--hairline)]';
+const TD_CLASSES = 'h-12 px-2 align-middle text-body';
 const NUMERIC_CLASSES = 'text-right tabular-nums';
 const TEXTUAL_CLASSES = 'text-left';
 
@@ -23,6 +23,28 @@ const TEXTUAL_CLASSES = 'text-left';
   },
 })
 export class UiTable {}
+
+/**
+ * Body or group row. `group` draws the muted banner that opens each account inside a list of
+ * holdings: it carries no hover state of its own, unlike an ordinary row.
+ *
+ * @example
+ * <tr uiTr>...
+ * <tr uiTr group>...
+ */
+@Directive({
+  selector: 'tr[uiTr]',
+  host: {
+    '[class]': 'classes()',
+  },
+})
+export class UiTr {
+  readonly group = input(false, { transform: booleanAttribute });
+
+  protected readonly classes = computed(() =>
+    this.group() ? 'min-h-(--row-min) rounded-control bg-(--muted) font-semibold' : 'rounded-control hover:bg-(--glow)',
+  );
+}
 
 const cellClasses = (base: string, numeric: boolean, from: CellBreakpoint | null): string =>
   [base, numeric ? NUMERIC_CLASSES : TEXTUAL_CLASSES, from ? FROM_CLASSES[from] : ''].filter(Boolean).join(' ');
