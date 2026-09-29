@@ -90,4 +90,63 @@ describe('UiDialog', () => {
 
     expect(container.querySelector('dialog')).toHaveClass('m-auto');
   });
+
+  it('carries the sheet classes for small screens', async () => {
+    const { container } = await renderDialog();
+
+    expect(container.querySelector('dialog')).toHaveClass('max-lg:mb-0', 'max-lg:max-w-none', 'max-lg:rounded-b-none');
+  });
+
+  it('shows a drag handle only under lg', async () => {
+    const { container } = await renderDialog();
+
+    const handle = container.querySelector('[data-dialog-handle]');
+    expect(handle).toHaveAttribute('aria-hidden', 'true');
+    expect(handle).toHaveClass('lg:hidden');
+  });
+
+  it('keeps the footer above the home indicator on small screens', async () => {
+    const { container } = await renderDialog();
+
+    expect(container.querySelector('[data-dialog-footer]')).toHaveClass(
+      'max-lg:pb-[calc(1rem+env(safe-area-inset-bottom))]',
+    );
+  });
+
+  it('scrolls its body independently of the heading and the footer', async () => {
+    const { container } = await renderDialog();
+
+    expect(container.querySelector('[data-dialog-body]')).toHaveClass('overflow-y-auto');
+  });
+
+  it('keeps the scrollable body reachable by keyboard', async () => {
+    const { container } = await renderDialog();
+
+    expect(container.querySelector('[data-dialog-body]')).toHaveAttribute('tabindex', '0');
+  });
+
+  it('keeps the md width as it was', async () => {
+    const { container } = await render(`<ui-dialog heading="Enter a price" width="md" [open]="true"></ui-dialog>`, {
+      imports: [UiDialog],
+    });
+
+    expect(container.querySelector('dialog')).toHaveClass('max-w-md');
+  });
+
+  it('maps the lg width to 560px', async () => {
+    const { container } = await render(
+      `<ui-dialog heading="Delete this account" width="lg" [open]="true"></ui-dialog>`,
+      { imports: [UiDialog] },
+    );
+
+    expect(container.querySelector('dialog')).toHaveClass('max-w-[560px]');
+  });
+
+  it('accepts open as a bare attribute', async () => {
+    const { container } = await render(`<ui-dialog heading="Enter a price" open></ui-dialog>`, {
+      imports: [UiDialog],
+    });
+
+    expect(container.querySelector('dialog')).toHaveAttribute('open');
+  });
 });

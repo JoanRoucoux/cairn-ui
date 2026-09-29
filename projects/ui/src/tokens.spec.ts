@@ -6,11 +6,6 @@ const stylesDir = join(dirname(testPath), '..', 'styles');
 const tokens = readFileSync(join(stylesDir, 'tokens.css'), 'utf8');
 const theme = readFileSync(join(stylesDir, 'theme.css'), 'utf8');
 
-/**
- * theme.css names its letter-spacing keys after the utility they feed (`--text-caption--letter-spacing`,
- * `--text-heading--letter-spacing`, `--text-display--letter-spacing`); tokens.css names the same two
- * values once, as `--tracking-caption` and `--tracking-display`.
- */
 const THEME_TO_TOKEN_ALIASES: Record<string, string> = {
   '--text-caption--letter-spacing': '--tracking-caption',
   '--text-heading--letter-spacing': '--tracking-display',
@@ -104,13 +99,6 @@ describe('design tokens', () => {
     expect(tokens).not.toMatch(/^\s*(body|h1|p|\*)\s*\{/m);
   });
 
-  /*
-   * theme.css copies literal values instead of referencing tokens.css with `var()`, because
-   * `@theme inline` resolves against its own reset (`--text-*: initial`) sitting earlier in the same
-   * block and compiles every size to a self-reference that resolves to nothing. This test is what
-   * keeps the copy from drifting: any literal in theme.css that names a token also declared in
-   * tokens.css must carry the exact same value.
-   */
   it('keeps every literal value in theme.css equal to its source in tokens.css', () => {
     const themeValues = parseDeclarations(theme);
     const tokenValues = parseDeclarations(tokens);

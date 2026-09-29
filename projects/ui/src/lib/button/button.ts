@@ -9,7 +9,6 @@ export const BUTTON_SIZES = ['md', 'lg', 'xl', 'icon'] as const;
 export type ButtonSize = (typeof BUTTON_SIZES)[number];
 
 const BASE_CLASSES =
-  // Tailwind's preflight gives buttons cursor: default; the hand cursor is what users expect here.
   'relative inline-flex items-center justify-center gap-2 rounded-control font-medium whitespace-nowrap cursor-pointer select-none touch-manipulation transition-[transform,background-color,opacity] duration-(--duration-press) ease-out active:scale-(--press-scale) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring) disabled:pointer-events-none disabled:opacity-40 aria-disabled:not-aria-busy:opacity-40';
 
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
@@ -27,16 +26,7 @@ const SIZE_CLASSES: Record<ButtonSize, string> = {
 };
 
 /**
- * Styled native button. Applied as an attribute so the host keeps every native
- * button behavior (type, disabled, form submission, accessibility) for free.
- *
- * Also applies to an anchor, for the one case where the action really is a navigation:
- * a download the browser has to perform itself.
- *
- * `size="icon"` has no visible text: give it an `aria-label`.
- *
- * A `loading` button shows a spinner before its label and swallows clicks, so a slow first
- * response cannot turn into a double submission.
+ * Styled native button or anchor, applied as an attribute so the host keeps every native behavior.
  *
  * @example
  * <button ui-button variant="destructive">Delete</button>
@@ -70,9 +60,6 @@ export class UiButton {
   );
 
   constructor() {
-    // A host `(click)` binding runs after the template's own listener, so a loading button would
-    // still fire the consumer's handler once before this guard got a say. Capturing from the
-    // constructor puts this listener first regardless of binding order.
     const host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
     const guard = (event: Event): void => {
       if (this.loading()) {

@@ -1,14 +1,3 @@
-/*
- * Tailwind 4 theme for cairn-ui. Import after 'tailwindcss' and tokens.css. Values live in
- * tokens.css; this block only tells Tailwind which utilities exist, and removes its default
- * scales so that only Cairn's six sizes, three radii and two curves can be used.
- *
- * A plain `@theme` block, not `@theme inline`: `@theme inline` resolves each declaration against
- * the *reset* `--text-*: initial` sitting earlier in the very same block, so `--text-body: var(--text-body)`
- * compiles to a self-reference that resolves to nothing (every size silently disappears). Literal
- * values side-step that, at the cost of a copy tokens.spec.ts keeps honest: it parses both files
- * and fails if a value here drifts from its source in tokens.css.
- */
 @theme {
   --text-*: initial;
   --radius-*: initial;

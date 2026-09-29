@@ -33,6 +33,7 @@ export const config: SheriffConfig = {
     'component:select': ['component:input', 'component:control'],
     'component:field': ['component:input', 'component:select', 'component:control'],
     'component:dialog': ['component:button'],
+    'component:menu': ['component:button'],
     'component:stat': ['component:delta'],
   },
 };

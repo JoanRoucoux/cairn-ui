@@ -50,6 +50,12 @@ describe('UiSegmented', () => {
     expect(screen.getByRole('radio', { name: '1D' })).toHaveClass('min-h-9', 'text-label');
   });
 
+  it('gives each option a minimum inline padding, so labels do not collapse into each other', async () => {
+    await renderSegmented();
+
+    expect(screen.getByRole('radio', { name: '1D' })).toHaveClass('px-3');
+  });
+
   it('reaches the touch target through its hit area, not its visible height', async () => {
     await renderSegmented();
 
@@ -82,8 +88,6 @@ describe('UiSegmented', () => {
 
     const thumb = fixture.nativeElement.querySelector('[data-thumb]') as HTMLElement;
     expect(thumb.style.transform).toBe('translateX(100%)');
-    // jsdom's CSSOM simplifies the calc() expression on assignment; the source still reads
-    // `calc(100% / n)`, one divisor per option.
     expect(thumb.style.width).toBe('calc(33.3333%)');
   });
 
