@@ -1,0 +1,391 @@
+import {
+  Component,
+  DestroyRef,
+  type ElementRef,
+  afterNextRender,
+  computed,
+  effect,
+  inject,
+  input,
+  signal,
+  viewChild,
+} from '@angular/core';
+
+import { axisTicks } from './internal/chart-axis';
+import { navigateIndex, nearestPointIndex } from './internal/chart-interaction';
+import { type ChartGeometry, type ChartPoint, type PlottedPoint, buildGeometry } from './internal/chart-scale';
+import { placeStartLabel } from './internal/start-label';
+import { TRANSITION_DURATION, easeOutQuint, interpolateLine, prefersReducedMotion } from './internal/transition';
+
+export type { ChartPoint };
+
+const DEFAULT_WIDTH = 640;
+const DEFAULT_HEIGHT = 240;
+const PLOT_PADDING = { x: 4, top: 10, bottom: 18 };
+const START_LABEL_HEIGHT = 17;
+
+const identityValue = (value: number): string => `${value}`;
+const identityDelta = (delta: number): string => `${delta > 0 ? '+' : ''}${delta}`;
+const identityTime = (time: number): string => new Date(time).toISOString();
+
+type PlotRef = ElementRef<SVGSVGElement>;
+
+/**
+ * Value over time: a monotone curve with a dashed line at the starting value and a tooltip.
+ *
+ * @example
+ * <ui-line-chart [points]="points" label="Net worth over one month" startLabel="Since" [valueFormat]="formatEur" />
+ */
+@Component({
+  selector: 'ui-line-chart',
+  template: `
+    <div class="relative h-full">
+      <svg
+        #svgRef
+        class="block h-full w-full touch-pan-y"
+        role="img"
+        tabindex="0"
+        [attr.aria-label]="label()"
+        [attr.height]="effectiveHeight()"
+        [attr.viewBox]="'0 0 ' + effectiveWidth() + ' ' + effectiveHeight()"
+        [attr.width]="effectiveWidth()"
+        (keydown)="onKeydown($event)"
+        (pointerleave)="onPointerLeave()"
+        (pointermove)="onPointerMove($event)"
+      >
+        @if (geometry(); as geometry) {
+          <path
+            class="stroke-(--foreground)"
+            data-chart-line
+            fill="none"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            [attr.d]="displayLine()"
+          />
+
+          <line
+            class="stroke-(--border)"
+            data-chart-start-line
+            stroke-dasharray="4 4"
+            stroke-width="1"
+            x1="0"
+            [attr.x2]="effectiveWidth()"
+            [attr.y1]="geometry.start.y"
+            [attr.y2]="geometry.start.y"
+          />
+
+          @if (startLabelInfo(); as info) {
+            <text
+              class="text-caption fill-(--subtle-foreground)"
+              data-chart-start-label
+              [attr.text-anchor]="info.placement.anchor"
+              [attr.x]="info.placement.x"
+              [attr.y]="info.placement.y"
+            >
+              {{ info.label }}
+            </text>
+          }
+
+          <circle
+            class="fill-(--foreground) stroke-(--card)"
+            data-chart-end
+            r="4"
+            stroke-width="2"
+            [attr.cx]="geometry.end.x"
+            [attr.cy]="geometry.end.y"
+          />
+
+          @for (
+            tick of ticks();
+            track tick.t;
+            let index = $index;
+            let count = $count;
+            let first = $first;
+            let last = $last
+          ) {
+            <text
+              class="text-caption fill-(--subtle-foreground)"
+              data-chart-axis-tick
+              [attr.text-anchor]="first ? 'start' : last ? 'end' : 'middle'"
+              [attr.x]="tick.x"
+              [attr.y]="effectiveHeight() - 4"
+              [class.max-sm:hidden]="!coreTick(index, count)"
+            >
+              {{ axisFormat()(tick.t) }}
+            </text>
+          }
+
+          @if (active(); as point) {
+            <line
+              class="stroke-(--border)"
+              data-chart-crosshair
+              stroke-width="1"
+              y1="0"
+              [attr.x1]="point.x"
+              [attr.x2]="point.x"
+              [attr.y2]="effectiveHeight()"
+            />
+            <circle
+              class="fill-(--foreground) stroke-(--card)"
+              data-chart-active
+              r="4"
+              stroke-width="2"
+              [attr.cx]="point.x"
+              [attr.cy]="point.y"
+            />
+          }
+        }
+      </svg>
+
+      @if (active(); as point) {
+        <div
+          class="rounded-container text-caption pointer-events-none absolute -translate-x-1/2 -translate-y-full bg-(--card) px-2.5 py-1.5 whitespace-nowrap shadow-[0_4px_16px_rgb(0_0_0/0.12)]"
+          data-testid="chart-tooltip"
+          role="status"
+          [style]="tooltipStyle(point)"
+        >
+          <p class="font-medium text-(--foreground)">{{ valueFormat()(point.v) }}</p>
+          <p data-chart-delta [class]="deltaClasses(point)">{{ deltaFormat()(deltaFor(point)) }}</p>
+          <p class="text-(--subtle-foreground)">{{ timeFormat()(point.t) }}</p>
+        </div>
+      }
+
+      @if (points().length > 0) {
+        <table class="sr-only">
+          <caption>
+            {{
+              label()
+            }}
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">{{ timeColumnLabel() }}</th>
+              <th scope="col">{{ valueColumnLabel() }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (point of points(); track point.t) {
+              <tr>
+                <td>{{ timeFormat()(point.t) }}</td>
+                <td>{{ valueFormat()(point.v) }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  `,
+  host: {
+    class: 'block h-full',
+  },
+})
+export class UiLineChart {
+  readonly points = input.required<ChartPoint[]>();
+  readonly label = input.required<string>();
+  readonly valueFormat = input<(value: number) => string>(identityValue);
+  readonly deltaFormat = input<(delta: number) => string>(identityDelta);
+  readonly timeFormat = input<(time: number) => string>(identityTime);
+  readonly axisFormat = input<(time: number) => string>(identityTime);
+  readonly startLabel = input('');
+  readonly timeColumnLabel = input('Time');
+  readonly valueColumnLabel = input('Value');
+
+  #destroyRef = inject(DestroyRef);
+  #frame: number | null = null;
+  #hasRenderedOnce = false;
+  #previousGeometry: ChartGeometry | null = null;
+
+  protected readonly svgRef = viewChild.required<PlotRef>('svgRef');
+  protected readonly activeIndex = signal<number | null>(null);
+  protected readonly animatedLine = signal<string | null>(null);
+
+  protected readonly measuredSize = signal<{ width: number; height: number } | null>(null);
+
+  protected readonly effectiveWidth = computed(() => this.measuredSize()?.width ?? DEFAULT_WIDTH);
+  protected readonly effectiveHeight = computed(() => this.measuredSize()?.height ?? DEFAULT_HEIGHT);
+
+  protected readonly geometry = computed(() =>
+    buildGeometry(this.points(), this.effectiveWidth(), this.effectiveHeight(), PLOT_PADDING),
+  );
+
+  protected readonly displayLine = computed(() => this.animatedLine() ?? this.geometry()!.line);
+
+  protected readonly ticks = computed(() => axisTicks(this.geometry()!.points));
+
+  protected readonly active = computed<PlottedPoint | null>(() => {
+    const geometry = this.geometry();
+    const index = this.activeIndex();
+
+    return geometry && index !== null ? (geometry.points[index] as PlottedPoint) : null;
+  });
+
+  protected readonly startLabelInfo = computed(() => {
+    const text = this.startLabel();
+    const geometry = this.geometry();
+
+    if (!text || !geometry) {
+      return null;
+    }
+
+    const label = `${text} ${this.valueFormat()(geometry.points[0]!.v)}`;
+    const size = { width: label.length * 0.56 * 12 + 8, height: START_LABEL_HEIGHT };
+    const placement = placeStartLabel(
+      geometry.points,
+      geometry.start.y,
+      { width: this.effectiveWidth(), height: this.effectiveHeight() },
+      size,
+    );
+
+    return { label, placement };
+  });
+
+  #renderRef = afterNextRender(() => this.#observeSize());
+
+  constructor() {
+    effect(() => {
+      const geometry = this.geometry();
+      const previous = this.#previousGeometry;
+
+      if (previous === geometry) {
+        return;
+      }
+
+      this.#previousGeometry = geometry;
+      this.#cancelAnimation();
+
+      if (!this.#hasRenderedOnce) {
+        this.#hasRenderedOnce = true;
+        return;
+      }
+
+      if (!previous || !geometry) {
+        this.animatedLine.set(null);
+        return;
+      }
+
+      if (prefersReducedMotion()) {
+        this.animatedLine.set(null);
+        return;
+      }
+
+      this.#animate(previous, geometry);
+    });
+
+    this.#destroyRef.onDestroy(() => this.#cancelAnimation());
+  }
+
+  #observeSize(): void {
+    this.#destroyRef.onDestroy(() => this.#renderRef.destroy());
+
+    if (typeof ResizeObserver === 'undefined') {
+      return;
+    }
+
+    const element = this.svgRef().nativeElement;
+
+    const observer = new ResizeObserver(([entry]) => {
+      if (entry) {
+        const { width, height } = entry.contentRect;
+
+        this.measuredSize.set({ width, height });
+      }
+    });
+
+    observer.observe(element);
+    this.#destroyRef.onDestroy(() => observer.disconnect());
+  }
+
+  #cancelAnimation(): void {
+    if (this.#frame !== null) {
+      cancelAnimationFrame(this.#frame);
+      this.#frame = null;
+    }
+  }
+
+  #animate(from: ChartGeometry, to: ChartGeometry): void {
+    if (from.points.length < 2 || to.points.length < 2) {
+      this.animatedLine.set(null);
+      return;
+    }
+
+    const startTime = performance.now();
+
+    const step = (now: number): void => {
+      const t = Math.min(1, (now - startTime) / TRANSITION_DURATION);
+
+      this.animatedLine.set(interpolateLine(from, to, easeOutQuint(t)));
+
+      if (t < 1) {
+        this.#frame = requestAnimationFrame(step);
+      } else {
+        this.#frame = null;
+        this.animatedLine.set(null);
+      }
+    };
+
+    this.#frame = requestAnimationFrame(step);
+  }
+
+  protected coreTick(index: number, count: number): boolean {
+    if (count <= 3) {
+      return true;
+    }
+
+    const middle = Math.floor((count - 1) / 2);
+
+    return index === 0 || index === count - 1 || index === middle;
+  }
+
+  protected deltaFor(point: PlottedPoint): number {
+    return point.v - this.points()[0]!.v;
+  }
+
+  protected deltaClasses(point: PlottedPoint): string {
+    const delta = this.deltaFor(point);
+
+    return delta > 0 ? 'text-(--positive)' : delta < 0 ? 'text-(--negative)' : 'text-(--muted-foreground)';
+  }
+
+  protected tooltipStyle(point: PlottedPoint): string {
+    return `left: ${(point.x / this.effectiveWidth()) * 100}%; top: ${(point.y / this.effectiveHeight()) * 100}%`;
+  }
+
+  protected onPointerMove(event: PointerEvent): void {
+    const geometry = this.geometry();
+
+    if (!geometry || geometry.points.length === 0) {
+      return;
+    }
+
+    const rect = this.svgRef().nativeElement.getBoundingClientRect();
+    const ratio = rect.width === 0 ? 1 : this.effectiveWidth() / rect.width;
+    const x = (event.clientX - rect.left) * ratio;
+
+    this.activeIndex.set(nearestPointIndex(geometry.points, x));
+  }
+
+  protected onPointerLeave(): void {
+    this.activeIndex.set(null);
+  }
+
+  protected onKeydown(event: KeyboardEvent): void {
+    const geometry = this.geometry();
+
+    if (!geometry || geometry.points.length === 0) {
+      return;
+    }
+
+    const navigation = navigateIndex(event.key, this.activeIndex(), geometry.points.length - 1);
+
+    if (!navigation) {
+      return;
+    }
+
+    if (navigation.preventDefault) {
+      event.preventDefault();
+    }
+
+    this.activeIndex.set(navigation.index);
+  }
+}
