@@ -28,7 +28,7 @@ const PALETTE = {
   },
 } as const;
 
-const FONT_BASE = 'ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif';
+const FONT_BASE = "'Rubik', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif";
 const FONT_CODE = 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';
 
 export const cairnStorybookTheme = (scheme: 'light' | 'dark'): ThemeVars => {

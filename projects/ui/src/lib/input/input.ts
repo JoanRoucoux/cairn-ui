@@ -2,16 +2,16 @@ import { Directive, computed, forwardRef, input } from '@angular/core';
 
 import { UI_CONTROL, type UiControl, type UiControlError } from '../control/control';
 
-/** Available control sizes. `md` is the 44px touch target. */
+/** Available control sizes. `md` is the 44/40px touch target. */
 export const CONTROL_SIZES = ['sm', 'md'] as const;
 export type ControlSize = (typeof CONTROL_SIZES)[number];
 
 export const CONTROL_BASE_CLASSES =
-  'w-full rounded-md border border-(--border) bg-transparent px-3 text-sm text-(--foreground) transition-colors placeholder:text-(--muted-foreground) enabled:hover:outline-2 enabled:hover:outline-offset-2 enabled:hover:outline-(--ring) enabled:group-hover:outline-2 enabled:group-hover:outline-offset-2 enabled:group-hover:outline-(--ring) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring) disabled:cursor-not-allowed disabled:opacity-50';
+  'w-full rounded-control bg-(--background) px-3 text-body text-(--foreground) shadow-[inset_0_0_0_1px_var(--border)] transition-shadow duration-(--duration-fast) ease-out placeholder:text-(--muted-foreground) focus-visible:shadow-[inset_0_0_0_2px_var(--ring)] aria-invalid:shadow-[inset_0_0_0_2px_var(--negative)] disabled:cursor-not-allowed disabled:opacity-40';
 
 export const CONTROL_SIZE_CLASSES: Record<ControlSize, string> = {
   sm: 'h-9',
-  md: 'h-11',
+  md: 'min-h-(--row-min)',
 };
 
 /**

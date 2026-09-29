@@ -44,10 +44,53 @@ describe('UiSegmented', () => {
     expect(await screen.findByRole('radio', { name: 'Max' })).toBeChecked();
   });
 
-  it('keeps every option at a 44px touch target', async () => {
+  it('sizes every option consistently', async () => {
     await renderSegmented();
 
-    expect(screen.getByRole('radio', { name: '1D' })).toHaveClass('min-h-11');
+    expect(screen.getByRole('radio', { name: '1D' })).toHaveClass('min-h-9', 'text-label');
+  });
+
+  it('reaches the touch target through its hit area, not its visible height', async () => {
+    await renderSegmented();
+
+    expect(screen.getByRole('radio', { name: '1D' })).toHaveClass(
+      'after:absolute',
+      'after:inset-x-0',
+      'after:top-1/2',
+      'after:h-(--row-min)',
+      'after:-translate-y-1/2',
+      "after:content-['']",
+    );
+  });
+
+  it('slides the thumb under the selected option', async () => {
+    const { fixture } = await render(
+      '<ui-segmented label="Range" [options]="options" [(value)]="value" />',
+
+      {
+        imports: [UiSegmented],
+        componentProperties: {
+          options: [
+            { value: '1d', label: '1D' },
+            { value: '7d', label: '7D' },
+            { value: '1m', label: '1M' },
+          ],
+          value: '7d',
+        },
+      },
+    );
+
+    const thumb = fixture.nativeElement.querySelector('[data-thumb]') as HTMLElement;
+    expect(thumb.style.transform).toBe('translateX(100%)');
+    // jsdom's CSSOM simplifies the calc() expression on assignment; the source still reads
+    // `calc(100% / n)`, one divisor per option.
+    expect(thumb.style.width).toBe('calc(33.3333%)');
+  });
+
+  it('renders no thumb when the value matches no option', async () => {
+    const { fixture } = await renderSegmented('unknown');
+
+    expect(fixture.nativeElement.querySelector('[data-thumb]')).toBeNull();
   });
 
   it('keeps only the selected option in the tab sequence', async () => {

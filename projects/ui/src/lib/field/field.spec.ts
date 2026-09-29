@@ -144,4 +144,22 @@ describe('UiField', () => {
 
     expect(container.querySelector('ui-field > div')).toHaveClass('group');
   });
+
+  it('renders the unit inside the field, after the value', async () => {
+    await render(`<ui-field label="Quantity" unit="parts"><input uiInput inputmode="decimal" /></ui-field>`, {
+      imports: [UiField, UiInput],
+    });
+
+    expect(screen.getByText('parts')).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: 'Quantity' })).toHaveClass('text-body');
+  });
+
+  it('draws a 2px negative ring when the field is in error', async () => {
+    await render(`<ui-field label="Quantity" error="You hold 500 parts."><input uiInput /></ui-field>`, {
+      imports: [UiField, UiInput],
+    });
+
+    expect(screen.getByRole('textbox', { name: 'Quantity' })).toHaveAttribute('aria-invalid', 'true');
+    expect(screen.getByText('You hold 500 parts.')).toHaveClass('text-(--negative)');
+  });
 });

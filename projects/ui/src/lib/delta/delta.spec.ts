@@ -56,4 +56,11 @@ describe('UiDelta', () => {
 
     expect(container.querySelector('ui-delta')).toHaveClass(expectedClass);
   });
+
+  it('renders a zero change in the muted color, neither positive nor negative', async () => {
+    await renderDelta(0);
+
+    const delta = screen.getByText('+316.54 EUR');
+    expect(delta.closest('ui-delta')).toHaveClass('text-(--muted-foreground)');
+  });
 });

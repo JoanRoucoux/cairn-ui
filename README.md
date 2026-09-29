@@ -30,9 +30,29 @@ pnpm start      # Storybook on http://localhost:6006
 
 ## Publishing and consuming
 
-The publishable artifact is built from `projects/ui` into `dist/ui`. Consumers must:
+The publishable artifact is built from `projects/ui` into `dist/ui`. Consumers must import two stylesheets, in
+order, and register the package as a Tailwind source (templates in `node_modules` are not scanned by default):
 
-1. Import the tokens: `@import '@joanroucoux/cairn-ui/styles/tokens.css';`
-2. Register the package as a Tailwind source (templates in `node_modules` are not scanned by default): `@source '../node_modules/@joanroucoux/cairn-ui';`
+```css
+@import 'tailwindcss';
+@import '@joanroucoux/cairn-ui/styles/tokens.css';
+@import '@joanroucoux/cairn-ui/styles/theme.css';
+@source '../node_modules/@joanroucoux/cairn-ui';
+```
+
+`tokens.css` declares the custom properties, and `theme.css` turns them into Tailwind utilities (`text-body`,
+`rounded-control`, `ease-out`...) and removes Tailwind's default scales. A consumer that only needs the custom
+properties, without Tailwind, can import `tokens.css` alone: it stays a pure token sheet with no dependency on
+`theme.css`.
+
+`fonts.css` self-hosts Rubik and must **not** be routed through the Tailwind entry above: its `@font-face` rules
+carry `url(./fonts/...)` relative to itself, and a bundler that inlines it into another CSS file's `@import` (as
+Tailwind's CSS-first pipeline does) does not rebase that path, so the browser requests a file that was never copied
+anywhere. Add it wherever the app's own build rebases relative `url()`s in CSS it processes directly instead: for an
+Angular app, `angular.json`'s `styles` array, next to the Tailwind stylesheet:
+
+```json
+"styles": ["src/styles.css", "node_modules/@joanroucoux/cairn-ui/styles/fonts.css"]
+```
 
 See [AGENTS.md](AGENTS.md) for the architecture, conventions and testing guidelines inherited from the starter.

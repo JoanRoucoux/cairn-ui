@@ -40,7 +40,7 @@ account's envelope type.
     template: `<ui-badge [variant]="variant">{{ label }}</ui-badge>`,
   }),
   args: {
-    variant: 'primary',
+    variant: 'neutral',
     label: 'Badge',
   },
   argTypes: {
@@ -48,7 +48,7 @@ account's envelope type.
       control: 'select',
       options: [...BADGE_VARIANTS],
       description:
-        'Color role. `outline` is the quietest, for a state that should not compete with the content around it.',
+        '`neutral` sits on the `--muted` surface. `outline` is quieter still, for a state that should not compete with the content around it.',
     },
     label: { control: 'text', description: 'Projected text content.' },
   },
@@ -57,15 +57,7 @@ account's envelope type.
 export default meta;
 type Story = StoryObj<BadgeArgs>;
 
-export const Primary: Story = {};
-
-export const Secondary: Story = {
-  args: { variant: 'secondary' },
-};
-
-export const Destructive: Story = {
-  args: { variant: 'destructive' },
-};
+export const Neutral: Story = {};
 
 export const Outline: Story = {
   args: { variant: 'outline' },

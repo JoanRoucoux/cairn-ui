@@ -24,7 +24,7 @@ const TONE_CLASSES: Record<MeterTone, string> = {
   selector: 'ui-meter',
   template: `
     <div
-      class="h-2.5 w-full overflow-hidden rounded-sm bg-(--elevated)"
+      class="rounded-control h-2.5 w-full overflow-hidden bg-(--elevated)"
       role="meter"
       [attr.aria-label]="label()"
       [attr.aria-valuemax]="1"
@@ -44,5 +44,5 @@ export class UiMeter {
 
   protected readonly percent = computed(() => Math.min(100, Math.max(0, this.value() * 100)));
 
-  protected readonly fillClasses = computed(() => `h-full rounded-sm ${TONE_CLASSES[this.tone()]}`);
+  protected readonly fillClasses = computed(() => `h-full rounded-control ${TONE_CLASSES[this.tone()]}`);
 }

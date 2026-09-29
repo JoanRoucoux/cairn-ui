@@ -54,6 +54,80 @@
   --accent-foreground: light-dark(#111414, #edefee);
   --destructive: light-dark(#b8443c, #a33a33);
   --destructive-foreground: light-dark(#fafbfa, #fafbfa);
+
+  /* Type - Rubik, one family for logotype and interface (self-hosted, 400/500/600/700).
+     Names follow Tailwind 4 namespaces: registered in @theme they yield text-body, rounded-control,
+     ease-out... Reset Tailwind's defaults (--text-*: initial) so only this scale exists.
+     Weights: 400 text, 500 labels and buttons, 600 titles and the dominant figure, 700 logotype only. */
+  --font-sans: 'Rubik', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --numeric: tabular-nums; /* amounts that align: tables, lists, columns. The lone big figure stays proportional. */
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1.0625rem; /* 12/17 axes, badges, price dates */
+  --text-label: 0.875rem;
+  --text-label--line-height: 1.25rem; /* 14/20 labels, secondary text, cells */
+  --text-body: 1rem;
+  --text-body--line-height: 1.5rem; /* 16/24 rows, body, inputs (no iOS zoom) */
+  --text-title: 1.25rem;
+  --text-title--line-height: 1.75rem; /* 20/28 card and section titles */
+  --text-heading: 1.75rem;
+  --text-heading--line-height: 2.125rem; /* 28/34 page title in the header */
+  --text-display: 2.5rem;
+  --text-display--line-height: 2.75rem; /* 40/44 the one dominant figure */
+  --tracking-display: -0.02em; /* heading, display */
+  --tracking-caption: 0.01em; /* caption */
+
+  /* Space - Tailwind's 4px step stays; these name the recurring gaps */
+  --gutter: 1rem; /* page side padding */
+  --inset-card: 1rem; /* card padding */
+  --stack-group: 1rem; /* between items of one group */
+  --stack-section: 1rem; /* between cards */
+  --row-min: 2.75rem; /* 44px touch target */
+  --header-height: 3.5rem; /* page header below the status bar / above the content */
+
+  /* Radius - one rule: controls 8, containers 12, pills round.
+     A control nested in a control subtracts its inset: calc(var(--radius-control) - 2px). */
+  --radius-control: 0.5rem; /* button, input, select, segmented, nav item, row hover */
+  --radius-container: 0.75rem; /* card, dialog, sheet top corners, tooltip */
+  --radius-pill: 9999px; /* avatar, badge, delta pill */
+
+  /* Motion - only transform and opacity animate. Never ease-in. Exits are faster than entries.
+     Nothing animates on page entry: the dashboard opens several times a day. */
+  --duration-press: 120ms; /* press feedback, on pointer down */
+  --duration-fast: 180ms; /* menus, segmented thumb */
+  --duration-base: 260ms; /* dialogs, sheets, list to detail, chart range change */
+  --duration-exit: 180ms; /* every exit */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1); /* what appears or moves */
+  --ease-sheet: cubic-bezier(0.32, 0.72, 0, 1); /* sheets rising from the bottom, and back */
+  --press-scale: 0.97;
+  --enter-scale: 0.95; /* dialogs and menus start at scale(0.95) and opacity 0, never scale(0) */
+  --pulse-duration: 1600ms; /* skeleton opacity pulse */
+
+  /* Browser theme color (meta theme-color, iOS status bar) follows the top of the page:
+     light #f7f8f8, dark #0a0b0b - the --background values. */
+}
+
+@media (min-width: 64rem) {
+  :root {
+    --gutter: 2rem;
+    --inset-card: 1.5rem;
+    --stack-section: 1.5rem;
+    --header-height: 4.5rem;
+  }
+}
+
+@media (pointer: fine) {
+  :root {
+    --row-min: 2.5rem; /* 40px with a mouse: denser tables */
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --press-scale: 1;
+    --enter-scale: 1; /* slides and scales become short fades */
+    --duration-base: 150ms;
+    --pulse-duration: 0ms;
+  }
 }
 
 :root[data-theme='light'] {

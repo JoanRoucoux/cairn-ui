@@ -5,11 +5,11 @@ export const AVATAR_SIZES = ['sm', 'md'] as const;
 export type AvatarSize = (typeof AVATAR_SIZES)[number];
 
 const BASE_CLASSES =
-  'inline-flex items-center justify-center rounded-full border border-(--primary) bg-(--soft) font-semibold tabular-nums text-(--primary)';
+  'inline-flex items-center justify-center rounded-pill border border-(--primary) bg-(--soft) font-semibold tabular-nums text-(--primary)';
 
 const SIZE_CLASSES: Record<AvatarSize, string> = {
-  sm: 'size-8 text-xs',
-  md: 'size-11 text-sm',
+  sm: 'size-8 text-caption',
+  md: 'size-11 text-label',
 };
 
 /**

@@ -8,7 +8,7 @@ export type CardVariant = (typeof CARD_VARIANTS)[number];
 export const CARD_PADDINGS = ['none', 'sm', 'md'] as const;
 export type CardPadding = (typeof CARD_PADDINGS)[number];
 
-const BASE_CLASSES = 'block rounded-xl border';
+const BASE_CLASSES = 'block rounded-container border';
 
 const VARIANT_CLASSES: Record<CardVariant, string> = {
   default: 'bg-(--card) border-(--border) text-(--card-foreground)',

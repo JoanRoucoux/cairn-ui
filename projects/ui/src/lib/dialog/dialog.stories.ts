@@ -50,7 +50,7 @@ buttons. Put the dismissing action first, so it sits on the left.
     template: `
       <button ui-button (click)="open = true">Ouvrir</button>
       <ui-dialog [heading]="heading" [width]="width" [open]="open" (dismissed)="open = false">
-        <p class="text-sm text-(--muted-foreground)">
+        <p class="text-label text-(--muted-foreground)">
           The price you enter replaces the last known value until the next refresh.
         </p>
         <button dialogActions ui-button variant="outline" (click)="open = false">Cancel</button>

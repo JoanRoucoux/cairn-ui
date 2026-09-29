@@ -1,22 +1,27 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
 import { expect, within } from 'storybook/test';
 
-import { UiTable, UiTd, UiTh } from './table';
+import { UiTable, UiTd, UiTh, UiTr } from './table';
 
 type TableArgs = Record<string, never>;
 
 const meta: Meta<TableArgs> = {
   title: 'Data display/Table',
-  decorators: [moduleMetadata({ imports: [UiTable, UiTd, UiTh] })],
+  decorators: [moduleMetadata({ imports: [UiTable, UiTd, UiTh, UiTr] })],
   parameters: {
     docs: {
       description: {
         component: `Styled native \`<table>\`. The rows and cells stay plain \`<tr>\` and \`<td>\`, with \`uiTable\`,
-\`uiTh\` and \`uiTd\` applied as attributes.
+\`uiTh\`, \`uiTd\` and \`uiTr\` applied as attributes.
 
 \`numeric\` right aligns a column and lines its digits up. Set it on the \`<th>\` and on every \`<td>\`
 of that column, since they carry it independently. \`from\` holds a secondary column back until the
-viewport is wide enough for it, which keeps a narrow screen honest instead of truncating.
+viewport is wide enough for it, which keeps a narrow screen honest instead of truncating. \`uiTr
+group\` draws the muted banner that opens each account inside a list of holdings; an ordinary row
+highlights on hover instead.
+
+Below 1024px, a consumer holds the quantity, average cost and quote columns back with \`from="lg"\`
+and repeats them as a subtitle inside the line's own cell instead of dropping them silently.
 
 #### When to use
 
@@ -50,13 +55,19 @@ viewport is wide enough for it, which keeps a narrow screen honest instead of tr
           </tr>
         </thead>
         <tbody>
-          <tr>
+          <tr uiTr group>
+            <td uiTd>Saxo Investor</td>
+            <td uiTd numeric from="md"></td>
+            <td uiTd numeric from="lg"></td>
+            <td uiTd numeric>61 247,83</td>
+          </tr>
+          <tr uiTr>
             <td uiTd>BNP Paribas Easy S&amp;P 500</td>
             <td uiTd numeric from="md">676</td>
             <td uiTd numeric from="lg">26,6540</td>
             <td uiTd numeric>22 515,47</td>
           </tr>
-          <tr>
+          <tr uiTr>
             <td uiTd>Savings account</td>
             <td uiTd numeric from="md">20 010</td>
             <td uiTd numeric from="lg">&mdash;</td>

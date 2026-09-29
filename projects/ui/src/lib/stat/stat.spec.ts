@@ -41,8 +41,8 @@ describe('UiStat', () => {
   });
 
   it.each<[StatSize, string]>([
-    ['hero', 'text-[48px]'],
-    ['tile', 'text-2xl'],
+    ['hero', 'text-display'],
+    ['tile', 'text-title'],
   ])('sizes the %s value accordingly', async (size, expectedClass) => {
     const { container } = await renderStat(size);
 
