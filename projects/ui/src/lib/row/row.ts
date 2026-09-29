@@ -6,8 +6,7 @@ const BASE_CLASSES =
 const SELECTED_CLASSES = 'bg-(--soft)';
 
 /**
- * Clickable row of a list: a holding, an envelope, an account. Replaces per-row cards and text
- * "Edit" / "Delete" buttons.
+ * Clickable row of a list: a holding, an envelope, an account.
  *
  * @example
  * <a ui-row [selected]="holding.id === openId()" [routerLink]="['/holdings', holding.id]">
