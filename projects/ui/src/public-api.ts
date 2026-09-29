@@ -19,6 +19,7 @@ export { CARD_PADDINGS, CARD_VARIANTS, UiCard, type CardPadding, type CardVarian
 export { type UiControlError } from './lib/control/control';
 export { DELTA_EMPHASES, UiDelta, type DeltaEmphasis } from './lib/delta/delta';
 export { DIALOG_WIDTHS, UiDialog, type DialogWidth } from './lib/dialog/dialog';
+export { type DonutSlice, UiDonut } from './lib/donut/donut';
 export { UiField } from './lib/field/field';
 export { CONTROL_SIZES, UiInput, UiTextarea, type ControlSize } from './lib/input/input';
 export { type ChartPoint, UiLineChart } from './lib/line-chart/line-chart';

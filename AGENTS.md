@@ -91,4 +91,5 @@ Keep them in sync with the starter:
 - npm consumers of the published library must add `@source '../node_modules/<pkg>'` to their Tailwind CSS — templates in `node_modules` are not scanned by default. Keep this documented in the README.
 - The root package version (release-please) is the starter's version; the library's own version lives in `projects/ui/package.json` and is bumped manually before publishing `dist/ui`.
 - Angular's zoneless scheduler calls `requestAnimationFrame` itself during bootstrap: assert on the rendered output, never on a count of animation frames.
+- `--subtle-foreground` only clears 4.5:1 against `--background`, `--card` and `--elevated` (see `docs/colors.mdx`); stacked on a `--soft` highlight (e.g. an active row) it drops to ~4.3:1, so text that can sit on `--soft` should use `--muted-foreground` instead.
 - Nothing is committed or pushed without an explicit request from the maintainer.
