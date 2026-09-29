@@ -4,5 +4,6 @@
   "lib": {
     "entryFile": "src/public-api.ts"
   },
-  "assets": ["./styles/**/*"]
+  "assets": ["./styles/**/*"],
+  "allowedNonPeerDependencies": ["d3-scale", "d3-shape"]
 }
