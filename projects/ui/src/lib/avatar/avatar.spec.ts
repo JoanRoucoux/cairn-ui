@@ -65,4 +65,12 @@ describe('UiAvatarLink', () => {
 
     expect(screen.getByRole('link', { name: 'Profil' }).className).not.toContain('active:bg-');
   });
+
+  it('holds a soft halo on the current page', async () => {
+    await render('<a uiAvatarLink href="/profile" aria-current="page"><ui-avatar initials="JR" label="Profil" /></a>', {
+      imports: [UiAvatar, UiAvatarLink],
+    });
+
+    expect(screen.getByRole('link', { name: 'Profil' })).toHaveClass('aria-[current=page]:bg-(--soft)');
+  });
 });

@@ -38,7 +38,8 @@ export class UiAvatar {
 
 /**
  * Round hit area around a `ui-avatar` that links somewhere: 44px on touch, 40px from 64rem, with a
- * glow on hover and the press scale. The avatar itself keeps its own size.
+ * glow on hover and the press scale. On the current page (`aria-current="page"`, which `routerLinkActive`
+ * sets through `ariaCurrentWhenActive`) it holds a soft halo. The avatar itself keeps its own size.
  *
  * @example
  * <a uiAvatarLink routerLink="/profile"><ui-avatar initials="JR" label="Profile" size="auto" /></a>
@@ -47,7 +48,7 @@ export class UiAvatar {
   selector: 'a[uiAvatarLink], button[uiAvatarLink]',
   host: {
     class:
-      'rounded-pill grid size-11 lg:size-10 place-items-center cursor-pointer select-none touch-manipulation transition-[transform,background-color] duration-(--duration-press) ease-out hover:bg-(--glow) active:scale-(--press-scale) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring)',
+      'rounded-pill grid size-11 lg:size-10 place-items-center cursor-pointer select-none touch-manipulation transition-[transform,background-color] duration-(--duration-press) ease-out hover:bg-(--glow) aria-[current=page]:bg-(--soft) active:scale-(--press-scale) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring)',
   },
 })
 export class UiAvatarLink {}
