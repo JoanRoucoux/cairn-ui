@@ -11,6 +11,7 @@ export {
   type AmountNumeric,
 } from './lib/amount/amount';
 export { type AmountFormatOptions, formatAmount } from './lib/amount/format-amount';
+export { ALERT_VARIANTS, UiAlert, type AlertVariant } from './lib/alert/alert';
 export { ASYNC_STATES, UiAsync, type AsyncState } from './lib/async/async';
 export { AVATAR_SIZES, UiAvatar, type AvatarSize } from './lib/avatar/avatar';
 export { BADGE_VARIANTS, UiBadge, type BadgeVariant } from './lib/badge/badge';
