@@ -231,6 +231,18 @@ describe('UiDonut', () => {
   });
 });
 
+describe('UiDonut legend press state', () => {
+  it('turns a pressed row to the soft surface, as a button and as a link', async () => {
+    await render(`<ui-donut [slices]="slices" label="x" othersLabel="Autres" [legendHref]="href" />`, {
+      imports: [UiDonut],
+      componentProperties: { slices: threeSlices, href: (id: string) => (id === 'c' ? null : `/${id}`) },
+    });
+
+    expect(screen.getByRole('button', { name: /Actions/ })).toHaveClass('hover:bg-(--glow)', 'active:bg-(--soft)');
+    expect(screen.getByRole('link', { name: /ETF/ })).toHaveClass('hover:bg-(--glow)', 'active:bg-(--soft)');
+  });
+});
+
 describe('UiDonut legend links', () => {
   const href = (id: string): string => `/holdings?classe=${id}`;
   const linkTemplate = `<ui-donut [slices]="slices" label="Par classe d'actif" othersLabel="Autres" [legendHref]="href" (sliceSelect)="onSelect($event)" />`;
@@ -272,7 +284,7 @@ describe('UiDonut legend links', () => {
     expect(onSelect).toHaveBeenCalledWith('c');
   });
 
-  it.each([{ ctrlKey: true }, { metaKey: true }, { shiftKey: true }, { button: 1 }])(
+  it.each([{ ctrlKey: true }, { metaKey: true }, { shiftKey: true }, { altKey: true }, { button: 1 }])(
     'leaves a modified click %o to the browser',
     async (init) => {
       const onSelect = vi.fn();

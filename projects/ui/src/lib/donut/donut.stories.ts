@@ -76,7 +76,7 @@ visible either way.
 
 * The \`<svg>\` is \`role="img"\`, named by \`label\` followed by every slice and its share, so the full
   detail survives even when several slices are grouped into "Others" visually.
-* Every legend row is a \`<button>\`: reachable by Tab, activated with Enter (and Space on a button), and its own text
+* Every legend row is a \`<button>\`, or a link when \`legendHref\` returns a URL for it: reachable by Tab, activated with Enter (and Space on a button), and its own text
   already carries the name, the sub-label, the share and the value — nothing depends on color alone.`,
       },
     },

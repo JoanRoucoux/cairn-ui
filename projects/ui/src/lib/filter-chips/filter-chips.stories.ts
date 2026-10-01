@@ -49,6 +49,7 @@ pill is 34 px tall inside a 44 px target. With a fine pointer the pills are 32 p
   telling which one is active, so a screen reader announces "Pressed" with the label and the count.
 * Every chip is a tab stop. Enter and Space select it. The scroller never needs a pointer: focusing
   a chip scrolls it into view.
+* Place it in a container padded by \`--gutter\`: on touch the row bleeds to the container's edges.
 * The focus ring is drawn inside the pill on touch and outside it with a fine pointer.`,
       },
     },
@@ -85,7 +86,7 @@ export const WithoutCounts: Story = {
 };
 
 export const ScrollsOnAPhone: Story = {
-  name: 'Scrolls on a phone',
+  name: 'Scrolls on a phone (needs touch emulation)',
   decorators: [
     (story) => ({
       ...story(),

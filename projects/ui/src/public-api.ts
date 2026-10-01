@@ -37,8 +37,8 @@ export {
   type DeltaWeight,
 } from './lib/delta/delta';
 export { DIALOG_LAYOUTS, DIALOG_WIDTHS, UiDialog, type DialogLayout, type DialogWidth } from './lib/dialog/dialog';
-export { type FilterChipOption, UiFilterChips } from './lib/filter-chips/filter-chips';
 export { type DonutSlice, UiDonut } from './lib/donut/donut';
+export { type FilterChipOption, UiFilterChips } from './lib/filter-chips/filter-chips';
 export { UiField, UiFieldLeading } from './lib/field/field';
 export {
   CONTROL_SIZES,

@@ -114,6 +114,16 @@ describe('UiFilterChips', () => {
     expect(screen.getByRole('button', { name: 'Crypto 0' })).toBeInTheDocument();
   });
 
+  it('rings the pill on hover with a fine pointer and scales the button on press', async () => {
+    await render(template, { imports: [UiFilterChips], componentProperties: { options: classes, value: 'all' } });
+    const button = screen.getByRole('button', { name: /^ETF/ });
+
+    expect(button).toHaveClass('group/chip', 'active:scale-(--press-scale)');
+    expect(button.querySelector('[data-chip]')).toHaveClass(
+      'pointer-fine:group-hover/chip:shadow-[inset_0_0_0_1px_var(--muted-foreground)]',
+    );
+  });
+
   it('shows the focus ring inside the pill on touch and outside it on a fine pointer', async () => {
     await render(template, { imports: [UiFilterChips], componentProperties: { options: classes, value: 'all' } });
 
