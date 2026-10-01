@@ -18,10 +18,10 @@ const SHEET_CLASSES =
   'max-lg:fixed max-lg:inset-x-4 max-lg:top-auto max-lg:w-auto max-lg:bottom-[calc(76px+env(safe-area-inset-bottom))] max-lg:min-w-0 max-lg:p-1.5 max-lg:bg-(--card) max-lg:shadow-[0_12px_32px_rgb(0_0_0/0.2),inset_0_0_0_1px_var(--border)] max-lg:backdrop:bg-[rgb(0_0_0/0.36)] max-lg:transition-[opacity,translate,overlay,display] max-lg:scale-100 max-lg:translate-y-4 max-lg:open:translate-y-0 max-lg:starting:open:scale-100 max-lg:starting:open:translate-y-4';
 
 const SHEET_ITEM_CLASSES =
-  'flex w-full items-center gap-3 lg:pointer-fine:gap-2.5 min-h-12 lg:min-h-11 lg:pointer-fine:min-h-9 px-3 lg:pointer-fine:px-2.5 rounded-[calc(var(--radius-container)-6px)] lg:rounded-[calc(var(--radius-container)-4px)] text-body lg:pointer-fine:text-label hover:bg-(--glow) focus-visible:bg-(--glow) max-lg:active:bg-(--soft) outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring) [&>svg]:size-5 [&>svg]:flex-none lg:[&>svg]:size-[18px] lg:pointer-fine:[&>svg]:size-4';
+  'flex w-full items-center gap-3 lg:pointer-fine:gap-2.5 min-h-12 lg:min-h-11 lg:pointer-fine:min-h-9 px-3 lg:pointer-fine:px-2.5 rounded-[calc(var(--radius-container)-6px)] lg:rounded-[calc(var(--radius-container)-4px)] text-body lg:pointer-fine:text-label hover:bg-(--glow) focus-visible:bg-(--glow) active:bg-(--soft) outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring) [&>svg]:size-5 [&>svg]:flex-none lg:[&>svg]:size-[18px] lg:pointer-fine:[&>svg]:size-4';
 
 const ITEM_CLASSES =
-  'flex w-full items-center gap-3 pointer-fine:gap-2.5 min-h-11 pointer-fine:min-h-9 px-3 pointer-fine:px-2.5 rounded-[calc(var(--radius-container)-4px)] text-body pointer-fine:text-label hover:bg-(--glow) focus-visible:bg-(--glow) outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring) [&>svg]:size-[18px] [&>svg]:flex-none pointer-fine:[&>svg]:size-4';
+  'flex w-full items-center gap-3 pointer-fine:gap-2.5 min-h-11 pointer-fine:min-h-9 px-3 pointer-fine:px-2.5 rounded-[calc(var(--radius-container)-4px)] text-body pointer-fine:text-label hover:bg-(--glow) focus-visible:bg-(--glow) active:bg-(--soft) outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring) [&>svg]:size-[18px] [&>svg]:flex-none pointer-fine:[&>svg]:size-4';
 
 const nextId = (() => {
   let count = 0;

@@ -49,7 +49,7 @@ that action is, so a screen reads at a glance.
   },
   render: (args) => ({
     props: args,
-    template: `<button ui-button [variant]="variant" [size]="size" [disabled]="disabled" [loading]="loading" (click)="onClick()">{{ label }}</button>`,
+    template: `<button ui-button [variant]="variant" [size]="size" [disabled]="disabled" [loading]="loading" [busy]="busy" (click)="onClick()">{{ label }}</button>`,
   }),
   args: {
     variant: 'primary',
@@ -71,7 +71,7 @@ that action is, so a screen reads at a glance.
       control: 'select',
       options: [...BUTTON_SIZES],
       description:
-        '`md` is the 40/44px touch target used everywhere by default. `xs` (32px), `sm` (36px), `lg` (44px) and `xl` (50px) are fixed heights. `compact` (32px, 28px from 64rem), `slim` (44px, then 32px),  `xxl` (52px, then 44px), `tall` (48px, then 40px) and `block` (50px, then 44px) step down at 64rem. `icon` is square and `icon-sm` is 44px on touch, 36px with a mouse; both need an `aria-label`.',
+        '`md` is the 40/44px touch target used everywhere by default. `xs` (32px), `sm` (36px), `lg` (44px) and `xl` (50px) are fixed heights. `compact` (32px, 28px from 64rem), `slim` (44px, then 32px), `xxl` (52px, then 44px), `tall` (48px, then 40px) and `block` (50px, then 44px) step down at 64rem. `icon` is square and `icon-sm` is 44px on touch, 36px with a mouse; both need an `aria-label`.',
     },
     disabled: {
       control: 'boolean',

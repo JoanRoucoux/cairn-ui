@@ -51,6 +51,14 @@ describe('UiMenu', () => {
     expect(screen.getByRole('button', { name: 'More' })).toHaveAttribute('aria-expanded', 'false');
   });
 
+  it('presses an item to the soft fill', async () => {
+    await render(template, { imports: [UiMenu, UiMenuTrigger, UiMenuItem], componentProperties: { edited: vi.fn() } });
+    await userEvent.click(screen.getByRole('button', { name: 'More' }));
+
+    expect(screen.getByRole('menuitem', { name: 'Edit' })).toHaveClass('active:bg-(--soft)');
+    expect(screen.getByRole('menuitem', { name: 'Delete the line' })).toHaveClass('active:bg-(--soft)');
+  });
+
   it('paints a destructive item in the negative color', async () => {
     await render(template, { imports: [UiMenu, UiMenuTrigger, UiMenuItem], componentProperties: { edited: vi.fn() } });
     await userEvent.click(screen.getByRole('button', { name: 'More' }));
@@ -246,7 +254,7 @@ describe('UiMenu', () => {
         'min-h-12',
         'lg:min-h-11',
         'lg:pointer-fine:min-h-9',
-        'max-lg:active:bg-(--soft)',
+        'active:bg-(--soft)',
         'rounded-[calc(var(--radius-container)-6px)]',
         'lg:rounded-[calc(var(--radius-container)-4px)]',
       );
