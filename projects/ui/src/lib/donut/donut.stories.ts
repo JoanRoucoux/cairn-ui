@@ -167,7 +167,7 @@ export const HighlightStaysOnTheRing: Story = {
     await userEvent.hover(canvas.getByRole('button', { name: /Crypto/ }));
 
     const arcs = canvasElement.querySelectorAll<SVGCircleElement>('svg circle[data-slice]');
-    await expect(arcs[4]?.style.strokeWidth).toBe('38px');
+    await expect(arcs[arcs.length - 1]?.style.strokeWidth).toBe('38px');
     await expect(arcs[0]?.style.strokeWidth).toBe('30px');
     await expect(canvasElement.querySelector('svg [style*="transform"]')).toBeNull();
   },

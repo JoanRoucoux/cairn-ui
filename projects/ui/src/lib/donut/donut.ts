@@ -75,7 +75,7 @@ const RAMP_DOT_CLASSES: Record<Ramp, string> = {
       }
     </div>
 
-    <div class="flex min-w-0 flex-1 flex-col">
+    <div class="flex w-full min-w-0 flex-1 flex-col sm:w-auto" data-testid="donut-legend">
       @for (slice of ranked(); track slice.id) {
         <button
           type="button"

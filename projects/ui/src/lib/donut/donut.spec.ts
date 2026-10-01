@@ -221,4 +221,12 @@ describe('UiDonut', () => {
     expect(screen.getByRole('img', { name: 'Empty' })).toBeInTheDocument();
     expect(screen.queryAllByRole('button')).toHaveLength(0);
   });
+  it('stretches the legend to the full width on a narrow screen so rows run edge to edge', async () => {
+    const { fixture } = await render(`<ui-donut [slices]="slices" label="x" othersLabel="Autres" />`, {
+      imports: [UiDonut],
+      componentProperties: { slices: threeSlices },
+    });
+
+    expect(fixture.nativeElement.querySelector('[data-testid="donut-legend"]')).toHaveClass('w-full', 'sm:w-auto');
+  });
 });
