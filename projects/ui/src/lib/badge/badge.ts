@@ -4,7 +4,15 @@ import { Component, computed, input } from '@angular/core';
 export const BADGE_VARIANTS = ['neutral', 'outline'] as const;
 export type BadgeVariant = (typeof BADGE_VARIANTS)[number];
 
-const BASE_CLASSES = 'inline-flex h-6 items-center rounded-pill px-2.5 text-caption font-medium';
+export const BADGE_SIZES = ['md', 'sm'] as const;
+export type BadgeSize = (typeof BADGE_SIZES)[number];
+
+const BASE_CLASSES = 'inline-flex items-center rounded-pill text-caption font-medium';
+
+const SIZE_CLASSES: Record<BadgeSize, string> = {
+  md: 'h-6 px-2.5',
+  sm: 'h-[22px] px-2',
+};
 
 const VARIANT_CLASSES: Record<BadgeVariant, string> = {
   neutral: 'bg-(--muted) text-(--foreground)',
@@ -26,6 +34,9 @@ const VARIANT_CLASSES: Record<BadgeVariant, string> = {
 })
 export class UiBadge {
   readonly variant = input<BadgeVariant>('neutral');
+  readonly size = input<BadgeSize>('md');
 
-  protected readonly classes = computed(() => `${BASE_CLASSES} ${VARIANT_CLASSES[this.variant()]}`);
+  protected readonly classes = computed(
+    () => `${BASE_CLASSES} ${SIZE_CLASSES[this.size()]} ${VARIANT_CLASSES[this.variant()]}`,
+  );
 }

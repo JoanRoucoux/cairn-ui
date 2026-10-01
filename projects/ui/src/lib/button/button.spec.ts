@@ -35,6 +35,8 @@ describe('UiButton', () => {
     ['lg', 'h-11'],
     ['xl', 'h-[50px]'],
     ['icon', 'size-(--row-min)'],
+    ['xxl', 'gap-2.5'],
+    ['xxl', 'h-[52px]'],
   ])('applies the %s size', async (size, expectedClass) => {
     await render('<button ui-button [size]="size" aria-label="Save">S</button>', {
       imports: [UiButton],
@@ -88,5 +90,24 @@ describe('UiButton', () => {
     await render('<a ui-button variant="outline" href="/export" download>Export</a>', { imports: [UiButton] });
 
     expect(screen.getByRole('link', { name: 'Export' })).toBeInTheDocument();
+  });
+
+  it.each<[ButtonVariant, string]>([
+    ['primary', 'hover:bg-(--primary-to)'],
+    ['outline', 'active:bg-(--soft)'],
+    ['ghost', 'active:bg-(--soft)'],
+  ])('moves the %s variant to its own hover or press colour', async (variant, expectedClass) => {
+    await render('<button ui-button [variant]="variant">Save</button>', {
+      imports: [UiButton],
+      componentProperties: { variant },
+    });
+
+    expect(screen.getByRole('button', { name: 'Save' })).toHaveClass(expectedClass);
+  });
+
+  it('tightens the start padding when an icon leads the label', async () => {
+    await render('<button ui-button>Add</button>', { imports: [UiButton] });
+
+    expect(screen.getByRole('button', { name: 'Add' })).toHaveClass('has-[>svg:first-child]:pl-3');
   });
 });

@@ -1,0 +1,87 @@
+import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
+import { expect, within } from 'storybook/test';
+
+import { ALERT_VARIANTS, type AlertVariant, UiAlert } from './alert';
+
+type AlertArgs = {
+  variant: AlertVariant;
+  heading: string;
+  text: string;
+};
+
+const meta: Meta<AlertArgs> = {
+  title: 'Feedback/Alert',
+  decorators: [moduleMetadata({ imports: [UiAlert] })],
+  parameters: {
+    docs: {
+      description: {
+        component: `Inline message that explains why something failed, or what an action is about to cost: a
+Lucide icon in the \`--negative\` color, an optional heading and a text.
+
+#### When to use
+
+* To report a failed submission next to the form that caused it, such as a sign-in error.
+* To warn, right above a confirmation, about an irreversible consequence (\`warning\` variant).
+
+#### When not to use
+
+* For a failed data load inside a block. Use [Async](?path=/docs/feedback-async--docs), which offers a retry.
+* For a label on a row. Use [Badge](?path=/docs/data-display-badge--docs).
+
+#### Accessibility
+
+* The \`error\` variant is \`role="alert"\`, announced as soon as it appears. The \`warning\` variant is
+  \`role="status"\`, announced politely.
+* The icon is decorative and hidden from assistive technology: the text carries the message.`,
+      },
+    },
+  },
+  render: (args) => ({
+    props: args,
+    template: `<div style="max-width: 342px"><ui-alert [variant]="variant" [heading]="heading">{{ text }}</ui-alert></div>`,
+  }),
+  args: {
+    variant: 'error',
+    heading: "La connexion n'a pas abouti",
+    text: "La demande a été annulée ou la clé n'a pas été reconnue. Réessayez.",
+  },
+  argTypes: {
+    variant: {
+      control: 'select',
+      options: [...ALERT_VARIANTS],
+      description:
+        '`error` is a bordered card with the circle icon. `warning` is a bare inline notice with the triangle icon.',
+    },
+    heading: { control: 'text', description: 'Optional heading. The text below it turns muted.' },
+    text: { control: 'text', description: 'Projected text content.' },
+  },
+};
+
+export default meta;
+type Story = StoryObj<AlertArgs>;
+
+export const WithHeading: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(canvas.getByRole('alert')).toBeVisible();
+    await expect(canvas.getByText("La connexion n'a pas abouti")).toBeVisible();
+  },
+};
+
+export const TextOnly: Story = {
+  args: { heading: '', text: 'Identifiant ou mot de passe incorrect.' },
+};
+
+export const Warning: Story = {
+  args: {
+    variant: 'warning',
+    heading: '',
+    text: 'Vous vendez toute la quantité : la ligne sera supprimée de PEA Boursorama. Cette action est définitive.',
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(canvas.getByRole('status')).toBeVisible();
+  },
+};

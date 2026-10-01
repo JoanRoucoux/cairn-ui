@@ -1,5 +1,6 @@
 import {
   Component,
+  Directive,
   ElementRef,
   afterRenderEffect,
   booleanAttribute,
@@ -16,6 +17,26 @@ const nextId = (() => {
 
   return (): string => `ui-field-${++count}`;
 })();
+
+/**
+ * Marks an element, typically an 18px svg icon, as the leading content of a `ui-field`: it sits
+ * inside the control's left edge and the control's text is inset to clear it. Decorative, so hidden
+ * from assistive technologies.
+ *
+ * @example
+ * <ui-field label="Search" labelHidden>
+ *   <svg uiFieldLeading width="18" height="18" viewBox="0 0 24 24">...</svg>
+ *   <input uiInput type="search" />
+ * </ui-field>
+ */
+@Directive({
+  selector: '[uiFieldLeading]',
+  host: {
+    class: 'pointer-events-none absolute left-3 flex text-(--muted-foreground)',
+    'aria-hidden': 'true',
+  },
+})
+export class UiFieldLeading {}
 
 /**
  * Label, control, hint and error as one unit. The control stays a plain native element:
@@ -46,7 +67,8 @@ const nextId = (() => {
       <!-- eslint-disable-next-line @angular-eslint/template/label-has-associated-control -- htmlFor is wired at runtime, once the projected control's id is known -->
       <label [class]="labelClasses()">{{ label() }}</label>
 
-      <div class="relative flex items-center">
+      <div [class]="rowClasses()">
+        <ng-content select="[uiFieldLeading]" />
         <ng-content />
 
         @if (unit()) {
@@ -76,9 +98,14 @@ export class UiField {
   protected readonly errorId = `${this.#id}-error`;
   readonly #host = inject<ElementRef<HTMLElement>>(ElementRef);
   protected readonly control = contentChild(UI_CONTROL);
+  protected readonly leading = contentChild(UiFieldLeading);
+
+  protected readonly rowClasses = computed(() =>
+    this.leading() ? 'relative flex items-center [&>input]:pl-[38px]' : 'relative flex items-center',
+  );
 
   protected readonly labelClasses = computed(() =>
-    this.labelHidden() ? 'sr-only' : 'text-label font-medium text-(--muted-foreground)',
+    this.labelHidden() ? 'sr-only' : 'text-label leading-[17px] font-medium text-(--muted-foreground)',
   );
 
   /**

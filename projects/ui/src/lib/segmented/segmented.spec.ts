@@ -47,7 +47,7 @@ describe('UiSegmented', () => {
   it('sizes every option consistently', async () => {
     await renderSegmented();
 
-    expect(screen.getByRole('radio', { name: '1D' })).toHaveClass('min-h-9', 'text-label');
+    expect(screen.getByRole('radio', { name: '1D' })).toHaveClass('h-10', 'pointer-fine:h-8', 'text-label');
   });
 
   it('gives each option a minimum inline padding, so labels do not collapse into each other', async () => {
@@ -88,7 +88,7 @@ describe('UiSegmented', () => {
 
     const thumb = fixture.nativeElement.querySelector('[data-thumb]') as HTMLElement;
     expect(thumb.style.transform).toBe('translateX(100%)');
-    expect(thumb.style.width).toBe('calc(33.3333%)');
+    expect(thumb.style.width).toContain('(100% - 4px)');
   });
 
   it('renders no thumb when the value matches no option', async () => {
@@ -142,5 +142,16 @@ describe('UiSegmented', () => {
     await user.keyboard('a');
 
     expect(screen.getByRole('radio', { name: '1D' })).toBeChecked();
+  });
+
+  it('draws the focus ring on the option, with or without a selected thumb', async () => {
+    const { container } = await renderSegmented('unknown');
+
+    expect(container.querySelector('[data-thumb]')).toBeNull();
+    expect(screen.getByRole('radio', { name: '1D' })).toHaveClass(
+      'focus-visible:outline-2',
+      'focus-visible:-outline-offset-2',
+      'focus-visible:outline-(--ring)',
+    );
   });
 });

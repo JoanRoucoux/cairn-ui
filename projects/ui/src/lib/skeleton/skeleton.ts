@@ -23,21 +23,26 @@ const BAR_CLASSES = 'block rounded-control bg-(--muted)';
   template: `
     @switch (shape()) {
       @case ('figure') {
-        <span class="${BAR_CLASSES} h-11 w-56" [style.animation]="animation"></span>
+        <span class="${BAR_CLASSES} h-10 w-65" [style.animation]="animation"></span>
       }
       @case ('row') {
-        <span class="flex h-14 flex-col justify-center gap-2">
-          <span class="${BAR_CLASSES} h-4 w-3/5" [style.animation]="animation"></span>
-          <span class="${BAR_CLASSES} h-3 w-2/5" [style.animation]="animation"></span>
+        <span class="flex h-14 items-center justify-between gap-4">
+          <span class="flex min-w-0 flex-1 flex-col gap-1.5">
+            <span class="${BAR_CLASSES} h-4 w-3/5" [style.animation]="animation"></span>
+            <span class="${BAR_CLASSES} h-3 w-20" [style.animation]="animation"></span>
+          </span>
+          <span class="${BAR_CLASSES} h-4 w-[90px] flex-none" [style.animation]="animation"></span>
         </span>
       }
       @case ('chart') {
-        <span class="rounded-container h-48 w-full bg-(--muted)" [style.animation]="animation"></span>
+        <span class="rounded-control min-h-50 w-full flex-1 bg-(--muted)" [style.animation]="animation"></span>
       }
       @case ('ring') {
         <span
-          class="rounded-pill size-40 border-[24px] border-(--muted) bg-transparent"
+          class="rounded-pill shadow-[inset_0_0_0_30px_var(--muted)]"
           [style.animation]="animation"
+          [style.height.px]="size()"
+          [style.width.px]="size()"
         ></span>
       }
       @default {
@@ -71,6 +76,7 @@ export class UiSkeleton {
   readonly shape = input<SkeletonShape>('text');
   readonly lines = input(1);
   readonly height = input(12);
+  readonly size = input(232);
 
   protected readonly animation = PULSE_ANIMATION;
 

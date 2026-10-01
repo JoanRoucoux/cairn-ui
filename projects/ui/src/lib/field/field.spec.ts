@@ -2,7 +2,7 @@ import { type RenderResult, render, screen } from '@testing-library/angular';
 
 import { UiInput } from '../input/input';
 import { UiSelect } from '../select/select';
-import { UiField } from './field';
+import { UiField, UiFieldLeading } from './field';
 
 const renderField = (attributes = '', control = '<input uiInput />'): Promise<RenderResult<unknown>> =>
   render(`<ui-field label="Quantity" ${attributes}>${control}</ui-field>`, {
@@ -130,6 +130,7 @@ describe('UiField', () => {
     const { container } = await renderField();
 
     expect(container.querySelector('label')).not.toHaveClass('sr-only');
+    expect(container.querySelector('label')).toHaveClass('leading-[17px]');
   });
 
   it('hides the label from sight but keeps it as the name of the control', async () => {
@@ -161,5 +162,63 @@ describe('UiField', () => {
 
     expect(screen.getByRole('textbox', { name: 'Quantity' })).toHaveAttribute('aria-invalid', 'true');
     expect(screen.getByText('You hold 500 parts.')).toHaveClass('text-(--negative)');
+  });
+
+  describe('leading slot', () => {
+    const renderSearch = (): Promise<RenderResult<unknown>> =>
+      render(
+        `<ui-field label="Search" labelHidden>
+          <svg uiFieldLeading data-testid="icon" width="18" height="18"></svg>
+          <input uiInput type="search" placeholder="Rechercher une ligne" />
+        </ui-field>`,
+        { imports: [UiField, UiFieldLeading, UiInput] },
+      );
+
+    it('renders the leading content in the control row, before the input', async () => {
+      await renderSearch();
+
+      const icon = screen.getByTestId('icon');
+      const control = screen.getByRole('searchbox', { name: 'Search' });
+
+      expect(icon.parentElement).toBe(control.parentElement);
+      expect(icon.compareDocumentPosition(control) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    });
+
+    it('pins the leading content 12px from the left, muted, and out of the pointer path', async () => {
+      await renderSearch();
+
+      expect(screen.getByTestId('icon')).toHaveClass(
+        'absolute',
+        'left-3',
+        'text-(--muted-foreground)',
+        'pointer-events-none',
+      );
+    });
+
+    it('hides the leading content from assistive technologies', async () => {
+      await renderSearch();
+
+      expect(screen.getByTestId('icon')).toHaveAttribute('aria-hidden', 'true');
+    });
+
+    it('insets the text by 12px padding + 18px icon + 8px gap', async () => {
+      await renderSearch();
+
+      expect(screen.getByRole('searchbox').parentElement?.className).toContain('[&>input]:pl-[38px]');
+    });
+
+    it('leaves the text inset alone without a leading slot', async () => {
+      await renderField();
+
+      expect(screen.getByRole('textbox').parentElement?.className).not.toContain('pl-[38px]');
+    });
+
+    it('keeps the unit slot working beside the leading content', async () => {
+      await render(`<ui-field label="Amount" unit="EUR"><svg uiFieldLeading></svg><input uiInput /></ui-field>`, {
+        imports: [UiField, UiFieldLeading, UiInput],
+      });
+
+      expect(screen.getByText('EUR')).toHaveClass('right-3');
+    });
   });
 });

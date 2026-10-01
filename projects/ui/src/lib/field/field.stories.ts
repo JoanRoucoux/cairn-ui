@@ -2,7 +2,7 @@ import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vit
 import { expect, within } from 'storybook/test';
 
 import { UiInput } from '../input/input';
-import { UiField } from './field';
+import { UiField, UiFieldLeading } from './field';
 
 type FieldArgs = {
   label: string;
@@ -14,7 +14,7 @@ type FieldArgs = {
 
 const meta: Meta<FieldArgs> = {
   title: 'Inputs/Field',
-  decorators: [moduleMetadata({ imports: [UiField, UiInput] })],
+  decorators: [moduleMetadata({ imports: [UiField, UiFieldLeading, UiInput] })],
   parameters: {
     docs: {
       description: {
@@ -26,6 +26,10 @@ custom component that would have to reimplement every native forms behaviour.
 
 \`unit\` renders a unit such as \`EUR\` or \`parts\` inside the control's right edge. It is decorative
 text, not part of the control's value.
+
+\`uiFieldLeading\` marks an element, typically an 18px svg icon, as the control's leading content. It
+sits 12px from the left edge, in \`--muted-foreground\`, and the control's text is inset by 38px
+(12px padding, 18px icon, 8px gap) to clear it. It is decorative and hidden from assistive technologies.
 
 A field shows a message from one of two places. \`error\` is the caller's own, and always wins. Where
 none is set, the field shows the first message among the projected control's \`errors\`, once that
@@ -148,5 +152,55 @@ export const InARow: Story = {
     const refused = canvas.getByLabelText('Price');
 
     await expect(valid.getBoundingClientRect().top).toBeCloseTo(refused.getBoundingClientRect().top, 0);
+  },
+};
+
+const SEARCH_ICON = `<svg uiFieldLeading width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>`;
+
+export const Recherche: Story = {
+  render: () => ({
+    template: `
+      <div class="flex max-w-sm flex-col gap-6">
+        <ui-field label="Rechercher une ligne" labelHidden>
+          ${SEARCH_ICON}
+          <input uiInput surface="card" type="search" placeholder="Rechercher une ligne" />
+        </ui-field>
+        <ui-field label="Rechercher une ligne (rempli)" labelHidden>
+          ${SEARCH_ICON}
+          <input uiInput surface="card" type="search" value="msci world" />
+        </ui-field>
+        <ui-field label="Rechercher une ligne (focus)" labelHidden>
+          ${SEARCH_ICON}
+          <input uiInput surface="card" type="search" placeholder="Rechercher une ligne" data-story-focus />
+        </ui-field>
+        <ui-field label="Rechercher une ligne (désactivé)" labelHidden>
+          ${SEARCH_ICON}
+          <input uiInput surface="card" type="search" placeholder="Rechercher une ligne" disabled />
+        </ui-field>
+        <ui-field label="Rechercher une ligne (erreur)" labelHidden error="Saisissez au moins 3 caractères.">
+          ${SEARCH_ICON}
+          <input uiInput surface="card" type="search" value="ms" />
+        </ui-field>
+        <ui-field label="Rechercher une ligne (compact)" labelHidden>
+          ${SEARCH_ICON}
+          <input uiInput surface="card" [size]="'sm'" type="search" placeholder="Rechercher une ligne" />
+        </ui-field>
+      </div>
+    `,
+  }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    const empty = canvas.getByRole('searchbox', { name: 'Rechercher une ligne' });
+    const icon = canvasElement.querySelector('svg')!;
+
+    canvasElement.querySelector<HTMLElement>('[data-story-focus]')!.focus();
+
+    await expect(empty).toHaveAttribute('placeholder', 'Rechercher une ligne');
+    await expect(icon).toHaveAttribute('aria-hidden', 'true');
+    await expect(getComputedStyle(empty).paddingLeft).toBe('38px');
+    await expect(icon.getBoundingClientRect().right).toBeLessThanOrEqual(
+      empty.getBoundingClientRect().left + parseFloat(getComputedStyle(empty).paddingLeft),
+    );
   },
 };

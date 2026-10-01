@@ -21,6 +21,7 @@ describe('UiNavItem', () => {
     const item = screen.getByRole('link', { name: 'Portfolio' });
     expect(item).toHaveAttribute('aria-current', 'page');
     expect(item).toHaveClass('bg-(--soft)', 'text-(--foreground)');
+    expect(item).not.toHaveClass('text-(--muted-foreground)');
   });
 
   it('is muted and carries no aria-current when inactive', async () => {

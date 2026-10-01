@@ -23,17 +23,17 @@ const pct = (share: number): string => `${(share * 100).toFixed(1)}%`;
 const eur = (value: number): string => `${value.toFixed(2)} EUR`;
 
 describe('UiDonut', () => {
-  it('renders one arc per ranked slice, filled from the grey ramp by rank', async () => {
+  it('renders one arc per ranked slice, stroked from the grey ramp by rank', async () => {
     const { fixture } = await render(`<ui-donut [slices]="slices" label="Par classe d'actif" othersLabel="Autres" />`, {
       imports: [UiDonut],
       componentProperties: { slices: threeSlices },
     });
-    const paths = fixture.nativeElement.querySelectorAll('svg path');
+    const paths = fixture.nativeElement.querySelectorAll('svg circle[data-slice]');
 
     expect(paths).toHaveLength(3);
-    expect(paths[0]).toHaveClass('fill-(--ramp-1)');
-    expect(paths[1]).toHaveClass('fill-(--ramp-2)');
-    expect(paths[2]).toHaveClass('fill-(--ramp-3)');
+    expect((paths[0] as SVGElement).style.stroke).toBe('var(--ramp-1)');
+    expect((paths[1] as SVGElement).style.stroke).toBe('var(--ramp-2)');
+    expect((paths[2] as SVGElement).style.stroke).toBe('var(--ramp-3)');
   });
 
   it('shows the largest slice at the centre by default', async () => {
@@ -48,19 +48,25 @@ describe('UiDonut', () => {
     expect(centre.getByText('60.00 EUR')).toBeInTheDocument();
   });
 
-  it('moves the centre and thickens the arc when a legend row is hovered, focused or touched', async () => {
+  it('moves the centre and thickens the stroke on the same ring when a legend row is hovered, focused or touched', async () => {
     const { fixture } = await render(
       `<ui-donut [slices]="slices" label="Par classe d'actif" othersLabel="Autres" [valueFormat]="eur" [shareFormat]="pct" />`,
       { imports: [UiDonut], componentProperties: { slices: threeSlices, eur, pct } },
     );
     const row = screen.getByRole('button', { name: /Fonds/ });
     const centre = within(fixture.nativeElement.querySelector('[data-testid="donut-centre"]'));
+    const arcs = fixture.nativeElement.querySelectorAll('svg circle[data-slice]');
+
+    expect(arcs[0].getAttribute('style')).toContain('stroke-width: 38');
+    expect(arcs[1].getAttribute('style')).toContain('stroke-width: 30');
 
     await userEvent.hover(row);
 
     expect(centre.getByText('Fonds')).toBeInTheDocument();
-    const groups = fixture.nativeElement.querySelectorAll('svg g');
-    expect((groups[1] as SVGGElement).style.transform).toContain('scale(1.08)');
+    expect(arcs[1].getAttribute('style')).toContain('stroke-width: 38');
+    expect(arcs[0].getAttribute('style')).toContain('stroke-width: 30');
+    expect(fixture.nativeElement.querySelector('svg [style*="scale"]')).toBeNull();
+    expect(fixture.nativeElement.querySelector('svg [style*="translate"]')).toBeNull();
 
     await userEvent.unhover(row);
     fireEvent.focus(row);
@@ -73,12 +79,36 @@ describe('UiDonut', () => {
     expect(centre.getByText('Fonds')).toBeInTheDocument();
   });
 
+  it('draws a muted track and every slice on the same r=78 circle', async () => {
+    const { fixture } = await render(`<ui-donut [slices]="slices" label="x" othersLabel="Autres" />`, {
+      imports: [UiDonut],
+      componentProperties: { slices: threeSlices },
+    });
+    const circles = Array.from(fixture.nativeElement.querySelectorAll('svg circle')) as SVGCircleElement[];
+
+    expect(circles).toHaveLength(4);
+    expect(circles.every((circle) => circle.getAttribute('r') === '78')).toBe(true);
+    expect(circles[0]).toHaveClass('stroke-(--muted)');
+  });
+
+  it('sets the centre name at 14px 500 muted, the share at 28px 600 and the amount as a muted caption', async () => {
+    const { fixture } = await render(`<ui-donut [slices]="slices" label="x" othersLabel="Autres" />`, {
+      imports: [UiDonut],
+      componentProperties: { slices: threeSlices },
+    });
+    const centre = within(fixture.nativeElement.querySelector('[data-testid="donut-centre"]'));
+
+    expect(centre.getByText('ETF')).toHaveClass('text-label', 'font-medium', 'text-(--muted-foreground)');
+    expect(centre.getByText('60%')).toHaveClass('text-heading', 'font-semibold');
+    expect(centre.getByText('60')).toHaveClass('text-caption', 'text-(--muted-foreground)');
+  });
+
   it('hovering an arc highlights its legend row and leaving it clears the highlight', async () => {
     const { fixture } = await render(`<ui-donut [slices]="slices" label="Par classe d'actif" othersLabel="Autres" />`, {
       imports: [UiDonut],
       componentProperties: { slices: threeSlices },
     });
-    const paths = fixture.nativeElement.querySelectorAll('svg path');
+    const paths = fixture.nativeElement.querySelectorAll('svg circle[data-slice]');
     const row = screen.getByRole('button', { name: /Fonds/ });
 
     fireEvent.pointerEnter(paths[1]);
@@ -187,8 +217,16 @@ describe('UiDonut', () => {
       componentProperties: { slices: [] as DonutSlice[] },
     });
 
-    expect(fixture.nativeElement.querySelectorAll('svg path')).toHaveLength(0);
+    expect(fixture.nativeElement.querySelectorAll('svg circle[data-slice]')).toHaveLength(0);
     expect(screen.getByRole('img', { name: 'Empty' })).toBeInTheDocument();
     expect(screen.queryAllByRole('button')).toHaveLength(0);
+  });
+  it('stretches the legend to the full width on a narrow screen so rows run edge to edge', async () => {
+    const { fixture } = await render(`<ui-donut [slices]="slices" label="x" othersLabel="Autres" />`, {
+      imports: [UiDonut],
+      componentProperties: { slices: threeSlices },
+    });
+
+    expect(fixture.nativeElement.querySelector('[data-testid="donut-legend"]')).toHaveClass('w-full', 'sm:w-auto');
   });
 });

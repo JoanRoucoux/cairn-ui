@@ -16,3 +16,13 @@ export const axisTicks = <T extends PlottedPoint>(points: readonly T[], maxTicks
 
   return [...indexes].sort((a, b) => a - b).map((index) => points[index] as T);
 };
+
+export const isCoreTick = (index: number, count: number): boolean => {
+  if (count <= 3) {
+    return true;
+  }
+
+  const middle = Math.floor((count - 1) / 2);
+
+  return index === 0 || index === count - 1 || index === middle;
+};

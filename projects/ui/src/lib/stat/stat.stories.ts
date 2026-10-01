@@ -7,6 +7,8 @@ import { STAT_SIZES, type StatSize, UiStat } from './stat';
 type StatArgs = {
   label: string;
   size: StatSize;
+  value: string;
+  delta: string;
 };
 
 const meta: Meta<StatArgs> = {
@@ -47,17 +49,21 @@ three are optional; only the value is required.
     props: args,
     template: `
       <ui-stat [label]="label" [size]="size">
-        <span uiStatValue>128,656 EUR</span>
-        <ui-delta uiStatDelta [value]="316.54" unknownLabel="Not available">+316.54 EUR</ui-delta>
-        <span uiStatCaption>over 1 month</span>
+        <span uiStatValue>{{ value }}</span>
+        <ui-delta uiStatDelta [value]="1" unknownLabel="Non disponible">{{ delta }}</ui-delta>
+        <span uiStatCaption>aujourd'hui</span>
       </ui-stat>
     `,
   }),
   args: {
-    label: 'Net worth',
+    label: 'Patrimoine',
     size: 'hero',
+    value: '164 294,28 €',
+    delta: '+412,56 € · +0,25 %',
   },
   argTypes: {
+    value: { control: 'text', description: 'The formatted figure, projected into the value slot.' },
+    delta: { control: 'text', description: 'The formatted, signed change, projected into the delta slot.' },
     label: { control: 'text', description: "The stat's label, in sentence case and without a trailing colon." },
     size: {
       control: 'inline-radio',
@@ -73,7 +79,18 @@ type Story = StoryObj<StatArgs>;
 export const Hero: Story = {};
 
 export const Tile: Story = {
-  args: { size: 'tile' },
+  args: { size: 'tile', label: 'Plus-value latente', value: '+21 846,90 €', delta: '+15,34 %' },
+  render: (args) => ({
+    props: args,
+    template: `
+      <div class="rounded-container box-content w-[200px] bg-(--card) p-4 shadow-[inset_0_0_0_1px_var(--border)]">
+        <ui-stat [label]="label" [size]="size">
+          <span uiStatValue>{{ value }}</span>
+          <ui-delta uiStatDelta [value]="1" unknownLabel="Non disponible">{{ delta }}</ui-delta>
+        </ui-stat>
+      </div>
+    `,
+  }),
 };
 
 export const WithoutDelta: Story = {
@@ -81,7 +98,7 @@ export const WithoutDelta: Story = {
     props: args,
     template: `
       <ui-stat [label]="label" [size]="size">
-        <span uiStatValue>128,656 EUR</span>
+        <span uiStatValue>{{ value }}</span>
       </ui-stat>
     `,
   }),
@@ -92,9 +109,9 @@ export const WithAside: Story = {
     props: args,
     template: `
       <ui-stat [label]="label" [size]="size">
-        <span uiStatValue>128,656 EUR</span>
-        <ui-delta uiStatDelta [value]="316.54" unknownLabel="Not available">+316.54 EUR</ui-delta>
-        <span uiStatCaption>over 1 month</span>
+        <span uiStatValue>{{ value }}</span>
+        <ui-delta uiStatDelta [value]="1" unknownLabel="Non disponible">{{ delta }}</ui-delta>
+        <span uiStatCaption>aujourd'hui</span>
         <svg uiStatAside width="80" height="32" viewBox="0 0 80 32" aria-hidden="true">
           <polyline points="0,24 20,18 40,20 60,8 80,4" fill="none" stroke="currentColor" stroke-width="2" />
         </svg>
@@ -109,8 +126,8 @@ export const AssociatesLabelAndValue: Story = {
     const dt = canvasElement.querySelector('dt');
     const dd = canvasElement.querySelector('dd');
 
-    await expect(dt).toHaveTextContent('Net worth');
-    await expect(dd).toHaveTextContent('128,656 EUR');
-    await expect(canvas.getByText('over 1 month')).toBeInTheDocument();
+    await expect(dt).toHaveTextContent('Patrimoine');
+    await expect(dd).toHaveTextContent('164 294,28 €');
+    await expect(canvas.getByText("aujourd'hui")).toBeInTheDocument();
   },
 };

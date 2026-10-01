@@ -4,25 +4,27 @@ import { Component, DestroyRef, ElementRef, booleanAttribute, computed, inject, 
 export const BUTTON_VARIANTS = ['primary', 'outline', 'ghost', 'destructive'] as const;
 export type ButtonVariant = (typeof BUTTON_VARIANTS)[number];
 
-/** Available button sizes. `md` is the touch target Cairn asks for everywhere. */
-export const BUTTON_SIZES = ['md', 'lg', 'xl', 'icon'] as const;
+/** Available button sizes. */
+export const BUTTON_SIZES = ['md', 'lg', 'xl', 'xxl', 'icon'] as const;
 export type ButtonSize = (typeof BUTTON_SIZES)[number];
 
 const BASE_CLASSES =
-  'relative inline-flex items-center justify-center gap-2 rounded-control font-medium whitespace-nowrap cursor-pointer select-none touch-manipulation transition-[transform,background-color,opacity] duration-(--duration-press) ease-out active:scale-(--press-scale) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring) disabled:pointer-events-none disabled:opacity-40 aria-disabled:not-aria-busy:opacity-40';
+  'relative inline-flex items-center justify-center rounded-control font-medium whitespace-nowrap cursor-pointer select-none touch-manipulation transition-[transform,background-color,opacity] duration-(--duration-press) ease-out active:scale-(--press-scale) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring) disabled:pointer-events-none disabled:opacity-40 aria-disabled:not-aria-busy:opacity-40';
 
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
-  primary: 'bg-(--primary) text-(--primary-foreground) hover:opacity-90',
-  outline: 'bg-(--card) text-(--foreground) shadow-[inset_0_0_0_1px_var(--border)] hover:bg-(--glow)',
-  ghost: 'bg-transparent text-(--foreground) hover:bg-(--glow)',
-  destructive: 'bg-(--destructive) text-(--destructive-foreground) hover:opacity-90',
+  primary: 'bg-(--primary) text-(--primary-foreground) hover:bg-(--primary-to)',
+  outline:
+    'bg-(--card) text-(--foreground) shadow-[inset_0_0_0_1px_var(--border)] hover:bg-(--glow) active:bg-(--soft)',
+  ghost: 'bg-transparent text-(--foreground) hover:bg-(--glow) active:bg-(--soft)',
+  destructive: 'bg-(--destructive) text-(--destructive-foreground)',
 };
 
 const SIZE_CLASSES: Record<ButtonSize, string> = {
-  md: 'min-h-(--row-min) px-4 text-label',
-  lg: 'h-11 px-[18px] text-label',
-  xl: 'h-[50px] px-6 text-body',
-  icon: 'size-(--row-min) p-0',
+  md: 'min-h-(--row-min) gap-2 px-4 text-label has-[>svg:first-child]:pl-3',
+  lg: 'h-11 gap-2 px-[18px] text-label',
+  xl: 'h-[50px] gap-2 px-6 text-body',
+  xxl: 'h-[52px] gap-2.5 px-6 text-body',
+  icon: 'size-(--row-min) gap-2 p-0',
 };
 
 /**

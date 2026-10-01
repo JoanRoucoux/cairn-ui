@@ -48,6 +48,13 @@ describe('UiMeter', () => {
     expect(screen.getByTestId('meter-fill')).toHaveClass(expectedClass);
   });
 
+  it('draws a 6px pill bar on the muted track, like the board', async () => {
+    await renderMeter();
+
+    expect(screen.getByRole('meter')).toHaveClass('h-1.5', 'rounded-pill', 'bg-(--muted)');
+    expect(screen.getByTestId('meter-fill')).toHaveClass('rounded-pill');
+  });
+
   it.each([
     [-0.5, '0%'],
     [0.25, '25%'],

@@ -54,7 +54,11 @@ const meta: Meta<AvatarArgs> = {
       control: 'text',
       description: 'Accessible name, announced instead of the initials. Usually the full name.',
     },
-    size: { control: 'select', options: [...AVATAR_SIZES], description: 'Disc diameter.' },
+    size: {
+      control: 'select',
+      options: [...AVATAR_SIZES],
+      description: 'Disc diameter: `sm` 32 px, `md` 34 px (iPhone header), `lg` 56 px (Profil).',
+    },
   },
 };
 
@@ -65,6 +69,30 @@ export const Default: Story = {};
 
 export const Small: Story = {
   args: { size: 'sm' },
+};
+
+export const InProfileLink: Story = {
+  render: () => ({
+    template: `
+      <a href="#" aria-label="Profil" class="grid size-10 place-items-center rounded-pill hover:bg-(--glow) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring)">
+        <ui-avatar initials="JO" label="Profil" size="sm" />
+      </a>
+    `,
+  }),
+};
+
+export const InProfileLinkTouch: Story = {
+  render: () => ({
+    template: `
+      <a href="#" aria-label="Profil" class="grid size-11 place-items-center rounded-pill active:scale-(--press-scale)">
+        <ui-avatar initials="JO" label="Profil" size="md" />
+      </a>
+    `,
+  }),
+};
+
+export const Large: Story = {
+  args: { size: 'lg' },
 };
 
 export const IsNamed: Story = {

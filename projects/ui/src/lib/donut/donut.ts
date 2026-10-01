@@ -1,6 +1,6 @@
 import { Component, computed, input, output, signal } from '@angular/core';
 
-import { positionSlices } from './internal/donut-geometry';
+import { ACTIVE_RING_WIDTH, RADIUS, RING_WIDTH, positionSlices } from './internal/donut-geometry';
 import { type DonutSlice, type Ramp, type RankedSlice, rankSlices, shareSlices } from './internal/donut-slices';
 
 export type { DonutSlice };
@@ -8,19 +8,8 @@ export type { DonutSlice };
 const identityValue = (value: number): string => `${value}`;
 const identityShare = (share: number): string => `${Math.round(share * 100)}%`;
 
-const ACTIVE_SCALE = 1.08;
-
 const ROW_CLASSES =
-  'flex w-full items-center gap-3 min-h-12 px-2 rounded-control text-left transition-colors duration-(--duration-fast) ease-out hover:bg-(--glow) focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring)';
-
-const RAMP_FILL_CLASSES: Record<Ramp, string> = {
-  1: 'fill-(--ramp-1)',
-  2: 'fill-(--ramp-2)',
-  3: 'fill-(--ramp-3)',
-  4: 'fill-(--ramp-4)',
-  5: 'fill-(--ramp-5)',
-  6: 'fill-(--ramp-6)',
-};
+  'flex w-full items-center gap-3 min-h-14 px-2 py-1 [font-variant-numeric:var(--numeric)] rounded-control text-left transition-colors duration-(--duration-fast) ease-out hover:bg-(--glow) focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring)';
 
 const RAMP_DOT_CLASSES: Record<Ramp, string> = {
   1: 'bg-(--ramp-1)',
@@ -42,34 +31,51 @@ const RAMP_DOT_CLASSES: Record<Ramp, string> = {
   selector: 'ui-donut',
   template: `
     <div class="relative size-[232px] flex-none sm:size-60">
-      <svg class="block h-full w-full" role="img" viewBox="0 0 200 200" [attr.aria-label]="ariaLabel()">
+      <svg class="block h-full w-full -rotate-90" role="img" viewBox="0 0 200 200" [attr.aria-label]="ariaLabel()">
+        <circle
+          class="stroke-(--muted)"
+          cx="100"
+          cy="100"
+          fill="none"
+          [attr.r]="radius"
+          [attr.stroke-width]="ringWidth"
+        />
         @for (slice of positioned(); track slice.id) {
-          <g class="transition-transform duration-(--duration-fast) ease-out" [style.transform]="arcTransform(slice)">
-            <path
-              stroke-width="1"
-              [attr.d]="slice.path"
-              [class]="pathClasses(slice)"
-              (click)="select(slice)"
-              (pointerenter)="highlight(slice.id)"
-              (pointerleave)="clearHighlight(slice.id)"
-            />
-          </g>
+          <circle
+            class="cursor-pointer transition-[stroke-width] duration-(--duration-fast) ease-out"
+            cx="100"
+            cy="100"
+            data-slice
+            fill="none"
+            [attr.r]="radius"
+            [attr.stroke-dasharray]="slice.dash"
+            [attr.stroke-dashoffset]="slice.offset"
+            [style.stroke]="strokeColor(slice)"
+            [style.stroke-width.px]="strokeWidth(slice)"
+            (click)="select(slice)"
+            (pointerenter)="highlight(slice.id)"
+            (pointerleave)="clearHighlight(slice.id)"
+          />
         }
       </svg>
 
       @if (active(); as slice) {
         <div
-          class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-10 text-center"
+          class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-12 text-center"
           data-testid="donut-centre"
         >
-          <span class="text-caption max-w-full truncate text-(--muted-foreground)">{{ slice.label }}</span>
-          <span class="text-title font-semibold">{{ shareFormat()(slice.share) }}</span>
-          <span class="text-caption">{{ valueFormat()(slice.value) }}</span>
+          <span class="text-label max-w-full truncate font-medium whitespace-nowrap text-(--muted-foreground)">{{
+            slice.label
+          }}</span>
+          <span class="text-heading font-semibold tracking-(--tracking-display)">{{ shareFormat()(slice.share) }}</span>
+          <span class="text-caption tracking-normal text-(--muted-foreground) [font-variant-numeric:var(--numeric)]">{{
+            valueFormat()(slice.value)
+          }}</span>
         </div>
       }
     </div>
 
-    <div class="flex min-w-0 flex-1 flex-col">
+    <div class="flex w-full min-w-0 flex-1 flex-col sm:w-auto" data-testid="donut-legend">
       @for (slice of ranked(); track slice.id) {
         <button
           type="button"
@@ -83,18 +89,20 @@ const RAMP_DOT_CLASSES: Record<Ramp, string> = {
           <span [class]="dotClasses(slice)"></span>
           <span class="flex min-w-0 flex-1 flex-col">
             <span class="text-body truncate font-medium">{{ slice.label }}</span>
-            <span class="text-caption truncate text-(--muted-foreground)">{{ subLabel(slice) }}</span>
+            <span class="text-caption truncate tracking-(--tracking-caption) text-(--subtle-foreground)">{{
+              subLabel(slice)
+            }}</span>
           </span>
           <span class="flex flex-none flex-col items-end whitespace-nowrap">
             <span class="text-body font-medium">{{ shareFormat()(slice.share) }}</span>
-            <span class="text-caption text-(--muted-foreground)">{{ valueFormat()(slice.value) }}</span>
+            <span class="text-caption tracking-normal text-(--muted-foreground)">{{ valueFormat()(slice.value) }}</span>
           </span>
         </button>
       }
     </div>
   `,
   host: {
-    class: 'flex flex-col items-center gap-6 sm:flex-row sm:items-center',
+    class: 'flex flex-col items-center gap-3 sm:flex-row sm:items-center sm:gap-8',
   },
 })
 export class UiDonut {
@@ -126,8 +134,15 @@ export class UiDonut {
     return detail ? `${this.label()} : ${detail}` : this.label();
   });
 
-  protected pathClasses(slice: RankedSlice): string {
-    return `cursor-pointer stroke-(--card) ${RAMP_FILL_CLASSES[slice.ramp]}`;
+  protected readonly radius = RADIUS;
+  protected readonly ringWidth = RING_WIDTH;
+
+  protected strokeColor(slice: RankedSlice): string {
+    return `var(--ramp-${slice.ramp})`;
+  }
+
+  protected strokeWidth(slice: RankedSlice): number {
+    return this.isActive(slice) ? ACTIVE_RING_WIDTH : RING_WIDTH;
   }
 
   protected dotClasses(slice: RankedSlice): string {
@@ -140,12 +155,6 @@ export class UiDonut {
 
   protected subLabel(slice: RankedSlice): string {
     return slice.members.length > 0 ? slice.members.join(', ') : (slice.sublabel ?? '');
-  }
-
-  protected arcTransform(slice: RankedSlice): string {
-    const scale = this.isActive(slice) ? ACTIVE_SCALE : 1;
-
-    return `translate(100px, 100px) scale(${scale})`;
   }
 
   protected isActive(slice: RankedSlice): boolean {

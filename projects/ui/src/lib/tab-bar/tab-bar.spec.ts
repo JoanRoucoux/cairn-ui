@@ -22,6 +22,15 @@ describe('UiTabBar', () => {
     const active = screen.getByRole('link', { name: 'Portfolio' });
     expect(active).toHaveAttribute('aria-current', 'page');
     expect(active).toHaveClass('font-semibold', 'text-(--foreground)');
+    expect(active).not.toHaveClass('text-(--muted-foreground)');
+  });
+
+  it('keeps every label at weight 500, 600 once active, on a 3px gap and a 1 line height', async () => {
+    const { container } = await render(template, { imports: [UiTabBar, UiTab] });
+
+    const inactive = screen.getByRole('link', { name: 'Holdings' });
+    expect(inactive).toHaveClass('gap-[3px]', 'font-medium');
+    expect(container.querySelector('[data-tab-label]')).toHaveClass('leading-none');
   });
 
   it('is muted and carries no aria-current when inactive', async () => {

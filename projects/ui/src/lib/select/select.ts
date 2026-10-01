@@ -3,14 +3,14 @@ import { Directive, computed, forwardRef, input } from '@angular/core';
 import { UI_CONTROL, type UiControl, type UiControlError } from '../control/control';
 import { CONTROL_BASE_CLASSES, CONTROL_SIZE_CLASSES, type ControlSize } from '../input/input';
 
-const SELECT_CLASSES = 'cursor-pointer pr-8';
+const SELECT_CLASSES =
+  'cursor-pointer appearance-none pr-10 bg-(image:--chevron-down) bg-no-repeat bg-[position:right_0.75rem_center] bg-[size:1.125rem]';
 
 // Spelled out prefix included: Tailwind scans for literal strings, so a prefix applied in code
-// emits nothing. Dropping `supports` leaves Firefox the padding of a chevron it does not lay out.
+// emits nothing.
 const PICKER_CLASSES = [
   'pointer-fine:supports-[appearance:base-select]:[appearance:base-select]',
   'pointer-fine:supports-[appearance:base-select]:items-center',
-  'pointer-fine:supports-[appearance:base-select]:pr-3',
   'pointer-fine:supports-[appearance:base-select]:[&_option]:cursor-pointer',
   'pointer-fine:supports-[appearance:base-select]:[&_option]:rounded-control',
   'pointer-fine:supports-[appearance:base-select]:[&_option]:px-2.5',
@@ -18,8 +18,7 @@ const PICKER_CLASSES = [
   'pointer-fine:supports-[appearance:base-select]:[&_option:hover]:bg-(--soft)',
   'pointer-fine:supports-[appearance:base-select]:[&_option:focus]:bg-(--soft)',
   'pointer-fine:supports-[appearance:base-select]:[&_option:checked]:font-medium',
-  '[&::picker-icon]:text-caption',
-  '[&::picker-icon]:text-(--muted-foreground)',
+  '[&::picker-icon]:hidden',
   '[&::picker(select)]:[appearance:base-select]',
   '[&::picker(select)]:my-1.5',
   '[&::picker(select)]:rounded-control',
@@ -55,6 +54,7 @@ export class UiSelect implements UiControl {
   readonly touched = input(false);
 
   protected readonly classes = computed(
-    () => `${CONTROL_BASE_CLASSES} ${SELECT_CLASSES} ${PICKER_CLASSES} ${CONTROL_SIZE_CLASSES[this.size()]}`,
+    () =>
+      `${CONTROL_BASE_CLASSES} bg-(--background) ${SELECT_CLASSES} ${PICKER_CLASSES} ${CONTROL_SIZE_CLASSES[this.size()]}`,
   );
 }

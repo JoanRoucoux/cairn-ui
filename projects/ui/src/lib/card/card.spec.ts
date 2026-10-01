@@ -21,10 +21,17 @@ describe('UiCard', () => {
     expect(screen.getByText('Total')).toHaveClass(expectedClass);
   });
 
+  it('draws its border as an inset shadow so padding matches the board', async () => {
+    await render('<ui-card>Total</ui-card>', { imports: [UiCard] });
+
+    expect(screen.getByText('Total')).toHaveClass('shadow-[inset_0_0_0_1px_var(--border)]');
+  });
+
   it.each<[CardPadding, string]>([
     ['none', 'p-0'],
     ['sm', 'p-3'],
-    ['md', 'p-5'],
+    ['md', 'p-(--inset-card)'],
+    ['list', 'px-2'],
   ])('applies the %s padding classes', async (padding, expectedClass) => {
     await render('<ui-card [padding]="padding">Total</ui-card>', {
       imports: [UiCard],

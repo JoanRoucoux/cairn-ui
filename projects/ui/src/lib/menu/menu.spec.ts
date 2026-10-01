@@ -55,7 +55,37 @@ describe('UiMenu', () => {
     await render(template, { imports: [UiMenu, UiMenuTrigger, UiMenuItem], componentProperties: { edited: vi.fn() } });
     await userEvent.click(screen.getByRole('button', { name: 'More' }));
 
-    expect(screen.getByRole('menuitem', { name: 'Delete the line' })).toHaveClass('text-(--negative)');
+    expect(screen.getByRole('menuitem', { name: 'Delete the line' })).toHaveClass(
+      'text-(--negative)',
+      'hover:bg-(--glow)',
+    );
+  });
+
+  it('draws the focus ring inside the item on keyboard focus', async () => {
+    await render(template, { imports: [UiMenu, UiMenuTrigger, UiMenuItem], componentProperties: { edited: vi.fn() } });
+    await userEvent.click(screen.getByRole('button', { name: 'More' }));
+
+    expect(screen.getByRole('menuitem', { name: 'Delete the line' })).toHaveClass(
+      'focus-visible:bg-(--glow)',
+      'focus-visible:outline-2',
+      'focus-visible:-outline-offset-2',
+      'focus-visible:outline-(--ring)',
+    );
+  });
+
+  it('sizes items 44 px on touch and 36 px with a mouse, and leaves the width to the consumer', async () => {
+    await render(template, { imports: [UiMenu, UiMenuTrigger, UiMenuItem], componentProperties: { edited: vi.fn() } });
+    await userEvent.click(screen.getByRole('button', { name: 'More' }));
+
+    expect(screen.getByRole('menuitem', { name: 'Delete the line' })).toHaveClass(
+      'min-h-11',
+      'px-3',
+      'text-body',
+      'pointer-fine:min-h-9',
+      'pointer-fine:px-2.5',
+      'pointer-fine:text-label',
+    );
+    expect(screen.getByRole('menu', { hidden: true })).not.toHaveClass('min-w-55');
   });
 
   it('wraps upward from the first item to the last', async () => {

@@ -17,7 +17,7 @@ const TEXT_CLASSES: Record<Sign, string> = {
   unknown: 'text-(--subtle-foreground)',
 };
 
-const PILL_BACKGROUND_CLASS = 'bg-(--muted)';
+const PILL_BACKGROUND_CLASS = 'bg-(--soft)';
 
 /**
  * Signed amount whose sign carries meaning: a gain, a loss, or an unknown.

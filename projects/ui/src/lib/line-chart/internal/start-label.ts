@@ -4,8 +4,8 @@ export type StartLabelBox = { width: number; height: number };
 export type StartLabelSize = { width: number; height: number };
 export type StartLabelPlacement = { x: number; y: number; anchor: 'start' | 'end' };
 
-const LINE_GAP = 3;
-const COLLISION_MARGIN = 3;
+const LINE_GAP = 6;
+const COLLISION_MARGIN = 6;
 const EDGE_TOLERANCE = 3;
 
 type Slot = { anchor: 'start' | 'end'; x: number; y: number; top: number; bottom: number };
