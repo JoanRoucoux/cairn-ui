@@ -18,6 +18,7 @@ type CardArgs = {
   border: CardBorder;
   padding: CardPadding;
   surface: CardSurface;
+  clip: boolean;
   label: string;
 };
 
@@ -50,13 +51,14 @@ const meta: Meta<CardArgs> = {
   },
   render: (args) => ({
     props: args,
-    template: `<ui-card [variant]="variant" [border]="border" [padding]="padding" [surface]="surface">{{ label }}</ui-card>`,
+    template: `<ui-card [variant]="variant" [border]="border" [padding]="padding" [surface]="surface" [clip]="clip">{{ label }}</ui-card>`,
   }),
   args: {
     variant: 'default',
     border: 'auto',
     padding: 'md',
     surface: 'always',
+    clip: false,
     label: 'Total portfolio value',
   },
   argTypes: {
@@ -77,6 +79,11 @@ const meta: Meta<CardArgs> = {
       options: [...CARD_PADDINGS],
       description:
         'Inner spacing; `xs` is 4 px, `sm` 12 px, `md` follows `--inset-card` (16 px, 24 px from 1 024 px), `recap` is 4 px / 12 px for a before/after recap whose rows carry their own 9 px, `panel` is 10 x 12 px, then 12 x 16 px from 1 024 px, `list` keeps a narrow side padding for rows that carry their own inset, `rows` is the 4 px / `--inset-card` inset of a ruled list such as facts, `none` when the content manages its own (e.g. a table).',
+    },
+    clip: {
+      control: 'boolean',
+      description:
+        'Clips the content to the rounded corners (`overflow-hidden`). Off by default, so focus rings and popovers of the content are not cut. Use it with `padding="none"` when a table or list touches the edges and its hovered or selected last row must follow the corners.',
     },
     surface: {
       control: 'inline-radio',
@@ -111,6 +118,24 @@ export const RendersContent: Story = {
 
     await expect(canvas.getByText(args.label)).toBeVisible();
   },
+};
+
+export const ClippedTable: Story = {
+  name: 'Clip, flush table with a selected last row',
+  render: () => ({
+    template: `
+      <div style="width: 22rem; display: flex; flex-direction: column; gap: 1rem">
+        <ui-card padding="none" clip>
+          <div style="padding: 12px 16px">Row</div>
+          <div style="padding: 12px 16px; background: var(--soft); border-radius: var(--radius-control)">Selected last row</div>
+        </ui-card>
+        <ui-card padding="none">
+          <div style="padding: 12px 16px">Row</div>
+          <div style="padding: 12px 16px; background: var(--soft); border-radius: var(--radius-control)">Without clip</div>
+        </ui-card>
+      </div>
+    `,
+  }),
 };
 
 export const CardOnDesktopOnly: Story = {

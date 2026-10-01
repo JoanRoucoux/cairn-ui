@@ -96,6 +96,20 @@ describe('UiCard', () => {
     });
   });
 
+  describe('clip', () => {
+    it('does not clip by default', async () => {
+      await render('<ui-card>Total</ui-card>', { imports: [UiCard] });
+
+      expect(screen.getByText('Total')).not.toHaveClass('overflow-hidden');
+    });
+
+    it('clips its content to the rounded corners with the clip attribute', async () => {
+      await render('<ui-card clip padding="none">Total</ui-card>', { imports: [UiCard] });
+
+      expect(screen.getByText('Total')).toHaveClass('overflow-hidden');
+    });
+  });
+
   describe('panel padding', () => {
     it.each<[CardSurface, string[]]>([
       ['always', ['px-3', 'py-2.5', 'lg:px-4', 'lg:py-3']],

@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, booleanAttribute, computed, input } from '@angular/core';
 
 /** Available card variants. `CardVariant` is derived from this tuple. */
 export const CARD_VARIANTS = ['default', 'elevated', 'inset'] as const;
@@ -108,6 +108,7 @@ const PADDING_CLASSES: Record<CardPadding, Record<CardSurface, string>> = {
  * @example
  * <ui-card variant="elevated" padding="sm">Total</ui-card>
  * <ui-card variant="inset" border="hairline" padding="xs">Results</ui-card>
+ * <ui-card padding="none" clip>Table that touches the edges, clipped to the corners</ui-card>
  * <ui-card surface="max-lg">Card on an iPhone, plain on a desktop</ui-card>
  */
 @Component({
@@ -122,6 +123,7 @@ export class UiCard {
   readonly padding = input<CardPadding>('md');
   readonly surface = input<CardSurface>('always');
   readonly border = input<CardBorder>('auto');
+  readonly clip = input(false, { transform: booleanAttribute });
 
   protected readonly classes = computed(() => {
     const variant = this.variant();
@@ -133,6 +135,7 @@ export class UiCard {
       VARIANT_CLASSES[variant][surface],
       BORDER_CLASSES[border === 'auto' ? AUTO_BORDERS[variant] : border][surface],
       PADDING_CLASSES[this.padding()][surface],
+      this.clip() ? 'overflow-hidden' : '',
     ]
       .filter(Boolean)
       .join(' ');
