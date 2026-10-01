@@ -20,7 +20,7 @@ export { CARD_PADDINGS, CARD_VARIANTS, UiCard, type CardPadding, type CardVarian
 export { type ChoiceChipOption, UiChoiceChips } from './lib/choice-chips/choice-chips';
 export { type UiControlError } from './lib/control/control';
 export { DELTA_EMPHASES, UiDelta, type DeltaEmphasis } from './lib/delta/delta';
-export { DIALOG_WIDTHS, UiDialog, type DialogWidth } from './lib/dialog/dialog';
+export { DIALOG_LAYOUTS, DIALOG_WIDTHS, UiDialog, type DialogLayout, type DialogWidth } from './lib/dialog/dialog';
 export { type DonutSlice, UiDonut } from './lib/donut/donut';
 export { UiField, UiFieldLeading } from './lib/field/field';
 export {

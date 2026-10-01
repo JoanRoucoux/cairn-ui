@@ -18,6 +18,66 @@ const WIDTH_VALUES: Record<DialogWidth, string> = {
   lg: '560px',
 };
 
+/** Spacing presets, one per screen family of the handoff. `DialogLayout` is derived from this tuple. */
+export const DIALOG_LAYOUTS = ['trade', 'form', 'list', 'confirm'] as const;
+export type DialogLayout = (typeof DIALOG_LAYOUTS)[number];
+
+const SAFE = 'var(--dialog-safe,env(safe-area-inset-bottom))';
+
+type LayoutClasses = {
+  dialog: string;
+  header: string;
+  title: string;
+  cross: string;
+  icon: string;
+  handle: string;
+  body: string;
+  footer: string;
+};
+
+const LAYOUTS: Record<DialogLayout, LayoutClasses> = {
+  trade: {
+    dialog: '',
+    header: 'items-start lg:pt-6',
+    title: 'pt-1 lg:pt-0',
+    cross: 'lg:-mt-1.5',
+    icon: 'lg:size-5',
+    handle: 'pt-[7.5px]',
+    body: 'pt-3 pb-4 lg:pt-5 lg:pb-5',
+    footer: `max-lg:pb-[calc(8px+${SAFE})] lg:pb-6`,
+  },
+  form: {
+    dialog: '',
+    header: 'items-center lg:pt-6',
+    title: '',
+    cross: '',
+    icon: 'lg:size-[22px]',
+    handle: 'pt-[7.5px]',
+    body: 'pt-2 pb-5 lg:pt-4 lg:pb-5',
+    footer: `max-lg:pb-[calc(12px+${SAFE})] lg:pb-5`,
+  },
+  list: {
+    dialog: 'max-lg:h-[calc(100dvh-58px)] lg:max-h-[760px]',
+    header: 'items-center lg:pt-5',
+    title: '',
+    cross: '',
+    icon: 'lg:size-[22px]',
+    handle: 'pt-[7.5px]',
+    body: 'pt-2 pb-4 lg:pt-4 lg:pb-5',
+    footer: `pt-3 shadow-[0_-1px_0_var(--hairline)] max-lg:pb-[calc(8px+${SAFE})] lg:pt-4 lg:pb-4`,
+  },
+  confirm: {
+    dialog: '',
+    header: 'items-center pt-3 lg:pt-6',
+    title: '',
+    cross: '',
+    icon: 'lg:size-[22px]',
+    handle: 'pt-[11.5px]',
+    body: 'pt-3 pb-5 lg:pt-3 lg:pb-6',
+    footer: `max-lg:pb-[calc(8px+${SAFE})] lg:pb-6`,
+  },
+};
+
 const nextId = (() => {
   let count = 0;
 
@@ -30,8 +90,12 @@ const nextId = (() => {
  * footer fed by [dialogActions]: right-aligned on a desktop, stacked full width (50px) on a sheet,
  * where the primary comes first and a secondary such as Annuler sits under it.
  *
+ * `layout` picks the spacing of a screen family: `trade` (default, Acheter and Vendre), `form` (Nouveau
+ * compte), `list` (Ajouter une ligne: divided footer, sheet of fixed height) and `confirm` (a
+ * confirmation, announced as an alertdialog).
+ *
  * @example
- * <ui-dialog heading="Acheter" description="Ferrari · PEA" closeLabel="Fermer" width="530px" [open]="buying()" (dismissed)="buying.set(false)">
+ * <ui-dialog heading="Acheter" description="Ferrari · PEA" closeLabel="Fermer" width="528px" [open]="buying()" (dismissed)="buying.set(false)">
  *   <p>Corps</p>
  *   <button dialogActions ui-button variant="outline" class="max-lg:hidden" (click)="buying.set(false)">Annuler</button>
  *   <button dialogActions ui-button>Acheter 40 parts</button>
@@ -39,22 +103,18 @@ const nextId = (() => {
  */
 @Component({
   selector: 'ui-dialog',
-  host: { '(click)': 'onClick($event)' },
+  host: { '(pointerdown)': 'onPointerDown($event)', '(click)': 'onClick($event)' },
   template: `
     <dialog
       #dlg
       [attr.aria-describedby]="description() ? descriptionId : null"
       [attr.aria-labelledby]="headingId"
-      [attr.role]="role()"
+      [attr.role]="layout() === 'confirm' ? 'alertdialog' : 'dialog'"
       [class]="classes()"
       [style.--dialog-width]="widthValue()"
       (close)="onNativeClose()"
     >
-      <div
-        aria-hidden="true"
-        class="flex h-5 justify-center pt-[var(--dialog-handle-top,7.5px)] lg:hidden"
-        data-dialog-handle
-      >
+      <div aria-hidden="true" class="flex h-5 justify-center lg:hidden" data-dialog-handle [class]="spec().handle">
         <span class="rounded-pill h-[5px] w-9 bg-(--border)"></span>
       </div>
 
@@ -92,9 +152,7 @@ const nextId = (() => {
 
       <div class="min-h-0 flex-1 overflow-y-auto px-4 lg:px-6" data-dialog-body>
         <!-- empty:hidden keeps a body-less dialog from carrying the body's vertical padding. -->
-        <div
-          class="flex flex-col gap-4 pt-[var(--dialog-head-gap,8px)] pb-[var(--dialog-foot-gap,16px)] empty:hidden lg:pt-[var(--dialog-head-gap-lg,20px)] lg:pb-[var(--dialog-foot-gap-lg,20px)]"
-        >
+        <div class="flex flex-col gap-4 empty:hidden" [class]="spec().body">
           <ng-content />
         </div>
       </div>
@@ -167,9 +225,7 @@ export class UiDialog {
   readonly heading = input.required<string>();
   readonly description = input<string>();
   readonly closeLabel = input<string>();
-  readonly role = input<'dialog' | 'alertdialog'>('dialog');
-  readonly headerAlign = input<'start' | 'center'>('start');
-  readonly divided = input(false, { transform: booleanAttribute });
+  readonly layout = input<DialogLayout>('trade');
   readonly truncateDescription = input(false, { transform: booleanAttribute });
   readonly width = input<DialogWidth | (string & {})>('lg');
   readonly open = input(false, { transform: booleanAttribute });
@@ -184,30 +240,30 @@ export class UiDialog {
     return Object.hasOwn(WIDTH_VALUES, width) ? WIDTH_VALUES[width as DialogWidth] : width;
   });
 
+  protected readonly spec = computed(() => LAYOUTS[this.layout()]);
+
   protected readonly headerClasses = computed(
     () =>
-      `flex gap-2 pt-[var(--dialog-title-top,0px)] pl-4 lg:gap-3 lg:pt-[var(--dialog-top-lg,24px)] lg:pl-6 ${this.headerAlign() === 'center' ? 'items-center' : 'items-start'} ${this.closeLabel() ? 'pr-2 lg:pr-4' : 'pr-4 lg:pr-6'}`,
+      `flex gap-2 pl-4 lg:gap-3 lg:pl-6 ${this.spec().header} ${this.closeLabel() ? 'pr-2 lg:pr-4' : 'pr-4 lg:pr-6'}`,
   );
 
-  protected readonly titleClasses = computed(() => (this.headerAlign() === 'start' ? 'pt-1 lg:pt-0' : ''));
+  protected readonly titleClasses = computed(() => this.spec().title);
 
   protected readonly crossClasses = computed(
     () =>
-      `rounded-pill lg:rounded-control grid size-11 flex-none cursor-pointer place-items-center text-(--muted-foreground) transition-[transform,background-color,color] duration-(--duration-press) ease-out outline-none focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-(--ring) active:scale-(--press-scale) active:bg-(--soft) lg:size-9 lg:hover:bg-(--glow) lg:hover:text-(--foreground)${this.headerAlign() === 'start' ? ' lg:-mt-1.5' : ''}`,
+      `rounded-pill lg:rounded-control grid size-11 flex-none cursor-pointer place-items-center text-(--muted-foreground) transition-[transform,background-color,color] duration-(--duration-press) ease-out outline-none focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-(--ring) active:scale-(--press-scale) active:bg-(--soft) lg:size-9 lg:hover:bg-(--glow) lg:hover:text-(--foreground) ${this.spec().cross}`,
   );
 
-  protected readonly iconClasses = computed(() =>
-    this.headerAlign() === 'start' ? 'lg:size-[var(--dialog-icon-lg,20px)]' : 'lg:size-[var(--dialog-icon-lg,22px)]',
-  );
+  protected readonly iconClasses = computed(() => this.spec().icon);
 
   protected readonly footerClasses = computed(
     () =>
-      `max-lg:[&>[ui-button]]:text-body flex justify-end gap-2 px-4 empty:hidden max-lg:flex-col-reverse max-lg:pb-[calc(var(--dialog-bottom,8px)+var(--dialog-safe,env(safe-area-inset-bottom)))] max-lg:[&>[ui-button]]:h-[50px] max-lg:[&>[ui-button]]:w-full lg:px-6 ${this.divided() ? 'pt-3 shadow-[0_-1px_0_var(--hairline)] lg:pt-4 lg:pb-[var(--dialog-bottom-lg,16px)]' : 'lg:pb-[var(--dialog-bottom-lg,24px)]'}`,
+      `max-lg:[&>[ui-button]]:text-body flex justify-end gap-2 px-4 empty:hidden max-lg:flex-col-reverse max-lg:[&>[ui-button]]:h-[50px] max-lg:[&>[ui-button]]:w-full lg:px-6 ${this.spec().footer}`,
   );
 
   protected readonly classes = computed(
     () =>
-      'open:flex w-full flex-col overflow-hidden m-auto mt-auto max-h-[calc(100dvh-2rem)] max-lg:mb-0 max-lg:max-w-none max-lg:rounded-b-none lg:max-w-(--dialog-width) rounded-container bg-(--card) text-(--foreground) shadow-[0_0_0_1px_var(--border),0_24px_64px_rgb(0_0_0/0.24)] max-lg:shadow-[0_-1px_0_var(--border),0_-12px_32px_rgb(0_0_0/0.16)] backdrop:bg-black/[0.36]',
+      `open:flex w-full flex-col overflow-hidden m-auto mt-auto max-h-[calc(100dvh-2rem)] max-lg:mb-0 max-lg:max-w-none max-lg:rounded-b-none lg:max-w-(--dialog-width) rounded-container bg-(--card) text-(--foreground) shadow-[0_0_0_1px_var(--border),0_24px_64px_rgb(0_0_0/0.24)] max-lg:shadow-[0_-1px_0_var(--border),0_-12px_32px_rgb(0_0_0/0.16)] backdrop:bg-black/[0.36] ${this.spec().dialog}`,
   );
 
   readonly #host = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -225,18 +281,29 @@ export class UiDialog {
     });
   }
 
-  protected onClick(event: MouseEvent): void {
-    const dialog = this.#host.nativeElement.querySelector('dialog') as HTMLDialogElement;
-    const rect = dialog.getBoundingClientRect();
-    const outside =
-      event.clientX < rect.left ||
-      event.clientX > rect.right ||
-      event.clientY < rect.top ||
-      event.clientY > rect.bottom;
+  #pressedOnBackdrop = false;
 
-    if (event.target === dialog && outside) {
-      dialog.close();
+  protected onPointerDown(event: MouseEvent): void {
+    this.#pressedOnBackdrop = event.target === this.#dialog && this.#outside(event);
+  }
+
+  protected onClick(event: MouseEvent): void {
+    if (this.#pressedOnBackdrop && event.target === this.#dialog && this.#outside(event)) {
+      this.#dialog.close();
     }
+    this.#pressedOnBackdrop = false;
+  }
+
+  get #dialog(): HTMLDialogElement {
+    return this.#host.nativeElement.querySelector('dialog') as HTMLDialogElement;
+  }
+
+  #outside(event: MouseEvent): boolean {
+    const rect = this.#dialog.getBoundingClientRect();
+
+    return (
+      event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom
+    );
   }
 
   protected onNativeClose(): void {

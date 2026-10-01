@@ -112,14 +112,6 @@ describe('UiDialog', () => {
     expect(handle).toHaveClass('h-5', 'lg:hidden');
   });
 
-  it('keeps the footer above the home indicator on small screens', async () => {
-    const { container } = await renderDialog();
-
-    expect(container.querySelector('[data-dialog-footer]')).toHaveClass(
-      'max-lg:pb-[calc(var(--dialog-bottom,8px)+var(--dialog-safe,env(safe-area-inset-bottom)))]',
-    );
-  });
-
   it('pads the sheet by 16px and the dialog by 24px', async () => {
     const { container } = await renderDialog();
 
@@ -140,88 +132,109 @@ describe('UiDialog', () => {
     );
   });
 
-  it('draws no hairline above the footer by default', async () => {
+  const renderLayout = (layout: string, closeLabel = 'Fermer'): Promise<RenderResult<unknown>> =>
+    render(`<ui-dialog heading="Titre" layout="${layout}" closeLabel="${closeLabel}" [open]="true"></ui-dialog>`, {
+      imports: [UiDialog],
+    });
+
+  it('uses the trade layout by default: start-aligned, hanging cross, no hairline, 8px under the sheet', async () => {
     const { container } = await renderDialog();
 
+    expect(container.querySelector('[data-dialog-header]')).toHaveClass('items-start', 'lg:pt-6');
     expect(container.querySelector('[data-dialog-footer]')).not.toHaveClass('shadow-[0_-1px_0_var(--hairline)]');
-  });
-
-  it('draws a hairline above the footer when divided', async () => {
-    const { container } = await render(
-      `<ui-dialog heading="Ajouter une ligne" divided [open]="true"><button dialogActions>Ajouter</button></ui-dialog>`,
-      { imports: [UiDialog] },
+    expect(container.querySelector('[data-dialog-footer]')).toHaveClass(
+      'max-lg:pb-[calc(8px+var(--dialog-safe,env(safe-area-inset-bottom)))]',
+      'lg:pb-6',
     );
+  });
 
+  it('hangs the cross of the trade layout out of the header with a 20px icon', async () => {
+    await renderLayout('trade');
+    const cross = screen.getByRole('button', { name: 'Fermer' });
+
+    expect(cross).toHaveClass('lg:-mt-1.5');
+    expect(cross.querySelector('svg')).toHaveClass('lg:size-5');
+  });
+
+  it('centres the header of the form layout and gives it 12px under the sheet', async () => {
+    const { container } = await renderLayout('form');
+    const cross = screen.getByRole('button', { name: 'Fermer' });
+
+    expect(container.querySelector('[data-dialog-header]')).toHaveClass('items-center', 'lg:pt-6');
+    expect(container.querySelector('[data-dialog-footer]')).toHaveClass(
+      'max-lg:pb-[calc(12px+var(--dialog-safe,env(safe-area-inset-bottom)))]',
+      'lg:pb-5',
+    );
+    expect(cross).not.toHaveClass('lg:-mt-1.5');
+    expect(cross.querySelector('svg')).toHaveClass('lg:size-[22px]');
+  });
+
+  it('divides the footer of the list layout and fixes the height of its sheet', async () => {
+    const { container } = await renderLayout('list');
+
+    expect(container.querySelector('[data-dialog-header]')).toHaveClass('items-center', 'lg:pt-5');
     expect(container.querySelector('[data-dialog-footer]')).toHaveClass('shadow-[0_-1px_0_var(--hairline)]', 'lg:pt-4');
+    expect(container.querySelector('dialog')).toHaveClass('max-lg:h-[calc(100dvh-58px)]', 'lg:max-h-[760px]');
   });
 
-  it('aligns the header to the start by default', async () => {
-    const { container } = await renderDialog();
+  it('keeps the other layouts at their natural height', async () => {
+    const { container } = await renderLayout('form');
 
-    expect(container.querySelector('[data-dialog-header]')).toHaveClass('items-start');
+    expect(container.querySelector('dialog')).not.toHaveClass('max-lg:h-[calc(100dvh-58px)]');
   });
 
-  it('centres the header on request', async () => {
+  it('turns the confirm layout into an alertdialog with the delete spacing', async () => {
     const { container } = await render(
-      `<ui-dialog heading="Nouveau compte" headerAlign="center" [open]="true"></ui-dialog>`,
+      `<ui-dialog heading="Supprimer la clé" layout="confirm" [open]="true"></ui-dialog>`,
       {
         imports: [UiDialog],
       },
     );
 
-    expect(container.querySelector('[data-dialog-header]')).toHaveClass('items-center');
+    expect(screen.getByRole('alertdialog', { name: 'Supprimer la clé' })).toBeInTheDocument();
+    expect(container.querySelector('[data-dialog-header]')).toHaveClass('pt-3', 'lg:pt-6');
+    expect(container.querySelector('[data-dialog-handle]')).toHaveClass('pt-[11.5px]');
   });
 
-  it('hangs the cross out of a start-aligned header and sits it in a centred one', async () => {
-    const start = await render(`<ui-dialog heading="Acheter" closeLabel="Fermer" [open]="true"></ui-dialog>`, {
-      imports: [UiDialog],
-    });
-    const startCross = screen.getByRole('button', { name: 'Fermer' });
-    expect(startCross).toHaveClass('lg:-mt-1.5');
-    expect(startCross.querySelector('svg')).toHaveClass('lg:size-[var(--dialog-icon-lg,20px)]');
-    start.fixture.destroy();
-  });
-
-  it('centres the cross with a 22px icon in a centred header', async () => {
-    await render(`<ui-dialog heading="Compte" closeLabel="Fermer" headerAlign="center" [open]="true"></ui-dialog>`, {
-      imports: [UiDialog],
-    });
-    const cross = screen.getByRole('button', { name: 'Fermer' });
-
-    expect(cross).not.toHaveClass('lg:-mt-1.5');
-    expect(cross.querySelector('svg')).toHaveClass('lg:size-[var(--dialog-icon-lg,22px)]');
-  });
-
-  it('takes its spacing from custom properties with the handoff defaults', async () => {
-    const { container } = await renderDialog();
-
-    expect(container.querySelector('[data-dialog-header]')).toHaveClass('lg:pt-[var(--dialog-top-lg,24px)]');
-    expect(container.querySelector('[data-dialog-footer]')).toHaveClass('lg:pb-[var(--dialog-bottom-lg,24px)]');
-  });
-
-  it('is a dialog unless asked to be an alertdialog', async () => {
-    const { container } = await renderDialog();
+  it('is a plain dialog in every other layout', async () => {
+    const { container } = await renderLayout('trade');
 
     expect(container.querySelector('dialog')).toHaveAttribute('role', 'dialog');
   });
 
-  it('can be an alertdialog', async () => {
-    await render(`<ui-dialog heading="Supprimer la clé" role="alertdialog" [open]="true"></ui-dialog>`, {
+  it('leaves no role on the host element, which would be a nameless alertdialog', async () => {
+    const { container } = await render(`<ui-dialog heading="Supprimer" layout="confirm" [open]="true"></ui-dialog>`, {
       imports: [UiDialog],
     });
 
-    expect(screen.getByRole('alertdialog', { name: 'Supprimer la clé' })).toBeInTheDocument();
+    expect(container.querySelector('ui-dialog')).not.toHaveAttribute('role');
   });
 
-  it('closes and reports on a click on the backdrop', async () => {
+  const press = (target: Element, type: string, x: number, y: number): void => {
+    target.dispatchEvent(new MouseEvent(type, { bubbles: true, clientX: x, clientY: y }));
+  };
+
+  it('closes and reports on a click that started on the backdrop', async () => {
     const { fixture, container, onDismissed } = await renderDialog();
     const dialog = container.querySelector('dialog') as HTMLDialogElement;
 
-    dialog.dispatchEvent(new MouseEvent('click', { bubbles: true, clientX: -20, clientY: -20 }));
+    press(dialog, 'pointerdown', -20, -20);
+    press(dialog, 'click', -20, -20);
     await fixture.whenStable();
 
     expect(dialog).not.toHaveAttribute('open');
     expect(onDismissed).toHaveBeenCalledOnce();
+  });
+
+  it('stays open when a drag from the panel is released on the backdrop', async () => {
+    const { container, onDismissed } = await renderDialog();
+    const dialog = container.querySelector('dialog') as HTMLDialogElement;
+
+    press(screen.getByText('Corps'), 'pointerdown', 0, 0);
+    press(dialog, 'click', -20, -20);
+
+    expect(dialog).toHaveAttribute('open');
+    expect(onDismissed).not.toHaveBeenCalled();
   });
 
   it('stays open on a click inside the panel', async () => {
@@ -229,9 +242,7 @@ describe('UiDialog', () => {
     const { container, onDismissed } = await renderDialog();
 
     await user.click(screen.getByText('Corps'));
-    container
-      .querySelector('dialog')
-      ?.dispatchEvent(new MouseEvent('click', { bubbles: true, clientX: 0, clientY: 0 }));
+    press(container.querySelector('dialog') as Element, 'click', 0, 0);
 
     expect(container.querySelector('dialog')).toHaveAttribute('open');
     expect(onDismissed).not.toHaveBeenCalled();
