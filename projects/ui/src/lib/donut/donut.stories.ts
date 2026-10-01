@@ -55,7 +55,7 @@ ramp (\`--ramp-1\` to \`--ramp-6\`). Beyond six slices, the five largest keep th
 merge into one "Others" slice on \`--ramp-6\`, whose legend sub-label lists the merged names — the
 ring's \`aria-label\` still names every original slice.
 
-Hovering, focusing or touching a legend row (or its arc) thickens that arc and shows its name, share
+Hovering, focusing or touching a legend row (or its arc) thickens that arc in place, on the same ring, and shows its name, share
 and value at the centre; activating a row (click or Enter) emits \`sliceSelect\` with its id, for the
 caller to navigate with. Formatting is the caller's business: \`valueFormat\` and \`shareFormat\` both
 arrive as inputs, so masking amounts is a matter of a formatter that returns bullets — shares stay
@@ -156,5 +156,19 @@ export const SelectingARowEmitsSliceSelect: Story = {
     await userEvent.click(canvas.getByRole('button', { name: /Actions/ }));
 
     await expect(args.sliceSelect).toHaveBeenCalledWith('stocks');
+  },
+};
+
+export const HighlightStaysOnTheRing: Story = {
+  name: 'The highlighted slice stays on the ring',
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.hover(canvas.getByRole('button', { name: /Crypto/ }));
+
+    const arcs = canvasElement.querySelectorAll<SVGCircleElement>('svg circle[data-slice]');
+    await expect(arcs[4]?.style.strokeWidth).toBe('38px');
+    await expect(arcs[0]?.style.strokeWidth).toBe('30px');
+    await expect(canvasElement.querySelector('svg [style*="transform"]')).toBeNull();
   },
 };

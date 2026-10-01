@@ -1,18 +1,27 @@
-import { type PieArcDatum, arc as d3Arc, pie as d3Pie } from 'd3-shape';
-
 import type { RankedSlice } from './donut-slices';
 
-export type PositionedSlice = RankedSlice & { path: string };
+export type PositionedSlice = RankedSlice & { dash: string; offset: string };
 
-export const OUTER_RADIUS = 93;
-export const INNER_RADIUS = 63;
+export const RADIUS = 78;
+export const RING_WIDTH = 30;
+export const ACTIVE_RING_WIDTH = 38;
+export const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
-const pieLayout = d3Pie<RankedSlice>()
-  .value((slice) => slice.value)
-  .sort(null);
-
-const arcGenerator = d3Arc<PieArcDatum<RankedSlice>>().innerRadius(INNER_RADIUS).outerRadius(OUTER_RADIUS);
+const GAP = 2;
 
 export function positionSlices(slices: RankedSlice[]): PositionedSlice[] {
-  return pieLayout(slices).map((arc) => ({ ...arc.data, path: arcGenerator(arc) as string }));
+  let travelled = 0;
+
+  return slices.map((slice) => {
+    const length = slice.share * CIRCUMFERENCE;
+    const drawn = Math.max(0, length - GAP);
+    const positioned = {
+      ...slice,
+      dash: `${drawn.toFixed(2)} ${(CIRCUMFERENCE - drawn).toFixed(2)}`,
+      offset: (-travelled).toFixed(2),
+    };
+    travelled += length;
+
+    return positioned;
+  });
 }
