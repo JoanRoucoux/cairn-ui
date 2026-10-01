@@ -184,30 +184,61 @@ describe('UiChoiceChips', () => {
     expect(screen.getByRole('radio', { name: 'PEA' })).toBeChecked();
   });
 
-  it('marks itself touched once focus leaves the group', async () => {
+  it('emits touch once focus leaves the group', async () => {
     const user = userEvent.setup();
-    const { fixture } = await render(
-      '<ui-choice-chips [options]="options" ariaLabel="Env" [(value)]="value" [(touched)]="touched" /><button>after</button>',
-      { imports: [UiChoiceChips], componentProperties: { options, value: 'pea', touched: false } },
+    const touch = vi.fn();
+    await render(
+      '<ui-choice-chips [options]="options" ariaLabel="Env" [(value)]="value" (touch)="touch()" /><button>after</button>',
+      { imports: [UiChoiceChips], componentProperties: { options, value: 'pea', touch } },
     );
 
     await user.click(screen.getByRole('radio', { name: 'CTO' }));
-    expect(fixture.componentInstance).toHaveProperty('touched', false);
+    expect(touch).not.toHaveBeenCalled();
 
     await user.click(screen.getByRole('button', { name: 'after' }));
-    expect(fixture.componentInstance).toHaveProperty('touched', true);
+    expect(touch).toHaveBeenCalledTimes(1);
   });
 
-  it('does not mark touched while focus moves between chips', async () => {
+  it('does not emit touch while focus moves between chips', async () => {
     const user = userEvent.setup();
-    const { fixture } = await render(
-      '<ui-choice-chips [options]="options" ariaLabel="Env" [(value)]="value" [(touched)]="touched" />',
-      { imports: [UiChoiceChips], componentProperties: { options, value: 'pea', touched: false } },
-    );
+    const touch = vi.fn();
+    await render('<ui-choice-chips [options]="options" ariaLabel="Env" [(value)]="value" (touch)="touch()" />', {
+      imports: [UiChoiceChips],
+      componentProperties: { options, value: 'pea', touch },
+    });
 
     screen.getByRole('radio', { name: 'PEA' }).focus();
     await user.keyboard('{ArrowRight}');
 
-    expect(fixture.componentInstance).toHaveProperty('touched', false);
+    expect(touch).not.toHaveBeenCalled();
+  });
+
+  it('flags the group invalid and required for assistive technology', async () => {
+    await renderChips('pea', '[invalid]="true" [required]="true"');
+
+    const group = screen.getByRole('radiogroup');
+    expect(group).toHaveAttribute('aria-invalid', 'true');
+    expect(group).toHaveAttribute('aria-required', 'true');
+  });
+
+  it('leaves aria-invalid and aria-required off by default', async () => {
+    await renderChips();
+
+    const group = screen.getByRole('radiogroup');
+    expect(group).not.toHaveAttribute('aria-invalid');
+    expect(group).not.toHaveAttribute('aria-required');
+  });
+
+  it('navigates from the focused chip when the value matches no option', async () => {
+    const user = userEvent.setup();
+    await renderChips('unknown');
+
+    screen.getByRole('radio', { name: 'PEA' }).focus();
+    await user.keyboard('{ArrowRight}');
+    expect(screen.getByRole('radio', { name: 'CTO' })).toBeChecked();
+
+    screen.getByRole('radio', { name: 'PEA' }).focus();
+    await user.keyboard('{ArrowLeft}');
+    expect(screen.getByRole('radio', { name: 'Assurance-vie' })).toBeChecked();
   });
 });

@@ -7,6 +7,7 @@ import {
   inject,
   input,
   model,
+  output,
   viewChildren,
 } from '@angular/core';
 
@@ -34,7 +35,7 @@ const nextId = (() => {
 /**
  * Exclusive choice among a handful of named options, shown as wrapping pills: an account envelope,
  * a category, a frequency. Compatible with Signal Forms: it implements the `FormValueControl`
- * contract, so `[formField]` binds `value`, `disabled`, `errors` and `touched` with nothing written
+ * contract, so `[formField]` binds `value`, `disabled`, `errors`, `invalid`, `required` and `touched`, and listens to `touch`, with nothing written
  * at the call site.
  *
  * @example
@@ -49,8 +50,10 @@ const nextId = (() => {
     <div
       class="flex flex-col gap-1.5"
       role="radiogroup"
+      [attr.aria-invalid]="invalid() || null"
       [attr.aria-label]="ariaLabel() ?? null"
       [attr.aria-labelledby]="labelledBy()"
+      [attr.aria-required]="required() || null"
       (focusout)="onFocusOut($event)"
     >
       @if (label()) {
@@ -60,7 +63,7 @@ const nextId = (() => {
       }
 
       <div class="flex flex-wrap gap-1.5">
-        @for (option of options(); track option.value) {
+        @for (option of options(); track option.value; let index = $index) {
           <button
             #radio
             role="radio"
@@ -70,7 +73,7 @@ const nextId = (() => {
             [class]="chipClasses(option.value)"
             [disabled]="disabled()"
             (click)="select(option.value)"
-            (keydown)="onKeydown($event)"
+            (keydown)="onKeydown($event, index)"
           >
             {{ option.label }}
           </button>
@@ -89,7 +92,10 @@ export class UiChoiceChips implements UiControl {
   readonly surface = input<ControlSurface>('background');
   readonly disabled = input(false, { transform: booleanAttribute });
   readonly errors = input<readonly UiControlError[]>([]);
-  readonly touched = model(false);
+  readonly invalid = input(false, { transform: booleanAttribute });
+  readonly required = input(false, { transform: booleanAttribute });
+  readonly touched = input(false);
+  readonly touch = output<void>();
 
   protected readonly labelId = nextId();
   readonly #host = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -119,18 +125,17 @@ export class UiChoiceChips implements UiControl {
 
   protected onFocusOut(event: FocusEvent): void {
     if (!this.#host.nativeElement.contains(event.relatedTarget as Node | null)) {
-      this.touched.set(true);
+      this.touch.emit();
     }
   }
 
-  protected onKeydown(event: KeyboardEvent): void {
+  protected onKeydown(event: KeyboardEvent, index: number): void {
     const opts = this.options();
-    const current = opts.findIndex((option) => option.value === this.value());
     const target = {
-      ArrowRight: current + 1,
-      ArrowDown: current + 1,
-      ArrowLeft: current - 1,
-      ArrowUp: current - 1,
+      ArrowRight: index + 1,
+      ArrowDown: index + 1,
+      ArrowLeft: index - 1,
+      ArrowUp: index - 1,
       Home: 0,
       End: opts.length - 1,
     }[event.key];
