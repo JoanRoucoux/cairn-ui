@@ -128,6 +128,21 @@ The host fills its parent's height (\`block h-full\`); size the chart by sizing 
     },
     timeColumnLabel: { control: 'text', description: "Header of the screen-reader table's time column." },
     valueColumnLabel: { control: 'text', description: "Header of the screen-reader table's value column." },
+    tooltip: {
+      control: 'inline-radio',
+      options: ['compact', 'large'],
+      description:
+        '`compact` (default) sits 12px above the plot with label and caption sizes; `large` is the desktop Dashboard tooltip, at the top of the plot with body and label sizes.',
+    },
+    tooltipDelta: {
+      control: 'boolean',
+      description: 'Shows the change since the start in the tooltip. Defaults to true.',
+    },
+    axisGap: {
+      control: 'number',
+      description:
+        'Pixels between the plot and the axis row, 12 by default and 16 on the desktop Dashboard. The box is plot + gap + 17.',
+    },
     sparkline: {
       control: 'boolean',
       description:
@@ -144,6 +159,21 @@ export default meta;
 type Story = StoryObj<LineChartArgs>;
 
 export const OneMonth: Story = {};
+
+const framed = (width: number, height: number, attributes: string): Story => ({
+  render: (args) => ({
+    props: args,
+    template: `<div style="width: ${width}px; height: ${height}px;"><ui-line-chart ${attributes} [points]="points" [label]="label" startLabel="Départ" [valueFormat]="valueFormat" [deltaFormat]="deltaFormat" [timeFormat]="timeFormat" [axisFormat]="axisFormat" /></div>`,
+  }),
+});
+
+export const DashboardPhone: Story = framed(326, 205, '');
+
+export const DashboardDesktop: Story = framed(688, 404, 'tooltip="large" [axisGap]="16"');
+
+export const LignesPhone: Story = framed(326, 179, '[tooltipDelta]="false"');
+
+export const LignesDesktop: Story = framed(352, 169, '[tooltipDelta]="false"');
 
 export const Sparkline: Story = {
   render: (args) => ({
@@ -223,7 +253,7 @@ export const RangeTransitionSettles: Story = {
     await userEvent.click(canvas.getByRole('button', { name: 'Switch range' }));
     await new Promise((resolve) => setTimeout(resolve, 400));
 
-    const plotHeight = plotHeightFor(240, false);
+    const plotHeight = plotHeightFor(240, false, 12);
     const padding = plotPaddingFor(plotHeight, false);
     const target = buildGeometry(oneDayPoints, 640, plotHeight, { x: 0, top: padding, bottom: padding });
 

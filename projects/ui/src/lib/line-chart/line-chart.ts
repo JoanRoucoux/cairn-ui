@@ -15,7 +15,15 @@ import {
 import { axisTicks, isCoreTick } from './internal/chart-axis';
 import { navigateIndex, nearestPointIndex } from './internal/chart-interaction';
 import {
+  DEFAULT_HEIGHT,
+  DEFAULT_WIDTH,
   START_LABEL_HEIGHT,
+  TOOLTIP_CLASSES,
+  type TooltipSize,
+  deltaTone,
+  identityDelta,
+  identityTime,
+  identityValue,
   plotHeightFor,
   plotPaddingFor,
   startLabelBaseline,
@@ -26,13 +34,6 @@ import { placeStartLabel } from './internal/start-label';
 import { TRANSITION_DURATION, easeOutQuint, interpolateLine, prefersReducedMotion } from './internal/transition';
 
 export type { ChartPoint };
-
-const DEFAULT_WIDTH = 640;
-const DEFAULT_HEIGHT = 240;
-
-const identityValue = (value: number): string => `${value}`;
-const identityDelta = (delta: number): string => `${delta > 0 ? '+' : ''}${delta}`;
-const identityTime = (time: number): string => new Date(time).toISOString();
 
 type PlotRef = ElementRef<SVGSVGElement>;
 
@@ -148,13 +149,16 @@ type PlotRef = ElementRef<SVGSVGElement>;
 
       @if (active(); as point) {
         <div
-          class="rounded-container pointer-events-none absolute top-0 bg-(--elevated) px-3 py-2 whitespace-nowrap [font-variant-numeric:var(--numeric)] shadow-[0_4px_16px_rgb(0_0_0/0.12),inset_0_0_0_1px_var(--border)]"
+          class="rounded-container pointer-events-none absolute bg-(--elevated) py-2 whitespace-nowrap [font-variant-numeric:var(--numeric)] shadow-[0_4px_16px_rgb(0_0_0/0.12),inset_0_0_0_1px_var(--border)]"
           data-testid="chart-tooltip"
           role="status"
+          [class]="tooltipClasses().box"
           [style]="tooltipStyle(point)"
         >
-          <p class="text-body font-medium text-(--foreground)">{{ valueFormat()(point.v) }}</p>
-          <p data-chart-delta [class]="deltaClasses(point)">{{ deltaFormat()(deltaFor(point)) }}</p>
+          <p class="font-medium text-(--foreground)" [class]="tooltipClasses().value">{{ valueFormat()(point.v) }}</p>
+          @if (tooltipDelta()) {
+            <p data-chart-delta [class]="deltaClasses(point)">{{ deltaFormat()(deltaFor(point)) }}</p>
+          }
           <p class="text-caption text-(--subtle-foreground)" data-chart-date>{{ timeFormat()(point.t) }}</p>
         </div>
       }
@@ -199,6 +203,9 @@ export class UiLineChart {
   readonly timeColumnLabel = input('Time');
   readonly valueColumnLabel = input('Value');
   readonly sparkline = input(false, { transform: booleanAttribute });
+  readonly tooltip = input<TooltipSize>('compact');
+  readonly tooltipDelta = input(true);
+  readonly axisGap = input(12);
 
   #destroyRef = inject(DestroyRef);
   #frame: number | null = null;
@@ -215,7 +222,11 @@ export class UiLineChart {
   protected readonly effectiveWidth = computed(() => this.measuredSize()?.width ?? DEFAULT_WIDTH);
   protected readonly effectiveHeight = computed(() => this.measuredSize()?.height ?? DEFAULT_HEIGHT);
 
-  protected readonly plotHeight = computed(() => plotHeightFor(this.effectiveHeight(), this.sparkline()));
+  protected readonly plotHeight = computed(() =>
+    plotHeightFor(this.effectiveHeight(), this.sparkline(), this.axisGap()),
+  );
+
+  protected readonly tooltipClasses = computed(() => TOOLTIP_CLASSES[this.tooltip()]);
 
   protected readonly geometry = computed(() => {
     const plotHeight = this.plotHeight();
@@ -312,10 +323,8 @@ export class UiLineChart {
   }
 
   #cancelAnimation(): void {
-    if (this.#frame !== null) {
-      cancelAnimationFrame(this.#frame);
-      this.#frame = null;
-    }
+    cancelAnimationFrame(this.#frame ?? 0);
+    this.#frame = null;
   }
 
   #animate(from: ChartGeometry, to: ChartGeometry): void {
@@ -329,14 +338,8 @@ export class UiLineChart {
     const step = (now: number): void => {
       const t = Math.min(1, (now - startTime) / TRANSITION_DURATION);
 
-      this.animatedLine.set(interpolateLine(from, to, easeOutQuint(t)));
-
-      if (t < 1) {
-        this.#frame = requestAnimationFrame(step);
-      } else {
-        this.#frame = null;
-        this.animatedLine.set(null);
-      }
+      this.animatedLine.set(t < 1 ? interpolateLine(from, to, easeOutQuint(t)) : null);
+      this.#frame = t < 1 ? requestAnimationFrame(step) : null;
     };
 
     this.#frame = requestAnimationFrame(step);
@@ -347,11 +350,7 @@ export class UiLineChart {
   }
 
   protected deltaClasses(point: PlottedPoint): string {
-    const delta = this.deltaFor(point);
-
-    const tone = delta > 0 ? 'text-(--positive)' : delta < 0 ? 'text-(--negative)' : 'text-(--muted-foreground)';
-
-    return `text-label ${tone}`;
+    return `${this.tooltipClasses().delta} ${deltaTone(this.deltaFor(point))}`;
   }
 
   protected tooltipStyle(point: PlottedPoint): string {

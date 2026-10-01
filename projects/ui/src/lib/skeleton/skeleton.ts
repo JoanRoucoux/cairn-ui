@@ -23,7 +23,7 @@ const BAR_CLASSES = 'block rounded-control bg-(--muted)';
   template: `
     @switch (shape()) {
       @case ('figure') {
-        <span class="${BAR_CLASSES} h-10 w-60" [style.animation]="animation"></span>
+        <span class="${BAR_CLASSES} h-10 w-65" [style.animation]="animation"></span>
       }
       @case ('row') {
         <span class="flex h-14 items-center justify-between gap-4">
@@ -35,10 +35,15 @@ const BAR_CLASSES = 'block rounded-control bg-(--muted)';
         </span>
       }
       @case ('chart') {
-        <span class="rounded-control h-35 w-full bg-(--muted)" [style.animation]="animation"></span>
+        <span class="rounded-control min-h-50 w-full flex-1 bg-(--muted)" [style.animation]="animation"></span>
       }
       @case ('ring') {
-        <span class="rounded-pill size-30 shadow-[inset_0_0_0_22px_var(--muted)]" [style.animation]="animation"></span>
+        <span
+          class="rounded-pill shadow-[inset_0_0_0_30px_var(--muted)]"
+          [style.animation]="animation"
+          [style.height.px]="size()"
+          [style.width.px]="size()"
+        ></span>
       }
       @default {
         @for (line of bars(); track $index) {
@@ -71,6 +76,7 @@ export class UiSkeleton {
   readonly shape = input<SkeletonShape>('text');
   readonly lines = input(1);
   readonly height = input(12);
+  readonly size = input(232);
 
   protected readonly animation = PULSE_ANIMATION;
 

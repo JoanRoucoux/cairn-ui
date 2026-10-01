@@ -24,7 +24,7 @@ describe('UiLineChart against the board', () => {
       expect(fixture.nativeElement.querySelector('[data-chart-start-line]')).toHaveAttribute('stroke-dasharray', '3 4');
     });
 
-    it('keeps the curve inside a plot that leaves a 29px band for the axis, with a sixteenth of padding top and bottom', async () => {
+    it('keeps the curve inside a plot that leaves a 29px band for the axis, with a fifteenth of the plot as padding top and bottom', async () => {
       const { fixture } = await renderChart();
       const plot = 240 - 29;
       const padding = (plot * 16) / 240;
@@ -64,14 +64,14 @@ describe('UiLineChart against the board', () => {
       expect(fixture.nativeElement.querySelector('[data-chart-crosshair]')).toHaveAttribute('y2', String(240 - 29));
     });
 
-    it('pins the tooltip to the top of the plot, 14px to the right of the point, flipped past 55%', async () => {
+    it('pins the compact tooltip 12px above the plot, 14px right of the point, flipped past 55%', async () => {
       await renderChart();
 
       screen.getByRole('img').focus();
       await userEvent.keyboard('{Home}');
       const tooltip = screen.getByTestId('chart-tooltip');
 
-      expect(tooltip).toHaveClass('bg-(--elevated)', 'px-3', 'py-2', 'top-0');
+      expect(tooltip).toHaveClass('bg-(--elevated)', 'px-2.5', 'py-2', '-top-3');
       expect(tooltip.style.left).toContain('+ 14px');
       expect(tooltip.style.transform).toBe('none');
 
@@ -81,16 +81,61 @@ describe('UiLineChart against the board', () => {
       expect(tooltip.style.transform).toBe('translateX(-100%)');
     });
 
-    it('sets the tooltip value in body size and the date in caption size', async () => {
+    it('sets the compact tooltip value in label size, its change and date in caption size', async () => {
       await renderChart();
 
       screen.getByRole('img').focus();
       await userEvent.keyboard('{Home}');
       const tooltip = screen.getByTestId('chart-tooltip');
 
+      expect(tooltip.querySelector('p')).toHaveClass('text-label', 'font-medium');
+      expect(tooltip.querySelector('[data-chart-delta]')).toHaveClass('text-caption');
+      expect(tooltip.querySelector('[data-chart-date]')).toHaveClass('text-caption');
+    });
+
+    it('offers the large tooltip, at the top of the plot with body and label sizes', async () => {
+      await render(`<ui-line-chart label="x" tooltip="large" [points]="points" [valueFormat]="fmt" />`, {
+        imports: [UiLineChart],
+        componentProperties: { points, fmt },
+      });
+
+      screen.getByRole('img').focus();
+      await userEvent.keyboard('{Home}');
+      const tooltip = screen.getByTestId('chart-tooltip');
+
+      expect(tooltip).toHaveClass('px-3', 'py-2', 'top-0');
       expect(tooltip.querySelector('p')).toHaveClass('text-body', 'font-medium');
       expect(tooltip.querySelector('[data-chart-delta]')).toHaveClass('text-label');
-      expect(tooltip.querySelector('[data-chart-date]')).toHaveClass('text-caption');
+    });
+
+    it('drops the change line when tooltipDelta is false', async () => {
+      await render(`<ui-line-chart label="x" [tooltipDelta]="false" [points]="points" [valueFormat]="fmt" />`, {
+        imports: [UiLineChart],
+        componentProperties: { points, fmt },
+      });
+
+      screen.getByRole('img').focus();
+      await userEvent.keyboard('{Home}');
+
+      expect(screen.getByTestId('chart-tooltip').querySelector('[data-chart-delta]')).toBeNull();
+      expect(screen.getByTestId('chart-tooltip')).toHaveTextContent('161389.51 EUR');
+    });
+
+    it('widens the band under the plot with axisGap, so the desktop Dashboard axis lands 16px under the plot', async () => {
+      const { fixture } = await render(
+        `<ui-line-chart label="x" [axisGap]="16" [points]="points" [valueFormat]="fmt" />`,
+        { imports: [UiLineChart], componentProperties: { points, fmt } },
+      );
+      const plot = 240 - 33;
+
+      screen.getByRole('img').focus();
+      await userEvent.keyboard('{End}');
+
+      expect(Number(fixture.nativeElement.querySelector('[data-chart-end]').getAttribute('cy'))).toBeCloseTo(
+        (plot * 16) / 240,
+        1,
+      );
+      expect(fixture.nativeElement.querySelector('[data-chart-crosshair]')).toHaveAttribute('y2', String(plot));
     });
 
     it('sets the axis and start label in tabular figures', async () => {

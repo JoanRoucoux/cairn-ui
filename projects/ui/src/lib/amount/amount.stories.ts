@@ -131,6 +131,10 @@ export const Quantity: Story = {
 
 export const Missing: Story = {
   args: { value: null },
+  render: (args) => ({
+    props: args,
+    template: `<span class="text-body font-medium"><ui-amount [value]="value" [currency]="currency" locale="fr-FR" /></span>`,
+  }),
 };
 
 export const Masked: Story = {
@@ -150,9 +154,10 @@ export const HiddenNextToAPercentage: Story = {
   render: (args) => ({
     props: args,
     template: `
-      <span class="inline-flex items-center gap-1">
-        <ui-amount [value]="value" [currency]="currency" signed whenMasked="hide" locale="fr-FR" />
-        <span class="text-label text-(--positive)">+0,25 %</span>
+      <span class="text-label flex gap-1.5 tabular-nums">
+        <ui-amount class="font-medium text-(--positive)" [value]="value" [currency]="currency" signed whenMasked="hide" locale="fr-FR" />
+        <span class="font-medium text-(--positive)">+0,25 %</span>
+        <span class="text-(--muted-foreground)">aujourd'hui</span>
       </span>
     `,
   }),

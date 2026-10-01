@@ -6,6 +6,7 @@ type SkeletonArgs = {
   shape: SkeletonShape;
   lines: number;
   height: number;
+  size: number;
 };
 
 const meta: Meta<SkeletonArgs> = {
@@ -18,8 +19,10 @@ const meta: Meta<SkeletonArgs> = {
 replaces: text, a dominant figure, a list row, a chart, or a ring.
 
 \`shape="text"\` (the default) draws one bar per \`lines\`; above one line, the last bar is shortened so
-the block reads as the tail of a paragraph rather than another full width line. The other four shapes
-are fixed: \`figure\`, \`row\`, \`chart\` and \`ring\` ignore \`lines\` and \`height\`.
+the block reads as the tail of a paragraph rather than another full width line. \`figure\` is the 260 by
+40 dominant figure and \`row\` a list row. \`chart\` fills its host from a 200px floor, so the
+screen sizes the box (200 on the phone, 300 and more on the desktop). \`ring\` takes \`size\`
+(232 on the phone, 240 on the desktop) with a 30px band. None of them reads \`lines\` or \`height\`.
 
 #### When to use
 
@@ -44,9 +47,9 @@ are fixed: \`figure\`, \`row\`, \`chart\` and \`ring\` ignore \`lines\` and \`he
   },
   render: (args) => ({
     props: args,
-    template: `<ui-skeleton [shape]="shape" [lines]="lines" [height]="height" />`,
+    template: `<ui-skeleton [shape]="shape" [lines]="lines" [height]="height" [size]="size" />`,
   }),
-  args: { shape: 'text', lines: 3, height: 12 },
+  args: { shape: 'text', lines: 3, height: 12, size: 232 },
   argTypes: {
     shape: {
       control: 'select',
@@ -56,6 +59,11 @@ are fixed: \`figure\`, \`row\`, \`chart\` and \`ring\` ignore \`lines\` and \`he
     lines: {
       control: { type: 'number', min: 1, max: 12 },
       description: 'Number of bars, `shape="text"` only. Above 1, the last one is narrower.',
+    },
+    size: {
+      control: { type: 'number', min: 40, max: 400 },
+      description:
+        'Diameter in pixels, `shape="ring"` only. 232 on the phone, 240 on the desktop; the band is always 30px.',
     },
     height: {
       control: { type: 'number', min: 4, max: 240 },
@@ -103,8 +111,24 @@ export const Row: Story = {
 
 export const Chart: Story = {
   args: { shape: 'chart' },
+  render: (args) => ({
+    props: args,
+    template: `<div class="flex h-[200px] w-[326px] flex-col"><ui-skeleton [shape]="shape" /></div>`,
+  }),
+};
+
+export const ChartFillsItsHost: Story = {
+  args: { shape: 'chart' },
+  render: (args) => ({
+    props: args,
+    template: `<div class="flex h-[340px] w-[688px] flex-col"><ui-skeleton class="flex-1" [shape]="shape" /></div>`,
+  }),
 };
 
 export const Ring: Story = {
   args: { shape: 'ring' },
+};
+
+export const RingDesktop: Story = {
+  args: { shape: 'ring', size: 240 },
 };

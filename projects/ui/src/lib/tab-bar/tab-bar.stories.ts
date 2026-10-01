@@ -37,7 +37,7 @@ pads the page content by the same height so nothing hides behind it.
   },
   render: () => ({
     template: `
-      <div class="w-[390px] overflow-hidden rounded-xl pb-3 shadow-[0_-1px_0_var(--hairline),0_0_0_1px_var(--border)]"><nav ui-tab-bar>
+      <div class="w-[390px] overflow-hidden rounded-[12px] pb-3 shadow-[0_-1px_0_var(--hairline),0_0_0_1px_var(--border)]"><nav ui-tab-bar>
         <a ui-tab active href="#">
           ${ICON('<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"></path><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>')}
           Portefeuille

@@ -1,9 +1,9 @@
 import { Component, booleanAttribute, computed, input } from '@angular/core';
 
 const TAB_CLASSES =
-  'flex h-[52px] flex-col items-center justify-center gap-[3px] font-medium touch-manipulation select-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring)';
+  'flex h-[52px] flex-col items-center justify-center gap-[3px] touch-manipulation select-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring)';
 
-const INACTIVE_TAB_CLASSES = 'text-(--muted-foreground)';
+const INACTIVE_TAB_CLASSES = 'font-medium text-(--muted-foreground)';
 
 const ACTIVE_TAB_CLASSES = 'font-semibold text-(--foreground)';
 
