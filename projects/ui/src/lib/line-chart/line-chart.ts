@@ -15,23 +15,25 @@ import {
 import { axisTicks, isCoreTick } from './internal/chart-axis';
 import { navigateIndex, nearestPointIndex } from './internal/chart-interaction';
 import {
+  type AxisTicks,
   DEFAULT_HEIGHT,
   DEFAULT_WIDTH,
   START_LABEL_HEIGHT,
-  TOOLTIP_CLASSES,
-  type TooltipSize,
   deltaTone,
   identityDelta,
   identityTime,
   identityValue,
+  parseAxisTicks,
   plotHeightFor,
   plotPaddingFor,
   startLabelBaseline,
+  tooltipClassesFor,
   tooltipPlacement,
 } from './internal/chart-layout';
 import { type ChartGeometry, type ChartPoint, type PlottedPoint, buildGeometry } from './internal/chart-scale';
 import { placeStartLabel } from './internal/start-label';
 import { TRANSITION_DURATION, easeOutQuint, interpolateLine, prefersReducedMotion } from './internal/transition';
+import { wideViewport } from './internal/viewport';
 
 export type { ChartPoint };
 
@@ -118,7 +120,8 @@ type PlotRef = ElementRef<SVGSVGElement>;
                 [attr.text-anchor]="first ? 'start' : last ? 'end' : 'middle'"
                 [attr.x]="tick.x"
                 [attr.y]="effectiveHeight() - 4"
-                [class.max-sm:hidden]="!isCoreTick(index, count)"
+                [class.hidden]="axisTicks() === 3 && !isCoreTick(index, count)"
+                [class.max-sm:hidden]="axisTicks() === 'auto' && !isCoreTick(index, count)"
               >
                 {{ axisFormat()(tick.t) }}
               </text>
@@ -203,11 +206,13 @@ export class UiLineChart {
   readonly timeColumnLabel = input('Time');
   readonly valueColumnLabel = input('Value');
   readonly sparkline = input(false, { transform: booleanAttribute });
-  readonly tooltip = input<TooltipSize>('compact');
-  readonly tooltipDelta = input(true);
-  readonly axisGap = input(12);
+  readonly tooltip = input<'compact' | 'large' | 'auto'>('compact');
+  readonly tooltipDelta = input(true, { transform: booleanAttribute });
+  readonly axisGap = input<number | 'auto'>(12);
+  readonly axisTicks = input<AxisTicks, AxisTicks | string>('auto', { transform: parseAxisTicks });
 
   #destroyRef = inject(DestroyRef);
+  #wide = wideViewport();
   #frame: number | null = null;
   #hasRenderedOnce = false;
   #previousGeometry: ChartGeometry | null = null;
@@ -223,10 +228,12 @@ export class UiLineChart {
   protected readonly effectiveHeight = computed(() => this.measuredSize()?.height ?? DEFAULT_HEIGHT);
 
   protected readonly plotHeight = computed(() =>
-    plotHeightFor(this.effectiveHeight(), this.sparkline(), this.axisGap()),
+    plotHeightFor(this.effectiveHeight(), this.sparkline(), this.axisGap(), this.#wide()),
   );
 
-  protected readonly tooltipClasses = computed(() => TOOLTIP_CLASSES[this.tooltip()]);
+  protected readonly tooltipStyle = (point: PlottedPoint): string => tooltipPlacement(point.x / this.effectiveWidth());
+
+  protected readonly tooltipClasses = computed(() => tooltipClassesFor(this.tooltip(), this.#wide()));
 
   protected readonly geometry = computed(() => {
     const plotHeight = this.plotHeight();
@@ -351,10 +358,6 @@ export class UiLineChart {
 
   protected deltaClasses(point: PlottedPoint): string {
     return `${this.tooltipClasses().delta} ${deltaTone(this.deltaFor(point))}`;
-  }
-
-  protected tooltipStyle(point: PlottedPoint): string {
-    return tooltipPlacement(point.x / this.effectiveWidth());
   }
 
   protected onPointerMove(event: PointerEvent): void {

@@ -146,6 +146,103 @@ describe('UiLineChart against the board', () => {
     });
   });
 
+  describe('responsive presets', () => {
+    const longSeries: ChartPoint[] = Array.from({ length: 18 }, (_, index) => ({ t: index, v: 100 + index }));
+    const hiddenBy = (fixture: { nativeElement: HTMLElement }, className: string): boolean[] =>
+      [...fixture.nativeElement.querySelectorAll('[data-chart-axis-tick]')].map((tick) =>
+        tick.classList.contains(className),
+      );
+
+    it.each<[string, string, boolean[]]>([
+      ['3', 'hidden', [false, true, false, true, false]],
+      ['5', 'hidden', [false, false, false, false, false]],
+      ['5', 'max-sm:hidden', [false, false, false, false, false]],
+      ['auto', 'max-sm:hidden', [false, true, false, true, false]],
+      ['auto', 'hidden', [false, false, false, false, false]],
+    ])('with axisTicks %s, class %s hides %j', async (axisTicks, className, expected) => {
+      const { fixture } = await render(`<ui-line-chart label="x" axisTicks="${axisTicks}" [points]="points" />`, {
+        imports: [UiLineChart],
+        componentProperties: { points: longSeries },
+      });
+
+      expect(hiddenBy(fixture, className)).toEqual(expected);
+    });
+
+    it('reads tooltipDelta as a boolean attribute', async () => {
+      await render(`<ui-line-chart label="x" tooltipDelta="false" [points]="points" [valueFormat]="fmt" />`, {
+        imports: [UiLineChart],
+        componentProperties: { points, fmt },
+      });
+
+      screen.getByRole('img').focus();
+      await userEvent.keyboard('{Home}');
+
+      expect(screen.getByTestId('chart-tooltip').querySelector('[data-chart-delta]')).toBeNull();
+    });
+
+    describe.each<[boolean, string, number]>([
+      [false, '-top-3', 29],
+      [true, 'top-0', 33],
+    ])('auto on a viewport at or above lg: %s', (wide, topClass, band) => {
+      beforeEach(() => {
+        vi.stubGlobal('matchMedia', () => ({ matches: wide }));
+      });
+      afterEach(() => vi.unstubAllGlobals());
+
+      it(`uses ${topClass} and a ${band}px band`, async () => {
+        const { fixture } = await render(
+          `<ui-line-chart label="x" tooltip="auto" axisGap="auto" [points]="points" [valueFormat]="fmt" />`,
+          { imports: [UiLineChart], componentProperties: { points, fmt } },
+        );
+
+        screen.getByRole('img').focus();
+        await userEvent.keyboard('{Home}');
+
+        expect(screen.getByTestId('chart-tooltip')).toHaveClass(topClass);
+        expect(fixture.nativeElement.querySelector('[data-chart-crosshair]')).toHaveAttribute('y2', String(240 - band));
+      });
+    });
+
+    it('follows the viewport when it crosses lg', async () => {
+      const query: { matches: boolean; onchange: ((event: { matches: boolean }) => void) | null } = {
+        matches: false,
+        onchange: null,
+      };
+      vi.stubGlobal('matchMedia', () => query);
+      const { fixture } = await render(`<ui-line-chart label="x" tooltip="auto" [points]="points" />`, {
+        imports: [UiLineChart],
+        componentProperties: { points },
+      });
+
+      screen.getByRole('img').focus();
+      await userEvent.keyboard('{Home}');
+      expect(screen.getByTestId('chart-tooltip')).toHaveClass('-top-3');
+
+      query.onchange?.({ matches: true });
+      fixture.detectChanges();
+      expect(screen.getByTestId('chart-tooltip')).toHaveClass('top-0');
+
+      fixture.destroy();
+      expect(query.onchange).toBeNull();
+      vi.unstubAllGlobals();
+    });
+
+    it('falls back to the phone presets when matchMedia is missing', async () => {
+      vi.stubGlobal('matchMedia', undefined);
+      const { fixture } = await render(`<ui-line-chart label="x" tooltip="auto" axisGap="auto" [points]="points" />`, {
+        imports: [UiLineChart],
+        componentProperties: { points },
+      });
+
+      screen.getByRole('img').focus();
+      await userEvent.keyboard('{Home}');
+
+      expect(screen.getByTestId('chart-tooltip')).toHaveClass('-top-3');
+      expect(fixture.nativeElement.querySelector('[data-chart-crosshair]')).toHaveAttribute('y2', String(240 - 29));
+      vi.unstubAllGlobals();
+    });
+  });
+
   describe('sparkline', () => {
     const renderSpark = (): ReturnType<typeof render> =>
       render(`<ui-line-chart label="Trend" sparkline startLabel="Depart" [points]="points" />`, {

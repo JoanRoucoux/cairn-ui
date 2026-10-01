@@ -130,9 +130,9 @@ The host fills its parent's height (\`block h-full\`); size the chart by sizing 
     valueColumnLabel: { control: 'text', description: "Header of the screen-reader table's value column." },
     tooltip: {
       control: 'inline-radio',
-      options: ['compact', 'large'],
+      options: ['compact', 'large', 'auto'],
       description:
-        '`compact` (default) sits 12px above the plot with label and caption sizes; `large` is the desktop Dashboard tooltip, at the top of the plot with body and label sizes.',
+        '`compact` (default) sits 12px above the plot with label and caption sizes; `large` is the desktop Dashboard tooltip, at the top of the plot with body and label sizes; `auto` is compact below 64rem and large from 64rem up, with no breakpoint in the consumer.',
     },
     tooltipDelta: {
       control: 'boolean',
@@ -141,7 +141,13 @@ The host fills its parent's height (\`block h-full\`); size the chart by sizing 
     axisGap: {
       control: 'number',
       description:
-        'Pixels between the plot and the axis row, 12 by default and 16 on the desktop Dashboard. The box is plot + gap + 17.',
+        'Pixels between the plot and the axis row, 12 by default and 16 on the desktop Dashboard, or "auto" for 12 below 64rem and 16 from 64rem up. The box is plot + gap + 17.',
+    },
+    axisTicks: {
+      control: 'inline-radio',
+      options: ['auto', 3, 5],
+      description:
+        '3 draws start, middle and end only (Lignes), 5 draws five labels, auto (default) draws 3 below 40rem and 5 above (Dashboard).',
     },
     sparkline: {
       control: 'boolean',
@@ -167,13 +173,13 @@ const framed = (width: number, height: number, attributes: string): Story => ({
   }),
 });
 
-export const DashboardPhone: Story = framed(326, 205, '');
+export const DashboardPhone: Story = framed(326, 205, 'tooltip="auto" axisGap="auto"');
 
-export const DashboardDesktop: Story = framed(688, 404, 'tooltip="large" [axisGap]="16"');
+export const DashboardDesktop: Story = framed(688, 404, 'tooltip="auto" axisGap="auto"');
 
-export const LignesPhone: Story = framed(326, 179, '[tooltipDelta]="false"');
+export const LignesPhone: Story = framed(326, 179, '[tooltipDelta]="false" axisTicks="3"');
 
-export const LignesDesktop: Story = framed(352, 169, '[tooltipDelta]="false"');
+export const LignesDesktop: Story = framed(352, 169, '[tooltipDelta]="false" axisTicks="3"');
 
 export const Sparkline: Story = {
   render: (args) => ({
@@ -253,7 +259,7 @@ export const RangeTransitionSettles: Story = {
     await userEvent.click(canvas.getByRole('button', { name: 'Switch range' }));
     await new Promise((resolve) => setTimeout(resolve, 400));
 
-    const plotHeight = plotHeightFor(240, false, 12);
+    const plotHeight = plotHeightFor(240, false, 12, false);
     const padding = plotPaddingFor(plotHeight, false);
     const target = buildGeometry(oneDayPoints, 640, plotHeight, { x: 0, top: padding, bottom: padding });
 

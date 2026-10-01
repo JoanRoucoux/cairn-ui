@@ -16,8 +16,8 @@ const START_LABEL_BASELINE_OFFSET = 4;
 const TOOLTIP_OFFSET = 14;
 const TOOLTIP_FLIP_RATIO = 0.55;
 
-export const plotHeightFor = (height: number, sparkline: boolean, axisGap: number): number =>
-  sparkline ? height : Math.max(height - axisGap - AXIS_ROW, 1);
+export const plotHeightFor = (height: number, sparkline: boolean, axisGap: number | 'auto', wide: boolean): number =>
+  sparkline ? height : Math.max(height - resolveGap(axisGap, wide) - AXIS_ROW, 1);
 
 export const plotPaddingFor = (plotHeight: number, sparkline: boolean): number =>
   sparkline ? SPARKLINE_PADDING : plotHeight * PLOT_PADDING_RATIO;
@@ -39,3 +39,16 @@ export const DEFAULT_HEIGHT = 240;
 export const identityValue = (value: number): string => `${value}`;
 export const identityDelta = (delta: number): string => `${delta > 0 ? '+' : ''}${delta}`;
 export const identityTime = (time: number): string => new Date(time).toISOString();
+
+export type AxisTicks = 3 | 5 | 'auto';
+
+export const parseAxisTicks = (value: AxisTicks | string): AxisTicks =>
+  value === 'auto' ? 'auto' : (Number(value) as 3 | 5);
+
+const resolveGap = (gap: number | 'auto', wide: boolean): number => (gap === 'auto' ? (wide ? 16 : 12) : gap);
+
+const resolveTooltip = (size: TooltipSize | 'auto', wide: boolean): TooltipSize =>
+  size === 'auto' ? (wide ? 'large' : 'compact') : size;
+
+export const tooltipClassesFor = (size: TooltipSize | 'auto', wide: boolean): (typeof TOOLTIP_CLASSES)[TooltipSize] =>
+  TOOLTIP_CLASSES[resolveTooltip(size, wide)];
