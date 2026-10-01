@@ -165,16 +165,16 @@ export const BackdropCloses: Story = {
 };
 
 const field = (label: string): string => `
-  <div class="flex flex-col gap-1.5">
+  <label class="flex flex-col gap-1.5">
     <span class="text-label font-medium text-(--muted-foreground)">${label}</span>
-    <div class="rounded-control bg-(--background) shadow-[inset_0_0_0_1px_var(--border)] h-12 lg:h-10"></div>
-  </div>`;
+    <input class="rounded-control bg-(--background) shadow-[inset_0_0_0_1px_var(--border)] h-12 lg:h-10 px-3 text-body outline-none focus-visible:outline-2 focus-visible:outline-(--ring)" />
+  </label>`;
 
 const result = (index: number): string => `
-  <div class="flex items-center justify-between rounded-control px-3 py-2">
+  <button type="button" class="flex w-full items-center justify-between rounded-control px-3 py-2 text-left hover:bg-(--glow)">
     <span class="text-body font-medium">Résultat ${index}</span>
     <span class="text-caption text-(--muted-foreground)">cours d'essai</span>
-  </div>`;
+  </button>`;
 
 export const Board: Story = {
   name: 'Board, dialog (380px)',
@@ -377,7 +377,7 @@ export const SheetOnAnIPhone: Story = {
         (dismissed)="open = false"
       >
         @for (row of rows; track row) {
-          <p class="text-label text-(--muted-foreground)">Ligne {{ row }} d'un corps plus haut que l'écran.</p>
+          <button type="button" class="flex w-full rounded-control px-3 py-2 text-left text-label hover:bg-(--glow)">Ligne {{ row }} d'un corps plus haut que l'écran.</button>
         }
         <button dialogActions ui-button variant="outline" class="max-lg:hidden" (click)="open = false">Annuler</button>
         <button dialogActions ui-button (click)="open = false">Acheter 10 parts</button>
