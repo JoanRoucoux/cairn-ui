@@ -75,6 +75,7 @@ describe('design tokens', () => {
     '--press-scale',
     '--enter-scale',
     '--pulse-duration',
+    '--chevron-down',
   ])('declares %s', (token) => {
     expect(tokens).toContain(`${token}:`);
   });
@@ -93,6 +94,15 @@ describe('design tokens', () => {
     expect(reduced).toContain('--press-scale: 1');
     expect(reduced).toContain('--enter-scale: 1');
     expect(reduced).toContain('--pulse-duration: 0ms');
+  });
+
+  it('draws the chevron-down in the --muted-foreground of each scheme', () => {
+    const [light, dark] = /--muted-foreground:\s*light-dark\(#([0-9a-f]{6}),\s*#([0-9a-f]{6})\)/.exec(tokens)!.slice(1);
+    const chevrons = [...tokens.matchAll(/--chevron-down:\s*url\("[^"]*stroke='%23([0-9a-f]{6})'/g)].map(
+      ([, color]) => color,
+    );
+
+    expect(chevrons).toEqual([light, dark, light, dark]);
   });
 
   it('stays a pure token sheet', () => {

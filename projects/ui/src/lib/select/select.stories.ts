@@ -1,5 +1,5 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
-import { expect, within } from 'storybook/test';
+import { expect, userEvent, within } from 'storybook/test';
 
 import { CONTROL_SIZES, type ControlSize } from '../input/input';
 import { UiSelect } from './select';
@@ -88,4 +88,36 @@ export const Dense: Story = {
 
 export const Disabled: Story = {
   args: { disabled: true },
+};
+
+export const Focus: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.tab();
+    await expect(canvas.getByRole('combobox', { name: 'Envelope' })).toHaveFocus();
+  },
+};
+
+export const States: Story = {
+  render: () => ({
+    template: `
+      <div class="flex flex-wrap items-end gap-6">
+        @for (state of ['Repos', 'Focus', 'Désactivé']; track state) {
+          <div class="flex flex-col items-start gap-2">
+            <select
+              uiSelect
+              style="width: 15rem"
+              [class.shadow-[inset_0_0_0_2px_var(--ring)]]="state === 'Focus'"
+              [disabled]="state === 'Désactivé'"
+              [attr.aria-label]="state"
+            >
+              <option>Saxo Investor · PEA</option>
+            </select>
+            <span class="text-caption text-(--subtle-foreground)">{{ state }}</span>
+          </div>
+        }
+      </div>
+    `,
+  }),
 };
