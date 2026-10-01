@@ -138,5 +138,6 @@ describe('UiListRow', () => {
     await render('<ul><li uiListRow [ruled]="false">MacBook Air</li></ul>', { imports: [UiListRow] });
 
     expect(screen.getByRole('listitem')).not.toHaveClass('shadow-[inset_0_-1px_0_var(--hairline)]');
+    expect(screen.getByRole('listitem')).toHaveClass('lg:min-h-17');
   });
 });

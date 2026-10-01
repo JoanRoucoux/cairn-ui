@@ -93,8 +93,9 @@ export class UiRowItem {}
 export class UiListRow {
   readonly ruled = input(true, { transform: booleanAttribute });
 
-  protected readonly classes = computed(
-    () =>
-      `flex min-h-18 items-center gap-3 py-1.5 lg:min-h-17${this.ruled() ? ' shadow-[inset_0_-1px_0_var(--hairline)]' : ''}`,
+  protected readonly classes = computed(() =>
+    this.ruled()
+      ? 'flex min-h-18 items-center gap-3 py-1.5 lg:min-h-17 shadow-[inset_0_-1px_0_var(--hairline)]'
+      : 'flex min-h-18 items-center gap-3 py-1.5 lg:min-h-17',
   );
 }

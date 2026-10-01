@@ -131,9 +131,14 @@ export class UiField {
 
   protected readonly trailing = contentChild(UiFieldTrailing);
 
-  protected readonly rowClasses = computed(
-    () =>
-      `relative flex items-center${this.leading() ? ' [&>input]:pl-[38px]' : ''}${this.trailing() ? ' [&>input]:pr-12 lg:[&>input]:pr-11' : ''}`,
+  protected readonly rowClasses = computed(() =>
+    [
+      'relative flex items-center',
+      this.leading() ? '[&>input]:pl-[38px]' : '',
+      this.trailing() ? '[&>input]:pr-12 lg:[&>input]:pr-11' : '',
+    ]
+      .filter(Boolean)
+      .join(' '),
   );
 
   protected readonly labelClasses = computed(() =>
