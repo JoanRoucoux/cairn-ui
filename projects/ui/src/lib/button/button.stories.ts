@@ -8,6 +8,7 @@ type ButtonArgs = {
   size: ButtonSize;
   disabled: boolean;
   loading: boolean;
+  busy: boolean;
   label: string;
   onClick: () => void;
 };
@@ -48,13 +49,14 @@ that action is, so a screen reads at a glance.
   },
   render: (args) => ({
     props: args,
-    template: `<button ui-button [variant]="variant" [size]="size" [disabled]="disabled" [loading]="loading" (click)="onClick()">{{ label }}</button>`,
+    template: `<button ui-button [variant]="variant" [size]="size" [disabled]="disabled" [loading]="loading" [busy]="busy" (click)="onClick()">{{ label }}</button>`,
   }),
   args: {
     variant: 'primary',
     size: 'md',
     disabled: false,
     loading: false,
+    busy: false,
     label: 'Button',
     onClick: fn(),
   },
@@ -63,13 +65,13 @@ that action is, so a screen reads at a glance.
       control: 'select',
       options: [...BUTTON_VARIANTS],
       description:
-        'How much emphasis the action carries. `primary` for the expected action, `destructive` for an irreversible one, `outline` and `ghost` for everything else.',
+        'How much emphasis the action carries. `primary` for the expected action, `destructive` for an irreversible one, `outline` and `ghost` for everything else. `quiet` is a muted icon button that fills `--soft` on hover and press (row actions). `quiet-glow` is the same icon button hovering to `--glow` with no press fill (a close cross). `quiet-destructive` turns negative on hover. `outline-destructive` is an outline with negative text. `tonal` is a filled `--muted` pill that becomes a plain text button with a glow hover from 64rem.',
     },
     size: {
       control: 'select',
       options: [...BUTTON_SIZES],
       description:
-        '`md` is the 40/44px touch target used everywhere by default. `lg` (44px), `xl` (50px) and `xxl` (52px, the full-width action) are deliberate exceptions; `icon` is square and needs an `aria-label`.',
+        '`md` is the 40/44px touch target used everywhere by default. `xs` (32px), `sm` (36px), `lg` (44px) and `xl` (50px) are fixed heights. `compact` (32px, 28px from 64rem), `slim` (44px, then 32px), `xxl` (52px, then 44px), `tall` (48px, then 40px) and `block` (50px, then 44px) step down at 64rem. `icon` is square and `icon-sm` is 44px on touch, 36px with a mouse; both need an `aria-label`.',
     },
     disabled: {
       control: 'boolean',
@@ -78,6 +80,11 @@ that action is, so a screen reads at a glance.
     loading: {
       control: 'boolean',
       description: 'Marks the button busy, keeps its width, and blocks a second click while an action is in flight.',
+    },
+    busy: {
+      control: 'boolean',
+      description:
+        'Marks the button busy like `loading`, without the spinner: the label alone says what is happening ("Connexion...").',
     },
     label: { control: 'text', description: 'Projected text content.' },
     onClick: { action: 'onClick', table: { disable: true } },
@@ -185,4 +192,123 @@ export const EmitsClicks: Story = {
 
     await expect(args.onClick).toHaveBeenCalledTimes(1);
   },
+};
+
+const ICON_DOTS = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /><circle cx="5" cy="12" r="1" /></svg>`;
+const ICON_LOGOUT = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 17 5-5-5-5" /><path d="M21 12H9" /><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /></svg>`;
+const ICON_TRASH = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>`;
+
+export const SmallActions: Story = {
+  name: 'Small actions (Comptes panel)',
+  render: () => ({
+    template: `
+      <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+        <button ui-button variant="outline" size="sm">Ajouter une ligne</button>
+        <button ui-button variant="ghost" size="sm">Importer un CSV</button>
+        <button ui-button variant="outline" size="xs">Saisir un cours</button>
+      </div>
+    `,
+  }),
+};
+
+export const QuietIcons: Story = {
+  name: 'Quiet icon buttons (44 touch, 36 mouse)',
+  render: () => ({
+    template: `
+      <div style="display: flex; gap: 12px; align-items: center;">
+        <button ui-button variant="quiet" size="icon-sm" aria-label="Actions du compte">${ICON_DOTS}</button>
+        <button ui-button variant="quiet-destructive" size="icon-sm" aria-label="Supprimer">${ICON_TRASH}</button>
+      </div>
+    `,
+  }),
+};
+
+export const OutlineDestructive: Story = {
+  name: 'Outline destructive (Profil, 50 then 44)',
+  render: () => ({
+    template: `
+      <button ui-button variant="outline-destructive" size="block" class="w-[320px]">
+        ${ICON_LOGOUT}
+        Se déconnecter
+      </button>
+    `,
+  }),
+};
+
+export const TonalCompact: Story = {
+  name: 'Tonal compact (Tout vendre)',
+  render: () => ({
+    template: `
+      <div style="display: flex; gap: 12px; align-items: center; justify-content: flex-end; width: 320px;">
+        <span class="text-label text-(--muted-foreground)">Vous détenez 500 parts</span>
+        <button ui-button variant="tonal" size="compact" class="-mr-1">Tout vendre</button>
+      </div>
+    `,
+  }),
+};
+
+const ICON_HOME = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" /><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></svg>`;
+
+export const ResponsiveSizes: Story = {
+  name: 'Sizes that step down at 64rem (404, sign-in, Profil)',
+  render: () => ({
+    template: `
+      <div style="display: flex; flex-direction: column; gap: 12px; width: 320px;">
+        <a ui-button size="xxl" href="#">${ICON_HOME}Revenir au portefeuille</a>
+        <button ui-button size="tall" variant="ghost">Utiliser plutôt une clé d'accès</button>
+        <button ui-button size="block" variant="outline">Exporter</button>
+      </div>
+    `,
+  }),
+};
+
+export const Busy: Story = {
+  args: { busy: true, label: 'En attente de la clé...', size: 'xxl' },
+  render: (args) => ({
+    props: args,
+    template: `
+      <button ui-button [variant]="variant" [size]="size" [busy]="busy" class="w-[320px]">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" /><circle cx="16.5" cy="7.5" r=".5" fill="currentColor" /></svg>
+        {{ label }}
+      </button>
+    `,
+  }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button', { name: /En attente/ });
+
+    await expect(button).toHaveAttribute('aria-busy', 'true');
+    await expect(button).toHaveAttribute('aria-disabled', 'true');
+    await expect(canvasElement.querySelector('[class*="animate-spin"]')).toBeNull();
+  },
+};
+
+export const DetailBar: Story = {
+  name: 'Detail action bar (Lignes iPhone, 48 px)',
+  render: () => ({
+    template: `
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 340px;">
+        <button ui-button variant="outline" size="tall">Vendre</button>
+        <button ui-button size="tall">Acheter</button>
+      </div>
+    `,
+  }),
+};
+
+export const CloseCross: Story = {
+  name: 'Close cross (Lignes desktop detail, 36 px)',
+  render: () => ({
+    template: `
+      <button ui-button variant="quiet-glow" size="icon-sm" aria-label="Fermer le détail">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+      </button>
+    `,
+  }),
+};
+
+export const SlimChange: Story = {
+  name: 'Slim ghost (Changer)',
+  render: () => ({
+    template: `<button ui-button variant="ghost" size="slim" type="button">Changer</button>`,
+  }),
 };

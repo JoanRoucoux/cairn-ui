@@ -2,7 +2,7 @@ import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vit
 import { expect, within } from 'storybook/test';
 
 import { UiInput } from '../input/input';
-import { UiField, UiFieldLeading } from './field';
+import { UiField, UiFieldLeading, UiFieldTrailing } from './field';
 
 type FieldArgs = {
   label: string;
@@ -10,11 +10,13 @@ type FieldArgs = {
   hint: string;
   error: string;
   unit: string;
+  optional: string;
+  invalid: boolean;
 };
 
 const meta: Meta<FieldArgs> = {
   title: 'Inputs/Field',
-  decorators: [moduleMetadata({ imports: [UiField, UiFieldLeading, UiInput] })],
+  decorators: [moduleMetadata({ imports: [UiField, UiFieldLeading, UiFieldTrailing, UiInput] })],
   parameters: {
     docs: {
       description: {
@@ -63,7 +65,7 @@ validation state on its own, so a form field needs no binding here at all.
   render: (args) => ({
     props: args,
     template: `
-      <ui-field [label]="label" [labelHidden]="labelHidden" [hint]="hint" [error]="error" [unit]="unit">
+      <ui-field [label]="label" [labelHidden]="labelHidden" [hint]="hint" [error]="error" [unit]="unit" [optional]="optional" [invalid]="invalid">
         <input uiInput type="number" step="0.0001" />
       </ui-field>
     `,
@@ -74,6 +76,8 @@ validation state on its own, so a form field needs no binding here at all.
     hint: '',
     error: '',
     unit: '',
+    optional: '',
+    invalid: false,
   },
   argTypes: {
     label: { control: 'text', description: "The field's label, wired to the control via `for`/`id`." },
@@ -86,6 +90,16 @@ validation state on its own, so a form field needs no binding here at all.
       control: 'text',
       description:
         'Optional validation message. When set, also marks the control `aria-invalid` and renders with `role="alert"`.',
+    },
+    optional: {
+      control: 'text',
+      description:
+        'Lighter suffix after the label, such as `(facultatif)`. It stays part of the control accessible name.',
+    },
+    invalid: {
+      control: 'boolean',
+      description:
+        'Marks the control `aria-invalid` without any message, for a failure the form reports elsewhere. A message from `error` or the control marks it too.',
     },
     unit: { control: 'text', description: "Unit shown inside the control's right edge, such as `EUR` or `parts`." },
   },
@@ -202,5 +216,57 @@ export const Recherche: Story = {
     await expect(icon.getBoundingClientRect().right).toBeLessThanOrEqual(
       empty.getBoundingClientRect().left + parseFloat(getComputedStyle(empty).paddingLeft),
     );
+  },
+};
+
+const EYE_ICON = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" /><circle cx="12" cy="12" r="3" /></svg>`;
+
+export const SignIn: Story = {
+  name: 'Sign-in: xl inputs, trailing action, invalid',
+  render: () => ({
+    template: `
+      <div class="flex max-w-sm flex-col gap-4">
+        <ui-field label="Identifiant">
+          <input uiInput surface="card" size="xl" value="joan" />
+        </ui-field>
+        <ui-field label="Mot de passe" invalid>
+          <input uiInput surface="card" size="xl" type="password" value="motdepasse" />
+          <button uiFieldTrailing type="button" aria-label="Afficher le mot de passe" aria-pressed="false">${EYE_ICON}</button>
+        </ui-field>
+      </div>
+    `,
+  }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const password = canvas.getByLabelText('Mot de passe');
+    const action = canvas.getByRole('button', { name: 'Afficher le mot de passe' });
+
+    await expect(password).toHaveAttribute('aria-invalid', 'true');
+    await expect(action.getBoundingClientRect().height).toBe(password.getBoundingClientRect().height);
+    await expect(action.getBoundingClientRect().width).toBe(action.getBoundingClientRect().height);
+    await expect(parseFloat(getComputedStyle(password).paddingRight)).toBeGreaterThanOrEqual(
+      action.getBoundingClientRect().width,
+    );
+  },
+};
+
+export const OptionalSheetForm: Story = {
+  name: 'Sheet form: lg inputs, optional suffix',
+  render: () => ({
+    template: `
+      <div class="flex max-w-sm flex-col gap-4">
+        <ui-field label="Nom du compte">
+          <input uiInput size="lg" placeholder="Livret A" />
+        </ui-field>
+        <ui-field label="Établissement" optional="(facultatif)">
+          <input uiInput size="lg" placeholder="Boursorama" />
+        </ui-field>
+      </div>
+    `,
+  }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(canvas.getByLabelText('Établissement (facultatif)')).toBeVisible();
   },
 };

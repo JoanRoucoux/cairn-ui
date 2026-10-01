@@ -1,7 +1,15 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
 import { expect, fn, userEvent, within } from 'storybook/test';
 
-import { ASYNC_STATES, type AsyncState, UiAsync } from './async';
+import {
+  ASYNC_ALIGNS,
+  ASYNC_STATES,
+  ASYNC_VARIANTS,
+  type AsyncAlign,
+  type AsyncState,
+  type AsyncVariant,
+  UiAsync,
+} from './async';
 
 type AsyncArgs = {
   title: string;
@@ -9,6 +17,10 @@ type AsyncArgs = {
   errorTitle: string;
   errorMessage: string;
   retryLabel: string;
+  variant: AsyncVariant;
+  align: AsyncAlign;
+  card: boolean;
+  fill: boolean;
   retry: () => void;
 };
 
@@ -23,6 +35,13 @@ shown in place with a retry button, or an empty state. Whichever state is active
 title stays visible above it — that title is not part of this component, the caller renders it.
 
 One call, one block, its three states: a call that fails never erases the rest of the screen.
+
+The error block has four looks. \`elevated\` (the default) is a tinted box with the token line heights.
+\`plain\` has no surface and the normal line height, for a block that sits in a card or a table the
+screen already draws. \`emphasis\` is a heading, a longer message and a primary retry button, for a
+list that is the whole page. \`inline\` is one row, message left and retry right, for a failure
+inside a form. \`align\` centres the block (\`auto\`: from 64rem), \`card\` draws a card around it and
+\`fill\` makes it fill a host the screen sizes.
 
 #### When to use
 
@@ -50,7 +69,7 @@ One call, one block, its three states: a call that fails never erases the rest o
     template: `
       <div class="rounded-container box-content flex w-[300px] flex-col gap-2.5 bg-(--card) p-4 shadow-[inset_0_0_0_1px_var(--border)]">
         <span class="text-title font-semibold">{{ title }}</span>
-        <ui-async [state]="state" [errorTitle]="errorTitle" [errorMessage]="errorMessage" [retryLabel]="retryLabel" (retry)="retry()">
+        <ui-async [state]="state" [errorTitle]="errorTitle" [errorMessage]="errorMessage" [retryLabel]="retryLabel" [variant]="variant" [align]="align" [card]="card" [fill]="fill" (retry)="retry()">
           <div asyncLoading class="flex flex-col gap-2.5">
             <div class="flex justify-between py-1.5"><span class="rounded-control block h-4 bg-(--muted) w-30"></span><span class="rounded-control block h-4 bg-(--muted) w-[90px]"></span></div>
             <div class="flex justify-between py-1.5"><span class="rounded-control block h-4 bg-(--muted) w-[90px]"></span><span class="rounded-control block h-4 bg-(--muted) w-[90px]"></span></div>
@@ -71,6 +90,10 @@ One call, one block, its three states: a call that fails never erases the rest o
     errorTitle: "Les enveloppes n'ont pas pu être chargées",
     errorMessage: "Le serveur n'a pas répondu.",
     retryLabel: 'Réessayer',
+    variant: 'elevated',
+    align: 'start',
+    card: false,
+    fill: false,
     retry: fn(),
   },
   argTypes: {
@@ -79,6 +102,25 @@ One call, one block, its three states: a call that fails never erases the rest o
     errorTitle: { control: 'text', description: 'Error state title, next to the block name.' },
     errorMessage: { control: 'text', description: 'Error state detail sentence.' },
     retryLabel: { control: 'text', description: 'Label of the retry button.' },
+    variant: {
+      control: 'inline-radio',
+      options: [...ASYNC_VARIANTS],
+      description:
+        'Look of the error block: `elevated` tinted box, `plain` no surface, `emphasis` heading and primary retry, `inline` one row.',
+    },
+    align: {
+      control: 'inline-radio',
+      options: [...ASYNC_ALIGNS],
+      description: 'Alignment of the error block. `auto` is the start below 64rem and centred from 64rem.',
+    },
+    card: {
+      control: 'boolean',
+      description: 'The error block draws its own card (background, container radius, hairline).',
+    },
+    fill: {
+      control: 'boolean',
+      description: 'The error block fills its host and centres vertically; the host sets the minimum height.',
+    },
     retry: { description: 'Emitted when the retry button is pressed. Only that block reloads.' },
   },
 };
@@ -106,3 +148,98 @@ export const Error: Story = {
     await expect(args.retry).toHaveBeenCalledOnce();
   },
 };
+
+type Screen = {
+  title: string;
+  message?: string;
+  width: number;
+  attrs?: string;
+  wrapper?: string;
+  host?: string;
+  surface?: 'card' | 'background';
+};
+
+const screen = (name: string, spec: Screen): Story => ({
+  name,
+  parameters: { layout: 'padded' },
+  render: () => ({
+    template: `
+      <div data-frame class="p-2 ${spec.surface === 'background' ? 'bg-(--background)' : 'bg-(--card)'} ${spec.wrapper ?? ''}" style="width: ${spec.width + 16}px">
+        <ui-async state="error" errorTitle="${spec.title}" errorMessage="${spec.message ?? "Le serveur n'a pas répondu."}" retryLabel="Réessayer" ${spec.attrs ?? ''} class="${spec.host ?? ''}" />
+      </div>`,
+  }),
+});
+
+export const ElevatedTotalPhone: Story = screen('Dashboard total, phone (elevated)', {
+  title: "Le total n'a pas pu être chargé",
+  width: 326,
+});
+
+export const ElevatedTotalDesktop: Story = screen('Dashboard total, desktop (elevated)', {
+  title: "Le total n'a pas pu être chargé",
+  width: 688,
+});
+
+export const CurveFillPhone: Story = screen('Dashboard curve, phone (center, fill)', {
+  title: "La courbe n'a pas pu être chargée",
+  width: 326,
+  attrs: 'align="center" fill',
+  host: 'min-h-63',
+});
+
+export const CurveFillDesktop: Story = screen('Dashboard curve, desktop (center, fill)', {
+  title: "La courbe n'a pas pu être chargée",
+  width: 688,
+  attrs: 'align="center" fill',
+  host: 'min-h-93',
+});
+
+export const ElevatedAutoAllocation: Story = screen('Repartition, phone and desktop (elevated, auto)', {
+  title: "La répartition par classe n'a pas pu être chargée",
+  width: 326,
+  attrs: 'align="auto"',
+  wrapper: 'lg:w-[516px]!',
+});
+
+export const PlainCard: Story = screen('Comptes, phone (plain, card)', {
+  title: "Les comptes n'ont pas pu être chargés",
+  width: 358,
+  attrs: 'variant="plain" card',
+  surface: 'background',
+});
+
+export const PlainCentered: Story = screen('Comptes, desktop (plain, center)', {
+  title: "Les comptes n'ont pas pu être chargés",
+  width: 1088,
+  attrs: 'variant="plain" align="center"',
+});
+
+export const PlainAuto: Story = screen('Comptes, phone and desktop (plain, auto)', {
+  title: "Les comptes n'ont pas pu être chargés",
+  width: 358,
+  attrs: 'variant="plain" align="auto"',
+  wrapper: 'lg:w-[1104px]! max-lg:bg-(--background)!',
+  host: 'block max-lg:rounded-container max-lg:bg-(--card) max-lg:shadow-[inset_0_0_0_1px_var(--border)]',
+});
+
+export const EmphasisCard: Story = screen('Lignes, phone (emphasis, card)', {
+  title: "Les lignes n'ont pas pu être chargées",
+  message: "Le serveur n'a pas répondu. Vérifiez la connexion, puis réessayez.",
+  width: 358,
+  attrs: 'variant="emphasis" card',
+  surface: 'background',
+});
+
+export const EmphasisCentered: Story = screen('Lignes, desktop (emphasis, center)', {
+  title: "Les lignes n'ont pas pu être chargées",
+  message: "Le serveur n'a pas répondu. Vérifiez la connexion, puis réessayez.",
+  width: 1088,
+  attrs: 'variant="emphasis" align="center"',
+});
+
+export const InlineSearch: Story = screen('Ajouter une ligne, search (inline)', {
+  title: '',
+  message: "La recherche en ligne n'a pas répondu.",
+  width: 350,
+  attrs: 'variant="inline"',
+});

@@ -1,13 +1,14 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
 import { expect, within } from 'storybook/test';
 
-import { METER_TONES, type MeterTone, UiMeter } from './meter';
+import { METER_SIZES, METER_TONES, type MeterSize, type MeterTone, UiMeter } from './meter';
 
 type MeterArgs = {
   value: number;
   label: string;
   valueText: string;
   tone: MeterTone;
+  size: MeterSize;
   amount: string;
   share: string;
 };
@@ -52,7 +53,7 @@ comparison when every bar starts at the same edge.
     template: `
       <div class="flex w-[300px] flex-col gap-1.5">
         <div class="text-body flex justify-between font-medium tabular-nums"><span>{{ label }}</span><span>{{ amount }}</span></div>
-        <ui-meter [value]="value" [label]="label" [valueText]="valueText" [tone]="tone" />
+        <ui-meter [value]="value" [label]="label" [valueText]="valueText" [tone]="tone" [size]="size" />
         <span class="text-label text-(--muted-foreground)">{{ share }}</span>
       </div>
     `,
@@ -62,6 +63,7 @@ comparison when every bar starts at the same edge.
     label: 'PEA',
     valueText: '37,3 %, 61 247,83 €',
     tone: 1,
+    size: 'md',
     amount: '61 247,83 €',
     share: '37,3 %',
   },
@@ -76,6 +78,11 @@ comparison when every bar starts at the same edge.
     valueText: {
       control: 'text',
       description: 'Phrase announced in place of the raw number, carrying both the share and the amount.',
+    },
+    size: {
+      control: 'inline-radio',
+      options: [...METER_SIZES],
+      description: 'Track thickness: `md` is 6px (the default), `sm` is 4px for dense lists such as the envelopes.',
     },
     tone: {
       control: 'select',
@@ -111,4 +118,15 @@ export const ExposesItsValue: Story = {
 
     await expect(canvas.getByRole('meter', { name: args.label })).toHaveAttribute('aria-valuetext', args.valueText);
   },
+};
+
+export const Thin: Story = {
+  name: 'Envelope bar, 4px (size sm)',
+  render: () => ({
+    template: `
+      <div data-frame class="flex w-[326px] flex-col gap-2 bg-(--card) p-2">
+        <ui-meter size="sm" [tone]="2" [value]="0.62" label="PEA" valueText="62 %, 61 247,83 €" />
+        <ui-meter size="sm" [tone]="2" [value]="0" label="Chargement" valueText="" aria-hidden="true" />
+      </div>`,
+  }),
 };

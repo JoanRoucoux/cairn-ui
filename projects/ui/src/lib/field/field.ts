@@ -39,6 +39,28 @@ const nextId = (() => {
 export class UiFieldLeading {}
 
 /**
+ * Marks an element, typically an icon button, as the trailing action of a `ui-field`: it sits on the
+ * control's right edge, square to the control's height, and the control's text is padded to clear it.
+ *
+ * @example
+ * <ui-field label="Password">
+ *   <input uiInput type="password" size="xl" />
+ *   <button uiFieldTrailing type="button" aria-label="Show the password" [attr.aria-pressed]="shown()">...</button>
+ * </ui-field>
+ *
+ * A toggle such as this one should carry `aria-pressed`. The slot shares the right edge with `unit`:
+ * set one or the other, not both.
+ */
+@Directive({
+  selector: '[uiFieldTrailing]',
+  host: {
+    class:
+      'absolute right-0 grid h-full aspect-square place-items-center rounded-control cursor-pointer text-(--muted-foreground) hover:text-(--foreground) focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-(--ring)',
+  },
+})
+export class UiFieldTrailing {}
+
+/**
  * Label, control, hint and error as one unit. The control stays a plain native element:
  * the field finds it in its own projected content and wires the ARIA attributes onto it.
  *
@@ -65,12 +87,17 @@ export class UiFieldLeading {}
   template: `
     <div class="group flex flex-col gap-1.5">
       <!-- eslint-disable-next-line @angular-eslint/template/label-has-associated-control -- htmlFor is wired at runtime, once the projected control's id is known -->
-      <label [class]="labelClasses()">{{ label() }}</label>
+      <label [class]="labelClasses()"
+        >{{ label() }}
+        @if (optional()) {
+          {{ ' ' }}<span class="font-normal text-(--subtle-foreground)">{{ optional() }}</span>
+        }
+      </label>
 
       <div [class]="rowClasses()">
         <ng-content select="[uiFieldLeading]" />
         <ng-content />
-
+        <ng-content select="[uiFieldTrailing]" />
         @if (unit()) {
           <span class="text-label pointer-events-none absolute right-3 text-(--subtle-foreground)">{{ unit() }}</span>
         }
@@ -92,6 +119,8 @@ export class UiField {
   readonly hint = input<string>();
   readonly error = input<string>();
   readonly unit = input<string>();
+  readonly optional = input<string>();
+  readonly invalid = input(false, { transform: booleanAttribute });
 
   readonly #id = nextId();
   protected readonly hintId = `${this.#id}-hint`;
@@ -100,8 +129,11 @@ export class UiField {
   protected readonly control = contentChild(UI_CONTROL);
   protected readonly leading = contentChild(UiFieldLeading);
 
-  protected readonly rowClasses = computed(() =>
-    this.leading() ? 'relative flex items-center [&>input]:pl-[38px]' : 'relative flex items-center',
+  protected readonly trailing = contentChild(UiFieldTrailing);
+
+  protected readonly rowClasses = computed(
+    () =>
+      `relative flex items-center${this.leading() ? ' [&>input]:pl-[38px]' : ''}${this.trailing() ? ' [&>input]:pr-12 lg:[&>input]:pr-11' : ''}`,
   );
 
   protected readonly labelClasses = computed(() =>
@@ -129,6 +161,8 @@ export class UiField {
   });
 
   constructor() {
+    let markedByField = false;
+
     afterRenderEffect(() => {
       // querySelector, not viewChild.required, so the "no control found" guard below stays reachable and testable.
       const control = this.#host.nativeElement.querySelector<HTMLElement>('input, select, textarea');
@@ -148,10 +182,12 @@ export class UiField {
         control.removeAttribute('aria-describedby');
       }
 
-      if (this.message()) {
+      if (this.message() || this.invalid()) {
         control.setAttribute('aria-invalid', 'true');
-      } else {
+        markedByField = true;
+      } else if (markedByField) {
         control.removeAttribute('aria-invalid');
+        markedByField = false;
       }
     });
   }

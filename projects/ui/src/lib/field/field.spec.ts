@@ -1,8 +1,10 @@
+import { signal } from '@angular/core';
+
 import { type RenderResult, render, screen } from '@testing-library/angular';
 
 import { UiInput } from '../input/input';
 import { UiSelect } from '../select/select';
-import { UiField, UiFieldLeading } from './field';
+import { UiField, UiFieldLeading, UiFieldTrailing } from './field';
 
 const renderField = (attributes = '', control = '<input uiInput />'): Promise<RenderResult<unknown>> =>
   render(`<ui-field label="Quantity" ${attributes}>${control}</ui-field>`, {
@@ -219,6 +221,102 @@ describe('UiField', () => {
       });
 
       expect(screen.getByText('EUR')).toHaveClass('right-3');
+    });
+  });
+
+  describe('trailing slot', () => {
+    const renderPassword = (): Promise<RenderResult<unknown>> =>
+      render(
+        `<ui-field label="Mot de passe">
+          <input uiInput size="xl" type="password" />
+          <button uiFieldTrailing type="button" aria-label="Afficher">o</button>
+        </ui-field>`,
+        { imports: [UiField, UiFieldTrailing, UiInput] },
+      );
+
+    it('renders the action in the control row, after the input', async () => {
+      await renderPassword();
+
+      const action = screen.getByRole('button', { name: 'Afficher' });
+      expect(action.parentElement).toBe(screen.getByLabelText('Mot de passe').parentElement);
+    });
+
+    it('pins a square action to the right edge, as tall as the control', async () => {
+      await renderPassword();
+
+      expect(screen.getByRole('button', { name: 'Afficher' })).toHaveClass(
+        'absolute',
+        'right-0',
+        'h-full',
+        'aspect-square',
+        'rounded-control',
+        'text-(--muted-foreground)',
+        'hover:text-(--foreground)',
+        'focus-visible:-outline-offset-4',
+      );
+    });
+
+    it('clears the action with right padding on the input, 48 px on touch and 44 px from 64rem', async () => {
+      await renderPassword();
+
+      const row = screen.getByLabelText('Mot de passe').parentElement;
+      expect(row?.className).toContain('[&>input]:pr-12');
+      expect(row?.className).toContain('lg:[&>input]:pr-11');
+    });
+
+    it('leaves the padding alone without a trailing slot', async () => {
+      await renderField();
+
+      expect(screen.getByRole('textbox').parentElement?.className).not.toContain('pr-12');
+    });
+  });
+
+  describe('invalid', () => {
+    it('marks the control invalid without any message', async () => {
+      await renderField('invalid');
+
+      expect(screen.getByLabelText('Quantity')).toHaveAttribute('aria-invalid', 'true');
+      expect(screen.queryByRole('alert')).toBeNull();
+    });
+
+    it('clears the mark it set once the field is valid again', async () => {
+      const invalid = signal(true);
+      const { fixture } = await render(
+        '<ui-field label="Quantity" [invalid]="invalid()"><input uiInput /></ui-field>',
+        {
+          imports: [UiField, UiInput],
+          componentProperties: { invalid },
+        },
+      );
+      expect(screen.getByLabelText('Quantity')).toHaveAttribute('aria-invalid', 'true');
+
+      invalid.set(false);
+      await fixture.whenStable();
+
+      expect(screen.getByLabelText('Quantity')).not.toHaveAttribute('aria-invalid');
+    });
+
+    it('leaves an aria-invalid the caller set itself', async () => {
+      await render('<ui-field label="Quantity"><input uiInput aria-invalid="true" /></ui-field>', {
+        imports: [UiField, UiInput],
+      });
+
+      expect(screen.getByLabelText('Quantity')).toHaveAttribute('aria-invalid', 'true');
+    });
+  });
+
+  describe('optional', () => {
+    it('adds a lighter suffix after the label and keeps it in the name of the control', async () => {
+      await renderField('optional="(facultatif)"');
+
+      expect(screen.getByText('(facultatif)')).toHaveClass('font-normal', 'text-(--subtle-foreground)');
+      expect(screen.getByLabelText('Quantity (facultatif)')).toBeInTheDocument();
+    });
+
+    it('adds nothing by default', async () => {
+      await renderField();
+
+      expect(document.querySelector('label span')).toBeNull();
     });
   });
 });

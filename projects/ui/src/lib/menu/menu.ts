@@ -7,14 +7,21 @@ import {
   contentChildren,
   inject,
   input,
+  numberAttribute,
   signal,
 } from '@angular/core';
 
 const MENU_CLASSES =
   'm-0 min-w-44 p-1 rounded-container bg-(--elevated) shadow-[0_8px_24px_rgb(0_0_0/0.16),inset_0_0_0_1px_var(--border)] text-(--foreground) transition-[opacity,transform,overlay,display] transition-discrete duration-(--duration-fast) ease-out starting:open:opacity-0 starting:open:scale-(--enter-scale) opacity-0 scale-(--enter-scale) open:opacity-100 open:scale-100';
 
+const SHEET_CLASSES =
+  'max-lg:fixed max-lg:inset-x-4 max-lg:top-auto max-lg:w-auto max-lg:bottom-[calc(76px+env(safe-area-inset-bottom))] max-lg:min-w-0 max-lg:p-1.5 max-lg:bg-(--card) max-lg:shadow-[0_12px_32px_rgb(0_0_0/0.2),inset_0_0_0_1px_var(--border)] max-lg:backdrop:bg-[rgb(0_0_0/0.36)] max-lg:transition-[opacity,translate,overlay,display] max-lg:scale-100 max-lg:translate-y-4 max-lg:open:translate-y-0 max-lg:starting:open:scale-100 max-lg:starting:open:translate-y-4';
+
+const SHEET_ITEM_CLASSES =
+  'flex w-full items-center gap-3 lg:pointer-fine:gap-2.5 min-h-12 lg:min-h-11 lg:pointer-fine:min-h-9 px-3 lg:pointer-fine:px-2.5 rounded-[calc(var(--radius-container)-6px)] lg:rounded-[calc(var(--radius-container)-4px)] text-body lg:pointer-fine:text-label hover:bg-(--glow) focus-visible:bg-(--glow) active:bg-(--soft) outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring) [:where(&>svg)]:size-5 [:where(&>svg)]:flex-none lg:[:where(&>svg)]:size-[18px] lg:pointer-fine:[:where(&>svg)]:size-4';
+
 const ITEM_CLASSES =
-  'flex w-full items-center gap-3 pointer-fine:gap-2.5 min-h-11 pointer-fine:min-h-9 px-3 pointer-fine:px-2.5 rounded-[calc(var(--radius-container)-4px)] text-body pointer-fine:text-label hover:bg-(--glow) focus-visible:bg-(--glow) outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring)';
+  'flex w-full items-center gap-3 pointer-fine:gap-2.5 min-h-11 pointer-fine:min-h-9 px-3 pointer-fine:px-2.5 rounded-[calc(var(--radius-container)-4px)] text-body pointer-fine:text-label hover:bg-(--glow) focus-visible:bg-(--glow) active:bg-(--soft) outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring) [:where(&>svg)]:size-[18px] [:where(&>svg)]:flex-none pointer-fine:[:where(&>svg)]:size-4';
 
 const nextId = (() => {
   let count = 0;
@@ -43,7 +50,9 @@ export class UiMenuItem {
   readonly #host = inject<ElementRef<HTMLButtonElement>>(ElementRef).nativeElement;
   readonly #menu = inject(UiMenu);
 
-  protected readonly classes = computed(() => `${ITEM_CLASSES}${this.destructive() ? ' text-(--negative)' : ''}`);
+  protected readonly classes = computed(
+    () => `${this.#menu.sheet() ? SHEET_ITEM_CLASSES : ITEM_CLASSES}${this.destructive() ? ' text-(--negative)' : ''}`,
+  );
 
   focus(): void {
     this.#host.focus();
@@ -59,7 +68,10 @@ export class UiMenuItem {
 }
 
 /**
- * Secondary actions menu, opened from its trigger through the native Popover API.
+ * Secondary actions menu, opened from its trigger through the native Popover API. With `sheet`, below
+ * 64rem it opens as a bottom action sheet above the tab bar instead of beside its trigger, and
+ * `heading` names what the actions apply to. `width` fixes the outer popover width in pixels (the sheet
+ * always spans the screen below 64rem); without it the menu fits its content.
  *
  * @example
  * <button ui-button size="icon" aria-label="More" [uiMenuTrigger]="menu">...</button>
@@ -70,12 +82,20 @@ export class UiMenuItem {
  */
 @Component({
   selector: 'ui-menu',
-  template: '<ng-content />',
+  template: `
+    @if (sheet() && heading()) {
+      <div aria-hidden="true" class="text-label px-3 pt-2 pb-1.5 leading-[17px] text-(--muted-foreground) lg:hidden">
+        {{ heading() }}
+      </div>
+    }
+    <ng-content />
+  `,
   host: {
     role: 'menu',
     popover: 'auto',
     '[id]': 'menuId',
-    '[class]': 'classes',
+    '[style.--ui-menu-width]': 'widthVar()',
+    '[class]': 'classes()',
     '[attr.aria-label]': 'label()',
     '(toggle)': 'onToggle($event)',
     '(keydown)': 'onKeydown($event)',
@@ -83,11 +103,19 @@ export class UiMenuItem {
 })
 export class UiMenu {
   readonly label = input.required<string>();
+  readonly sheet = input(false, { transform: booleanAttribute });
+  readonly heading = input<string>();
+  readonly width = input<number | undefined, unknown>(undefined, { transform: numberAttribute });
 
   readonly menuId = nextId();
   readonly isOpen = signal(false);
 
-  protected readonly classes = MENU_CLASSES;
+  protected readonly hasWidth = computed(() => Number.isFinite(this.width()));
+  protected readonly widthVar = computed(() => (this.hasWidth() ? `${this.width()}px` : null));
+  protected readonly classes = computed(() => {
+    const width = !this.hasWidth() ? '' : this.sheet() ? ' lg:w-(--ui-menu-width)' : ' w-(--ui-menu-width)';
+    return `${MENU_CLASSES}${this.sheet() ? ` ${SHEET_CLASSES}` : ''}${width}`;
+  });
   protected readonly items = contentChildren(UiMenuItem);
 
   readonly #host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
@@ -99,7 +127,13 @@ export class UiMenu {
     if (typeof this.#host.showPopover === 'function') {
       this.#host.showPopover();
     }
-    this.#position(trigger);
+    if (this.#isSheet()) {
+      this.#host.style.position = '';
+      this.#host.style.top = '';
+      this.#host.style.left = '';
+    } else {
+      this.#position(trigger);
+    }
     this.items()[0]?.focus();
   }
 
@@ -157,6 +191,10 @@ export class UiMenu {
     }
     event.preventDefault();
     items[nextIndex]?.focus();
+  }
+
+  #isSheet(): boolean {
+    return this.sheet() && typeof window.matchMedia === 'function' && !window.matchMedia('(min-width: 64rem)').matches;
   }
 
   #position(trigger: HTMLElement): void {

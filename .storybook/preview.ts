@@ -30,6 +30,7 @@ const preview: Preview = {
   ],
   parameters: {
     controls: { expanded: true },
+    a11y: { test: 'error' },
     /*
      * A Docs page is Storybook's own chrome, rendered outside the component tree the decorator
      * above themes, so its prose, tables and code blocks take their colors from this ThemeVars.

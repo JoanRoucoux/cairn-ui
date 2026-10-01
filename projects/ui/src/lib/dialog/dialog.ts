@@ -1,12 +1,15 @@
 import {
   Component,
+  DestroyRef,
   ElementRef,
+  afterNextRender,
   afterRenderEffect,
   booleanAttribute,
   computed,
   inject,
   input,
   output,
+  signal,
 } from '@angular/core';
 
 /** Named dialog widths; any other CSS length is accepted as is. `DialogWidth` is derived from this tuple. */
@@ -98,7 +101,7 @@ const nextId = (() => {
   template: `
     <dialog
       #dlg
-      [attr.aria-describedby]="description() ? descriptionId : null"
+      [attr.aria-describedby]="describedBy()"
       [attr.aria-labelledby]="headingId"
       [attr.role]="layout() === 'confirm' ? 'alertdialog' : 'dialog'"
       [class]="classes()"
@@ -141,7 +144,14 @@ const nextId = (() => {
         }
       </div>
 
-      <div class="min-h-0 flex-1 overflow-y-auto px-4 lg:px-6" data-dialog-body>
+      <div
+        class="min-h-0 flex-1 overflow-y-auto px-4 outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring) lg:px-6"
+        data-dialog-body
+        [attr.aria-labelledby]="scrollable() ? headingId : null"
+        [attr.role]="scrollable() ? 'region' : null"
+        [attr.tabindex]="scrollable() ? 0 : null"
+        [id]="bodyId"
+      >
         <!-- empty:hidden keeps a body-less dialog from carrying the body's vertical padding. -->
         <div class="flex flex-col gap-4 empty:hidden" [class]="spec().body">
           <ng-content />
@@ -224,6 +234,16 @@ export class UiDialog {
 
   protected readonly headingId = nextId();
   protected readonly descriptionId = `${this.headingId}-description`;
+  protected readonly bodyId = `${this.headingId}-body`;
+  protected readonly scrollable = signal(false);
+
+  protected readonly describedBy = computed(() => {
+    if (this.description()) {
+      return this.descriptionId;
+    }
+
+    return this.layout() === 'confirm' ? this.bodyId : null;
+  });
 
   protected readonly widthValue = computed(() => {
     const width = this.width();
@@ -260,6 +280,21 @@ export class UiDialog {
   readonly #host = inject<ElementRef<HTMLElement>>(ElementRef);
 
   constructor() {
+    const destroyRef = inject(DestroyRef);
+
+    afterNextRender(() => {
+      if (typeof ResizeObserver === 'undefined') {
+        return;
+      }
+
+      const body = this.#host.nativeElement.querySelector('[data-dialog-body]') as HTMLElement;
+      const observer = new ResizeObserver(() => this.scrollable.set(body.scrollHeight > body.clientHeight));
+
+      observer.observe(body);
+      observer.observe(body.firstElementChild as Element);
+      destroyRef.onDestroy(() => observer.disconnect());
+    });
+
     afterRenderEffect(() => {
       // viewChild.required can't target a #private field (NG1053); safe because the template has exactly one <dialog>.
       const dialog = this.#host.nativeElement.querySelector('dialog') as HTMLDialogElement;

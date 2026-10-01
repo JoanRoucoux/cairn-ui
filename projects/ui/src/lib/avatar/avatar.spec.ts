@@ -1,6 +1,6 @@
 import { type RenderResult, render, screen } from '@testing-library/angular';
 
-import { type AvatarSize, UiAvatar } from './avatar';
+import { type AvatarSize, UiAvatar, UiAvatarLink } from './avatar';
 
 const renderAvatar = (size: AvatarSize = 'md'): Promise<RenderResult<unknown>> =>
   render('<ui-avatar initials="JR" label="My account" [size]="size" />', {
@@ -33,9 +33,36 @@ describe('UiAvatar', () => {
     ['sm', 'size-8'],
     ['md', 'size-[34px]'],
     ['lg', 'size-14'],
+    ['auto', 'size-[34px]'],
+    ['auto', 'lg:size-8'],
+    ['auto', 'lg:text-caption'],
   ])('applies the %s size classes', async (size, expectedClass) => {
     await renderAvatar(size);
 
     expect(screen.getByRole('img', { name: 'My account' })).toHaveClass(expectedClass);
+  });
+});
+
+describe('UiAvatarLink', () => {
+  const link = '<a uiAvatarLink href="/profile"><ui-avatar initials="JR" label="Profil" /></a>';
+
+  it('wraps the avatar in a round 44 px hit area, 40 px from 64rem', async () => {
+    await render(link, { imports: [UiAvatar, UiAvatarLink] });
+
+    expect(screen.getByRole('link', { name: 'Profil' })).toHaveClass(
+      'rounded-pill',
+      'size-11',
+      'lg:size-10',
+      'place-items-center',
+      'hover:bg-(--glow)',
+      'active:scale-(--press-scale)',
+      'focus-visible:outline-offset-2',
+    );
+  });
+
+  it('draws no pressed fill', async () => {
+    await render(link, { imports: [UiAvatar, UiAvatarLink] });
+
+    expect(screen.getByRole('link', { name: 'Profil' }).className).not.toContain('active:bg-');
   });
 });

@@ -37,4 +37,10 @@ describe('UiNavItem', () => {
 
     expect(screen.getByRole('link', { name: 'Portfolio' })).toHaveAttribute('aria-current', 'page');
   });
+
+  it('keeps the inherited line height and fills on press when idle', async () => {
+    await render('<a ui-nav-item href="/">Portfolio</a>', { imports: [UiNavItem] });
+
+    expect(screen.getByRole('link', { name: 'Portfolio' })).toHaveClass('leading-normal', 'active:bg-(--soft)');
+  });
 });

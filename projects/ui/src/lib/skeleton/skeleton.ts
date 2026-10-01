@@ -1,7 +1,7 @@
 import { Component, computed, input } from '@angular/core';
 
 /** Available skeleton shapes. `SkeletonShape` is derived from this tuple. */
-export const SKELETON_SHAPES = ['text', 'figure', 'row', 'chart', 'ring'] as const;
+export const SKELETON_SHAPES = ['text', 'figure', 'row', 'chart', 'ring', 'dot'] as const;
 export type SkeletonShape = (typeof SKELETON_SHAPES)[number];
 
 const LAST_LINE_WIDTH = '62%';
@@ -36,6 +36,9 @@ const BAR_CLASSES = 'block rounded-control bg-(--muted)';
       }
       @case ('chart') {
         <span class="rounded-control min-h-50 w-full flex-1 bg-(--muted)" [style.animation]="animation"></span>
+      }
+      @case ('dot') {
+        <span class="rounded-pill size-3 bg-(--muted)" [style.animation]="animation"></span>
       }
       @case ('ring') {
         <span

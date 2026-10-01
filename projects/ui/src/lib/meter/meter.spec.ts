@@ -64,4 +64,17 @@ describe('UiMeter', () => {
 
     expect(screen.getByTestId('meter-fill')).toHaveStyle({ width: expectedWidth });
   });
+
+  it('draws a 6px track by default', async () => {
+    await renderMeter();
+
+    expect(screen.getByRole('meter')).toHaveClass('h-1.5');
+  });
+
+  it('draws a 4px track at size sm', async () => {
+    await render('<ui-meter [value]="0.5" label="Funds" valueText="50%" size="sm" />', { imports: [UiMeter] });
+
+    expect(screen.getByRole('meter')).toHaveClass('h-1');
+    expect(screen.getByRole('meter')).not.toHaveClass('h-1.5');
+  });
 });

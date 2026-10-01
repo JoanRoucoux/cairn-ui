@@ -230,3 +230,121 @@ describe('UiDonut', () => {
     expect(fixture.nativeElement.querySelector('[data-testid="donut-legend"]')).toHaveClass('w-full', 'sm:w-auto');
   });
 });
+
+describe('UiDonut legend press state', () => {
+  it('turns a pressed row to the soft surface, as a button and as a link', async () => {
+    await render(`<ui-donut [slices]="slices" label="x" othersLabel="Autres" [legendHref]="href" />`, {
+      imports: [UiDonut],
+      componentProperties: { slices: threeSlices, href: (id: string) => (id === 'c' ? null : `/${id}`) },
+    });
+
+    expect(screen.getByRole('button', { name: /Actions/ })).toHaveClass('hover:bg-(--glow)', 'active:bg-(--soft)');
+    expect(screen.getByRole('link', { name: /ETF/ })).toHaveClass('hover:bg-(--glow)', 'active:bg-(--soft)');
+  });
+});
+
+describe('UiDonut legend links', () => {
+  const href = (id: string): string => `/holdings?classe=${id}`;
+  const linkTemplate = `<ui-donut [slices]="slices" label="Par classe d'actif" othersLabel="Autres" [legendHref]="href" (sliceSelect)="onSelect($event)" />`;
+
+  it('renders each legend row as a link to its href instead of a button', async () => {
+    await render(linkTemplate, {
+      imports: [UiDonut],
+      componentProperties: { slices: threeSlices, href, onSelect: vi.fn() },
+    });
+
+    expect(screen.queryAllByRole('button')).toHaveLength(0);
+    expect(screen.getByRole('link', { name: /Fonds/ })).toHaveAttribute('href', '/holdings?classe=b');
+    expect(screen.getAllByRole('link')).toHaveLength(3);
+  });
+
+  it('keeps a button for a row whose href is null', async () => {
+    await render(linkTemplate, {
+      imports: [UiDonut],
+      componentProperties: {
+        slices: threeSlices,
+        href: (id: string) => (id === 'c' ? null : href(id)),
+        onSelect: vi.fn(),
+      },
+    });
+
+    expect(screen.getByRole('button', { name: /Actions/ })).toBeInTheDocument();
+    expect(screen.getAllByRole('link')).toHaveLength(2);
+  });
+
+  it('hands a plain click to sliceSelect and cancels the page load, so the caller can route', async () => {
+    const onSelect = vi.fn();
+    await render(linkTemplate, { imports: [UiDonut], componentProperties: { slices: threeSlices, href, onSelect } });
+    const link = screen.getByRole('link', { name: /Actions/ });
+    const click = new MouseEvent('click', { bubbles: true, cancelable: true });
+
+    link.dispatchEvent(click);
+
+    expect(click.defaultPrevented).toBe(true);
+    expect(onSelect).toHaveBeenCalledWith('c');
+  });
+
+  it.each([{ ctrlKey: true }, { metaKey: true }, { shiftKey: true }, { altKey: true }, { button: 1 }])(
+    'leaves a modified click %o to the browser',
+    async (init) => {
+      const onSelect = vi.fn();
+      await render(linkTemplate, { imports: [UiDonut], componentProperties: { slices: threeSlices, href, onSelect } });
+      const click = new MouseEvent('click', { bubbles: true, cancelable: true, ...init });
+      let prevented = true;
+      const swallow = (event: Event): void => {
+        prevented = event.defaultPrevented;
+        event.preventDefault();
+      };
+      document.addEventListener('click', swallow, { once: true });
+
+      screen.getByRole('link', { name: /Actions/ }).dispatchEvent(click);
+
+      expect(prevented).toBe(false);
+      expect(onSelect).not.toHaveBeenCalled();
+    },
+  );
+
+  it('still highlights the slice on hover and focus', async () => {
+    const { fixture } = await render(linkTemplate, {
+      imports: [UiDonut],
+      componentProperties: { slices: threeSlices, href, onSelect: vi.fn() },
+    });
+    const link = screen.getByRole('link', { name: /Fonds/ });
+    const centre = within(fixture.nativeElement.querySelector('[data-testid="donut-centre"]'));
+
+    await userEvent.hover(link);
+    expect(link).toHaveClass('bg-(--soft)');
+    expect(centre.getByText('Fonds')).toBeInTheDocument();
+
+    await userEvent.unhover(link);
+    fireEvent.focus(link);
+    expect(link).toHaveClass('bg-(--soft)');
+
+    fireEvent.blur(link);
+    expect(link).not.toHaveClass('bg-(--soft)');
+  });
+
+  it('shares the row geometry and the focus ring with the button rows', async () => {
+    await render(linkTemplate, {
+      imports: [UiDonut],
+      componentProperties: { slices: threeSlices, href, onSelect: vi.fn() },
+    });
+
+    expect(screen.getByRole('link', { name: /ETF/ })).toHaveClass(
+      'min-h-14',
+      'focus-visible:outline-2',
+      'focus-visible:-outline-offset-2',
+      'focus-visible:outline-(--ring)',
+    );
+  });
+
+  it('activates a link with Enter', async () => {
+    const onSelect = vi.fn();
+    await render(linkTemplate, { imports: [UiDonut], componentProperties: { slices: threeSlices, href, onSelect } });
+
+    screen.getByRole('link', { name: /ETF/ }).focus();
+    await userEvent.keyboard('{Enter}');
+
+    expect(onSelect).toHaveBeenCalledWith('a');
+  });
+});

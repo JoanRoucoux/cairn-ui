@@ -192,7 +192,9 @@ export type GroupSize = (typeof GROUP_SIZES)[number];
       [class]="size() === 'lg' ? 'min-h-12' : 'min-h-11'"
     >
       <div class="flex min-w-0 items-baseline gap-3">
-        <h2 class="text-body m-0 font-semibold whitespace-nowrap">{{ name() }}</h2>
+        <h2 class="text-body m-0 font-semibold whitespace-nowrap outline-none" data-group-heading tabindex="-1">
+          {{ name() }}
+        </h2>
         @if (meta()) {
           <span class="text-label truncate text-(--muted-foreground)">{{ meta() }}</span>
         }

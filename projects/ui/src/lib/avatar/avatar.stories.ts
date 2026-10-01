@@ -1,7 +1,7 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
 import { expect, within } from 'storybook/test';
 
-import { AVATAR_SIZES, type AvatarSize, UiAvatar } from './avatar';
+import { AVATAR_SIZES, type AvatarSize, UiAvatar, UiAvatarLink } from './avatar';
 
 type AvatarArgs = {
   initials: string;
@@ -11,7 +11,7 @@ type AvatarArgs = {
 
 const meta: Meta<AvatarArgs> = {
   title: 'Data display/Avatar',
-  decorators: [moduleMetadata({ imports: [UiAvatar] })],
+  decorators: [moduleMetadata({ imports: [UiAvatar, UiAvatarLink] })],
   parameters: {
     docs: {
       description: {
@@ -57,7 +57,8 @@ const meta: Meta<AvatarArgs> = {
     size: {
       control: 'select',
       options: [...AVATAR_SIZES],
-      description: 'Disc diameter: `sm` 32 px, `md` 34 px (iPhone header), `lg` 56 px (Profil).',
+      description:
+        'Disc diameter: `sm` 32 px, `md` 34 px (iPhone header), `lg` 56 px (Profil), `auto` 34 px then 32 px from 64rem (the app header).',
     },
   },
 };
@@ -74,18 +75,8 @@ export const Small: Story = {
 export const InProfileLink: Story = {
   render: () => ({
     template: `
-      <a href="#" aria-label="Profil" class="grid size-10 place-items-center rounded-pill hover:bg-(--glow) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring)">
-        <ui-avatar initials="JO" label="Profil" size="sm" />
-      </a>
-    `,
-  }),
-};
-
-export const InProfileLinkTouch: Story = {
-  render: () => ({
-    template: `
-      <a href="#" aria-label="Profil" class="grid size-11 place-items-center rounded-pill active:scale-(--press-scale)">
-        <ui-avatar initials="JO" label="Profil" size="md" />
+      <a uiAvatarLink href="#">
+        <ui-avatar initials="JO" label="Profil" size="auto" />
       </a>
     `,
   }),

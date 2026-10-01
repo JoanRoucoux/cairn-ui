@@ -63,7 +63,8 @@ textarea grows from a floor instead of sitting at a fixed height.
     size: {
       control: 'inline-radio',
       options: [...CONTROL_SIZES],
-      description: '`md` is the 44px touch target used by default.',
+      description:
+        '`md` is the 44px touch target used by default; `sm` is 36px; `lg` is 48px below 64rem, then the touch target (sheet forms); `xl` is 48px, then 44px (sign-in).',
     },
   },
 };

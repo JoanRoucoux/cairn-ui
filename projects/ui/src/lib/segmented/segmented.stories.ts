@@ -1,12 +1,14 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
 import { expect, userEvent, within } from 'storybook/test';
 
-import { type SegmentedOption, UiSegmented } from './segmented';
+import { SEGMENTED_SIZES, type SegmentedOption, type SegmentedSize, UiSegmented } from './segmented';
 
 type SegmentedArgs = {
+  showLabel: boolean;
   options: SegmentedOption[];
   label: string;
   value: string;
+  size: SegmentedSize;
 };
 
 const meta: Meta<SegmentedArgs> = {
@@ -46,9 +48,11 @@ mode. The selection is a \`model()\`, bound with \`[(value)]\`.
   },
   render: (args) => ({
     props: args,
-    template: `<ui-segmented [options]="options" [label]="label" [(value)]="value" />`,
+    template: `<ui-segmented [options]="options" [label]="label" [showLabel]="showLabel" [(value)]="value" [size]="size" />`,
   }),
   args: {
+    showLabel: false,
+    size: 'md',
     label: 'Time range',
     value: '1d',
     options: [
@@ -62,7 +66,18 @@ mode. The selection is a \`model()\`, bound with \`[(value)]\`.
   },
   argTypes: {
     label: { control: 'text', description: 'Accessible name for the group (`aria-label` on the `radiogroup`).' },
+    showLabel: {
+      control: 'boolean',
+      description:
+        'Draws `label` above the track (label size, 500, muted, 6px gap) and names the group by it with `aria-labelledby` instead of `aria-label`.',
+    },
     value: { control: 'text', description: 'Currently selected option value. Two-way bound via `[(value)]`.' },
+    size: {
+      control: 'inline-radio',
+      options: [...SEGMENTED_SIZES],
+      description:
+        'Option height: `md` is 40 px on touch and 32 px with a mouse (Dashboard, Profil); `sm` is 40 px, then 30 px with a mouse (the Lignes detail range).',
+    },
     options: { control: false, description: 'Ordered `{ value, label }` list of choices.' },
   },
 };
@@ -93,4 +108,32 @@ export const InAFlexHeaderWithNoWidth: Story = {
       </div>
     `,
   }),
+};
+
+export const VisibleLabel: Story = {
+  name: 'Profil, theme with a visible label',
+  args: {
+    label: 'Thème',
+    showLabel: true,
+    value: 'system',
+    options: [
+      { value: 'system', label: 'Système' },
+      { value: 'light', label: 'Clair' },
+      { value: 'dark', label: 'Sombre' },
+    ],
+  },
+  render: (args) => ({
+    props: args,
+    template: `<div data-frame class="w-[326px] bg-(--card) p-2"><ui-segmented [options]="options" [label]="label" [showLabel]="showLabel" [(value)]="value" /></div>`,
+  }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(canvas.getByRole('radiogroup', { name: 'Thème' })).toBeInTheDocument();
+  },
+};
+
+export const SmallWithAMouse: Story = {
+  name: 'Small (Lignes detail range)',
+  args: { size: 'sm' },
 };

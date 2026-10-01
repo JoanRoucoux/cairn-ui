@@ -16,6 +16,23 @@ const renderSegmented = (value = '1d'): Promise<RenderResult<unknown>> =>
   });
 
 describe('UiSegmented', () => {
+  it('draws 40 px options on touch and 32 px with a mouse by default', async () => {
+    await renderSegmented();
+
+    expect(screen.getByRole('radio', { name: '1D' })).toHaveClass('h-10', 'pointer-fine:h-8');
+  });
+
+  it('draws 30 px options with a mouse at the sm size', async () => {
+    await render('<ui-segmented [options]="options" label="Range" size="sm" value="1d" />', {
+      imports: [UiSegmented],
+      componentProperties: { options },
+    });
+
+    const option = screen.getByRole('radio', { name: '1D' });
+    expect(option).toHaveClass('h-10', 'pointer-fine:h-[30px]');
+    expect(option).not.toHaveClass('pointer-fine:h-8');
+  });
+
   it('exposes the group under its label', async () => {
     await renderSegmented();
 
@@ -153,5 +170,27 @@ describe('UiSegmented', () => {
       'focus-visible:-outline-offset-2',
       'focus-visible:outline-(--ring)',
     );
+  });
+
+  it('names the radiogroup by aria-label and draws no visible label by default', async () => {
+    await renderSegmented();
+
+    expect(screen.getByRole('radiogroup')).toHaveAttribute('aria-label');
+    expect(screen.getByRole('radiogroup')).not.toHaveAttribute('aria-labelledby');
+  });
+
+  it('draws the label above the track and names the group by it with showLabel', async () => {
+    await render('<ui-segmented [options]="options" label="Theme" showLabel [(value)]="value" />', {
+      imports: [UiSegmented],
+      componentProperties: { options, value: '1d' },
+    });
+    const label = screen.getByText('Theme');
+    const group = screen.getByRole('radiogroup');
+
+    expect(label).toHaveClass('text-label', 'leading-[17px]', 'font-medium', 'text-(--muted-foreground)');
+    expect(group).not.toHaveAttribute('aria-label');
+    expect(group).toHaveAttribute('aria-labelledby', label.id);
+    expect(screen.getByRole('radiogroup', { name: 'Theme' })).toBeInTheDocument();
+    expect(label.parentElement).toHaveClass('gap-1.5');
   });
 });
