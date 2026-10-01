@@ -85,6 +85,13 @@ describe('UiDialog', () => {
     expect(container.querySelector('dialog')).toHaveAttribute('open');
   });
 
+  it('only lays itself out while open, so a closed one leaves the tab order', async () => {
+    const { container } = await renderDialog(false);
+
+    expect(container.querySelector('dialog')).toHaveClass('open:flex');
+    expect(container.querySelector('dialog')).not.toHaveClass('flex');
+  });
+
   it('centres itself, which Tailwind preflight would otherwise prevent', async () => {
     const { container } = await renderDialog();
 
@@ -102,15 +109,41 @@ describe('UiDialog', () => {
 
     const handle = container.querySelector('[data-dialog-handle]');
     expect(handle).toHaveAttribute('aria-hidden', 'true');
-    expect(handle).toHaveClass('lg:hidden');
+    expect(handle).toHaveClass('h-5', 'lg:hidden');
   });
 
   it('keeps the footer above the home indicator on small screens', async () => {
     const { container } = await renderDialog();
 
     expect(container.querySelector('[data-dialog-footer]')).toHaveClass(
-      'max-lg:pb-[calc(1rem+env(safe-area-inset-bottom))]',
+      'max-lg:pb-[calc(1.25rem+env(safe-area-inset-bottom))]',
     );
+  });
+
+  it('pads the sheet by 16px and the dialog by 24px', async () => {
+    const { container } = await renderDialog();
+
+    for (const part of ['[data-dialog-body]', '[data-dialog-footer]']) {
+      expect(container.querySelector(part)).toHaveClass('px-4', 'lg:px-6');
+    }
+    expect(container.querySelector('[data-dialog-header]')).toHaveClass('pl-4', 'lg:pl-6');
+  });
+
+  it('right-aligns the actions on a desktop and stacks them full width on a sheet', async () => {
+    const { container } = await renderDialog();
+
+    expect(container.querySelector('[data-dialog-footer]')).toHaveClass(
+      'justify-end',
+      'max-lg:flex-col-reverse',
+      'max-lg:*:h-[50px]',
+      'max-lg:*:w-full',
+    );
+  });
+
+  it('draws a hairline above the footer', async () => {
+    const { container } = await renderDialog();
+
+    expect(container.querySelector('[data-dialog-footer]')).toHaveClass('shadow-[0_-1px_0_var(--hairline)]');
   });
 
   it('scrolls its body independently of the heading and the footer', async () => {
@@ -119,27 +152,74 @@ describe('UiDialog', () => {
     expect(container.querySelector('[data-dialog-body]')).toHaveClass('overflow-y-auto');
   });
 
-  it('keeps the scrollable body reachable by keyboard', async () => {
+  it('does not make the body a tab stop that would steal the initial focus', async () => {
     const { container } = await renderDialog();
 
-    expect(container.querySelector('[data-dialog-body]')).toHaveAttribute('tabindex', '0');
+    expect(container.querySelector('[data-dialog-body]')).not.toHaveAttribute('tabindex');
   });
 
-  it('keeps the md width as it was', async () => {
+  it('sets the width from the md token', async () => {
     const { container } = await render(`<ui-dialog heading="Enter a price" width="md" [open]="true"></ui-dialog>`, {
       imports: [UiDialog],
     });
 
-    expect(container.querySelector('dialog')).toHaveClass('max-w-md');
+    expect(container.querySelector('dialog')).toHaveStyle({ '--dialog-width': '28rem' });
   });
 
-  it('maps the lg width to 560px', async () => {
+  it('sets the width from the lg token', async () => {
+    const { container } = await render(`<ui-dialog heading="Delete" width="lg" [open]="true"></ui-dialog>`, {
+      imports: [UiDialog],
+    });
+
+    expect(container.querySelector('dialog')).toHaveStyle({ '--dialog-width': '560px' });
+  });
+
+  it('takes any CSS length as the width', async () => {
+    const { container } = await render(`<ui-dialog heading="Buy" width="530px" [open]="true"></ui-dialog>`, {
+      imports: [UiDialog],
+    });
+
+    expect(container.querySelector('dialog')).toHaveStyle({ '--dialog-width': '530px' });
+    expect(container.querySelector('dialog')).toHaveClass('lg:max-w-(--dialog-width)');
+  });
+
+  it('shows no cross unless a label is given', async () => {
+    await renderDialog();
+
+    expect(screen.queryByRole('button', { name: /close|fermer/i })).not.toBeInTheDocument();
+  });
+
+  it('shows the subtitle under the title', async () => {
     const { container } = await render(
-      `<ui-dialog heading="Delete this account" width="lg" [open]="true"></ui-dialog>`,
+      `<ui-dialog heading="Acheter" description="Ferrari · PEA" [open]="true"></ui-dialog>`,
       { imports: [UiDialog] },
     );
 
-    expect(container.querySelector('dialog')).toHaveClass('max-w-[560px]');
+    const header = container.querySelector('[data-dialog-header]');
+    expect(header).toHaveTextContent('Ferrari · PEA');
+    expect(header?.querySelector('h2')).toHaveTextContent('Acheter');
+  });
+
+  it('labels the cross with the text the consumer passes', async () => {
+    await render(`<ui-dialog heading="Acheter" closeLabel="Fermer" [open]="true"></ui-dialog>`, {
+      imports: [UiDialog],
+    });
+
+    expect(screen.getByRole('button', { name: 'Fermer' })).toBeInTheDocument();
+  });
+
+  it('closes and reports when the cross is used', async () => {
+    const user = userEvent.setup();
+    const onDismissed = vi.fn();
+    const { container } = await render(
+      `<ui-dialog heading="Acheter" closeLabel="Fermer" [open]="true" (dismissed)="onDismissed()"></ui-dialog>`,
+      { imports: [UiDialog], componentProperties: { onDismissed } },
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Fermer' }));
+
+    expect(container.querySelector('dialog')).not.toHaveAttribute('open');
+    expect(onDismissed).toHaveBeenCalledOnce();
   });
 
   it('accepts open as a bare attribute', async () => {
