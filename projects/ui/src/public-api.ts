@@ -20,8 +20,15 @@ export { type UiControlError } from './lib/control/control';
 export { DELTA_EMPHASES, UiDelta, type DeltaEmphasis } from './lib/delta/delta';
 export { DIALOG_WIDTHS, UiDialog, type DialogWidth } from './lib/dialog/dialog';
 export { type DonutSlice, UiDonut } from './lib/donut/donut';
-export { UiField } from './lib/field/field';
-export { CONTROL_SIZES, UiInput, UiTextarea, type ControlSize } from './lib/input/input';
+export { UiField, UiFieldLeading } from './lib/field/field';
+export {
+  CONTROL_SIZES,
+  CONTROL_SURFACES,
+  UiInput,
+  UiTextarea,
+  type ControlSize,
+  type ControlSurface,
+} from './lib/input/input';
 export { type ChartPoint, UiLineChart } from './lib/line-chart/line-chart';
 export { UiMenu, UiMenuItem, UiMenuTrigger } from './lib/menu/menu';
 export { METER_TONES, UiMeter, type MeterTone } from './lib/meter/meter';

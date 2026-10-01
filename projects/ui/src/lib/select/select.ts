@@ -55,6 +55,7 @@ export class UiSelect implements UiControl {
   readonly touched = input(false);
 
   protected readonly classes = computed(
-    () => `${CONTROL_BASE_CLASSES} ${SELECT_CLASSES} ${PICKER_CLASSES} ${CONTROL_SIZE_CLASSES[this.size()]}`,
+    () =>
+      `${CONTROL_BASE_CLASSES} bg-(--background) ${SELECT_CLASSES} ${PICKER_CLASSES} ${CONTROL_SIZE_CLASSES[this.size()]}`,
   );
 }

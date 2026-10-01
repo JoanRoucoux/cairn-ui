@@ -4,7 +4,7 @@ import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { UI_CONTROL } from '../control/control';
-import { type ControlSize, UiInput, UiTextarea } from './input';
+import { type ControlSize, type ControlSurface, UiInput, UiTextarea } from './input';
 
 describe('UiInput', () => {
   it('styles the native input and accepts typing', async () => {
@@ -50,6 +50,27 @@ describe('UiInput', () => {
     });
 
     expect(screen.getByRole('textbox', { name: 'Email' })).toHaveClass(expectedClass);
+  });
+
+  it.each<[ControlSurface, string]>([
+    ['background', 'bg-(--background)'],
+    ['card', 'bg-(--card)'],
+  ])('paints the %s surface', async (surface, expectedClass) => {
+    await render('<input uiInput aria-label="Email" [surface]="surface" />', {
+      imports: [UiInput],
+      componentProperties: { surface },
+    });
+
+    const input = screen.getByRole('textbox', { name: 'Email' });
+
+    expect(input).toHaveClass(expectedClass);
+    expect(input.className.split(' ').filter((name) => name.startsWith('bg-'))).toHaveLength(1);
+  });
+
+  it('paints the background surface by default', async () => {
+    await render('<input uiInput aria-label="Email" />', { imports: [UiInput] });
+
+    expect(screen.getByRole('textbox', { name: 'Email' })).toHaveClass('bg-(--background)');
   });
 
   it('reaches the touch target by default', async () => {
