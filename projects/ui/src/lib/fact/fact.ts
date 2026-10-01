@@ -1,7 +1,7 @@
 import { Component, Directive, booleanAttribute, computed, input } from '@angular/core';
 
 /** Available fact row sizes. `FactSize` is derived from this tuple. */
-export const FACT_SIZES = ['md', 'sm'] as const;
+export const FACT_SIZES = ['md', 'sm', 'auto'] as const;
 export type FactSize = (typeof FACT_SIZES)[number];
 
 /** Colour of the line under a fact value. `stale` flags an out-of-date figure. */
@@ -11,6 +11,10 @@ export type FactSubTone = (typeof FACT_SUB_TONES)[number];
 const SIZE_CLASSES: Record<FactSize, { row: string; value: string }> = {
   md: { row: 'py-3 [&:not(:first-child)]:shadow-[inset_0_1px_0_var(--hairline)]', value: 'text-body' },
   sm: { row: 'py-2.5', value: 'text-label' },
+  auto: {
+    row: 'py-3 lg:py-2.5 max-lg:[&:not(:first-child)]:shadow-[inset_0_1px_0_var(--hairline)]',
+    value: 'text-body lg:text-label',
+  },
 };
 
 const SUB_TONE_CLASSES: Record<FactSubTone, string> = {

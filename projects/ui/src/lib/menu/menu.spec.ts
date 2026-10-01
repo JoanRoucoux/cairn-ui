@@ -352,9 +352,9 @@ describe('UiMenu', () => {
       await render(template, { imports, componentProperties: { edited: vi.fn() } });
 
       expect(screen.getByRole('menuitem', { name: 'Edit', hidden: true })).toHaveClass(
-        '[&>svg]:size-[18px]',
-        '[&>svg]:flex-none',
-        'pointer-fine:[&>svg]:size-4',
+        '[:where(&>svg)]:size-[18px]',
+        '[:where(&>svg)]:flex-none',
+        'pointer-fine:[:where(&>svg)]:size-4',
       );
     });
 
@@ -362,9 +362,9 @@ describe('UiMenu', () => {
       await render(`<ui-menu label="Actions" sheet><button uiMenuItem>Edit</button></ui-menu>`, { imports });
 
       expect(screen.getByRole('menuitem', { name: 'Edit', hidden: true })).toHaveClass(
-        '[&>svg]:size-5',
-        'lg:[&>svg]:size-[18px]',
-        'lg:pointer-fine:[&>svg]:size-4',
+        '[:where(&>svg)]:size-5',
+        'lg:[:where(&>svg)]:size-[18px]',
+        'lg:pointer-fine:[:where(&>svg)]:size-4',
       );
     });
   });

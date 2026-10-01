@@ -1,6 +1,7 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
 import { expect, within } from 'storybook/test';
 
+import { UiCard } from '../card/card';
 import { FACT_SIZES, FACT_SUB_TONES, type FactSize, type FactSubTone, UiFact, UiFacts } from './fact';
 
 type FactArgs = {
@@ -11,7 +12,7 @@ type FactArgs = {
 
 const meta: Meta<FactArgs> = {
   title: 'Data display/Facts',
-  decorators: [moduleMetadata({ imports: [UiFacts, UiFact] })],
+  decorators: [moduleMetadata({ imports: [UiCard, UiFacts, UiFact] })],
   parameters: {
     docs: {
       description: {
@@ -33,6 +34,7 @@ line under the value, and a hairline between rows. Built on a native description
 * \`dl[uiFacts]\` holds \`div[ui-fact]\` children, each exposing a \`dt\` (the label) and a \`dd\` (the
   value and its sub-line), which is the markup assistive technologies expect for term and value pairs.
 * The sub-line colour (\`stale\`) is never the only signal: the line says what is out of date.
+* \`size="auto"\` is \`md\` below 64rem and \`sm\` from it, as the Lignes detail does, so one list serves both widths.
 * \`size="md"\` (12 px rows, body value) is the iPhone detail inside a card; \`sm\` (10 px rows, label
   value) is the desktop detail card. The card around the iPhone list is page layout.`,
       },
@@ -57,7 +59,7 @@ line under the value, and a hairline between rows. Built on a native description
       control: 'inline-radio',
       options: [...FACT_SIZES],
       description:
-        '`md` is a 12 px row with a body value; `sm` a 10 px row with a label-size value and no hairline between rows.',
+        '`md` is a 12 px row with a body value; `sm` a 10 px row with a label-size value and no hairline between rows; `auto` is `md` below 64rem and `sm` from it, so one list serves both widths.',
     },
     subTone: {
       control: 'inline-radio',
@@ -104,4 +106,23 @@ export const Desktop: Story = {
 
 export const Stale: Story = {
   args: { subTone: 'stale' },
+};
+
+export const Auto: Story = {
+  name: 'Auto size (Lignes detail, one list for both widths)',
+  render: (args) => ({
+    props: args,
+    template: `
+      <div class="w-[358px] lg:w-[420px]">
+        <ui-card surface="max-lg" padding="rows">
+        <dl uiFacts [ruled]="ruled">
+          <div ui-fact label="Quantité" size="auto">500</div>
+          <div ui-fact label="PRU" size="auto">24,12 €</div>
+          <div ui-fact label="Cours" size="auto" sub="Cours du 25/09 à 17:35 · Yahoo Finance" [subTone]="subTone">28,64 €</div>
+          <div ui-fact label="ISIN" size="auto" sub="ETF">LU1681043599</div>
+        </dl>
+        </ui-card>
+      </div>
+    `,
+  }),
 };

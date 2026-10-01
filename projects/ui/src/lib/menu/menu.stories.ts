@@ -43,15 +43,29 @@ backdrop, and \`heading\` names what the actions apply to. \`width\` fixes the p
       },
     },
   },
-  render: () => ({
+  render: (args) => ({
+    props: args,
     template: `
       <button ui-button size="icon" variant="ghost" aria-label="More" [uiMenuTrigger]="menu">⋯</button>
-      <ui-menu #menu label="Line actions">
+      <ui-menu #menu label="Line actions" [sheet]="sheet" [heading]="heading">
         <button uiMenuItem type="button">Edit</button>
         <button uiMenuItem type="button" destructive>Delete the line</button>
       </ui-menu>
     `,
   }),
+  args: { sheet: false, heading: undefined },
+  argTypes: {
+    sheet: {
+      control: 'boolean',
+      description:
+        'Below 64rem, opens as a bottom action sheet above the tab bar, with a backdrop, instead of as a popover beside the trigger. From 64rem it is a popover either way.',
+    },
+    heading: {
+      control: 'text',
+      description:
+        'Title of the sheet naming what the actions apply to (an account name). Shown only with `sheet`, below 64rem, and hidden from assistive technologies: `label` must name the target too.',
+    },
+  },
 };
 
 export default meta;

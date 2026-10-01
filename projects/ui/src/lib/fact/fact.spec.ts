@@ -46,6 +46,16 @@ describe('UiFact', () => {
     );
   });
 
+  it('switches from the md to the sm size at 64rem with the auto size, hairline included', async () => {
+    const { container } = await renderFacts({ size: 'auto' });
+
+    expect(container.querySelector('[ui-fact]')).toHaveClass(
+      'lg:py-2.5',
+      'max-lg:[&:not(:first-child)]:shadow-[inset_0_1px_0_var(--hairline)]',
+    );
+    expect(screen.getByText('500')).toHaveClass('lg:text-label');
+  });
+
   it('shows an optional sub-line under the value, subtle by default', async () => {
     await renderFacts();
 
@@ -69,6 +79,7 @@ describe('UiFact', () => {
   it.each<[FactSize, string[]]>([
     ['md', ['py-3', 'text-body']],
     ['sm', ['py-2.5', 'text-label']],
+    ['auto', ['py-3', 'text-body']],
   ])('applies the %s size', async (size, classes) => {
     const { container } = await renderFacts({ size });
 
