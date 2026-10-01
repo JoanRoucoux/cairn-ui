@@ -1,5 +1,14 @@
 import { Component, computed, input } from '@angular/core';
 
+/** Track thicknesses. `MeterSize` is derived from this tuple. */
+export const METER_SIZES = ['md', 'sm'] as const;
+export type MeterSize = (typeof METER_SIZES)[number];
+
+const TRACK_CLASSES: Record<MeterSize, string> = {
+  md: 'h-1.5',
+  sm: 'h-1',
+};
+
 /** Ramp step used to paint the fill. `MeterTone` is derived from this tuple. */
 export const METER_TONES = [1, 2, 3, 4, 5, 6] as const;
 export type MeterTone = (typeof METER_TONES)[number];
@@ -24,13 +33,14 @@ const TONE_CLASSES: Record<MeterTone, string> = {
   selector: 'ui-meter',
   template: `
     <div
-      class="rounded-pill h-1.5 w-full overflow-hidden bg-(--muted)"
+      class="rounded-pill w-full overflow-hidden bg-(--muted)"
       role="meter"
       [attr.aria-label]="label()"
       [attr.aria-valuemax]="1"
       [attr.aria-valuemin]="0"
       [attr.aria-valuenow]="value()"
       [attr.aria-valuetext]="valueText()"
+      [class]="trackClasses()"
     >
       <div data-testid="meter-fill" [class]="fillClasses()" [style.width.%]="percent()"></div>
     </div>
@@ -41,6 +51,9 @@ export class UiMeter {
   readonly label = input.required<string>();
   readonly valueText = input.required<string>();
   readonly tone = input<MeterTone>(1);
+  readonly size = input<MeterSize>('md');
+
+  protected readonly trackClasses = computed(() => TRACK_CLASSES[this.size()]);
 
   protected readonly percent = computed(() => Math.min(100, Math.max(0, this.value() * 100)));
 

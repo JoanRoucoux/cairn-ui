@@ -154,4 +154,26 @@ describe('UiSegmented', () => {
       'focus-visible:outline-(--ring)',
     );
   });
+
+  it('names the radiogroup by aria-label and draws no visible label by default', async () => {
+    await renderSegmented();
+
+    expect(screen.getByRole('radiogroup')).toHaveAttribute('aria-label');
+    expect(screen.getByRole('radiogroup')).not.toHaveAttribute('aria-labelledby');
+  });
+
+  it('draws the label above the track and names the group by it with showLabel', async () => {
+    await render('<ui-segmented [options]="options" label="Theme" showLabel [(value)]="value" />', {
+      imports: [UiSegmented],
+      componentProperties: { options, value: '1d' },
+    });
+    const label = screen.getByText('Theme');
+    const group = screen.getByRole('radiogroup');
+
+    expect(label).toHaveClass('text-label', 'leading-[17px]', 'font-medium', 'text-(--muted-foreground)');
+    expect(group).not.toHaveAttribute('aria-label');
+    expect(group).toHaveAttribute('aria-labelledby', label.id);
+    expect(screen.getByRole('radiogroup', { name: 'Theme' })).toBeInTheDocument();
+    expect(label.parentElement).toHaveClass('gap-1.5');
+  });
 });

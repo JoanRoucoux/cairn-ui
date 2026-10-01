@@ -367,4 +367,34 @@ describe('UiDialog', () => {
 
     expect(container.querySelector('dialog')).toHaveAttribute('open');
   });
+
+  it('describes a confirm dialog by its body when it has no description', async () => {
+    const { container } = await render(
+      `<ui-dialog heading="Delete" layout="confirm" [open]="true"><p>This cannot be undone.</p></ui-dialog>`,
+      { imports: [UiDialog] },
+    );
+    const dialog = container.querySelector('dialog') as HTMLElement;
+    const describedBy = dialog.getAttribute('aria-describedby');
+
+    expect(describedBy).toBeTruthy();
+    expect(container.querySelector(`#${describedBy}`)).toContainElement(screen.getByText('This cannot be undone.'));
+  });
+
+  it('prefers the description over the body for a confirm dialog', async () => {
+    const { container } = await render(
+      `<ui-dialog heading="Delete" description="Ferrari" layout="confirm" [open]="true"><p>Body</p></ui-dialog>`,
+      { imports: [UiDialog] },
+    );
+    const describedBy = container.querySelector('dialog')?.getAttribute('aria-describedby');
+
+    expect(container.querySelector(`#${describedBy}`)).toHaveTextContent('Ferrari');
+  });
+
+  it('leaves a trade dialog without description undescribed', async () => {
+    const { container } = await render(`<ui-dialog heading="Buy" [open]="true"><p>Body</p></ui-dialog>`, {
+      imports: [UiDialog],
+    });
+
+    expect(container.querySelector('dialog')).not.toHaveAttribute('aria-describedby');
+  });
 });

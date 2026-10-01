@@ -16,13 +16,13 @@ const meta: Meta<SkeletonArgs> = {
     docs: {
       description: {
         component: `Placeholder standing in for content that has not arrived yet, at the shape of the content it
-replaces: text, a dominant figure, a list row, a chart, or a ring.
+replaces: text, a dominant figure, a list row, a chart, a ring, or a legend dot.
 
 \`shape="text"\` (the default) draws one bar per \`lines\`; above one line, the last bar is shortened so
 the block reads as the tail of a paragraph rather than another full width line. \`figure\` is the 260 by
 40 dominant figure and \`row\` a list row. \`chart\` fills its host from a 200px floor, so the
 screen sizes the box (200 on the phone, 300 and more on the desktop). \`ring\` takes \`size\`
-(232 on the phone, 240 on the desktop) with a 30px band. None of them reads \`lines\` or \`height\`.
+(232 on the phone, 240 on the desktop) with a 30px band. \`dot\` is the 12px disc of a legend entry. None of them reads \`lines\` or \`height\`.
 
 #### When to use
 
@@ -131,4 +131,24 @@ export const Ring: Story = {
 
 export const RingDesktop: Story = {
   args: { shape: 'ring', size: 240 },
+};
+
+export const Dot: Story = {
+  name: 'Legend dot',
+  args: { shape: 'dot' },
+  render: (args) => ({
+    props: args,
+    template: `<div data-frame class="w-fit bg-(--card) p-2"><ui-skeleton [shape]="shape" /></div>`,
+  }),
+};
+
+export const LegendEntry: Story = {
+  name: 'Legend entry, dot and label',
+  render: () => ({
+    template: `
+      <div class="flex w-[280px] items-center gap-3 bg-(--card) p-2">
+        <ui-skeleton shape="dot" class="flex-none" />
+        <ui-skeleton class="w-[140px]" [height]="16" />
+      </div>`,
+  }),
 };

@@ -63,4 +63,30 @@ describe('UiDelta', () => {
     const delta = screen.getByText('+316.54 EUR');
     expect(delta.closest('ui-delta')).toHaveClass('text-(--muted-foreground)');
   });
+
+  it('keeps the label size and the medium weight by default', async () => {
+    const { container } = await renderDelta(316.54);
+
+    expect(container.querySelector('ui-delta')).toHaveClass('text-label', 'font-medium');
+  });
+
+  it('inherits the size of its context at size inherit', async () => {
+    const { container } = await render('<ui-delta [value]="1" unknownLabel="n/a" size="inherit">+1</ui-delta>', {
+      imports: [UiDelta],
+    });
+    const delta = container.querySelector('ui-delta');
+
+    expect(delta).not.toHaveClass('text-label');
+    expect(delta).toHaveClass('tabular-nums');
+  });
+
+  it('draws the regular weight on request', async () => {
+    const { container } = await render('<ui-delta [value]="1" unknownLabel="n/a" weight="regular">+1</ui-delta>', {
+      imports: [UiDelta],
+    });
+    const delta = container.querySelector('ui-delta');
+
+    expect(delta).toHaveClass('font-normal');
+    expect(delta).not.toHaveClass('font-medium');
+  });
 });

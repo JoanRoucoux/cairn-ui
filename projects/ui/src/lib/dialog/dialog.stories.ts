@@ -332,6 +332,9 @@ export const AddLineSheetManyResults: Story = {
 
 export const DeletePasskey: Story = {
   name: 'Supprimer la clé, alertdialog (488px) and sheet',
+  play: async ({ canvasElement }) => {
+    await expect(canvasElement.querySelector('dialog')?.getAttribute('aria-describedby')).toBeTruthy();
+  },
   args: {
     heading: 'Supprimer la clé « MacBook Air » ?',
     description: undefined,

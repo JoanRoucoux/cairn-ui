@@ -159,36 +159,35 @@ type PlotRef = ElementRef<SVGSVGElement>;
           [class]="tooltipClasses().box"
           [style]="tooltipStyle(point)"
         >
-          <p class="font-medium text-(--foreground)" [class]="tooltipClasses().value">{{ valueFormat()(point.v) }}</p>
+          <p class="font-medium text-(--foreground)" [class]="tooltipClasses().value">
+            {{ tooltipFormat()?.(point) ?? valueFormat()(point.v) }}
+          </p>
           @if (tooltipDelta()) {
             <p data-chart-delta [class]="deltaClasses(point)">{{ deltaFormat()(deltaFor(point)) }}</p>
           }
           <p class="text-caption text-(--subtle-foreground)" data-chart-date>{{ timeFormat()(point.t) }}</p>
         </div>
       }
-
       @if (points().length > 0) {
-        <table class="sr-only">
-          <caption>
-            {{
-              label()
-            }}
-          </caption>
-          <thead>
-            <tr>
-              <th scope="col">{{ timeColumnLabel() }}</th>
-              <th scope="col">{{ valueColumnLabel() }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (point of points(); track point.t) {
+        <div class="sr-only">
+          <table>
+            <caption [textContent]="label()"></caption>
+            <thead>
               <tr>
-                <td>{{ timeFormat()(point.t) }}</td>
-                <td>{{ valueFormat()(point.v) }}</td>
+                <th scope="col">{{ timeColumnLabel() }}</th>
+                <th scope="col">{{ valueColumnLabel() }}</th>
               </tr>
-            }
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              @for (point of points(); track point.t) {
+                <tr>
+                  <td>{{ timeFormat()(point.t) }}</td>
+                  <td>{{ valueFormat()(point.v) }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
       }
     </div>
   `,
@@ -200,6 +199,7 @@ export class UiLineChart {
   readonly points = input.required<ChartPoint[]>();
   readonly label = input.required<string>();
   readonly valueFormat = input<(value: number) => string>(identityValue);
+  readonly tooltipFormat = input<(point: ChartPoint) => string>();
   readonly deltaFormat = input<(delta: number) => string>(identityDelta);
   readonly timeFormat = input<(time: number) => string>(identityTime);
   readonly axisFormat = input<(time: number) => string>(identityTime);

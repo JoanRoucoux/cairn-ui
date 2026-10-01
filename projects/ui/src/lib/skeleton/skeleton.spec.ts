@@ -111,4 +111,13 @@ describe('UiSkeleton', () => {
 
     expect(container.querySelectorAll('ui-skeleton > span')).toHaveLength(2);
   });
+
+  it('draws the dot as a 12px pulsing disc', async () => {
+    const { fixture } = await render('<ui-skeleton shape="dot" />', { imports: [UiSkeleton] });
+    const dot = fixture.nativeElement.querySelector('ui-skeleton > span');
+
+    expect(fixture.nativeElement.querySelectorAll('ui-skeleton > span')).toHaveLength(1);
+    expect(dot).toHaveClass('size-3', 'rounded-pill', 'bg-(--muted)');
+    expect(dot.style.animation).toContain('cairn-pulse');
+  });
 });

@@ -1,11 +1,21 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
 import { expect, within } from 'storybook/test';
 
-import { DELTA_EMPHASES, type DeltaEmphasis, UiDelta } from './delta';
+import {
+  DELTA_EMPHASES,
+  DELTA_SIZES,
+  DELTA_WEIGHTS,
+  type DeltaEmphasis,
+  type DeltaSize,
+  type DeltaWeight,
+  UiDelta,
+} from './delta';
 
 type DeltaArgs = {
   value: number | null;
   emphasis: DeltaEmphasis;
+  size: DeltaSize;
+  weight: DeltaWeight;
   label: string;
 };
 
@@ -44,11 +54,13 @@ is responsible for formatting it with its own sign, because color can never carr
   },
   render: (args) => ({
     props: args,
-    template: `<ui-delta [value]="value" [emphasis]="emphasis" unknownLabel="Non disponible">{{ label }}</ui-delta>`,
+    template: `<ui-delta [value]="value" [emphasis]="emphasis" [size]="size" [weight]="weight" unknownLabel="Non disponible">{{ label }}</ui-delta>`,
   }),
   args: {
     value: 412.56,
     emphasis: 'text',
+    size: 'label',
+    weight: 'medium',
     label: '+412,56 € · +0,25 %',
   },
   argTypes: {
@@ -61,6 +73,16 @@ is responsible for formatting it with its own sign, because color can never carr
       control: 'select',
       options: [...DELTA_EMPHASES],
       description: '`text` colors the figure only. `pill` also draws a neutral chip behind it.',
+    },
+    size: {
+      control: 'inline-radio',
+      options: [...DELTA_SIZES],
+      description: '`label` sets the label size; `inherit` takes the size of the line it sits in.',
+    },
+    weight: {
+      control: 'inline-radio',
+      options: [...DELTA_WEIGHTS],
+      description: '`medium` (500, the default) or `regular` (400) for a figure that sits in running rows.',
     },
     label: { control: 'text', description: 'Projected content: the formatted figure, already carrying its own sign.' },
   },
@@ -89,5 +111,29 @@ export const Unknown: Story = {
     const canvas = within(canvasElement);
 
     await expect(canvas.getByText('Non disponible')).toBeInTheDocument();
+  },
+};
+
+export const RegularLabel: Story = {
+  name: 'Envelope share, regular weight',
+  args: { weight: 'regular', label: '+4,2 %' },
+  render: (args) => ({
+    props: args,
+    template: `<div data-frame class="bg-(--card) p-2"><ui-delta [value]="value" [size]="size" [weight]="weight" unknownLabel="Non disponible">{{ label }}</ui-delta></div>`,
+  }),
+};
+
+export const InheritedBody: Story = {
+  name: 'Mover in a table cell, size inherit and regular weight',
+  args: { size: 'inherit', weight: 'regular', label: '+1 204,50 €' },
+  render: (args) => ({
+    props: args,
+    template: `<div data-frame class="text-body bg-(--card) p-2"><ui-delta [value]="value" [size]="size" [weight]="weight" unknownLabel="Non disponible">{{ label }}</ui-delta></div>`,
+  }),
+  play: async ({ canvasElement }) => {
+    const delta = canvasElement.querySelector('ui-delta') as HTMLElement;
+
+    await expect(getComputedStyle(delta).fontSize).toBe(getComputedStyle(delta.parentElement as HTMLElement).fontSize);
+    await expect(getComputedStyle(delta).fontWeight).toBe('400');
   },
 };

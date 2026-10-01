@@ -14,6 +14,7 @@ type LineChartArgs = {
   timeColumnLabel: string;
   valueColumnLabel: string;
   valueFormat: (value: number) => string;
+  tooltipFormat?: (point: ChartPoint) => string;
   deltaFormat: (delta: number) => string;
   timeFormat: (time: number) => string;
   axisFormat: (time: number) => string;
@@ -154,7 +155,16 @@ The host fills its parent's height (\`block h-full\`); size the chart by sizing 
       description:
         'Draws the curve alone at 1.5px, with no reference line, dot, axis or tooltip, and out of the tab order. Size it with the container.',
     },
-    valueFormat: { control: false, description: 'Formats a point value for the tooltip and the start label.' },
+    valueFormat: {
+      control: false,
+      description:
+        'Formats a point value for the start label, the screen-reader table and, without tooltipFormat, the tooltip.',
+    },
+    tooltipFormat: {
+      control: false,
+      description:
+        'Formats a whole point for the tooltip value line, when it reads more than the value (a position value and its unit price). Falls back to valueFormat.',
+    },
     deltaFormat: { control: false, description: 'Formats the signed change since the first point, for the tooltip.' },
     timeFormat: { control: false, description: "Formats a point's time for the tooltip and the table." },
     axisFormat: { control: false, description: 'Formats a tick time for the axis.' },
@@ -264,5 +274,38 @@ export const RangeTransitionSettles: Story = {
     const target = buildGeometry(oneDayPoints, 640, plotHeight, { x: 0, top: padding, bottom: padding });
 
     await expect(canvasElement.querySelector('[data-chart-line]')).toHaveAttribute('d', target?.line);
+  },
+};
+
+export const LignesDetailTooltip: Story = {
+  name: 'Lignes detail, tooltip with the unit price',
+  args: {
+    tooltipFormat: (point: ChartPoint) => `${eur(point.v)} · cours ${eur(point.v / 500)}`,
+  },
+  render: (args) => ({
+    props: args,
+    template: `<div data-frame class="bg-(--card) p-4" style="width: 358px"><div style="height: 150px;"><ui-line-chart [tooltipDelta]="false" axisTicks="3" [points]="points" [label]="label" startLabel="Départ" [valueFormat]="valueFormat" [tooltipFormat]="tooltipFormat" [timeFormat]="timeFormat" [axisFormat]="axisFormat" /></div></div>`,
+  }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.hover(canvasElement.querySelector('svg') as HTMLElement);
+
+    await expect(canvas.getByTestId('chart-tooltip')).toHaveTextContent(/cours/);
+    await expect(canvas.getByText(/^Départ /)).not.toHaveTextContent(/cours/);
+  },
+};
+
+export const ScreenReaderTableDoesNotWiden: Story = {
+  name: 'The screen-reader table does not widen its host',
+  render: (args) => ({
+    props: args,
+    template: `<div data-frame style="width: 326px; height: 205px; overflow: visible;"><ui-line-chart [points]="points" [label]="label" [valueFormat]="valueFormat" [timeFormat]="timeFormat" /></div>`,
+  }),
+  play: async ({ canvasElement }) => {
+    const table = canvasElement.querySelector('table') as HTMLElement;
+
+    await expect(table.parentElement as HTMLElement).toHaveClass('sr-only');
+    await expect(canvasElement.scrollWidth).toBeLessThanOrEqual(canvasElement.clientWidth);
   },
 };

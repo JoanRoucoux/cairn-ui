@@ -4,7 +4,25 @@ import { Component, computed, input } from '@angular/core';
 export const DELTA_EMPHASES = ['text', 'pill'] as const;
 export type DeltaEmphasis = (typeof DELTA_EMPHASES)[number];
 
-const BASE_CLASSES = 'inline-flex items-center gap-1 text-label font-medium tabular-nums';
+/** Type sizes. `DeltaSize` is derived from this tuple. */
+export const DELTA_SIZES = ['label', 'inherit'] as const;
+export type DeltaSize = (typeof DELTA_SIZES)[number];
+
+/** Font weights. `DeltaWeight` is derived from this tuple. */
+export const DELTA_WEIGHTS = ['medium', 'regular'] as const;
+export type DeltaWeight = (typeof DELTA_WEIGHTS)[number];
+
+const BASE_CLASSES = 'inline-flex items-center gap-1 tabular-nums';
+
+const SIZE_CLASSES: Record<DeltaSize, string> = {
+  label: 'text-label',
+  inherit: '',
+};
+
+const WEIGHT_CLASSES: Record<DeltaWeight, string> = {
+  medium: 'font-medium',
+  regular: 'font-normal',
+};
 
 const PILL_CLASSES = 'h-6 rounded-pill px-2';
 
@@ -49,6 +67,8 @@ export class UiDelta {
   readonly value = input.required<number | null | undefined>();
   readonly unknownLabel = input.required<string>();
   readonly emphasis = input<DeltaEmphasis>('text');
+  readonly size = input<DeltaSize>('label');
+  readonly weight = input<DeltaWeight>('medium');
 
   protected readonly sign = computed<Sign>(() => {
     const value = this.value();
@@ -69,6 +89,6 @@ export class UiDelta {
     const sign = this.sign();
     const background = this.emphasis() === 'pill' ? `${PILL_CLASSES} ${PILL_BACKGROUND_CLASS}` : 'bg-transparent';
 
-    return `${BASE_CLASSES} ${TEXT_CLASSES[sign]} ${background}`;
+    return `${BASE_CLASSES} ${SIZE_CLASSES[this.size()]} ${WEIGHT_CLASSES[this.weight()]} ${TEXT_CLASSES[sign]} ${background}`;
   });
 }

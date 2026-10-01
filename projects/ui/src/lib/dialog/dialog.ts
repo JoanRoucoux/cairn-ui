@@ -98,7 +98,7 @@ const nextId = (() => {
   template: `
     <dialog
       #dlg
-      [attr.aria-describedby]="description() ? descriptionId : null"
+      [attr.aria-describedby]="describedBy()"
       [attr.aria-labelledby]="headingId"
       [attr.role]="layout() === 'confirm' ? 'alertdialog' : 'dialog'"
       [class]="classes()"
@@ -141,7 +141,7 @@ const nextId = (() => {
         }
       </div>
 
-      <div class="min-h-0 flex-1 overflow-y-auto px-4 lg:px-6" data-dialog-body>
+      <div class="min-h-0 flex-1 overflow-y-auto px-4 lg:px-6" data-dialog-body [id]="bodyId">
         <!-- empty:hidden keeps a body-less dialog from carrying the body's vertical padding. -->
         <div class="flex flex-col gap-4 empty:hidden" [class]="spec().body">
           <ng-content />
@@ -224,6 +224,15 @@ export class UiDialog {
 
   protected readonly headingId = nextId();
   protected readonly descriptionId = `${this.headingId}-description`;
+  protected readonly bodyId = `${this.headingId}-body`;
+
+  protected readonly describedBy = computed(() => {
+    if (this.description()) {
+      return this.descriptionId;
+    }
+
+    return this.layout() === 'confirm' ? this.bodyId : null;
+  });
 
   protected readonly widthValue = computed(() => {
     const width = this.width();

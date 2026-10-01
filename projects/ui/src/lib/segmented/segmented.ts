@@ -1,4 +1,10 @@
-import { Component, ElementRef, computed, input, model, viewChildren } from '@angular/core';
+import { Component, ElementRef, booleanAttribute, computed, input, model, viewChildren } from '@angular/core';
+
+const nextId = (() => {
+  let count = 0;
+
+  return () => `ui-segmented-${++count}`;
+})();
 
 export type SegmentedOption = {
   value: string;
@@ -22,42 +28,53 @@ const UNSELECTED_CLASSES = 'text-(--muted-foreground) hover:text-(--foreground)'
 @Component({
   selector: 'ui-segmented',
   template: `
-    <div
-      class="rounded-control relative grid bg-(--muted) p-0.5"
-      role="radiogroup"
-      [attr.aria-label]="label()"
-      [style.grid-template-columns]="'repeat(' + options().length + ', 1fr)'"
-    >
-      @if (thumbIndex(); as index) {
-        <span
-          aria-hidden="true"
-          class="absolute top-0.5 bottom-0.5 left-0.5 rounded-[calc(var(--radius-control)-2px)] bg-(--card) shadow-[0_1px_2px_rgb(0_0_0/0.08),inset_0_0_0_1px_var(--border)] transition-transform duration-(--duration-fast) ease-out"
-          data-thumb
-          [style.transform]="'translateX(' + (index - 1) * 100 + '%)'"
-          [style.width]="'calc((100% - 4px) / ' + options().length + ')'"
-        ></span>
+    <div [class]="showLabel() ? 'flex flex-col gap-1.5' : ''">
+      @if (showLabel()) {
+        <span class="text-label leading-[17px] font-medium text-(--muted-foreground)" [id]="labelId">{{
+          label()
+        }}</span>
       }
+      <div
+        class="rounded-control relative grid bg-(--muted) p-0.5"
+        role="radiogroup"
+        [attr.aria-label]="showLabel() ? null : label()"
+        [attr.aria-labelledby]="showLabel() ? labelId : null"
+        [style.grid-template-columns]="'repeat(' + options().length + ', 1fr)'"
+      >
+        @if (thumbIndex(); as index) {
+          <span
+            aria-hidden="true"
+            class="absolute top-0.5 bottom-0.5 left-0.5 rounded-[calc(var(--radius-control)-2px)] bg-(--card) shadow-[0_1px_2px_rgb(0_0_0/0.08),inset_0_0_0_1px_var(--border)] transition-transform duration-(--duration-fast) ease-out"
+            data-thumb
+            [style.transform]="'translateX(' + (index - 1) * 100 + '%)'"
+            [style.width]="'calc((100% - 4px) / ' + options().length + ')'"
+          ></span>
+        }
 
-      @for (option of options(); track option.value) {
-        <button
-          #radio
-          role="radio"
-          type="button"
-          [attr.aria-checked]="option.value === value()"
-          [attr.tabindex]="tabIndexFor(option.value)"
-          [class]="optionClasses(option.value)"
-          (click)="select(option.value)"
-          (keydown)="onKeydown($event)"
-        >
-          {{ option.label }}
-        </button>
-      }
+        @for (option of options(); track option.value) {
+          <button
+            #radio
+            role="radio"
+            type="button"
+            [attr.aria-checked]="option.value === value()"
+            [attr.tabindex]="tabIndexFor(option.value)"
+            [class]="optionClasses(option.value)"
+            (click)="select(option.value)"
+            (keydown)="onKeydown($event)"
+          >
+            {{ option.label }}
+          </button>
+        }
+      </div>
     </div>
   `,
 })
 export class UiSegmented {
   readonly options = input.required<SegmentedOption[]>();
   readonly label = input.required<string>();
+  readonly showLabel = input(false, { transform: booleanAttribute });
+
+  protected readonly labelId = nextId();
   readonly value = model.required<string>();
 
   protected readonly radios = viewChildren<ElementRef<HTMLButtonElement>>('radio');
