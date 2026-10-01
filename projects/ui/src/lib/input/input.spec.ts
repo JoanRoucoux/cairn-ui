@@ -43,6 +43,10 @@ describe('UiInput', () => {
   it.each<[ControlSize, string]>([
     ['sm', 'h-9'],
     ['md', 'min-h-(--row-min)'],
+    ['lg', 'min-h-12'],
+    ['lg', 'lg:min-h-(--row-min)'],
+    ['xl', 'h-12'],
+    ['xl', 'lg:h-11'],
   ])('applies the %s size classes', async (size, expectedClass) => {
     await render('<input uiInput aria-label="Email" [size]="size" />', {
       imports: [UiInput],
@@ -83,6 +87,14 @@ describe('UiInput', () => {
     await render('<input uiInput aria-label="Search" class="w-52" />', { imports: [UiInput] });
 
     expect(screen.getByRole('textbox', { name: 'Search' })).toHaveClass('w-52', 'min-h-(--row-min)');
+  });
+
+  it('hides the native search clear button, as the design draws none', async () => {
+    await render('<input uiInput type="search" aria-label="Search" />', { imports: [UiInput] });
+
+    expect(screen.getByRole('searchbox', { name: 'Search' })).toHaveClass(
+      '[&::-webkit-search-cancel-button]:appearance-none',
+    );
   });
 
   it('resolves UI_CONTROL to itself', async () => {

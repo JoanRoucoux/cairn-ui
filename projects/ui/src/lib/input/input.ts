@@ -2,8 +2,8 @@ import { Directive, computed, forwardRef, input } from '@angular/core';
 
 import { UI_CONTROL, type UiControl, type UiControlError } from '../control/control';
 
-/** Available control sizes. `md` is the 44/40px touch target. */
-export const CONTROL_SIZES = ['sm', 'md'] as const;
+/** Available control sizes. `md` is the 44/40px touch target; `lg` and `xl` are the 48px sheet and sign-in fields. */
+export const CONTROL_SIZES = ['sm', 'md', 'lg', 'xl'] as const;
 export type ControlSize = (typeof CONTROL_SIZES)[number];
 
 export const CONTROL_BASE_CLASSES =
@@ -20,7 +20,11 @@ export const CONTROL_SURFACE_CLASSES: Record<ControlSurface, string> = {
 export const CONTROL_SIZE_CLASSES: Record<ControlSize, string> = {
   sm: 'h-9',
   md: 'min-h-(--row-min)',
+  lg: 'min-h-12 lg:min-h-(--row-min)',
+  xl: 'h-12 lg:h-11',
 };
+
+const SEARCH_CLASSES = '[&::-webkit-search-cancel-button]:appearance-none';
 
 /**
  * Styled native text input. A directive (not a wrapper component) so the host
@@ -47,7 +51,8 @@ export class UiInput implements UiControl {
   readonly touched = input(false);
 
   protected readonly classes = computed(
-    () => `${CONTROL_BASE_CLASSES} ${CONTROL_SURFACE_CLASSES[this.surface()]} ${CONTROL_SIZE_CLASSES[this.size()]}`,
+    () =>
+      `${CONTROL_BASE_CLASSES} ${SEARCH_CLASSES} ${CONTROL_SURFACE_CLASSES[this.surface()]} ${CONTROL_SIZE_CLASSES[this.size()]}`,
   );
 }
 
