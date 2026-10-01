@@ -28,7 +28,11 @@ its own when the content is taller than the screen, so the header and the footer
 
 The header carries the title, an optional subtitle (\`description\`) and a close cross, which exists
 only when the consumer passes \`closeLabel\`. The width is set by the consumer: \`md\`, \`lg\` or any CSS
-length (530px for a trade, 460px to add a line, 440px for a new account).
+length (Acheter 530px, Nouveau compte 528px, Ajouter une ligne 560px, Supprimer la clé 488px).
+
+Layout inputs: \`align\` (\`start\` hangs the cross beside a title that may carry a subtitle, \`center\` centres title and cross), \`divided\` (a hairline above the footer, used by the fixed-footer dialogs), \`role\` (\`alertdialog\` for confirmations) and \`truncateDescription\` (one ellipsised line instead of wrapping). A click on the backdrop closes the dialog, like Escape.
+
+The spacing of each screen is set with CSS custom properties on the host, with the handoff defaults: \`--dialog-top-lg\` (24px), \`--dialog-head-gap\` and \`-lg\` (8px, 20px: header to body), \`--dialog-foot-gap\` and \`-lg\` (16px, 20px: body to footer), \`--dialog-bottom\` (8px plus the safe area, which \`--dialog-safe\` can replace) and \`--dialog-bottom-lg\` (24px, 16px when divided), \`--dialog-title-top\`, \`--dialog-handle-top\` and \`--dialog-icon-lg\`. The stories carry the values of every screen.
 
 Content goes in two slots: the default one for the body, and \`[dialogActions]\` for the footer
 buttons. Put the dismissing action first. On a desktop the footer is right-aligned; on a sheet the
@@ -128,6 +132,7 @@ export const CrossCloses: Story = {
 
     await userEvent.click(canvas.getByRole('button', { name: 'Ouvrir' }));
     await waitFor(() => expect(canvas.getByRole('dialog', { name: 'Saisir un cours' })).toBeVisible());
+    await expect(canvas.getByRole('button', { name: 'Fermer' })).toHaveFocus();
     await userEvent.click(canvas.getByRole('button', { name: 'Fermer' }));
 
     await waitFor(() => expect(canvas.queryByRole('dialog')).not.toBeInTheDocument());
@@ -135,13 +140,86 @@ export const CrossCloses: Story = {
   },
 };
 
+export const BackdropCloses: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Ouvrir' }));
+    await waitFor(() => expect(canvas.getByRole('dialog', { name: 'Saisir un cours' })).toBeVisible());
+    await userEvent.pointer({
+      keys: '[MouseLeft]',
+      target: canvas.getByRole('dialog'),
+      coords: { clientX: 4, clientY: 4 },
+    });
+
+    await waitFor(() => expect(canvas.queryByRole('dialog')).not.toBeInTheDocument());
+    await expect(canvas.getByRole('button', { name: 'Ouvrir' })).toHaveFocus();
+  },
+};
+
+const field = (label: string): string => `
+  <div class="flex flex-col gap-1.5">
+    <span class="text-label font-medium text-(--muted-foreground)">${label}</span>
+    <div class="rounded-control bg-(--background) shadow-[inset_0_0_0_1px_var(--border)] h-12 lg:h-10"></div>
+  </div>`;
+
+const SAFE = '--dialog-safe: var(--story-safe, env(safe-area-inset-bottom))';
+
+export const Board: Story = {
+  name: 'Board, dialog (380px)',
+  args: { heading: 'Vendre Ferrari', description: undefined, width: '380px', open: true },
+  render: (args) => ({
+    props: args,
+    template: `
+      <ui-dialog
+        style="--dialog-top-lg: 20px; --dialog-head-gap-lg: 16px; --dialog-foot-gap-lg: 20px; --dialog-icon-lg: 20px"
+        headerAlign="center"
+        divided
+        [heading]="heading"
+        [closeLabel]="closeLabel"
+        [width]="width"
+        [open]="open"
+        (dismissed)="open = false"
+      >
+        <p class="text-label text-(--muted-foreground)">Contenu, défilant si besoin.</p>
+        <button dialogActions ui-button variant="outline" (click)="open = false">Annuler</button>
+        <button dialogActions ui-button (click)="open = false">Vendre</button>
+      </ui-dialog>
+    `,
+  }),
+};
+
+export const BoardSheet: Story = {
+  name: 'Board, sheet (iPhone, no cross)',
+  parameters: { viewport: { width: 390, height: 844 } },
+  args: { heading: 'Acheter Ferrari', description: undefined, closeLabel: undefined, open: true },
+  render: (args) => ({
+    props: args,
+    template: `
+      <ui-dialog
+        style="--dialog-head-gap: 0px; --dialog-foot-gap: 0px; --dialog-bottom: 20px"
+        headerAlign="center"
+        divided
+        [heading]="heading"
+        [open]="open"
+        (dismissed)="open = false"
+      >
+        <div style="height: 82px"></div>
+        <button dialogActions ui-button (click)="open = false">Acheter 10 parts</button>
+      </ui-dialog>
+    `,
+  }),
+};
+
 export const Trade: Story = {
-  name: 'Dialog, trade (530px)',
+  name: 'Acheter, dialog (530px) and sheet',
   args: { heading: 'Acheter', description: 'Ferrari · PEA', width: '530px', open: true },
   render: (args) => ({
     props: args,
     template: `
       <ui-dialog
+        style="--dialog-head-gap: 12px; --dialog-safe: 0px; --dialog-bottom: 0px"
+        truncateDescription
         [heading]="heading"
         [description]="description"
         [closeLabel]="closeLabel"
@@ -149,7 +227,10 @@ export const Trade: Story = {
         [open]="open"
         (dismissed)="open = false"
       >
-        <p class="text-label text-(--muted-foreground)">Quantité et prix unitaire.</p>
+        <div class="flex flex-col gap-4" data-story-body>${field('Quantité')}${field('Prix unitaire')}</div>
+        <div dialogActions class="-mx-4 mt-1 grid grid-cols-3 gap-1.5 bg-(--muted) p-1.5 pb-10 lg:hidden" data-story-keypad>
+          <span class="text-center text-2xl">1</span><span class="text-center text-2xl">2</span><span class="text-center text-2xl">3</span>
+        </div>
         <button dialogActions ui-button variant="outline" class="max-lg:hidden" (click)="open = false">Annuler</button>
         <button dialogActions ui-button (click)="open = false">Acheter 40 parts</button>
       </ui-dialog>
@@ -158,13 +239,21 @@ export const Trade: Story = {
 };
 
 export const NewAccount: Story = {
-  name: 'Dialog, new account (440px)',
-  args: { heading: 'Nouveau compte', description: undefined, width: '440px', open: true },
+  name: 'Nouveau compte, dialog (528px) and sheet',
+  args: { heading: 'Nouveau compte', description: undefined, width: '528px', open: true },
   render: (args) => ({
     props: args,
     template: `
-      <ui-dialog [heading]="heading" [closeLabel]="closeLabel" [width]="width" [open]="open" (dismissed)="open = false">
-        <p class="text-label text-(--muted-foreground)">Nom du compte, enveloppe et établissement.</p>
+      <ui-dialog
+        style="--dialog-head-gap-lg: 16px; --dialog-foot-gap-lg: 20px; --dialog-bottom-lg: 20px; --dialog-foot-gap: 20px; --dialog-bottom: 12px; ${SAFE}"
+        headerAlign="center"
+        [heading]="heading"
+        [closeLabel]="closeLabel"
+        [width]="width"
+        [open]="open"
+        (dismissed)="open = false"
+      >
+        <div class="flex flex-col gap-4" data-story-body>${field('Nom du compte')}${field('Enveloppe')}${field('Établissement (facultatif)')}</div>
         <button dialogActions ui-button variant="outline" class="max-lg:hidden" (click)="open = false">Annuler</button>
         <button dialogActions ui-button (click)="open = false">Créer le compte</button>
       </ui-dialog>
@@ -173,20 +262,22 @@ export const NewAccount: Story = {
 };
 
 export const AddLine: Story = {
-  name: 'Dialog, add a line (460px)',
-  args: { heading: 'Ajouter une ligne', description: 'PEA Boursorama', width: '460px', open: true },
+  name: 'Ajouter une ligne, dialog (560px) and sheet',
+  args: { heading: 'Ajouter une ligne', description: undefined, width: '560px', open: true },
   render: (args) => ({
     props: args,
     template: `
       <ui-dialog
+        style="--dialog-top-lg: 20px; --dialog-head-gap-lg: 16px; --dialog-foot-gap-lg: 20px; ${SAFE}"
+        headerAlign="center"
+        divided
         [heading]="heading"
-        [description]="description"
         [closeLabel]="closeLabel"
         [width]="width"
         [open]="open"
         (dismissed)="open = false"
       >
-        <p class="text-label text-(--muted-foreground)">Un seul champ, Titre : un nom ou un ISIN.</p>
+        <div class="flex flex-col gap-4" data-story-body>${field('Compte')}${field('Titre')}</div>
         <button dialogActions ui-button variant="outline" class="max-lg:hidden" (click)="open = false">Annuler</button>
         <button dialogActions ui-button (click)="open = false">Ajouter la ligne</button>
       </ui-dialog>
@@ -194,20 +285,28 @@ export const AddLine: Story = {
   }),
 };
 
-export const Destructive: Story = {
-  name: 'Dialog, destructive primary (440px)',
+export const DeletePasskey: Story = {
+  name: 'Supprimer la clé, alertdialog (488px) and sheet',
   args: {
-    heading: 'Supprimer la clé « iPhone de Joan » ?',
+    heading: 'Supprimer la clé « MacBook Air » ?',
     description: undefined,
     closeLabel: undefined,
-    width: '440px',
+    width: '488px',
     open: true,
   },
   render: (args) => ({
     props: args,
     template: `
-      <ui-dialog [heading]="heading" [width]="width" [open]="open" (dismissed)="open = false">
-        <p class="text-body text-(--muted-foreground)">
+      <ui-dialog
+        style="--dialog-head-gap-lg: 12px; --dialog-foot-gap-lg: 24px; --dialog-handle-top: 11.5px; --dialog-title-top: 12px; --dialog-head-gap: 12px; --dialog-foot-gap: 20px; ${SAFE}"
+        headerAlign="center"
+        role="alertdialog"
+        [heading]="heading"
+        [width]="width"
+        [open]="open"
+        (dismissed)="open = false"
+      >
+        <p class="text-body text-(--muted-foreground)" data-story-body>
           Cet appareil ne pourra plus se connecter à Cairn avec cette clé. Les autres clés restent valables.
         </p>
         <button dialogActions ui-button variant="outline" (click)="open = false">Annuler</button>

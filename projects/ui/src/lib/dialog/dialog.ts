@@ -39,45 +39,49 @@ const nextId = (() => {
  */
 @Component({
   selector: 'ui-dialog',
+  host: { '(click)': 'onClick($event)' },
   template: `
     <dialog
       #dlg
       [attr.aria-describedby]="description() ? descriptionId : null"
       [attr.aria-labelledby]="headingId"
+      [attr.role]="role()"
       [class]="classes()"
       [style.--dialog-width]="widthValue()"
       (close)="onNativeClose()"
     >
-      <div aria-hidden="true" class="grid h-5 place-items-center lg:hidden" data-dialog-handle>
+      <div
+        aria-hidden="true"
+        class="flex h-5 justify-center pt-[var(--dialog-handle-top,7.5px)] lg:hidden"
+        data-dialog-handle
+      >
         <span class="rounded-pill h-[5px] w-9 bg-(--border)"></span>
       </div>
 
-      <div
-        class="flex items-start gap-2 pl-4 lg:gap-3 lg:pt-5 lg:pb-1 lg:pl-6"
-        data-dialog-header
-        [class]="headerEnd()"
-      >
-        <div class="flex min-w-0 flex-1 flex-col pt-1 lg:pt-0">
+      <div data-dialog-header [class]="headerClasses()">
+        <div class="flex min-w-0 flex-1 flex-col" [class]="titleClasses()">
           <h2 class="text-title font-semibold" [id]="headingId">{{ heading() }}</h2>
 
           @if (description()) {
-            <p class="text-label truncate text-(--muted-foreground)" [id]="descriptionId">{{ description() }}</p>
+            <p
+              class="text-label text-(--muted-foreground)"
+              [class.truncate]="truncateDescription()"
+              [id]="descriptionId"
+            >
+              {{ description() }}
+            </p>
           }
         </div>
 
         @if (closeLabel()) {
-          <button
-            class="rounded-pill lg:rounded-control grid size-11 flex-none cursor-pointer place-items-center text-(--muted-foreground) transition-[transform,background-color,color] duration-(--duration-press) ease-out outline-none focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-(--ring) active:scale-(--press-scale) active:bg-(--soft) lg:-mt-1 lg:size-9 lg:hover:bg-(--glow) lg:hover:text-(--foreground)"
-            type="button"
-            [attr.aria-label]="closeLabel()"
-            (click)="dlg.close()"
-          >
+          <button type="button" [attr.aria-label]="closeLabel()" [class]="crossClasses()" (click)="dlg.close()">
             <svg
               aria-hidden="true"
-              class="block size-[22px] fill-none stroke-current stroke-[1.75] lg:size-5"
+              class="block size-[22px] fill-none stroke-current stroke-[1.75]"
               stroke-linecap="round"
               stroke-linejoin="round"
               viewBox="0 0 24 24"
+              [class]="iconClasses()"
             >
               <path d="M18 6 6 18" />
               <path d="m6 6 12 12" />
@@ -88,24 +92,24 @@ const nextId = (() => {
 
       <div class="min-h-0 flex-1 overflow-y-auto px-4 lg:px-6" data-dialog-body>
         <!-- empty:hidden keeps a body-less dialog from carrying the body's vertical padding. -->
-        <div class="flex flex-col gap-4 pt-2 pb-3 empty:hidden lg:pt-3 lg:pb-5">
+        <div
+          class="flex flex-col gap-4 pt-[var(--dialog-head-gap,8px)] pb-[var(--dialog-foot-gap,16px)] empty:hidden lg:pt-[var(--dialog-head-gap-lg,20px)] lg:pb-[var(--dialog-foot-gap-lg,20px)]"
+        >
           <ng-content />
         </div>
       </div>
 
-      <div
-        class="max-lg:*:text-body flex justify-end gap-2 px-4 pt-3 shadow-[0_-1px_0_var(--hairline)] empty:hidden max-lg:flex-col-reverse max-lg:pb-[calc(1.25rem+env(safe-area-inset-bottom))] max-lg:*:h-[50px] max-lg:*:w-full lg:px-6 lg:py-4"
-        data-dialog-footer
-      >
+      <div data-dialog-footer [class]="footerClasses()">
         <ng-content select="[dialogActions]" />
       </div>
     </dialog>
   `,
   styles: `
     dialog {
+      --dialog-ease: var(--ease-sheet);
       transition:
-        opacity var(--duration-base) var(--ease-sheet),
-        transform var(--duration-base) var(--ease-sheet),
+        opacity var(--duration-base) var(--dialog-ease),
+        transform var(--duration-base) var(--dialog-ease),
         overlay var(--duration-base) allow-discrete,
         display var(--duration-base) allow-discrete;
       opacity: 1;
@@ -127,6 +131,7 @@ const nextId = (() => {
 
     @media (min-width: 64rem) {
       dialog {
+        --dialog-ease: var(--ease-out);
         transform: scale(1);
       }
 
@@ -162,6 +167,10 @@ export class UiDialog {
   readonly heading = input.required<string>();
   readonly description = input<string>();
   readonly closeLabel = input<string>();
+  readonly role = input<'dialog' | 'alertdialog'>('dialog');
+  readonly headerAlign = input<'start' | 'center'>('start');
+  readonly divided = input(false, { transform: booleanAttribute });
+  readonly truncateDescription = input(false, { transform: booleanAttribute });
   readonly width = input<DialogWidth | (string & {})>('lg');
   readonly open = input(false, { transform: booleanAttribute });
   readonly dismissed = output<void>();
@@ -175,7 +184,26 @@ export class UiDialog {
     return Object.hasOwn(WIDTH_VALUES, width) ? WIDTH_VALUES[width as DialogWidth] : width;
   });
 
-  protected readonly headerEnd = computed(() => (this.closeLabel() ? 'pr-2 lg:pr-4' : 'pr-4 lg:pr-6'));
+  protected readonly headerClasses = computed(
+    () =>
+      `flex gap-2 pt-[var(--dialog-title-top,0px)] pl-4 lg:gap-3 lg:pt-[var(--dialog-top-lg,24px)] lg:pl-6 ${this.headerAlign() === 'center' ? 'items-center' : 'items-start'} ${this.closeLabel() ? 'pr-2 lg:pr-4' : 'pr-4 lg:pr-6'}`,
+  );
+
+  protected readonly titleClasses = computed(() => (this.headerAlign() === 'start' ? 'pt-1 lg:pt-0' : ''));
+
+  protected readonly crossClasses = computed(
+    () =>
+      `rounded-pill lg:rounded-control grid size-11 flex-none cursor-pointer place-items-center text-(--muted-foreground) transition-[transform,background-color,color] duration-(--duration-press) ease-out outline-none focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-(--ring) active:scale-(--press-scale) active:bg-(--soft) lg:size-9 lg:hover:bg-(--glow) lg:hover:text-(--foreground)${this.headerAlign() === 'start' ? ' lg:-mt-1.5' : ''}`,
+  );
+
+  protected readonly iconClasses = computed(() =>
+    this.headerAlign() === 'start' ? 'lg:size-[var(--dialog-icon-lg,20px)]' : 'lg:size-[var(--dialog-icon-lg,22px)]',
+  );
+
+  protected readonly footerClasses = computed(
+    () =>
+      `max-lg:[&>[ui-button]]:text-body flex justify-end gap-2 px-4 empty:hidden max-lg:flex-col-reverse max-lg:pb-[calc(var(--dialog-bottom,8px)+var(--dialog-safe,env(safe-area-inset-bottom)))] max-lg:[&>[ui-button]]:h-[50px] max-lg:[&>[ui-button]]:w-full lg:px-6 ${this.divided() ? 'pt-3 shadow-[0_-1px_0_var(--hairline)] lg:pt-4 lg:pb-[var(--dialog-bottom-lg,16px)]' : 'lg:pb-[var(--dialog-bottom-lg,24px)]'}`,
+  );
 
   protected readonly classes = computed(
     () =>
@@ -185,7 +213,6 @@ export class UiDialog {
   readonly #host = inject<ElementRef<HTMLElement>>(ElementRef);
 
   constructor() {
-    // After render, not effect(): the first showModal must see the cross, or initial focus skips it.
     afterRenderEffect(() => {
       // viewChild.required can't target a #private field (NG1053); safe because the template has exactly one <dialog>.
       const dialog = this.#host.nativeElement.querySelector('dialog') as HTMLDialogElement;
@@ -196,6 +223,20 @@ export class UiDialog {
         dialog.close();
       }
     });
+  }
+
+  protected onClick(event: MouseEvent): void {
+    const dialog = this.#host.nativeElement.querySelector('dialog') as HTMLDialogElement;
+    const rect = dialog.getBoundingClientRect();
+    const outside =
+      event.clientX < rect.left ||
+      event.clientX > rect.right ||
+      event.clientY < rect.top ||
+      event.clientY > rect.bottom;
+
+    if (event.target === dialog && outside) {
+      dialog.close();
+    }
   }
 
   protected onNativeClose(): void {

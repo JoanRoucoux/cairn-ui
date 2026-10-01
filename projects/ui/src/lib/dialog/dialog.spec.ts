@@ -116,7 +116,7 @@ describe('UiDialog', () => {
     const { container } = await renderDialog();
 
     expect(container.querySelector('[data-dialog-footer]')).toHaveClass(
-      'max-lg:pb-[calc(1.25rem+env(safe-area-inset-bottom))]',
+      'max-lg:pb-[calc(var(--dialog-bottom,8px)+var(--dialog-safe,env(safe-area-inset-bottom)))]',
     );
   });
 
@@ -135,15 +135,126 @@ describe('UiDialog', () => {
     expect(container.querySelector('[data-dialog-footer]')).toHaveClass(
       'justify-end',
       'max-lg:flex-col-reverse',
-      'max-lg:*:h-[50px]',
-      'max-lg:*:w-full',
+      'max-lg:[&>[ui-button]]:h-[50px]',
+      'max-lg:[&>[ui-button]]:w-full',
     );
   });
 
-  it('draws a hairline above the footer', async () => {
+  it('draws no hairline above the footer by default', async () => {
     const { container } = await renderDialog();
 
-    expect(container.querySelector('[data-dialog-footer]')).toHaveClass('shadow-[0_-1px_0_var(--hairline)]');
+    expect(container.querySelector('[data-dialog-footer]')).not.toHaveClass('shadow-[0_-1px_0_var(--hairline)]');
+  });
+
+  it('draws a hairline above the footer when divided', async () => {
+    const { container } = await render(
+      `<ui-dialog heading="Ajouter une ligne" divided [open]="true"><button dialogActions>Ajouter</button></ui-dialog>`,
+      { imports: [UiDialog] },
+    );
+
+    expect(container.querySelector('[data-dialog-footer]')).toHaveClass('shadow-[0_-1px_0_var(--hairline)]', 'lg:pt-4');
+  });
+
+  it('aligns the header to the start by default', async () => {
+    const { container } = await renderDialog();
+
+    expect(container.querySelector('[data-dialog-header]')).toHaveClass('items-start');
+  });
+
+  it('centres the header on request', async () => {
+    const { container } = await render(
+      `<ui-dialog heading="Nouveau compte" headerAlign="center" [open]="true"></ui-dialog>`,
+      {
+        imports: [UiDialog],
+      },
+    );
+
+    expect(container.querySelector('[data-dialog-header]')).toHaveClass('items-center');
+  });
+
+  it('hangs the cross out of a start-aligned header and sits it in a centred one', async () => {
+    const start = await render(`<ui-dialog heading="Acheter" closeLabel="Fermer" [open]="true"></ui-dialog>`, {
+      imports: [UiDialog],
+    });
+    const startCross = screen.getByRole('button', { name: 'Fermer' });
+    expect(startCross).toHaveClass('lg:-mt-1.5');
+    expect(startCross.querySelector('svg')).toHaveClass('lg:size-[var(--dialog-icon-lg,20px)]');
+    start.fixture.destroy();
+  });
+
+  it('centres the cross with a 22px icon in a centred header', async () => {
+    await render(`<ui-dialog heading="Compte" closeLabel="Fermer" headerAlign="center" [open]="true"></ui-dialog>`, {
+      imports: [UiDialog],
+    });
+    const cross = screen.getByRole('button', { name: 'Fermer' });
+
+    expect(cross).not.toHaveClass('lg:-mt-1.5');
+    expect(cross.querySelector('svg')).toHaveClass('lg:size-[var(--dialog-icon-lg,22px)]');
+  });
+
+  it('takes its spacing from custom properties with the handoff defaults', async () => {
+    const { container } = await renderDialog();
+
+    expect(container.querySelector('[data-dialog-header]')).toHaveClass('lg:pt-[var(--dialog-top-lg,24px)]');
+    expect(container.querySelector('[data-dialog-footer]')).toHaveClass('lg:pb-[var(--dialog-bottom-lg,24px)]');
+  });
+
+  it('is a dialog unless asked to be an alertdialog', async () => {
+    const { container } = await renderDialog();
+
+    expect(container.querySelector('dialog')).toHaveAttribute('role', 'dialog');
+  });
+
+  it('can be an alertdialog', async () => {
+    await render(`<ui-dialog heading="Supprimer la clé" role="alertdialog" [open]="true"></ui-dialog>`, {
+      imports: [UiDialog],
+    });
+
+    expect(screen.getByRole('alertdialog', { name: 'Supprimer la clé' })).toBeInTheDocument();
+  });
+
+  it('closes and reports on a click on the backdrop', async () => {
+    const { fixture, container, onDismissed } = await renderDialog();
+    const dialog = container.querySelector('dialog') as HTMLDialogElement;
+
+    dialog.dispatchEvent(new MouseEvent('click', { bubbles: true, clientX: -20, clientY: -20 }));
+    await fixture.whenStable();
+
+    expect(dialog).not.toHaveAttribute('open');
+    expect(onDismissed).toHaveBeenCalledOnce();
+  });
+
+  it('stays open on a click inside the panel', async () => {
+    const user = userEvent.setup();
+    const { container, onDismissed } = await renderDialog();
+
+    await user.click(screen.getByText('Corps'));
+    container
+      .querySelector('dialog')
+      ?.dispatchEvent(new MouseEvent('click', { bubbles: true, clientX: 0, clientY: 0 }));
+
+    expect(container.querySelector('dialog')).toHaveAttribute('open');
+    expect(onDismissed).not.toHaveBeenCalled();
+  });
+
+  it('lets a long subtitle wrap', async () => {
+    const { container } = await render(
+      `<ui-dialog heading="Supprimer" description="Une phrase entière qui explique ce qui sera supprimé." [open]="true"></ui-dialog>`,
+      { imports: [UiDialog] },
+    );
+
+    expect(
+      container.querySelector('#' + container.querySelector('dialog')?.getAttribute('aria-describedby')),
+    ).not.toHaveClass('truncate');
+  });
+
+  it('truncates the subtitle when asked to', async () => {
+    const { container } = await render(
+      `<ui-dialog heading="Acheter" description="Ferrari · PEA" truncateDescription [open]="true"></ui-dialog>`,
+      { imports: [UiDialog] },
+    );
+
+    expect(container.querySelector('[data-dialog-header] p')).toHaveClass('truncate');
   });
 
   it('scrolls its body independently of the heading and the footer', async () => {
