@@ -93,3 +93,19 @@ export const IsNamed: Story = {
     await expect(canvas.getByRole('img', { name: args.label })).toBeVisible();
   },
 };
+
+export const InProfileLinkCurrentPage: Story = {
+  name: 'In a link, current page',
+  render: () => ({
+    template: `
+      <a uiAvatarLink href="#" aria-current="page">
+        <ui-avatar initials="JO" label="Profil" size="auto" />
+      </a>
+    `,
+  }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(canvas.getByRole('link', { name: 'Profil' })).toHaveAttribute('aria-current', 'page');
+  },
+};
