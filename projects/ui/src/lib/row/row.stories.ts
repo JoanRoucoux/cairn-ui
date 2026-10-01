@@ -12,6 +12,7 @@ import {
   UiListRow,
   UiRow,
   UiRowItem,
+  UiRowTile,
 } from './row';
 
 type RowArgs = {
@@ -23,7 +24,7 @@ type RowArgs = {
 
 const meta: Meta<RowArgs> = {
   title: 'Data display/Row',
-  decorators: [moduleMetadata({ imports: [UiButton, UiListRow, UiRow, UiRowItem] })],
+  decorators: [moduleMetadata({ imports: [UiButton, UiListRow, UiRow, UiRowItem, UiRowTile] })],
   parameters: {
     docs: {
       description: {
@@ -109,9 +110,9 @@ export const Profile: Story = {
   render: (args) => ({
     props: args,
     template: `
-      <div class="w-[340px] px-2">
+      <div class="w-[358px] px-2">
         <a ui-row href="#" [selected]="selected" [size]="size" [padding]="padding" class="-mx-2 w-auto">
-          <span class="rounded-control bg-(--muted) grid size-9 flex-none place-items-center">
+          <span uiRowTile>
             <svg class="block size-[18px] flex-none fill-none stroke-current stroke-[1.75]" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"></path><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"></path></svg>
           </span>
           <span class="flex min-w-0 flex-1 flex-col">
@@ -225,7 +226,7 @@ export const RuledListRows: Story = {
     template: `
       <ul class="w-[326px]">
         <li uiListRow>
-          <span class="rounded-control grid size-9 flex-none place-items-center bg-(--muted)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" /><circle cx="16.5" cy="7.5" r=".5" fill="currentColor" /></svg></span>
+          <span uiRowTile><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" /><circle cx="16.5" cy="7.5" r=".5" fill="currentColor" /></svg></span>
           <span class="flex min-w-0 flex-1 flex-col">
             <span class="flex items-center gap-2">
               <span class="text-body truncate font-medium">iPhone de Joan</span>
@@ -236,7 +237,7 @@ export const RuledListRows: Story = {
           <button ui-button variant="quiet-destructive" size="icon-sm" class="-mr-2" aria-label="Supprimer la clé iPhone de Joan"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg></button>
         </li>
         <li uiListRow>
-          <span class="rounded-control grid size-9 flex-none place-items-center bg-(--muted)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" /><circle cx="16.5" cy="7.5" r=".5" fill="currentColor" /></svg></span>
+          <span uiRowTile><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" /><circle cx="16.5" cy="7.5" r=".5" fill="currentColor" /></svg></span>
           <span class="flex min-w-0 flex-1 flex-col">
             <span class="flex items-center gap-2">
               <span class="text-body truncate font-medium">MacBook Air</span>
@@ -246,7 +247,7 @@ export const RuledListRows: Story = {
           <button ui-button variant="quiet-destructive" size="icon-sm" class="-mr-2" aria-label="Supprimer la clé MacBook Air"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg></button>
         </li>
         <li uiListRow>
-          <span class="rounded-control grid size-9 flex-none place-items-center bg-(--muted)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" /><circle cx="16.5" cy="7.5" r=".5" fill="currentColor" /></svg></span>
+          <span uiRowTile><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" /><circle cx="16.5" cy="7.5" r=".5" fill="currentColor" /></svg></span>
           <span class="flex min-w-0 flex-1 flex-col">
             <span class="flex items-center gap-2">
               <span class="text-body truncate font-medium">YubiKey 5C</span>
