@@ -34,6 +34,8 @@ export const config: SheriffConfig = {
     'component:choice-chips': ['component:input', 'component:control'],
     'component:select': ['component:input', 'component:control'],
     'component:field': ['component:input', 'component:select', 'component:control'],
+    'component:action-bar': ['component:button', 'component:tab-bar'],
+    'component:fact': ['component:card'],
     'component:dialog': ['component:button'],
     'component:menu': ['component:button'],
     'component:row': ['component:button'],
