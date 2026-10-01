@@ -38,8 +38,8 @@ const SUB_TONE_CLASSES: Record<FactSubTone, string> = {
 export class UiFacts {
   readonly ruled = input(false, { transform: booleanAttribute });
 
-  protected readonly classes = computed(
-    () => `m-0 flex flex-col${this.ruled() ? ' shadow-[inset_0_1px_0_var(--hairline)]' : ''}`,
+  protected readonly classes = computed(() =>
+    this.ruled() ? 'm-0 flex flex-col shadow-[inset_0_1px_0_var(--hairline)]' : 'm-0 flex flex-col',
   );
 }
 
