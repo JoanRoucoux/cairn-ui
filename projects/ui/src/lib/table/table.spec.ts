@@ -1,6 +1,6 @@
 import { type RenderResult, render, screen } from '@testing-library/angular';
 
-import { UiCellSub, UiGroupCell, UiRowAction, UiRowLink, UiTable, UiTd, UiTh, UiTr } from './table';
+import { UiCellSub, UiGroup, UiGroupCell, UiRowAction, UiRowLink, UiTable, UiTd, UiTh, UiTr } from './table';
 
 const imports = [UiTable, UiTd, UiTh, UiTr, UiGroupCell, UiRowLink, UiRowAction, UiCellSub];
 
@@ -38,11 +38,12 @@ describe('UiTable', () => {
     expect(screen.getByRole('table')).toHaveClass('w-full');
   });
 
-  it('styles headers as captions in the subtle color, 36px tall', async () => {
+  it('styles headers as captions in the subtle color, centred in 36px', async () => {
     await renderTable();
 
     expect(screen.getByRole('columnheader', { name: 'Ligne' })).toHaveClass(
-      'h-9',
+      '[--table-head:2.25rem]',
+      'align-middle',
       'text-caption',
       'text-(--subtle-foreground)',
     );
@@ -51,8 +52,7 @@ describe('UiTable', () => {
   it('makes a header 40px tall when asked', async () => {
     await render(`<table uiTable><thead><tr><th uiTh tall>Compte</th></tr></thead></table>`, { imports });
 
-    expect(screen.getByRole('columnheader')).toHaveClass('h-10');
-    expect(screen.getByRole('columnheader')).not.toHaveClass('h-9');
+    expect(screen.getByRole('columnheader')).toHaveClass('[--table-head:2.5rem]');
   });
 
   it('fixes a column width and keeps it from shrinking', async () => {
@@ -64,7 +64,7 @@ describe('UiTable', () => {
   it('gives body cells a 48px row', async () => {
     await renderTable();
 
-    expect(screen.getByRole('cell', { name: 'Savings account' })).toHaveClass('h-12');
+    expect(screen.getByRole('cell', { name: 'Savings account' })).toHaveClass('h-(--table-row)');
   });
 
   it('aligns a numeric column to the right and lines up its digits', async () => {
@@ -196,5 +196,116 @@ describe('UiCellSub', () => {
     await render(`<span uiCellSub narrow>10 × 421,26 €</span>`, { imports });
 
     expect(screen.getByText('10 × 421,26 €')).toHaveClass('lg:hidden');
+  });
+});
+
+describe('UiTable options', () => {
+  const host = (attributes: string): Promise<RenderResult<unknown>> =>
+    render(`<table uiTable ${attributes}><thead><tr><th uiTh>A</th></tr></thead></table>`, { imports });
+
+  it('is 48px per row, ruled under the header and tight to it by default', async () => {
+    await host('');
+
+    expect(screen.getByRole('table')).toHaveClass(
+      '[--table-row:3rem]',
+      '[--table-rule:inset_0_-1px_0_var(--hairline)]',
+    );
+    expect(screen.getByRole('table')).toHaveClass('[--table-head-gap:0px]');
+  });
+
+  it.each([
+    ['52', '[--table-row:3.25rem]'],
+    ['60', '[--table-row:3.75rem]'],
+  ] as const)('sizes rows at %spx', async (row, expected) => {
+    await host(`row="${row}"`);
+
+    expect(screen.getByRole('table')).toHaveClass(expected);
+  });
+
+  it('turns the header hairline off', async () => {
+    await host('[rule]="false"');
+
+    expect(screen.getByRole('table')).toHaveClass('[--table-rule:none]');
+  });
+
+  it('opens a 4px gap under the header', async () => {
+    await host('spaced');
+
+    expect(screen.getByRole('table')).toHaveClass('[--table-head-gap:0.25rem]');
+  });
+
+  it('lets cells read the row size and the header read the rule', async () => {
+    await renderTable();
+
+    expect(screen.getByRole('cell', { name: 'Savings account' })).toHaveClass('h-(--table-row)');
+    expect(screen.getByRole('columnheader', { name: 'Ligne' })).toHaveClass('shadow-(--table-rule)');
+  });
+});
+
+describe('UiGroupCell sizes', () => {
+  it('is 44px high with a 10px lead by default and 48px with a 12px lead when large', async () => {
+    await render(
+      `<table uiTable><tbody uiGroup>
+         <tr uiTr group><td ui-group-cell name="A">1</td></tr>
+         <tr uiTr group><td ui-group-cell size="lg" name="B">2</td></tr>
+       </tbody></table>`,
+      { imports: [...imports, UiGroup] },
+    );
+
+    expect(screen.getByText('A').closest('td')).toHaveClass('pt-2.5');
+    expect(screen.getByText('A').closest('div')).toHaveClass('min-h-11');
+    expect(screen.getByText('B').closest('td')).toHaveClass('pt-3');
+    expect(screen.getByText('B').closest('div')).toHaveClass('min-h-12');
+  });
+
+  it('names the group with a heading', async () => {
+    await render(`<table uiTable><tbody><tr uiTr group><td ui-group-cell name="Saxo">1</td></tr></tbody></table>`, {
+      imports,
+    });
+
+    expect(screen.getByRole('heading', { name: 'Saxo' })).toBeInTheDocument();
+  });
+
+  it('closes a group with a 4px tail', async () => {
+    await render(`<table uiTable><tbody uiGroup></tbody></table>`, { imports: [...imports, UiGroup] });
+
+    expect(screen.getAllByRole('rowgroup')[0]).toHaveClass('after:table-row', 'after:h-1');
+  });
+});
+
+describe('UiRowLink variants', () => {
+  it('can stay on the name alone, underlined on hover, with its own ring', async () => {
+    await render(`<a uiRowLink [stretch]="false" href="/a">PEA Saxo</a>`, { imports });
+
+    const link = screen.getByRole('link');
+    expect(link).toHaveClass('hover:underline', 'focus-visible:outline-2', 'focus-visible:outline-offset-2');
+    expect(link).not.toHaveClass('after:absolute');
+  });
+
+  it('marks the open line with aria-current', async () => {
+    await render(`<a uiRowLink current href="/a">Ferrari</a>`, { imports });
+
+    expect(screen.getByRole('link')).toHaveAttribute('aria-current', 'true');
+  });
+});
+
+describe('UiCellSub tone', () => {
+  it('is subtle by default', async () => {
+    await render(`<span uiCellSub>x</span>`, { imports });
+
+    expect(screen.getByText('x')).toHaveClass('text-(--subtle-foreground)', 'font-normal');
+  });
+
+  it('is stale at 500 without the subtle color', async () => {
+    await render(`<span uiCellSub tone="stale">x</span>`, { imports });
+
+    expect(screen.getByText('x')).toHaveClass('text-(--stale)', 'font-medium');
+    expect(screen.getByText('x')).not.toHaveClass('text-(--subtle-foreground)');
+  });
+
+  it('can inherit the color of its cell', async () => {
+    await render(`<span uiCellSub tone="inherit">x</span>`, { imports });
+
+    expect(screen.getByText('x')).not.toHaveClass('text-(--subtle-foreground)', 'text-(--stale)');
   });
 });

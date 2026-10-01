@@ -43,7 +43,11 @@ export { STAT_SIZES, UiStat, type StatSize } from './lib/stat/stat';
 export { UiSwitch } from './lib/switch/switch';
 export {
   CELL_BREAKPOINTS,
+  GROUP_SIZES,
+  SUB_TONES,
+  TABLE_ROWS,
   UiCellSub,
+  UiGroup,
   UiGroupCell,
   UiRowAction,
   UiRowLink,
@@ -52,5 +56,8 @@ export {
   UiTh,
   UiTr,
   type CellBreakpoint,
+  type GroupSize,
+  type SubTone,
+  type TableRow,
 } from './lib/table/table';
 export { UiTab, UiTabBar } from './lib/tab-bar/tab-bar';
