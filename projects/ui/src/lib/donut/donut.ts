@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import { Component, computed, input, output, signal } from '@angular/core';
 
 import { ACTIVE_RING_WIDTH, RADIUS, RING_WIDTH, positionSlices } from './internal/donut-geometry';
@@ -77,30 +78,49 @@ const RAMP_DOT_CLASSES: Record<Ramp, string> = {
 
     <div class="flex w-full min-w-0 flex-1 flex-col sm:w-auto" data-testid="donut-legend">
       @for (slice of ranked(); track slice.id) {
-        <button
-          type="button"
-          [class]="rowClasses(slice)"
-          (blur)="clearHighlight(slice.id)"
-          (click)="select(slice)"
-          (focus)="highlight(slice.id)"
-          (pointerenter)="highlight(slice.id)"
-          (pointerleave)="clearHighlight(slice.id)"
-        >
-          <span [class]="dotClasses(slice)"></span>
-          <span class="flex min-w-0 flex-1 flex-col">
-            <span class="text-body truncate font-medium">{{ slice.label }}</span>
-            <span class="text-caption truncate tracking-(--tracking-caption) text-(--subtle-foreground)">{{
-              subLabel(slice)
-            }}</span>
-          </span>
-          <span class="flex flex-none flex-col items-end whitespace-nowrap">
-            <span class="text-body font-medium">{{ shareFormat()(slice.share) }}</span>
-            <span class="text-caption tracking-normal text-(--muted-foreground)">{{ valueFormat()(slice.value) }}</span>
-          </span>
-        </button>
+        @if (hrefFor(slice.id); as href) {
+          <a
+            [attr.href]="href"
+            [class]="rowClasses(slice)"
+            (blur)="clearHighlight(slice.id)"
+            (click)="follow($event, slice)"
+            (focus)="highlight(slice.id)"
+            (pointerenter)="highlight(slice.id)"
+            (pointerleave)="clearHighlight(slice.id)"
+          >
+            <ng-container *ngTemplateOutlet="rowContent; context: { $implicit: slice }" />
+          </a>
+        } @else {
+          <button
+            type="button"
+            [class]="rowClasses(slice)"
+            (blur)="clearHighlight(slice.id)"
+            (click)="select(slice)"
+            (focus)="highlight(slice.id)"
+            (pointerenter)="highlight(slice.id)"
+            (pointerleave)="clearHighlight(slice.id)"
+          >
+            <ng-container *ngTemplateOutlet="rowContent; context: { $implicit: slice }" />
+          </button>
+        }
       }
     </div>
+
+    <ng-template #rowContent let-slice>
+      <span [class]="dotClasses(slice)"></span>
+      <span class="flex min-w-0 flex-1 flex-col">
+        <span class="text-body truncate font-medium">{{ slice.label }}</span>
+        <span class="text-caption truncate tracking-(--tracking-caption) text-(--subtle-foreground)">{{
+          subLabel(slice)
+        }}</span>
+      </span>
+      <span class="flex flex-none flex-col items-end whitespace-nowrap">
+        <span class="text-body font-medium">{{ shareFormat()(slice.share) }}</span>
+        <span class="text-caption tracking-normal text-(--muted-foreground)">{{ valueFormat()(slice.value) }}</span>
+      </span>
+    </ng-template>
   `,
+  imports: [NgTemplateOutlet],
   host: {
     class: 'flex flex-col items-center gap-3 sm:flex-row sm:items-center sm:gap-8',
   },
@@ -111,6 +131,8 @@ export class UiDonut {
   readonly othersLabel = input.required<string>();
   readonly valueFormat = input<(value: number) => string>(identityValue);
   readonly shareFormat = input<(share: number) => string>(identityShare);
+
+  readonly legendHref = input<((id: string) => string | null) | undefined>();
 
   readonly sliceSelect = output<DonutSlice['id']>();
 
@@ -169,6 +191,18 @@ export class UiDonut {
     if (this.activeId() === id) {
       this.activeId.set(null);
     }
+  }
+
+  protected hrefFor(id: string): string | null {
+    return this.legendHref()?.(id) ?? null;
+  }
+
+  protected follow(event: MouseEvent, slice: RankedSlice): void {
+    if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) {
+      return;
+    }
+    event.preventDefault();
+    this.select(slice);
   }
 
   protected select(slice: RankedSlice): void {
