@@ -31,7 +31,7 @@ describe('UiAvatar', () => {
 
   it.each<[AvatarSize, string]>([
     ['sm', 'size-8'],
-    ['md', 'size-9'],
+    ['md', 'size-[34px]'],
     ['lg', 'size-14'],
   ])('applies the %s size classes', async (size, expectedClass) => {
     await renderAvatar(size);

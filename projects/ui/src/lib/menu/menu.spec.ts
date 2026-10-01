@@ -57,9 +57,23 @@ describe('UiMenu', () => {
 
     expect(screen.getByRole('menuitem', { name: 'Delete the line' })).toHaveClass(
       'text-(--negative)',
-      'min-h-9',
       'hover:bg-(--glow)',
     );
+  });
+
+  it('sizes items 44 px on touch and 36 px with a mouse, and leaves the width to the consumer', async () => {
+    await render(template, { imports: [UiMenu, UiMenuTrigger, UiMenuItem], componentProperties: { edited: vi.fn() } });
+    await userEvent.click(screen.getByRole('button', { name: 'More' }));
+
+    expect(screen.getByRole('menuitem', { name: 'Delete the line' })).toHaveClass(
+      'min-h-11',
+      'px-3',
+      'text-body',
+      'pointer-fine:min-h-9',
+      'pointer-fine:px-2.5',
+      'pointer-fine:text-label',
+    );
+    expect(screen.getByRole('menu', { hidden: true })).not.toHaveClass('min-w-55');
   });
 
   it('wraps upward from the first item to the last', async () => {

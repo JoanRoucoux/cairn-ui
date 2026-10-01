@@ -35,6 +35,7 @@ describe('UiButton', () => {
     ['lg', 'h-11'],
     ['xl', 'h-[50px]'],
     ['icon', 'size-(--row-min)'],
+    ['xxl', 'gap-2.5'],
     ['xxl', 'h-[52px]'],
   ])('applies the %s size', async (size, expectedClass) => {
     await render('<button ui-button [size]="size" aria-label="Save">S</button>', {

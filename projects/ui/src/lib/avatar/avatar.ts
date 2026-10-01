@@ -8,7 +8,7 @@ const BASE_CLASSES = 'inline-flex items-center justify-center rounded-pill bg-(-
 
 const SIZE_CLASSES: Record<AvatarSize, string> = {
   sm: 'size-8 text-caption',
-  md: 'size-9 text-label',
+  md: 'size-[34px] text-label',
   lg: 'size-14 text-title',
 };
 

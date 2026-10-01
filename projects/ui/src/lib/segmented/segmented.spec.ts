@@ -144,18 +144,14 @@ describe('UiSegmented', () => {
     expect(screen.getByRole('radio', { name: '1D' })).toBeChecked();
   });
 
-  it('sizes the thumb to one option inside the track padding', async () => {
-    const { container } = await renderSegmented();
+  it('draws the focus ring on the option, with or without a selected thumb', async () => {
+    const { container } = await renderSegmented('unknown');
 
-    expect(container.querySelector('[data-thumb]')).toHaveStyle({ width: 'calc((100% - 4px) / 3)' });
-  });
-
-  it('draws the focus ring on the thumb instead of the option', async () => {
-    const { container } = await renderSegmented();
-
-    expect(container.querySelector('[role=radiogroup]')).toHaveClass('group');
-    expect(container.querySelector('[data-thumb]')).toHaveClass(
-      'group-has-focus-visible:shadow-[0_1px_2px_rgb(0_0_0/0.08),inset_0_0_0_1px_var(--border),0_0_0_2px_var(--ring)]',
+    expect(container.querySelector('[data-thumb]')).toBeNull();
+    expect(screen.getByRole('radio', { name: '1D' })).toHaveClass(
+      'focus-visible:outline-2',
+      'focus-visible:-outline-offset-2',
+      'focus-visible:outline-(--ring)',
     );
   });
 });
