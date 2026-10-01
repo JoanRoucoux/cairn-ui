@@ -174,7 +174,23 @@ describe('UiDialog', () => {
 
     expect(container.querySelector('[data-dialog-header]')).toHaveClass('items-center', 'lg:pt-5');
     expect(container.querySelector('[data-dialog-footer]')).toHaveClass('shadow-[0_-1px_0_var(--hairline)]', 'lg:pt-4');
-    expect(container.querySelector('dialog')).toHaveClass('max-lg:h-[calc(100dvh-58px)]', 'lg:max-h-[760px]');
+    expect(container.querySelector('dialog')).toHaveClass('max-lg:h-[calc(100dvh-58px)]');
+  });
+
+  it('anchors the list dialog 96px from the top and clamps it to the viewport', async () => {
+    const { container } = await renderLayout('list');
+
+    expect(container.querySelector('dialog')).toHaveClass(
+      'lg:mt-24',
+      'lg:mb-auto',
+      'lg:max-h-[min(760px,calc(100dvh-96px-32px))]',
+    );
+  });
+
+  it('keeps the other layouts centred', async () => {
+    const { container } = await renderLayout('form');
+
+    expect(container.querySelector('dialog')).not.toHaveClass('lg:mt-24');
   });
 
   it('keeps the other layouts at their natural height', async () => {

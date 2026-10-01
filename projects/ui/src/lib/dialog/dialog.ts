@@ -57,7 +57,7 @@ const LAYOUTS: Record<DialogLayout, LayoutClasses> = {
     footer: `max-lg:pb-[calc(12px+${SAFE})] lg:pb-5`,
   },
   list: {
-    dialog: 'max-lg:h-[calc(100dvh-58px)] lg:max-h-[760px]',
+    dialog: 'max-lg:h-[calc(100dvh-58px)] lg:mt-24 lg:mb-auto lg:max-h-[min(760px,calc(100dvh-96px-32px))]',
     header: 'items-center lg:pt-5',
     title: '',
     cross: '',

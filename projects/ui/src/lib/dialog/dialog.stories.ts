@@ -287,15 +287,33 @@ const sheetStaysFixed: Story['play'] = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
   const dialog = canvas.getByRole('dialog', { name: 'Ajouter une ligne' });
   const footer = dialog.querySelector('[data-dialog-footer]') as HTMLElement;
-  const isSheet = window.matchMedia('(max-width: 63.99rem)').matches;
 
-  if (isSheet) {
-    await waitFor(() => expect(Math.round(dialog.getBoundingClientRect().height)).toBe(window.innerHeight - 58));
-    await waitFor(() => expect(Math.round(footer.getBoundingClientRect().bottom)).toBe(window.innerHeight));
-  } else {
-    await waitFor(() => expect(dialog.getBoundingClientRect().height).toBeLessThanOrEqual(760));
-    await waitFor(() => expect(footer.getBoundingClientRect().bottom).toBeLessThanOrEqual(window.innerHeight));
-  }
+  await waitFor(() => expect(Math.round(dialog.getBoundingClientRect().height)).toBe(window.innerHeight - 58));
+  await waitFor(() => expect(Math.round(footer.getBoundingClientRect().bottom)).toBe(window.innerHeight));
+};
+
+const desktopAnchored: Story['play'] = async ({ canvasElement }) => {
+  const canvas = within(canvasElement);
+  const dialog = canvas.getByRole('dialog', { name: 'Ajouter une ligne' });
+  const footer = dialog.querySelector('[data-dialog-footer]') as HTMLElement;
+
+  await waitFor(() => expect(Math.round(dialog.getBoundingClientRect().top)).toBe(96));
+  await waitFor(() => expect(footer.getBoundingClientRect().bottom).toBeLessThanOrEqual(window.innerHeight - 32));
+  await expect(dialog.getBoundingClientRect().height).toBeLessThanOrEqual(760);
+};
+
+export const AddLineDesktopFewResults: Story = {
+  name: 'Ajouter une ligne, desktop 1440x900 with few results',
+  parameters: { viewport: { width: 1440, height: 900 } },
+  ...addLine(2),
+  play: desktopAnchored,
+};
+
+export const AddLineDesktopManyResultsShortScreen: Story = {
+  name: 'Ajouter une ligne, desktop 1366x650 with many results',
+  parameters: { viewport: { width: 1366, height: 650 } },
+  ...addLine(30),
+  play: desktopAnchored,
 };
 
 export const AddLineSheetFewResults: Story = {
