@@ -59,7 +59,7 @@ line under the value, and a hairline between rows. Built on a native description
       control: 'inline-radio',
       options: [...FACT_SIZES],
       description:
-        '`md` is a 12 px row with a body value; `sm` a 10 px row with a label-size value and no hairline between rows; `auto` is `md` below 64rem and `sm` from it, so one list serves both widths.',
+        '`md` is a 12 px row with a body value; `sm` a 10 px row with a label-size value and no hairline between rows; `recap` a 9 px row with a label-size value and a hairline between rows, for the before/after recap of a trade dialog; `auto` is `md` below 64rem and `sm` from it, so one list serves both widths.',
     },
     subTone: {
       control: 'inline-radio',
@@ -121,6 +121,27 @@ export const Auto: Story = {
           <div ui-fact label="Cours" size="auto" sub="Cours du 25/09 à 17:35 · Yahoo Finance" [subTone]="subTone">28,64 €</div>
           <div ui-fact label="ISIN" size="auto" sub="ETF">LU1681043599</div>
         </dl>
+        </ui-card>
+      </div>
+    `,
+  }),
+};
+
+export const TradeRecap: Story = {
+  name: 'Recap (Acheter and Vendre dialogs)',
+  render: () => ({
+    template: `
+      <div class="bg-(--card) p-4 w-[358px] box-content">
+        <ui-card variant="inset" padding="recap">
+          <dl uiFacts>
+            <div ui-fact label="Quantité" size="recap">
+              <span class="flex items-baseline gap-1.5 text-right"><span class="text-(--subtle-foreground)">500</span><span class="text-(--subtle-foreground)">&rarr;</span><span class="font-medium">540</span></span>
+            </div>
+            <div ui-fact label="PRU" size="recap">
+              <span class="flex items-baseline gap-1.5 text-right"><span class="text-(--subtle-foreground)">24,12&nbsp;€</span><span class="text-(--subtle-foreground)">&rarr;</span><span class="font-medium">24,49&nbsp;€</span></span>
+            </div>
+            <div ui-fact label="Montant de l'achat" size="recap"><span class="font-medium">1&nbsp;164,00&nbsp;€</span></div>
+          </dl>
         </ui-card>
       </div>
     `,

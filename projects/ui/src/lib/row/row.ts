@@ -99,3 +99,19 @@ export class UiListRow {
       : 'flex min-h-18 items-center gap-3 py-1.5 lg:min-h-17',
   );
 }
+
+/**
+ * The 36px filled tile that leads a row: an icon on a muted square with the control radius. Put it on
+ * a `span` as the first child of a `ui-row` or a `uiListRow`.
+ *
+ * @example
+ * <a ui-row size="xl" padding="sm" href="/export">
+ *   <span uiRowTile><svg lucideDownload [size]="18" /></span>
+ *   Export
+ * </a>
+ */
+@Directive({
+  selector: '[uiRowTile]',
+  host: { class: 'rounded-control grid size-9 flex-none place-items-center bg-(--muted)' },
+})
+export class UiRowTile {}

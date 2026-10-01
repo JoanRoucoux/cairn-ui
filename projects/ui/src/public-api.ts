@@ -71,6 +71,7 @@ export {
   UiListRow,
   UiRow,
   UiRowItem,
+  UiRowTile,
   type RowGap,
   type RowPadding,
   type RowSize,

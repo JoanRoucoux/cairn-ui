@@ -88,6 +88,19 @@ describe('UiFact', () => {
   });
 });
 
+describe('UiFact recap size', () => {
+  it('is a 9px row of label-size values with a 12px gap and a hairline between rows', async () => {
+    const { container } = await renderFacts({ size: 'recap' });
+
+    expect(container.querySelector('[ui-fact]')).toHaveClass(
+      'gap-3',
+      'py-[9px]',
+      '[&:not(:first-child)]:shadow-[inset_0_1px_0_var(--hairline)]',
+    );
+    expect(screen.getByText('500')).toHaveClass('text-label');
+  });
+});
+
 describe('UiFacts', () => {
   it('stacks the rows without margin', async () => {
     const { container } = await renderFacts();

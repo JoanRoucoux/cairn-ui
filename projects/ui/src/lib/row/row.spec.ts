@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/angular';
 
-import { UiListRow, UiRow, UiRowItem } from './row';
+import { UiListRow, UiRow, UiRowItem, UiRowTile } from './row';
 
 describe('UiRow', () => {
   it('renders as a link carrying its content', async () => {
@@ -139,5 +139,20 @@ describe('UiListRow', () => {
 
     expect(screen.getByRole('listitem')).not.toHaveClass('shadow-[inset_0_-1px_0_var(--hairline)]');
     expect(screen.getByRole('listitem')).toHaveClass('lg:min-h-17');
+  });
+});
+
+describe('UiRowTile', () => {
+  it('draws a 36px muted square with the control radius around its icon', async () => {
+    await render('<span uiRowTile data-testid="tile">icon</span>', { imports: [UiRowTile] });
+
+    expect(screen.getByTestId('tile')).toHaveClass(
+      'size-9',
+      'rounded-control',
+      'bg-(--muted)',
+      'grid',
+      'place-items-center',
+      'flex-none',
+    );
   });
 });
