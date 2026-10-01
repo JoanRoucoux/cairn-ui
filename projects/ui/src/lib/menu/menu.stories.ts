@@ -14,6 +14,11 @@ const meta: Meta = {
 outside), stacking and the top layer all come from the platform. It opens below its trigger,
 aligned to the trigger's right edge, and flips above when there is no room below.
 
+With \`sheet\`, below 64rem it opens instead as a bottom action sheet above the tab bar, with a
+backdrop, and \`heading\` names what the actions apply to. \`width\` fixes the popover width in pixels,
+**outer width, padding included**: the mockup's \`width: 210px\` and \`200px\` are content-box, so pass
+\`218\` and \`208\`. Without it the menu fits its content.
+
 #### When to use
 
 * For the secondary actions of a row: edit, delete, duplicate.
@@ -27,6 +32,8 @@ aligned to the trigger's right edge, and flips above when there is no room below
 
 #### Accessibility
 
+* \`heading\` is hidden from assistive technologies, so \`label\` must name the target as well, for
+  example "Actions sur Saxo Investor".
 * The trigger carries \`aria-haspopup="menu"\`, \`aria-expanded\` and \`aria-controls\`.
 * Opening moves focus to the first item; the arrow keys move between items and wrap; Home and End
   jump to the first and the last. Escape and a click outside close the menu, and focus returns to

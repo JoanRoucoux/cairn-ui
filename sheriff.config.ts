@@ -4,7 +4,7 @@ import type { SheriffConfig } from '@softarc/sheriff-core';
  * Enforces the design-system boundaries: each component folder is an isolated
  * module, and components must not import each other — shared building blocks
  * belong in their own module (e.g. a future `internal/` utilities module).
- * There are four exceptions. `select` reuses `input`'s shared control classes
+ * There are two kinds of exceptions: shared classes and test-only grants. `select` reuses `input`'s shared control classes
  * (`CONTROL_BASE_CLASSES`, `CONTROL_SIZE_CLASSES`, `ControlSize`) rather than
  * duplicating them, and `choice-chips` reuses its surface classes (`CONTROL_SURFACE_CLASSES`,
  * `ControlSurface`) for the same reason. `field`, `dialog`, `menu`, `row` and `stat` grant access only because their

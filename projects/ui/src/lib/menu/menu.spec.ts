@@ -292,6 +292,28 @@ describe('UiMenu', () => {
       expect(menu.style.getPropertyValue('--ui-menu-width')).toBe('');
     });
 
+    it('ignores a width that is not a number', async () => {
+      const { container } = await render(
+        `<ui-menu label="Line actions" width="wide"><button uiMenuItem>Edit</button></ui-menu>`,
+        { imports },
+      );
+
+      const menu = container.querySelector('ui-menu') as HTMLElement;
+      expect(menu.className).not.toContain('w-(--ui-menu-width)');
+      expect(menu.style.getPropertyValue('--ui-menu-width')).toBe('');
+    });
+
+    it('accepts a static width attribute', async () => {
+      const { container } = await render(
+        `<ui-menu label="Line actions" width="208"><button uiMenuItem>Edit</button></ui-menu>`,
+        { imports },
+      );
+
+      expect((container.querySelector('ui-menu') as HTMLElement).style.getPropertyValue('--ui-menu-width')).toBe(
+        '208px',
+      );
+    });
+
     it('sets a fixed width in pixels', async () => {
       const { container } = await render(
         `<ui-menu label="Line actions" [width]="210"><button uiMenuItem>Edit</button></ui-menu>`,

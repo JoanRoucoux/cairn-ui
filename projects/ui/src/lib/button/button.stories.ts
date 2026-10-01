@@ -65,13 +65,13 @@ that action is, so a screen reads at a glance.
       control: 'select',
       options: [...BUTTON_VARIANTS],
       description:
-        'How much emphasis the action carries. `primary` for the expected action, `destructive` for an irreversible one, `outline` and `ghost` for everything else. `quiet`, `muted` and `quiet-destructive` are muted icon buttons (hover fills soft, glow, or turns negative), `outline-destructive` an outline with negative text, `soft` a muted pill that becomes a plain text button from 64rem.',
+        'How much emphasis the action carries. `primary` for the expected action, `destructive` for an irreversible one, `outline` and `ghost` for everything else. `quiet` is a muted icon button that fills `--soft` on hover and press (row actions). `quiet-glow` is the same icon button hovering to `--glow` with no press fill (a close cross). `quiet-destructive` turns negative on hover. `outline-destructive` is an outline with negative text. `tonal` is a filled `--muted` pill that becomes a plain text button with a glow hover from 64rem.',
     },
     size: {
       control: 'select',
       options: [...BUTTON_SIZES],
       description:
-        '`md` is the 40/44px touch target used everywhere by default. `xs` (32px), `sm` (36px), `lg` (44px) and `xl` (50px) are fixed heights. `compact` (32px, 28px from 64rem), `xxl` (52px, then 44px), `tall` (48px, then 40px) and `block` (50px, then 44px) step down at 64rem. `icon` is square and `icon-sm` is 44px on touch, 36px with a mouse; both need an `aria-label`.',
+        '`md` is the 40/44px touch target used everywhere by default. `xs` (32px), `sm` (36px), `lg` (44px) and `xl` (50px) are fixed heights. `compact` (32px, 28px from 64rem), `slim` (44px, then 32px),  `xxl` (52px, then 44px), `tall` (48px, then 40px) and `block` (50px, then 44px) step down at 64rem. `icon` is square and `icon-sm` is 44px on touch, 36px with a mouse; both need an `aria-label`.',
     },
     disabled: {
       control: 'boolean',
@@ -235,13 +235,13 @@ export const OutlineDestructive: Story = {
   }),
 };
 
-export const SoftCompact: Story = {
-  name: 'Soft compact (Tout vendre)',
+export const TonalCompact: Story = {
+  name: 'Tonal compact (Tout vendre)',
   render: () => ({
     template: `
       <div style="display: flex; gap: 12px; align-items: center; justify-content: flex-end; width: 320px;">
         <span class="text-label text-(--muted-foreground)">Vous détenez 500 parts</span>
-        <button ui-button variant="soft" size="compact" class="-mr-1">Tout vendre</button>
+        <button ui-button variant="tonal" size="compact" class="-mr-1">Tout vendre</button>
       </div>
     `,
   }),
@@ -299,9 +299,16 @@ export const CloseCross: Story = {
   name: 'Close cross (Lignes desktop detail, 36 px)',
   render: () => ({
     template: `
-      <button ui-button variant="muted" size="icon-sm" aria-label="Fermer le détail">
+      <button ui-button variant="quiet-glow" size="icon-sm" aria-label="Fermer le détail">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
       </button>
     `,
+  }),
+};
+
+export const SlimChange: Story = {
+  name: 'Slim ghost (Changer)',
+  render: () => ({
+    template: `<button ui-button variant="ghost" size="slim" type="button">Changer</button>`,
   }),
 };

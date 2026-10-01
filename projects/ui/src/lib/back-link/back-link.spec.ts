@@ -29,6 +29,7 @@ describe('UiBackLink', () => {
 
   it.each<[BackLinkSize, string[]]>([
     ['md', ['h-11', 'text-(--foreground)']],
+    ['header', ['h-11', 'text-(--foreground)', 'focus-visible:-outline-offset-2']],
     ['sm', ['h-9', 'pr-2', 'pl-0.5', 'text-(--muted-foreground)', 'hover:bg-(--glow)', 'hover:text-(--foreground)']],
   ])('applies the %s size', async (size, classes) => {
     await render('<a ui-back-link href="/" [size]="size">Retour</a>', {
@@ -37,5 +38,21 @@ describe('UiBackLink', () => {
     });
 
     expect(screen.getByRole('link', { name: 'Retour' })).toHaveClass(...classes);
+  });
+});
+
+describe('UiBackLink chevron', () => {
+  it.each<[BackLinkSize, string]>([
+    ['md', '22'],
+    ['sm', '22'],
+    ['header', '24'],
+  ])('draws the %s chevron %s px', async (size, expected) => {
+    const { container } = await render('<a ui-back-link href="/" [size]="size">Lignes</a>', {
+      imports: [UiBackLink],
+      componentProperties: { size },
+    });
+
+    expect(container.querySelector('svg')).toHaveAttribute('width', expected);
+    expect(container.querySelector('svg')).toHaveAttribute('height', expected);
   });
 });

@@ -7,6 +7,7 @@ import {
   contentChildren,
   inject,
   input,
+  numberAttribute,
   signal,
 } from '@angular/core';
 
@@ -104,14 +105,15 @@ export class UiMenu {
   readonly label = input.required<string>();
   readonly sheet = input(false, { transform: booleanAttribute });
   readonly heading = input<string>();
-  readonly width = input<number>();
+  readonly width = input<number | undefined, unknown>(undefined, { transform: numberAttribute });
 
   readonly menuId = nextId();
   readonly isOpen = signal(false);
 
-  protected readonly widthVar = computed(() => (this.width() === undefined ? null : `${this.width()}px`));
+  protected readonly hasWidth = computed(() => Number.isFinite(this.width()));
+  protected readonly widthVar = computed(() => (this.hasWidth() ? `${this.width()}px` : null));
   protected readonly classes = computed(() => {
-    const width = this.width() === undefined ? '' : this.sheet() ? ' lg:w-(--ui-menu-width)' : ' w-(--ui-menu-width)';
+    const width = !this.hasWidth() ? '' : this.sheet() ? ' lg:w-(--ui-menu-width)' : ' w-(--ui-menu-width)';
     return `${MENU_CLASSES}${this.sheet() ? ` ${SHEET_CLASSES}` : ''}${width}`;
   });
   protected readonly items = contentChildren(UiMenuItem);

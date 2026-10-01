@@ -21,12 +21,12 @@ describe('UiButton', () => {
     ['outline', 'shadow-[inset_0_0_0_1px_var(--border)]'],
     ['ghost', 'bg-transparent'],
     ['destructive', 'bg-(--destructive)'],
-    ['soft', 'bg-(--muted)'],
-    ['soft', 'lg:bg-transparent'],
-    ['soft', 'lg:hover:bg-(--glow)'],
-    ['muted', 'text-(--muted-foreground)'],
-    ['muted', 'hover:bg-(--glow)'],
-    ['muted', 'hover:text-(--foreground)'],
+    ['tonal', 'bg-(--muted)'],
+    ['tonal', 'lg:bg-transparent'],
+    ['tonal', 'lg:hover:bg-(--glow)'],
+    ['quiet-glow', 'text-(--muted-foreground)'],
+    ['quiet-glow', 'hover:bg-(--glow)'],
+    ['quiet-glow', 'hover:text-(--foreground)'],
     ['quiet', 'text-(--muted-foreground)'],
     ['quiet', 'hover:bg-(--soft)'],
     ['quiet-destructive', 'hover:text-(--negative)'],
@@ -49,6 +49,9 @@ describe('UiButton', () => {
     ['icon', 'size-(--row-min)'],
     ['xxl', 'gap-2.5'],
     ['xxl', 'h-[52px]'],
+    ['slim', 'h-11'],
+    ['slim', 'lg:h-8'],
+    ['slim', 'px-2.5'],
     ['compact', 'h-8'],
     ['compact', 'lg:h-7'],
     ['compact', 'lg:px-2'],
@@ -150,8 +153,8 @@ describe('UiButton', () => {
     );
   });
 
-  it('draws no pressed fill on the muted variant', async () => {
-    await render('<button ui-button variant="muted" size="icon-sm" aria-label="Fermer">x</button>', {
+  it('draws no pressed fill on the quiet-glow variant', async () => {
+    await render('<button ui-button variant="quiet-glow" size="icon-sm" aria-label="Fermer">x</button>', {
       imports: [UiButton],
     });
     const button = screen.getByRole('button', { name: 'Fermer' });

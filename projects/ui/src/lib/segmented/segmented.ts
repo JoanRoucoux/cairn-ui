@@ -12,7 +12,15 @@ export type SegmentedOption = {
 };
 
 const OPTION_CLASSES =
-  "relative z-10 h-10 pointer-fine:h-8 flex-1 cursor-pointer px-3 text-label font-medium transition-colors after:absolute after:inset-x-0 after:top-1/2 after:h-(--row-min) after:-translate-y-1/2 after:content-[''] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring) active:scale-(--press-scale)";
+  "relative z-10 flex-1 cursor-pointer px-3 text-label font-medium transition-colors after:absolute after:inset-x-0 after:top-1/2 after:h-(--row-min) after:-translate-y-1/2 after:content-[''] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring) active:scale-(--press-scale)";
+
+export const SEGMENTED_SIZES = ['md', 'sm'] as const;
+export type SegmentedSize = (typeof SEGMENTED_SIZES)[number];
+
+const SIZE_CLASSES: Record<SegmentedSize, string> = {
+  md: 'h-10 pointer-fine:h-8',
+  sm: 'h-10 pointer-fine:h-[30px]',
+};
 
 const SELECTED_CLASSES = 'text-(--foreground)';
 
@@ -76,6 +84,7 @@ export class UiSegmented {
 
   protected readonly labelId = nextId();
   readonly value = model.required<string>();
+  readonly size = input<SegmentedSize>('md');
 
   protected readonly radios = viewChildren<ElementRef<HTMLButtonElement>>('radio');
 
@@ -86,7 +95,7 @@ export class UiSegmented {
   });
 
   protected optionClasses(optionValue: string): string {
-    return `${OPTION_CLASSES} ${optionValue === this.value() ? SELECTED_CLASSES : UNSELECTED_CLASSES}`;
+    return `${OPTION_CLASSES} ${SIZE_CLASSES[this.size()]} ${optionValue === this.value() ? SELECTED_CLASSES : UNSELECTED_CLASSES}`;
   }
 
   protected tabIndexFor(optionValue: string): number {

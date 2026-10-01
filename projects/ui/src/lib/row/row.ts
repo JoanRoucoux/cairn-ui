@@ -1,6 +1,6 @@
 import { Component, Directive, booleanAttribute, computed, input } from '@angular/core';
 
-export const ROW_SIZES = ['md', 'lg', 'xl', 'card'] as const;
+export const ROW_SIZES = ['md', 'lg', 'xl', 'card', 'dense'] as const;
 export type RowSize = (typeof ROW_SIZES)[number];
 
 export const ROW_PADDINGS = ['md', 'sm', 'none'] as const;
@@ -14,9 +14,10 @@ const SIZE_CLASSES: Record<RowSize, string> = {
   lg: 'min-h-15',
   xl: 'min-h-18 pointer-fine:min-h-17',
   card: 'min-h-17',
+  dense: 'min-h-14 lg:min-h-12',
 };
 
-const SIZE_GAPS: Record<RowSize, string> = { md: 'gap-2.5', lg: 'gap-2.5', xl: 'gap-3', card: 'gap-2' };
+const SIZE_GAPS: Record<RowSize, string> = { md: 'gap-2.5', lg: 'gap-2.5', xl: 'gap-3', card: 'gap-2', dense: 'gap-3' };
 
 const PADDING_CLASSES: Record<RowPadding, string> = { md: 'px-2.5', sm: 'px-2', none: 'px-0' };
 

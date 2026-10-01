@@ -45,8 +45,11 @@ export class UiFieldLeading {}
  * @example
  * <ui-field label="Password">
  *   <input uiInput type="password" size="xl" />
- *   <button uiFieldTrailing type="button" aria-label="Show the password">...</button>
+ *   <button uiFieldTrailing type="button" aria-label="Show the password" [attr.aria-pressed]="shown()">...</button>
  * </ui-field>
+ *
+ * A toggle such as this one should carry `aria-pressed`. The slot shares the right edge with `unit`:
+ * set one or the other, not both.
  */
 @Directive({
   selector: '[uiFieldTrailing]',

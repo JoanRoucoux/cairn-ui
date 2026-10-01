@@ -46,7 +46,7 @@ const meta: Meta<BackLinkArgs> = {
       control: 'inline-radio',
       options: [...BACK_LINK_SIZES],
       description:
-        '`md` is 44 px high in the foreground colour (screen header on iPhone); `sm` is 36 px, muted, with a hover glow (desktop header).',
+        '`md` is 44 px high in the foreground colour (screen header on iPhone); `sm` is 36 px, muted, with a hover glow (desktop header); `header` has the `md` metrics with a 24 px chevron and a focus ring drawn inside (a screen header).',
     },
     label: { control: 'text', description: 'Projected text: the name of the destination.' },
   },
@@ -65,4 +65,9 @@ export const Default: Story = {
 
 export const Small: Story = {
   args: { size: 'sm', label: 'Instruments' },
+};
+
+export const Header: Story = {
+  name: 'Header (Lignes detail)',
+  args: { size: 'header', label: 'Lignes' },
 };

@@ -9,14 +9,15 @@ export const BUTTON_VARIANTS = [
   'quiet',
   'quiet-destructive',
   'outline-destructive',
-  'soft',
-  'muted',
+  'quiet-glow',
+  'tonal',
 ] as const;
 export type ButtonVariant = (typeof BUTTON_VARIANTS)[number];
 
 /** Available button sizes. */
 export const BUTTON_SIZES = [
   'compact',
+  'slim',
   'xs',
   'sm',
   'md',
@@ -42,8 +43,8 @@ const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   outline: `${RING_OUTSIDE} ${OUTLINE} text-(--foreground)`,
   ghost: `${RING_OUTSIDE} bg-transparent text-(--foreground) hover:bg-(--glow) active:bg-(--soft)`,
   destructive: `${RING_OUTSIDE} bg-(--destructive) text-(--destructive-foreground)`,
-  soft: `${RING_OUTSIDE} bg-(--muted) text-(--foreground) lg:bg-transparent lg:hover:bg-(--glow)`,
-  muted: `${RING_INSIDE} bg-transparent text-(--muted-foreground) hover:bg-(--glow) hover:text-(--foreground)`,
+  tonal: `${RING_OUTSIDE} bg-(--muted) text-(--foreground) lg:bg-transparent lg:hover:bg-(--glow)`,
+  'quiet-glow': `${RING_INSIDE} bg-transparent text-(--muted-foreground) hover:bg-(--glow) hover:text-(--foreground)`,
   quiet: `${RING_INSIDE} bg-transparent text-(--muted-foreground) hover:bg-(--soft) hover:text-(--foreground) active:bg-(--soft)`,
   'quiet-destructive': `${RING_INSIDE} bg-transparent text-(--muted-foreground) hover:bg-(--glow) hover:text-(--negative) active:bg-(--soft)`,
   'outline-destructive': `${RING_OUTSIDE} ${OUTLINE} text-(--negative)`,
@@ -52,6 +53,7 @@ const VARIANT_CLASSES: Record<ButtonVariant, string> = {
 const SIZE_CLASSES: Record<ButtonSize, string> = {
   compact:
     'h-8 lg:h-7 gap-1.5 px-2.5 lg:px-2 text-label before:absolute before:-inset-x-1 before:-inset-y-1.5 lg:before:hidden',
+  slim: 'h-11 lg:h-8 gap-1.5 px-2.5 text-label',
   xs: 'h-8 gap-1.5 px-2.5 text-label',
   sm: 'h-9 gap-2 px-3 text-label',
   md: 'min-h-(--row-min) gap-2 px-4 text-label has-[>svg:first-child]:pl-3',

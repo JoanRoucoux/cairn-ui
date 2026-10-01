@@ -231,7 +231,7 @@ export const SignIn: Story = {
         </ui-field>
         <ui-field label="Mot de passe" invalid>
           <input uiInput surface="card" size="xl" type="password" value="motdepasse" />
-          <button uiFieldTrailing type="button" aria-label="Afficher le mot de passe">${EYE_ICON}</button>
+          <button uiFieldTrailing type="button" aria-label="Afficher le mot de passe" aria-pressed="false">${EYE_ICON}</button>
         </ui-field>
       </div>
     `,

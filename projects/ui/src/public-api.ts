@@ -39,6 +39,8 @@ export {
 } from './lib/delta/delta';
 export { DIALOG_LAYOUTS, DIALOG_WIDTHS, UiDialog, type DialogLayout, type DialogWidth } from './lib/dialog/dialog';
 export { type DonutSlice, UiDonut } from './lib/donut/donut';
+export { FACT_SIZES, FACT_SUB_TONES, UiFact, UiFacts, type FactSize, type FactSubTone } from './lib/fact/fact';
+export { UiExternalLink } from './lib/external-link/external-link';
 export { UiField, UiFieldLeading, UiFieldTrailing } from './lib/field/field';
 export { type FilterChipOption, UiFilterChips } from './lib/filter-chips/filter-chips';
 export {
@@ -63,7 +65,7 @@ export {
   type RowPadding,
   type RowSize,
 } from './lib/row/row';
-export { UiSegmented, type SegmentedOption } from './lib/segmented/segmented';
+export { SEGMENTED_SIZES, UiSegmented, type SegmentedOption, type SegmentedSize } from './lib/segmented/segmented';
 export { UiSelect } from './lib/select/select';
 export { UiSkeleton } from './lib/skeleton/skeleton';
 export { STAT_SIZES, UiStat, type StatSize } from './lib/stat/stat';

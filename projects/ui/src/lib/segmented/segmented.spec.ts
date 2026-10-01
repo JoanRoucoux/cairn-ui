@@ -16,6 +16,23 @@ const renderSegmented = (value = '1d'): Promise<RenderResult<unknown>> =>
   });
 
 describe('UiSegmented', () => {
+  it('draws 40 px options on touch and 32 px with a mouse by default', async () => {
+    await renderSegmented();
+
+    expect(screen.getByRole('radio', { name: '1D' })).toHaveClass('h-10', 'pointer-fine:h-8');
+  });
+
+  it('draws 30 px options with a mouse at the sm size', async () => {
+    await render('<ui-segmented [options]="options" label="Range" size="sm" value="1d" />', {
+      imports: [UiSegmented],
+      componentProperties: { options },
+    });
+
+    const option = screen.getByRole('radio', { name: '1D' });
+    expect(option).toHaveClass('h-10', 'pointer-fine:h-[30px]');
+    expect(option).not.toHaveClass('pointer-fine:h-8');
+  });
+
   it('exposes the group under its label', async () => {
     await renderSegmented();
 

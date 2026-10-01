@@ -66,7 +66,7 @@ with a click handler, so keyboard and assistive technology support come for free
       control: 'select',
       options: [...ROW_SIZES],
       description:
-        'Minimum height and gap: `md` 56 px, `lg` 60 px (10 px gap), `xl` 72 px on touch and 68 px with a mouse (12 px gap), `card` 68 px (8 px gap, the rows of a card).',
+        'Minimum height and gap: `md` 56 px, `lg` 60 px (10 px gap), `xl` 72 px on touch and 68 px with a mouse (12 px gap), `card` 68 px (8 px gap, the rows of a card), `dense` 56 px then 48 px from 64rem (12 px gap, result lists).',
     },
     gap: {
       control: 'select',
@@ -190,4 +190,21 @@ export const WithTrailingAction: Story = {
 
     await expect(row.getBoundingClientRect().right + 4).toBeCloseTo(action.getBoundingClientRect().left, 0);
   },
+};
+
+export const Dense: Story = {
+  name: 'Dense result row (add a line)',
+  args: { size: 'dense' },
+  render: (args) => ({
+    props: args,
+    template: `
+      <button ui-row type="button" [size]="size" [padding]="padding" class="w-[340px]">
+        <span class="flex min-w-0 flex-1 flex-col">
+          <span class="text-body truncate font-medium">Amundi MSCI World</span>
+          <span class="text-caption text-(--subtle-foreground)">LU1681043599 · ETF</span>
+        </span>
+        <span class="text-caption flex-none text-(--muted-foreground)">Yahoo Finance</span>
+      </button>
+    `,
+  }),
 };
