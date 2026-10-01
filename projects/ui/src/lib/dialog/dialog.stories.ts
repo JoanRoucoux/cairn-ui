@@ -3,6 +3,7 @@ import { expect, userEvent, waitFor, within } from 'storybook/test';
 
 import { UiButton } from '../button/button';
 import { DIALOG_LAYOUTS, type DialogLayout, type DialogWidth, UiDialog } from './dialog';
+import { desktopAnchored, field, result, sheetStaysFixed } from './internal/dialog-story-fixtures';
 
 type DialogArgs = {
   heading: string;
@@ -164,18 +165,6 @@ export const BackdropCloses: Story = {
   },
 };
 
-const field = (label: string): string => `
-  <label class="flex flex-col gap-1.5">
-    <span class="text-label font-medium text-(--muted-foreground)">${label}</span>
-    <input class="rounded-control bg-(--background) shadow-[inset_0_0_0_1px_var(--border)] h-12 lg:h-10 px-3 text-body outline-none focus-visible:outline-2 focus-visible:outline-(--ring)" />
-  </label>`;
-
-const result = (index: number): string => `
-  <button type="button" class="flex w-full items-center justify-between rounded-control px-3 py-2 text-left hover:bg-(--glow)">
-    <span class="text-body font-medium">Résultat ${index}</span>
-    <span class="text-caption text-(--muted-foreground)">cours d'essai</span>
-  </button>`;
-
 export const Board: Story = {
   name: 'Board, dialog (380px)',
   args: { heading: 'Vendre Ferrari', description: undefined, width: '380px', layout: 'list', open: true },
@@ -283,25 +272,6 @@ const addLine = (results: number): Story => ({
 
 export const AddLine: Story = { name: 'Ajouter une ligne, dialog (560px) and sheet', ...addLine(2) };
 
-const sheetStaysFixed: Story['play'] = async ({ canvasElement }) => {
-  const canvas = within(canvasElement);
-  const dialog = canvas.getByRole('dialog', { name: 'Ajouter une ligne' });
-  const footer = dialog.querySelector('[data-dialog-footer]') as HTMLElement;
-
-  await waitFor(() => expect(Math.round(dialog.getBoundingClientRect().height)).toBe(window.innerHeight - 58));
-  await waitFor(() => expect(Math.round(footer.getBoundingClientRect().bottom)).toBe(window.innerHeight));
-};
-
-const desktopAnchored: Story['play'] = async ({ canvasElement }) => {
-  const canvas = within(canvasElement);
-  const dialog = canvas.getByRole('dialog', { name: 'Ajouter une ligne' });
-  const footer = dialog.querySelector('[data-dialog-footer]') as HTMLElement;
-
-  await waitFor(() => expect(Math.round(dialog.getBoundingClientRect().top)).toBe(96));
-  await waitFor(() => expect(footer.getBoundingClientRect().bottom).toBeLessThanOrEqual(window.innerHeight - 32));
-  await expect(dialog.getBoundingClientRect().height).toBeLessThanOrEqual(760);
-};
-
 export const AddLineDesktopFewResults: Story = {
   name: 'Ajouter une ligne, desktop 1440x900 with few results',
   parameters: { viewport: { width: 1440, height: 900 } },
@@ -355,6 +325,37 @@ export const DeletePasskey: Story = {
       </ui-dialog>
     `,
   }),
+};
+
+export const TextOnlyScrollingBody: Story = {
+  name: 'Text-only body that scrolls (keyboard reachable)',
+  parameters: { viewport: { width: 390, height: 420 } },
+  args: { heading: 'Conditions', closeLabel: 'Fermer', layout: 'confirm', width: '488px', open: true },
+  render: (args) => ({
+    props: { ...args, paragraphs: Array.from({ length: 12 }, (_, index) => index + 1) },
+    template: `
+      <ui-dialog [heading]="heading" [closeLabel]="closeLabel" [layout]="layout" [width]="width" [open]="open" (dismissed)="open = false">
+        @for (paragraph of paragraphs; track paragraph) {
+          <p class="text-body text-(--muted-foreground)">
+            Le cours saisi remplace la dernière valeur connue jusqu'à la prochaine actualisation de la source.
+          </p>
+        }
+        <button dialogActions ui-button (click)="open = false">Compris</button>
+      </ui-dialog>
+    `,
+  }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const dialog = canvas.getByRole('alertdialog', { name: 'Conditions' });
+    const body = dialog.querySelector('[data-dialog-body]') as HTMLElement;
+
+    await waitFor(() => expect(body).toHaveAttribute('tabindex', '0'));
+    await expect(body).toHaveAccessibleName('Conditions');
+    await expect(body).not.toHaveFocus();
+
+    await userEvent.tab();
+    await expect(body).toHaveFocus();
+  },
 };
 
 export const Wide: Story = {
