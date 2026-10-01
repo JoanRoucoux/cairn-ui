@@ -22,6 +22,83 @@ const parseDeclarations = (css: string): Map<string, string> => {
   return declarations;
 };
 
+type Rgb = [number, number, number];
+type Scheme = 'light' | 'dark';
+
+const colorOf = (name: string, scheme: Scheme): string => {
+  const line = tokens.split('\n').find((candidate) => candidate.trim().startsWith(`${name}:`))!;
+  const pair = /light-dark\((.+)\);/.exec(line)![1]!;
+  const [light, dark] = pair.split(/,\s(?=#|rgb)/);
+
+  return (scheme === 'light' ? light : dark)!.trim();
+};
+
+const parseColor = (value: string): { rgb: Rgb; alpha: number } => {
+  if (value.startsWith('#')) {
+    const n = parseInt(value.slice(1), 16);
+
+    return { rgb: [n >> 16, (n >> 8) & 255, n & 255], alpha: 1 };
+  }
+
+  const [r, g, b, a] = value.match(/[\d.]+/g)!.map(Number);
+
+  return { rgb: [r!, g!, b!], alpha: a! };
+};
+
+const over = (top: string, ground: Rgb): Rgb => {
+  const { rgb, alpha } = parseColor(top);
+
+  return rgb.map((channel, i) => channel * alpha + ground[i]! * (1 - alpha)) as Rgb;
+};
+
+const luminance = (rgb: Rgb): number => {
+  const [r, g, b] = rgb.map((channel) => {
+    const c = channel / 255;
+
+    return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  });
+
+  return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!;
+};
+
+const contrast = (a: Rgb, b: Rgb): number => {
+  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+
+  return (hi! + 0.05) / (lo! + 0.05);
+};
+
+describe('text contrast', () => {
+  const TEXT = ['--foreground', '--muted-foreground', '--subtle-foreground', '--positive', '--negative', '--stale'];
+  const GROUNDS = ['--background', '--card', '--elevated', '--muted'];
+
+  it.each(['light', 'dark'] as const)('keeps every text token at 4.5:1 or more in %s', (scheme) => {
+    const failures: string[] = [];
+
+    for (const text of TEXT) {
+      const foreground = parseColor(colorOf(text, scheme)).rgb;
+      const grounds = new Map<string, Rgb>(GROUNDS.map((g) => [g, parseColor(colorOf(g, scheme)).rgb]));
+
+      for (const base of ['--background', '--card']) {
+        grounds.set(`--soft over ${base}`, over(colorOf('--soft', scheme), grounds.get(base)!));
+      }
+
+      for (const [ground, rgb] of grounds) {
+        const ratio = contrast(foreground, rgb);
+
+        if (ratio < 4.5) {
+          failures.push(`${text} on ${ground}: ${ratio.toFixed(2)}`);
+        }
+      }
+    }
+
+    expect(failures).toEqual([]);
+  });
+
+  it.each(['light', 'dark'] as const)('keeps the secondary text distinct from the tertiary one in %s', (scheme) => {
+    expect(colorOf('--muted-foreground', scheme)).not.toBe(colorOf('--subtle-foreground', scheme));
+  });
+});
+
 describe('design tokens', () => {
   it.each([
     '--background',
