@@ -183,6 +183,13 @@ describe('UiAsync', () => {
       expect(fixture.nativeElement.querySelector('ui-async')).not.toHaveClass('flex');
     });
 
+    it('draws the inline row with a card and fill without vertical centring', async () => {
+      const { alert } = await draw('variant="inline" card fill');
+
+      expect(alert).toHaveClass('bg-(--card)', 'flex-1', 'justify-between');
+      expect(alert).not.toHaveClass('justify-center');
+    });
+
     it('leaves the box unfilled by default', async () => {
       const { alert, host } = await draw('');
 

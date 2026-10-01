@@ -171,7 +171,7 @@ export class UiAsync {
     const fill = this.fill() ? ' flex-1 justify-center' : '';
 
     if (spec === null) {
-      return `flex ${INLINE_BOX_CLASSES}${this.card() ? ` ${CARD_SURFACE_CLASSES}` : ''}${fill}`;
+      return `flex ${INLINE_BOX_CLASSES}${this.card() ? ` ${CARD_SURFACE_CLASSES}` : ''}${this.fill() ? ' flex-1' : ''}`;
     }
 
     const surface = this.card() ? CARD_SURFACE_CLASSES : spec.surface;
