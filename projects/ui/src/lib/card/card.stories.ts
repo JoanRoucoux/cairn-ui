@@ -54,7 +54,8 @@ const meta: Meta<CardArgs> = {
     padding: {
       control: 'select',
       options: [...CARD_PADDINGS],
-      description: 'Inner spacing; `none` when the content manages its own (e.g. a table).',
+      description:
+        'Inner spacing; `md` follows `--inset-card` (16 px, 24 px from 1 024 px), `list` keeps a narrow side padding for rows that carry their own inset, `none` when the content manages its own (e.g. a table).',
     },
     label: { control: 'text', description: 'Projected content.' },
   },
@@ -71,6 +72,10 @@ export const Elevated: Story = {
 
 export const Flush: Story = {
   args: { padding: 'none' },
+};
+
+export const List: Story = {
+  args: { padding: 'list' },
 };
 
 export const RendersContent: Story = {

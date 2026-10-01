@@ -105,7 +105,7 @@ export class UiField {
   );
 
   protected readonly labelClasses = computed(() =>
-    this.labelHidden() ? 'sr-only' : 'text-label font-medium text-(--muted-foreground)',
+    this.labelHidden() ? 'sr-only' : 'text-label leading-[17px] font-medium text-(--muted-foreground)',
   );
 
   /**

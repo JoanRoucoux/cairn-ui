@@ -130,6 +130,7 @@ describe('UiField', () => {
     const { container } = await renderField();
 
     expect(container.querySelector('label')).not.toHaveClass('sr-only');
+    expect(container.querySelector('label')).toHaveClass('leading-[17px]');
   });
 
   it('hides the label from sight but keeps it as the name of the control', async () => {

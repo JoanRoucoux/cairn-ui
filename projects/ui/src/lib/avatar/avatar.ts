@@ -1,15 +1,15 @@
 import { Component, computed, input } from '@angular/core';
 
 /** Available avatar sizes. `AvatarSize` is derived from this tuple. */
-export const AVATAR_SIZES = ['sm', 'md'] as const;
+export const AVATAR_SIZES = ['sm', 'md', 'lg'] as const;
 export type AvatarSize = (typeof AVATAR_SIZES)[number];
 
-const BASE_CLASSES =
-  'inline-flex items-center justify-center rounded-pill border border-(--primary) bg-(--soft) font-semibold tabular-nums text-(--primary)';
+const BASE_CLASSES = 'inline-flex items-center justify-center rounded-pill bg-(--muted) font-medium tabular-nums';
 
 const SIZE_CLASSES: Record<AvatarSize, string> = {
   sm: 'size-8 text-caption',
-  md: 'size-11 text-label',
+  md: 'size-9 text-label',
+  lg: 'size-14 text-title',
 };
 
 /**

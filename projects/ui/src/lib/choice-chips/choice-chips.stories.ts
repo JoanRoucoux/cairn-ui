@@ -25,7 +25,7 @@ const meta: Meta<ChoiceChipsArgs> = {
       description: {
         component: `Exclusive choice among a handful of named options, shown as wrapping pills, such as an
 account envelope, a category or a frequency. The selection is a \`model()\`, bound with \`[(value)]\`
-or with Signal Forms' \`[formField]\`, which fills \`disabled\`, \`errors\` and \`touched\` too.
+or with Signal Forms' \`[formField]\`, which fills \`disabled\`, \`errors\`, \`invalid\`, \`required\` and \`touched\` too.
 
 #### When to use
 

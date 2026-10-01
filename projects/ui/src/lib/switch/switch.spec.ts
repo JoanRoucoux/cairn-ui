@@ -53,6 +53,19 @@ describe('UiSwitch', () => {
     );
   });
 
+  it('is 40 by 24 with a mouse and 51 by 31 on touch', async () => {
+    await render('<input type="checkbox" uiSwitch aria-label="Hide amounts" />', { imports: [UiSwitch] });
+
+    expect(screen.getByRole('switch', { name: 'Hide amounts' })).toHaveClass(
+      'w-[51px]',
+      'h-[31px]',
+      'pointer-fine:w-10',
+      'pointer-fine:h-6',
+      'pointer-fine:after:size-5',
+      'pointer-fine:checked:after:translate-x-4',
+    );
+  });
+
   it('dims to opacity 0.4 when disabled', async () => {
     await render('<input type="checkbox" uiSwitch aria-label="Hide amounts" disabled />', { imports: [UiSwitch] });
 

@@ -54,7 +54,11 @@ const meta: Meta<AvatarArgs> = {
       control: 'text',
       description: 'Accessible name, announced instead of the initials. Usually the full name.',
     },
-    size: { control: 'select', options: [...AVATAR_SIZES], description: 'Disc diameter.' },
+    size: {
+      control: 'select',
+      options: [...AVATAR_SIZES],
+      description: 'Disc diameter: `sm` 32 px, `md` 36 px, `lg` 56 px.',
+    },
   },
 };
 
@@ -65,6 +69,10 @@ export const Default: Story = {};
 
 export const Small: Story = {
   args: { size: 'sm' },
+};
+
+export const Large: Story = {
+  args: { size: 'lg' },
 };
 
 export const IsNamed: Story = {

@@ -23,10 +23,10 @@ describe('UiChoiceChips', () => {
     expect(screen.getByText('Envelope')).toBeVisible();
   });
 
-  it('sets the visible label in label size and weight with the natural line height', async () => {
+  it('sets the visible label in label size and weight with the 17 px line height', async () => {
     await renderChips();
 
-    expect(screen.getByText('Envelope')).toHaveClass('text-label', 'font-medium', 'leading-[normal]');
+    expect(screen.getByText('Envelope')).toHaveClass('text-label', 'font-medium', 'leading-[17px]');
   });
 
   it('names the group with ariaLabel when no visible label is given', async () => {

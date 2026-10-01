@@ -1,9 +1,11 @@
 import { Component, booleanAttribute, computed, input } from '@angular/core';
 
 const BASE_CLASSES =
-  'flex items-center gap-3 h-10 px-3 rounded-control text-label font-medium text-(--muted-foreground) transition-colors duration-(--duration-press) hover:bg-(--glow) hover:text-(--foreground) focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring)';
+  'flex items-center gap-3 h-10 px-3 rounded-control text-label font-medium transition-colors duration-(--duration-press) hover:bg-(--glow) hover:text-(--foreground) focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring)';
 
 const ACTIVE_CLASSES = 'bg-(--soft) text-(--foreground)';
+
+const IDLE_CLASSES = 'text-(--muted-foreground)';
 
 /**
  * One destination of the sidebar navigation (Portfolio, Holdings, Allocation, Accounts).
@@ -25,5 +27,5 @@ const ACTIVE_CLASSES = 'bg-(--soft) text-(--foreground)';
 export class UiNavItem {
   readonly active = input(false, { transform: booleanAttribute });
 
-  protected readonly classes = computed(() => `${BASE_CLASSES}${this.active() ? ` ${ACTIVE_CLASSES}` : ''}`);
+  protected readonly classes = computed(() => `${BASE_CLASSES} ${this.active() ? ACTIVE_CLASSES : IDLE_CLASSES}`);
 }

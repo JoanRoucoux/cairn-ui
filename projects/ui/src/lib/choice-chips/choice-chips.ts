@@ -34,9 +34,7 @@ const nextId = (() => {
 
 /**
  * Exclusive choice among a handful of named options, shown as wrapping pills: an account envelope,
- * a category, a frequency. Compatible with Signal Forms: it implements the `FormValueControl`
- * contract, so `[formField]` binds `value`, `disabled`, `errors`, `invalid`, `required` and `touched`, and listens to `touch`, with nothing written
- * at the call site.
+ * a category, a frequency. Binds to Signal Forms with `[formField]`.
  *
  * @example
  * <ui-choice-chips label="Envelope" [options]="envelopes" [(value)]="envelope" />
@@ -57,7 +55,7 @@ const nextId = (() => {
       (focusout)="onFocusOut($event)"
     >
       @if (label()) {
-        <span class="text-label leading-[normal] font-medium text-(--muted-foreground)" [id]="labelId">{{
+        <span class="text-label leading-[17px] font-medium text-(--muted-foreground)" [id]="labelId">{{
           label()
         }}</span>
       }
