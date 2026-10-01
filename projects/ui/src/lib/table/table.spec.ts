@@ -108,11 +108,18 @@ describe('UiTable', () => {
 });
 
 describe('UiTr', () => {
-  it('highlights an ordinary row on hover and press', async () => {
+  it('highlights an ordinary row on hover only', async () => {
     await render(`<table uiTable><tbody><tr uiTr><td uiTd>Ferrari</td></tr></tbody></table>`, { imports });
 
-    expect(screen.getByRole('row')).toHaveClass('hover:[&>td]:bg-(--glow)', 'active:[&>td]:bg-(--soft)');
+    expect(screen.getByRole('row')).toHaveClass('hover:[&>td]:bg-(--glow)');
+    expect(screen.getByRole('row')).not.toHaveClass('active:[&>td]:bg-(--soft)');
     expect(screen.getByRole('row')).not.toHaveAttribute('aria-selected');
+  });
+
+  it('presses an interactive row to the soft fill', async () => {
+    await render('<table uiTable><tbody><tr uiTr interactive><td uiTd>Ferrari</td></tr></tbody></table>', { imports });
+
+    expect(screen.getByRole('row')).toHaveClass('active:[&>td]:bg-(--soft)');
   });
 
   it('fills a selected row with the soft color and says so', async () => {
@@ -148,7 +155,11 @@ describe('UiGroupCell', () => {
   it('draws the muted band at least 44px tall', async () => {
     await renderBand();
 
-    expect(screen.getByText('Saxo Investor').closest('div')).toHaveClass('bg-(--muted)', 'rounded-control', 'min-h-11');
+    expect(screen.getByText('Saxo Investor').closest('div')?.parentElement).toHaveClass(
+      'bg-(--muted)',
+      'rounded-control',
+      'min-h-11',
+    );
   });
 
   it('omits the meta when there is none', async () => {
@@ -253,9 +264,9 @@ describe('UiGroupCell sizes', () => {
     );
 
     expect(screen.getByText('A').closest('td')).toHaveClass('pt-2.5');
-    expect(screen.getByText('A').closest('div')).toHaveClass('min-h-11');
+    expect(screen.getByText('A').closest('div')?.parentElement).toHaveClass('min-h-11');
     expect(screen.getByText('B').closest('td')).toHaveClass('pt-3');
-    expect(screen.getByText('B').closest('div')).toHaveClass('min-h-12');
+    expect(screen.getByText('B').closest('div')?.parentElement).toHaveClass('min-h-12');
   });
 
   it('names the group with a heading', async () => {
@@ -264,6 +275,14 @@ describe('UiGroupCell sizes', () => {
     });
 
     expect(screen.getByRole('heading', { name: 'Saxo' })).toBeInTheDocument();
+  });
+
+  it('keeps the name in a heading outside any inline wrapper', async () => {
+    await render('<table uiTable><tbody><tr uiTr group><td ui-group-cell name="Saxo">1</td></tr></tbody></table>', {
+      imports,
+    });
+
+    expect(screen.getByRole('heading').parentElement?.tagName).toBe('DIV');
   });
 
   it('closes a group with a 4px tail', async () => {

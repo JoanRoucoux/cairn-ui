@@ -63,7 +63,9 @@ export class UiTable {
 export class UiGroup {}
 
 /**
- * Body or group row. An ordinary row glows on hover and takes the soft fill when `selected`.
+ * Body or group row. An ordinary row glows on hover and takes the soft fill when `selected`; an
+ * `interactive` row (one that opens something) also presses to the soft fill. A row with no action keeps a
+ * plain name: `<td uiTd primary class="truncate font-medium">`.
  * `group` marks the row that holds a group band: it carries no hover state.
  *
  * @example
@@ -80,6 +82,7 @@ export class UiGroup {}
 export class UiTr {
   readonly group = input(false, { transform: booleanAttribute });
   readonly selected = input(false, { transform: booleanAttribute });
+  readonly interactive = input(false, { transform: booleanAttribute });
 
   protected readonly classes = computed(() => {
     if (this.group()) {
@@ -88,7 +91,8 @@ export class UiTr {
     return [
       'relative [&>td:first-child]:rounded-l-control [&>td:last-child]:rounded-r-control',
       this.selected() ? '[&>td]:bg-(--soft)' : '',
-      'hover:[&>td]:bg-(--glow) active:[&>td]:bg-(--soft)',
+      'hover:[&>td]:bg-(--glow)',
+      this.interactive() ? 'active:[&>td]:bg-(--soft)' : '',
     ]
       .filter(Boolean)
       .join(' ');
@@ -188,12 +192,12 @@ export type GroupSize = (typeof GROUP_SIZES)[number];
       class="rounded-control flex items-center justify-between gap-4 bg-(--muted) px-2"
       [class]="size() === 'lg' ? 'min-h-12' : 'min-h-11'"
     >
-      <span class="flex min-w-0 items-baseline gap-3">
+      <div class="flex min-w-0 items-baseline gap-3">
         <h2 class="text-body m-0 font-semibold whitespace-nowrap">{{ name() }}</h2>
         @if (meta()) {
           <span class="text-label truncate text-(--muted-foreground)">{{ meta() }}</span>
         }
-      </span>
+      </div>
       <span class="font-semibold whitespace-nowrap tabular-nums"><ng-content /></span>
     </div>
   `,

@@ -6,23 +6,20 @@ import { UiCellSub, UiGroup, UiGroupCell, UiRowAction, UiRowLink, UiTable, UiTd,
 type TableArgs = Record<string, never>;
 
 type Tone = 'positive' | 'negative' | 'none';
-type Extra = { stale?: boolean; noValue?: boolean; selected?: boolean };
-type Holding = Record<
-  'name' | 'sub' | 'cls' | 'quantity' | 'average' | 'price' | 'value' | 'pnl' | 'pnlPct' | 'day' | 'compact' | 'narrow',
-  string
-> & { tone: Tone } & Extra;
+type Holding = Record<string, string> & { tone: Tone; stale: boolean; noValue: boolean; selected: boolean };
 
 const FIELDS = ['name', 'isin', 'cls', 'quantity', 'average', 'price', 'value', 'pnl', 'pnlPct', 'day'];
 
-function holding(line: string, tone: Tone, extra: Extra = {}): Holding {
-  const f = Object.fromEntries(FIELDS.map((field, index) => [field, line.split('|')[index]]));
-  const compact = extra.stale ? 'Cours du 24/09' : extra.noValue ? 'Aucun cours' : f['cls'];
-  const narrow = extra.stale
-    ? 'Cours du 24/09, en retard'
-    : extra.noValue
-      ? 'Aucun cours'
-      : `${f['quantity']} × ${f['price']} € · PRU ${f['average']} €`;
-  return { ...f, sub: `${f['isin']} · ${f['cls']}`, compact, narrow, tone, ...extra } as Holding;
+function holding(line: string, tone: Tone): Holding {
+  const cells = line.split('|');
+  const f = Object.fromEntries(FIELDS.map((field, index) => [field, cells[index]]));
+  const flags = { selected: cells[10] === 'selected', stale: cells[10] === 'stale', noValue: cells[10] === 'noValue' };
+  const compact = flags.stale ? 'Cours du 24/09' : flags.noValue ? 'Aucun cours' : f['cls'];
+  const narrow = flags.noValue
+    ? `${f['quantity']} · PRU ${f['average']} €`
+    : `${f['quantity']} × ${f['price']} € · PRU ${f['average']} €`;
+  const note = flags.stale ? 'Cours du 24/09, en retard' : flags.noValue ? 'Aucun cours, à saisir' : '';
+  return { ...f, sub: `${f['isin']} · ${f['cls']}`, compact, narrow, note, tone, ...flags } as Holding;
 }
 
 const GROUPS: { name: string; meta: string; total: string; rows: Holding[] }[] = [
@@ -33,11 +30,8 @@ const GROUPS: { name: string; meta: string; total: string; rows: Holding[] }[] =
     rows: [
       holding('Ferrari|NL00150001Q9|Actions|10|388,10|421,26|4 212,60 €|+331,60 €|+8,54 %|+1,60 %', 'positive'),
       holding(
-        'Amundi MSCI World|LU1681043599|ETF|500|26,40|28,64|14 318,40 €|+1 118,40 €|+8,48 %|+0,90 %',
+        'Amundi MSCI World|LU1681043599|ETF|500|26,40|28,64|14 318,40 €|+1 118,40 €|+8,48 %|+0,90 %|selected',
         'positive',
-        {
-          selected: true,
-        },
       ),
       holding('Accor|FR0000120404|Actions|60|40,12|38,42|2 305,20 €|−102,00 €|−4,24 %|−0,42 %', 'negative'),
     ],
@@ -48,13 +42,10 @@ const GROUPS: { name: string; meta: string; total: string; rows: Holding[] }[] =
     total: '21 406,18 €',
     rows: [
       holding(
-        'Amundi Opportunités ESR|QS0009119224|Fonds|142,318|118,62|150,41|21 406,18 €|+4 524,42 €|+26,80 %|',
+        'Amundi Opportunités ESR|QS0009119224|Fonds|142,318|118,62|150,41|21 406,18 €|+4 524,42 €|+26,80 %||stale',
         'positive',
-        {
-          stale: true,
-        },
       ),
-      holding('Valmy Gestion Flexible Retraite|FR0013280799|Fonds|10,55|119,84||—||||', 'none', { noValue: true }),
+      holding('Valmy Gestion Flexible Retraite|FR0013280799|Fonds|10,55|119,84||—||||noValue', 'none'),
     ],
   },
 ];
@@ -88,7 +79,9 @@ group in \`<tbody uiGroup>\` for its 4px tail. Its total is a \`ui-amount\`.
 
 \`a[uiRowLink]\` or \`button[uiRowLink]\` in the first cell makes the whole row one target, with a row-wide ring
 (Lignes, Instruments). \`[stretch]="false"\` keeps the target on the name, underlined on hover with its own ring
-(Comptes). \`current\` sets \`aria-current\`. A control in another cell takes \`uiRowAction\`.
+(Comptes). \`current\` sets \`aria-current\`. A control in another cell takes \`uiRowAction\`. A row
+that opens something is \`interactive\` (it presses to the soft fill); one with no action keeps a plain name,
+\`<td uiTd primary class="truncate font-medium">\`.
 
 Under 1024px, mark Quantité, PRU and Cours \`secondary\` on their header and cells: they are hidden, and a
 \`<span uiCellSub narrow>\` carries them as the row subtitle. \`uiCellSub\` takes a \`tone\`: subtle, stale or
@@ -175,11 +168,18 @@ const holdingsTemplate = (columns: 'full' | 'compact' | 'narrow'): string => {
   const narrow = columns === 'narrow';
   const hold = narrow ? 'secondary' : '';
   const width = { full: 'w-[1120px]', compact: 'w-[696px]', narrow: 'w-[720px]' }[columns];
-  const subTone = `[tone]="row.stale ? 'stale' : 'subtle'"`;
+  const staleTone = `[tone]="row.stale ? 'stale' : 'subtle'"`;
   const sub = compact
-    ? `<span uiCellSub ${subTone}>{{ row.compact }}</span>`
-    : `<span uiCellSub ${subTone}${narrow ? ' class="max-lg:hidden"' : ''}>{{ row.sub }}</span>
-       ${narrow ? `<span uiCellSub narrow ${subTone}>{{ row.narrow }}</span>` : ''}`;
+    ? `<span uiCellSub ${staleTone}>{{ row.compact }}</span>`
+    : `<span uiCellSub${narrow ? ' class="max-lg:hidden"' : ''}>{{ row.sub }}</span>
+       ${
+         narrow
+           ? `<span uiCellSub narrow>{{ row.narrow }}</span>
+       @if (row.note) {
+         <span uiCellSub narrow ${staleTone}>{{ row.note }}</span>
+       }`
+           : ''
+       }`;
   return `
     <div class="${CARD} ${width}">
       <table uiTable row="60" [rule]="false">
@@ -198,7 +198,7 @@ const holdingsTemplate = (columns: 'full' | 'compact' | 'narrow'): string => {
               <td ui-group-cell size="lg" colspan="${compact ? 3 : 7}" [name]="group.name" [meta]="group.meta">{{ group.total }}</td>
             </tr>
             @for (row of group.rows; track row.name) {
-              <tr uiTr [selected]="${compact} && row.selected === true">
+              <tr uiTr interactive [selected]="${compact} && row.selected === true">
                 <td uiTd primary>
                   <a uiRowLink href="#" [current]="${compact} && row.selected === true" (click)="$event.preventDefault()">{{ row.name }}</a>
                   ${sub}
@@ -219,7 +219,16 @@ const holdingsTemplate = (columns: 'full' | 'compact' | 'narrow'): string => {
                   }
                 </td>`
                 }
-                <td uiTd numeric class="font-medium">{{ row.value }}</td>
+                <td uiTd numeric class="font-medium" [class.text-(--subtle-foreground)]="row.noValue">
+                  {{ row.value }}
+                  ${
+                    narrow
+                      ? `@if (row.noValue) {
+                    <button uiRowAction type="button" class="mt-1 h-8 rounded-control bg-(--card) px-2.5 text-label font-medium whitespace-nowrap shadow-[inset_0_0_0_1px_var(--border)] hover:bg-(--glow) lg:hidden">Saisir un cours</button>
+                  }`
+                      : ''
+                  }
+                </td>
                 ${
                   compact
                     ? ''
@@ -278,6 +287,7 @@ export const Etroit: Story = {
     await expect(canvas.queryByRole('columnheader', { name: 'PRU' })).not.toBeInTheDocument();
     await expect(canvas.getByRole('columnheader', { name: 'Plus-value latente' })).toBeVisible();
     await expect(canvas.getByText('10 × 421,26 € · PRU 388,10 €')).toBeVisible();
+    await expect(canvas.getByRole('button', { name: 'Saisir un cours' })).toBeVisible();
   },
 };
 
@@ -366,7 +376,7 @@ export const Instruments: Story = {
        <th uiTh tall width="56px"><span class="sr-only">Actions</span></th>`,
       `@for (instrument of instruments; track instrument.name) {
          <tr uiTr>
-           <td uiTd primary><a uiRowLink href="#" (click)="$event.preventDefault()">{{ instrument.name }}</a></td>
+           <td uiTd primary class="truncate font-medium">{{ instrument.name }}</td>
            <td uiTd class="text-label text-(--muted-foreground) tabular-nums">{{ instrument.isin }}</td>
            <td uiTd><span class="${PILL}">{{ instrument.cls }}</span></td>
            <td uiTd>
