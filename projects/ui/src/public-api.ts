@@ -21,7 +21,8 @@ export {
   type AsyncState,
   type AsyncVariant,
 } from './lib/async/async';
-export { AVATAR_SIZES, UiAvatar, type AvatarSize } from './lib/avatar/avatar';
+export { AVATAR_SIZES, UiAvatar, UiAvatarLink, type AvatarSize } from './lib/avatar/avatar';
+export { BACK_LINK_SIZES, UiBackLink, type BackLinkSize } from './lib/back-link/back-link';
 export { BADGE_SIZES, BADGE_VARIANTS, UiBadge, type BadgeSize, type BadgeVariant } from './lib/badge/badge';
 export { BUTTON_SIZES, BUTTON_VARIANTS, UiButton, type ButtonSize, type ButtonVariant } from './lib/button/button';
 export { CARD_PADDINGS, CARD_VARIANTS, UiCard, type CardPadding, type CardVariant } from './lib/card/card';
@@ -38,8 +39,8 @@ export {
 } from './lib/delta/delta';
 export { DIALOG_LAYOUTS, DIALOG_WIDTHS, UiDialog, type DialogLayout, type DialogWidth } from './lib/dialog/dialog';
 export { type DonutSlice, UiDonut } from './lib/donut/donut';
+export { UiField, UiFieldLeading, UiFieldTrailing } from './lib/field/field';
 export { type FilterChipOption, UiFilterChips } from './lib/filter-chips/filter-chips';
-export { UiField, UiFieldLeading } from './lib/field/field';
 export {
   CONTROL_SIZES,
   CONTROL_SURFACES,
@@ -52,7 +53,16 @@ export { type AxisTicks, type ChartPoint, type TooltipSize, UiLineChart } from '
 export { UiMenu, UiMenuItem, UiMenuTrigger } from './lib/menu/menu';
 export { METER_SIZES, METER_TONES, UiMeter, type MeterSize, type MeterTone } from './lib/meter/meter';
 export { UiNavItem } from './lib/nav-item/nav-item';
-export { ROW_PADDINGS, ROW_SIZES, UiRow, type RowPadding, type RowSize } from './lib/row/row';
+export {
+  ROW_GAPS,
+  ROW_PADDINGS,
+  ROW_SIZES,
+  UiRow,
+  UiRowItem,
+  type RowGap,
+  type RowPadding,
+  type RowSize,
+} from './lib/row/row';
 export { UiSegmented, type SegmentedOption } from './lib/segmented/segmented';
 export { UiSelect } from './lib/select/select';
 export { UiSkeleton } from './lib/skeleton/skeleton';

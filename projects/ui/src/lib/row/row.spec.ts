@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/angular';
 
-import { UiRow } from './row';
+import { UiRow, UiRowItem } from './row';
 
 describe('UiRow', () => {
   it('renders as a link carrying its content', async () => {
@@ -60,5 +60,49 @@ describe('UiRow', () => {
     await render('<a ui-row selected href="#">Row</a>', { imports: [UiRow] });
 
     expect(screen.getByRole('link', { name: 'Row' })).toHaveAttribute('aria-current', 'true');
+  });
+
+  it('offers a 68 px card row with an 8 px gap', async () => {
+    await render('<a ui-row size="card" href="#">Row</a>', { imports: [UiRow] });
+
+    const row = screen.getByRole('link', { name: 'Row' });
+    expect(row).toHaveClass('min-h-17', 'gap-2');
+    expect(row).not.toHaveClass('gap-2.5', 'gap-3');
+  });
+
+  it('narrows the gap to 8 px on any size without keeping the size gap', async () => {
+    await render('<a ui-row size="xl" gap="sm" padding="sm" href="#">Row</a>', { imports: [UiRow] });
+
+    const row = screen.getByRole('link', { name: 'Row' });
+    expect(row).toHaveClass('gap-2', 'min-h-18', 'pointer-fine:min-h-17');
+    expect(row).not.toHaveClass('gap-3');
+  });
+});
+
+describe('UiRowItem', () => {
+  const template = `
+    <div uiRowItem data-testid="item">
+      <a ui-row size="xl" padding="sm" href="#">Saxo Investor</a>
+      <button type="button" aria-label="Actions sur Saxo Investor">...</button>
+    </div>`;
+
+  it('lays the row and its trailing action side by side, 4 px apart, centred', async () => {
+    await render(template, { imports: [UiRow, UiRowItem] });
+
+    expect(screen.getByTestId('item')).toHaveClass('flex', 'items-center', 'gap-1');
+  });
+
+  it('lets the row take the room the action leaves', async () => {
+    await render(template, { imports: [UiRow, UiRowItem] });
+
+    expect(screen.getByTestId('item').className).toContain('[&>[ui-row]]:min-w-0');
+    expect(screen.getByTestId('item').className).toContain('[&>[ui-row]]:flex-1');
+    expect(screen.getByTestId('item').className).toContain('[&>[ui-row]]:w-auto');
+  });
+
+  it('keeps the trailing action at its own size', async () => {
+    await render(template, { imports: [UiRow, UiRowItem] });
+
+    expect(screen.getByTestId('item').className).toContain('[&>:not([ui-row])]:flex-none');
   });
 });

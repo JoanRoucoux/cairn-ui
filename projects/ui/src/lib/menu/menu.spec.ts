@@ -191,4 +191,151 @@ describe('UiMenu', () => {
     expect(menu.style.transformOrigin).toBe('bottom right');
     expect(menu.style.top).toBe('476px');
   });
+
+  describe('sheet', () => {
+    const sheetTemplate = `
+      <button type="button" [uiMenuTrigger]="menu">More</button>
+      <ui-menu #menu label="Account actions" sheet heading="Livret A">
+        <button uiMenuItem>Edit</button>
+        <button uiMenuItem destructive>Delete</button>
+      </ui-menu>`;
+    const imports = [UiMenu, UiMenuTrigger, UiMenuItem];
+
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
+    it('is a popover everywhere by default and draws no heading', async () => {
+      const { container } = await render(template, { imports, componentProperties: { edited: vi.fn() } });
+
+      const menu = container.querySelector('ui-menu') as HTMLElement;
+      expect(menu.className).not.toContain('max-lg:');
+      expect(menu.textContent).not.toContain('Livret A');
+    });
+
+    it('becomes a bottom action sheet below 64rem', async () => {
+      const { container } = await render(sheetTemplate, { imports });
+
+      const menu = container.querySelector('ui-menu') as HTMLElement;
+      expect(menu).toHaveClass(
+        'max-lg:fixed',
+        'max-lg:inset-x-4',
+        'max-lg:top-auto',
+        'max-lg:bottom-[calc(76px+env(safe-area-inset-bottom))]',
+        'max-lg:p-1.5',
+        'max-lg:bg-(--card)',
+        'max-lg:backdrop:bg-[rgb(0_0_0/0.36)]',
+        'max-lg:translate-y-4',
+        'max-lg:open:translate-y-0',
+      );
+    });
+
+    it('names the sheet with a heading that is not a menu item', async () => {
+      await render(sheetTemplate, { imports });
+
+      const heading = screen.getByText('Livret A', { exact: true });
+      expect(heading).toHaveClass('lg:hidden', 'text-label', 'leading-[17px]', 'text-(--muted-foreground)');
+      expect(heading).toHaveAttribute('aria-hidden', 'true');
+    });
+
+    it('draws 48 px body-text items below 64rem and the popover items from 64rem', async () => {
+      await render(sheetTemplate, { imports });
+
+      const item = screen.getByRole('menuitem', { name: 'Edit', hidden: true });
+      expect(item).toHaveClass(
+        'min-h-12',
+        'lg:min-h-11',
+        'lg:pointer-fine:min-h-9',
+        'max-lg:active:bg-(--soft)',
+        'rounded-[calc(var(--radius-container)-6px)]',
+        'lg:rounded-[calc(var(--radius-container)-4px)]',
+      );
+      expect(item).not.toHaveClass('min-h-11');
+    });
+
+    it('leaves the items of a plain menu as they were', async () => {
+      await render(template, { imports, componentProperties: { edited: vi.fn() } });
+
+      expect(screen.getByRole('menuitem', { name: 'Edit', hidden: true })).toHaveClass('min-h-11');
+    });
+
+    it('does not position itself against the trigger while it is a sheet', async () => {
+      vi.stubGlobal('matchMedia', () => ({ matches: false }));
+      const { container } = await render(sheetTemplate, { imports });
+      const menu = container.querySelector('ui-menu') as HTMLElement;
+
+      await userEvent.click(screen.getByRole('button', { name: 'More' }));
+
+      expect(menu.style.top).toBe('');
+      expect(menu.style.left).toBe('');
+    });
+
+    it('still positions itself from 64rem', async () => {
+      vi.stubGlobal('matchMedia', () => ({ matches: true }));
+      const { container } = await render(sheetTemplate, { imports });
+      const menu = container.querySelector('ui-menu') as HTMLElement;
+
+      await userEvent.click(screen.getByRole('button', { name: 'More' }));
+
+      expect(menu.style.position).toBe('fixed');
+    });
+  });
+
+  describe('width', () => {
+    const imports = [UiMenu, UiMenuTrigger, UiMenuItem];
+
+    it('leaves the width to the content by default', async () => {
+      const { container } = await render(template, { imports, componentProperties: { edited: vi.fn() } });
+
+      const menu = container.querySelector('ui-menu') as HTMLElement;
+      expect(menu.className).not.toContain('w-(--ui-menu-width)');
+      expect(menu.style.getPropertyValue('--ui-menu-width')).toBe('');
+    });
+
+    it('sets a fixed width in pixels', async () => {
+      const { container } = await render(
+        `<ui-menu label="Line actions" [width]="210"><button uiMenuItem>Edit</button></ui-menu>`,
+        { imports },
+      );
+
+      const menu = container.querySelector('ui-menu') as HTMLElement;
+      expect(menu).toHaveClass('w-(--ui-menu-width)');
+      expect(menu.style.getPropertyValue('--ui-menu-width')).toBe('210px');
+    });
+
+    it('keeps a sheet full width below 64rem and applies the width from 64rem', async () => {
+      const { container } = await render(
+        `<ui-menu label="Account actions" sheet [width]="210"><button uiMenuItem>Edit</button></ui-menu>`,
+        { imports },
+      );
+
+      const menu = container.querySelector('ui-menu') as HTMLElement;
+      expect(menu).toHaveClass('lg:w-(--ui-menu-width)', 'max-lg:w-auto');
+      expect(menu).not.toHaveClass('w-(--ui-menu-width)');
+    });
+  });
+
+  describe('item icons', () => {
+    const imports = [UiMenu, UiMenuTrigger, UiMenuItem];
+
+    it('sizes a leading svg 18 px on touch and 16 px with a mouse', async () => {
+      await render(template, { imports, componentProperties: { edited: vi.fn() } });
+
+      expect(screen.getByRole('menuitem', { name: 'Edit', hidden: true })).toHaveClass(
+        '[&>svg]:size-[18px]',
+        '[&>svg]:flex-none',
+        'pointer-fine:[&>svg]:size-4',
+      );
+    });
+
+    it('sizes the svg of a sheet 20 px below 64rem and as a popover from 64rem', async () => {
+      await render(`<ui-menu label="Actions" sheet><button uiMenuItem>Edit</button></ui-menu>`, { imports });
+
+      expect(screen.getByRole('menuitem', { name: 'Edit', hidden: true })).toHaveClass(
+        '[&>svg]:size-5',
+        'lg:[&>svg]:size-[18px]',
+        'lg:pointer-fine:[&>svg]:size-4',
+      );
+    });
+  });
 });

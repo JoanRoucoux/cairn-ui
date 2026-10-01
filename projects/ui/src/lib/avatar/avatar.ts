@@ -1,7 +1,7 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, Directive, computed, input } from '@angular/core';
 
 /** Available avatar sizes. `AvatarSize` is derived from this tuple. */
-export const AVATAR_SIZES = ['sm', 'md', 'lg'] as const;
+export const AVATAR_SIZES = ['sm', 'md', 'lg', 'auto'] as const;
 export type AvatarSize = (typeof AVATAR_SIZES)[number];
 
 const BASE_CLASSES = 'inline-flex items-center justify-center rounded-pill bg-(--muted) font-medium tabular-nums';
@@ -10,6 +10,7 @@ const SIZE_CLASSES: Record<AvatarSize, string> = {
   sm: 'size-8 text-caption',
   md: 'size-[34px] text-label',
   lg: 'size-14 text-title',
+  auto: 'size-[34px] text-label lg:size-8 lg:text-caption',
 };
 
 /**
@@ -34,3 +35,19 @@ export class UiAvatar {
 
   protected readonly classes = computed(() => `${BASE_CLASSES} ${SIZE_CLASSES[this.size()]}`);
 }
+
+/**
+ * Round hit area around a `ui-avatar` that links somewhere: 44px on touch, 40px from 64rem, with a
+ * glow on hover and the press scale. The avatar itself keeps its own size.
+ *
+ * @example
+ * <a uiAvatarLink routerLink="/profile"><ui-avatar initials="JR" label="Profile" size="auto" /></a>
+ */
+@Directive({
+  selector: 'a[uiAvatarLink], button[uiAvatarLink]',
+  host: {
+    class:
+      'rounded-pill grid size-11 lg:size-10 place-items-center cursor-pointer select-none touch-manipulation transition-[transform,background-color] duration-(--duration-press) ease-out hover:bg-(--glow) active:scale-(--press-scale) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring)',
+  },
+})
+export class UiAvatarLink {}

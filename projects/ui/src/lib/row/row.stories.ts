@@ -1,16 +1,19 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
+import { expect, within } from 'storybook/test';
 
-import { ROW_PADDINGS, ROW_SIZES, type RowPadding, type RowSize, UiRow } from './row';
+import { UiButton } from '../button/button';
+import { ROW_GAPS, ROW_PADDINGS, ROW_SIZES, type RowGap, type RowPadding, type RowSize, UiRow, UiRowItem } from './row';
 
 type RowArgs = {
   selected: boolean;
   size: RowSize;
   padding: RowPadding;
+  gap: RowGap;
 };
 
 const meta: Meta<RowArgs> = {
   title: 'Data display/Row',
-  decorators: [moduleMetadata({ imports: [UiRow] })],
+  decorators: [moduleMetadata({ imports: [UiButton, UiRow, UiRowItem] })],
   parameters: {
     docs: {
       description: {
@@ -39,7 +42,7 @@ with a click handler, so keyboard and assistive technology support come for free
   render: (args) => ({
     props: args,
     template: `
-      <a ui-row href="#" [selected]="selected" [size]="size" [padding]="padding" class="w-[340px]">
+      <a ui-row href="#" [selected]="selected" [size]="size" [padding]="padding" [gap]="gap" class="w-[340px]">
         <div class="flex min-w-0 flex-1 flex-col">
           <span class="text-body font-medium">Amundi MSCI World</span>
           <span class="text-label text-(--muted-foreground)">500 × 28,64 €</span>
@@ -55,13 +58,20 @@ with a click handler, so keyboard and assistive technology support come for free
     selected: false,
     size: 'md',
     padding: 'md',
+    gap: 'default',
   },
   argTypes: {
     selected: { control: 'boolean', description: 'Sets `aria-current="true"` and the soft background.' },
     size: {
       control: 'select',
       options: [...ROW_SIZES],
-      description: 'Minimum height: `md` 56 px, `lg` 60 px, `xl` 72 px on touch and 68 px with a mouse (12 px gap).',
+      description:
+        'Minimum height and gap: `md` 56 px, `lg` 60 px (10 px gap), `xl` 72 px on touch and 68 px with a mouse (12 px gap), `card` 68 px (8 px gap, the rows of a card).',
+    },
+    gap: {
+      control: 'select',
+      options: [...ROW_GAPS],
+      description: 'Space between the row children: the size default, or `sm` for 8 px on any size.',
     },
     padding: {
       control: 'select',
@@ -103,4 +113,81 @@ export const Profile: Story = {
       </div>
     `,
   }),
+};
+
+export const Card: Story = {
+  name: 'Card row (Lignes iPhone)',
+  args: { size: 'card', padding: 'sm' },
+  render: (args) => ({
+    props: args,
+    template: `
+      <div class="rounded-container bg-(--card) w-[340px] px-2 py-1.5 shadow-[inset_0_0_0_1px_var(--border)]">
+        <a ui-row href="#" [selected]="selected" [size]="size" [padding]="padding" class="-mx-2 w-auto">
+          <div class="flex min-w-0 flex-1 flex-col">
+            <span class="text-body font-medium">Amundi MSCI World</span>
+            <span class="text-label text-(--muted-foreground)">500 × 28,64 €</span>
+          </div>
+          <div class="flex flex-col items-end whitespace-nowrap">
+            <span class="text-body font-medium">14 318,40 €</span>
+            <span class="text-label text-(--muted-foreground)">+0,90 %</span>
+          </div>
+        </a>
+      </div>
+    `,
+  }),
+};
+
+export const NarrowGap: Story = {
+  name: 'Narrow gap on a tall row (Dashboard movers)',
+  args: { size: 'xl', padding: 'sm', gap: 'sm' },
+  render: (args) => ({
+    props: args,
+    template: `
+      <a ui-row href="#" [selected]="selected" [size]="size" [padding]="padding" [gap]="gap" class="w-[340px]">
+        <div class="flex min-w-0 flex-1 flex-col">
+          <span class="text-body font-medium">Amundi MSCI World</span>
+          <span class="text-label text-(--muted-foreground)">ETF Actions</span>
+        </div>
+        <span class="flex flex-col items-end whitespace-nowrap">
+          <span class="text-body font-medium">14 318,40 €</span>
+          <span class="text-label text-(--muted-foreground)">+0,90 %</span>
+        </span>
+        <svg class="block size-4 flex-none fill-none stroke-(--subtle-foreground) stroke-[1.75]" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+      </a>
+    `,
+  }),
+};
+
+export const WithTrailingAction: Story = {
+  name: 'With a trailing action (Comptes iPhone)',
+  args: { size: 'xl', padding: 'sm' },
+  render: (args) => ({
+    props: args,
+    template: `
+      <div class="rounded-container bg-(--card) w-[358px] py-1.5 pr-1 pl-2 shadow-[inset_0_0_0_1px_var(--border)]">
+        <div uiRowItem>
+          <a ui-row href="#" [selected]="selected" [size]="size" [padding]="padding">
+            <span class="flex min-w-0 flex-1 flex-col">
+              <span class="text-body truncate font-medium">Saxo Investor</span>
+              <span class="text-label truncate text-(--subtle-foreground)">PEA · Saxo</span>
+            </span>
+            <span class="flex flex-col items-end whitespace-nowrap">
+              <span class="text-body font-medium">61 247,83 €</span>
+              <span class="text-label text-(--muted-foreground)">8 lignes</span>
+            </span>
+          </a>
+          <button ui-button variant="quiet" size="icon-sm" aria-label="Actions sur Saxo Investor">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /><circle cx="5" cy="12" r="1" /></svg>
+          </button>
+        </div>
+      </div>
+    `,
+  }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const row = canvas.getByRole('link', { name: /Saxo Investor/ });
+    const action = canvas.getByRole('button', { name: 'Actions sur Saxo Investor' });
+
+    await expect(row.getBoundingClientRect().right + 4).toBeCloseTo(action.getBoundingClientRect().left, 0);
+  },
 };

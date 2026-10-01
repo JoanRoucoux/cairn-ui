@@ -7,9 +7,9 @@ import type { SheriffConfig } from '@softarc/sheriff-core';
  * There are four exceptions. `select` reuses `input`'s shared control classes
  * (`CONTROL_BASE_CLASSES`, `CONTROL_SIZE_CLASSES`, `ControlSize`) rather than
  * duplicating them, and `choice-chips` reuses its surface classes (`CONTROL_SURFACE_CLASSES`,
- * `ControlSurface`) for the same reason. `field`, `dialog` and `stat` grant access only because their
+ * `ControlSurface`) for the same reason. `field`, `dialog`, `menu`, `row` and `stat` grant access only because their
  * spec/story files need to render a sibling component (`input`/`select`,
- * `button`, and `delta`, respectively) for testing - Sheriff has no test-only lens, so
+ * `button`, and `delta`) for testing - Sheriff has no test-only lens, so
  * those grants technically widen the production import surface too, even
  * though nothing in production code currently uses them that way.
  *
@@ -36,6 +36,7 @@ export const config: SheriffConfig = {
     'component:field': ['component:input', 'component:select', 'component:control'],
     'component:dialog': ['component:button'],
     'component:menu': ['component:button'],
+    'component:row': ['component:button'],
     'component:stat': ['component:delta'],
   },
 };

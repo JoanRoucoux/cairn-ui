@@ -107,3 +107,63 @@ export const NearTheBottomRightCorner: Story = {
     await expect(rect.bottom).toBeLessThanOrEqual(window.innerHeight);
   },
 };
+
+const ICON_PEN = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /><path d="m15 5 4 4" /></svg>`;
+const ICON_TRASH = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>`;
+
+export const ActionSheet: Story = {
+  name: 'Action sheet below 64rem (Comptes)',
+  parameters: { layout: 'fullscreen' },
+  render: () => ({
+    template: `
+      <div class="flex h-screen items-start justify-end p-4">
+        <button ui-button size="icon-sm" variant="quiet" aria-label="Actions du compte" [uiMenuTrigger]="menu">⋯</button>
+        <ui-menu #menu label="Actions du compte" sheet heading="Livret A" [width]="218">
+          <button uiMenuItem type="button">${ICON_PEN}Modifier le compte</button>
+          <button uiMenuItem type="button" destructive>${ICON_TRASH}Supprimer le compte</button>
+        </ui-menu>
+      </div>
+    `,
+  }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Actions du compte' }));
+
+    await waitFor(() => expect(canvas.getByRole('menu', { name: 'Actions du compte' })).toBeVisible());
+    await expect(canvas.getByRole('menuitem', { name: 'Modifier le compte' })).toHaveFocus();
+  },
+};
+
+export const FixedWidth: StoryObj<{ width: number }> = {
+  name: 'Fixed width and icon sizes (Lignes 208, Comptes 218)',
+  args: { width: 218 },
+  argTypes: {
+    width: {
+      control: 'number',
+      description: 'Outer popover width in pixels, padding included. The sheet spans the screen below 64rem.',
+    },
+  },
+  parameters: { layout: 'fullscreen' },
+  render: (args) => ({
+    props: args,
+    template: `
+      <div class="flex h-screen items-start justify-end p-4">
+        <button ui-button size="icon-sm" variant="quiet" aria-label="Actions du compte" [uiMenuTrigger]="menu">⋯</button>
+        <ui-menu #menu label="Actions du compte" [width]="width">
+          <button uiMenuItem type="button">${ICON_PEN}Modifier le compte</button>
+          <button uiMenuItem type="button" destructive>${ICON_TRASH}Supprimer le compte</button>
+        </ui-menu>
+      </div>
+    `,
+  }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Actions du compte' }));
+
+    const menu = canvas.getByRole('menu', { name: 'Actions du compte' });
+    await waitFor(() => expect(menu).toBeVisible());
+    await expect(menu.getBoundingClientRect().width).toBe(218);
+  },
+};
