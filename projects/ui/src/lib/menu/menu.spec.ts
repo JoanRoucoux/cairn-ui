@@ -55,7 +55,11 @@ describe('UiMenu', () => {
     await render(template, { imports: [UiMenu, UiMenuTrigger, UiMenuItem], componentProperties: { edited: vi.fn() } });
     await userEvent.click(screen.getByRole('button', { name: 'More' }));
 
-    expect(screen.getByRole('menuitem', { name: 'Delete the line' })).toHaveClass('text-(--negative)');
+    expect(screen.getByRole('menuitem', { name: 'Delete the line' })).toHaveClass(
+      'text-(--negative)',
+      'min-h-9',
+      'hover:bg-(--glow)',
+    );
   });
 
   it('wraps upward from the first item to the last', async () => {

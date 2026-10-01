@@ -1,9 +1,11 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
 
-import { UiRow } from './row';
+import { ROW_PADDINGS, ROW_SIZES, type RowPadding, type RowSize, UiRow } from './row';
 
 type RowArgs = {
   selected: boolean;
+  size: RowSize;
+  padding: RowPadding;
 };
 
 const meta: Meta<RowArgs> = {
@@ -37,7 +39,7 @@ with a click handler, so keyboard and assistive technology support come for free
   render: (args) => ({
     props: args,
     template: `
-      <a ui-row href="#" [selected]="selected" class="w-[340px]">
+      <a ui-row href="#" [selected]="selected" [size]="size" [padding]="padding" class="w-[340px]">
         <div class="flex min-w-0 flex-1 flex-col">
           <span class="text-body font-medium">Amundi MSCI World</span>
           <span class="text-label text-(--muted-foreground)">500 × 28,64 €</span>
@@ -51,9 +53,17 @@ with a click handler, so keyboard and assistive technology support come for free
   }),
   args: {
     selected: false,
+    size: 'md',
+    padding: 'md',
   },
   argTypes: {
     selected: { control: 'boolean', description: 'Sets `aria-current="true"` and the soft background.' },
+    size: { control: 'select', options: [...ROW_SIZES], description: 'Minimum height: `md` 56 px, `lg` 60 px.' },
+    padding: {
+      control: 'select',
+      options: [...ROW_PADDINGS],
+      description: 'Side padding: `md` 10 px, `sm` 8 px, `none` 0.',
+    },
   },
 };
 
@@ -64,4 +74,8 @@ export const Default: Story = {};
 
 export const Selected: Story = {
   args: { selected: true },
+};
+
+export const Tall: Story = {
+  args: { size: 'lg', padding: 'sm' },
 };

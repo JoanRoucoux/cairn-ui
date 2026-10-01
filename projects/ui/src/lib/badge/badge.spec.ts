@@ -3,6 +3,13 @@ import { render, screen } from '@testing-library/angular';
 import { type BadgeVariant, UiBadge } from './badge';
 
 describe('UiBadge', () => {
+  it('is 24 px high by default and 22 px when small', async () => {
+    await render('<ui-badge>A</ui-badge><ui-badge size="sm">B</ui-badge>', { imports: [UiBadge] });
+
+    expect(screen.getByText('A')).toHaveClass('h-6', 'px-2.5');
+    expect(screen.getByText('B')).toHaveClass('h-[22px]', 'px-2');
+  });
+
   it('renders projected content', async () => {
     await render('<ui-badge>New</ui-badge>', { imports: [UiBadge] });
 

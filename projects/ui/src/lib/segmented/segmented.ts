@@ -6,7 +6,7 @@ export type SegmentedOption = {
 };
 
 const OPTION_CLASSES =
-  "relative z-10 min-h-9 flex-1 cursor-pointer px-3 text-label font-medium transition-colors after:absolute after:inset-x-0 after:top-1/2 after:h-(--row-min) after:-translate-y-1/2 after:content-[''] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring)";
+  "relative z-10 h-10 pointer-fine:h-8 flex-1 cursor-pointer px-3 text-label font-medium transition-colors after:absolute after:inset-x-0 after:top-1/2 after:h-(--row-min) after:-translate-y-1/2 after:content-[''] focus-visible:outline-none active:scale-(--press-scale)";
 
 const SELECTED_CLASSES = 'text-(--foreground)';
 
@@ -23,7 +23,7 @@ const UNSELECTED_CLASSES = 'text-(--muted-foreground) hover:text-(--foreground)'
   selector: 'ui-segmented',
   template: `
     <div
-      class="rounded-control relative grid bg-(--muted) p-0.5"
+      class="group rounded-control relative grid bg-(--muted) p-0.5"
       role="radiogroup"
       [attr.aria-label]="label()"
       [style.grid-template-columns]="'repeat(' + options().length + ', 1fr)'"
@@ -31,10 +31,10 @@ const UNSELECTED_CLASSES = 'text-(--muted-foreground) hover:text-(--foreground)'
       @if (thumbIndex(); as index) {
         <span
           aria-hidden="true"
-          class="absolute top-0.5 bottom-0.5 left-0.5 rounded-[calc(var(--radius-control)-2px)] bg-(--card) shadow-[0_1px_2px_rgb(0_0_0/0.08)] transition-transform duration-(--duration-fast) ease-out"
+          class="absolute top-0.5 bottom-0.5 left-0.5 rounded-[calc(var(--radius-control)-2px)] bg-(--card) shadow-[0_1px_2px_rgb(0_0_0/0.08),inset_0_0_0_1px_var(--border)] transition-transform duration-(--duration-fast) ease-out group-has-focus-visible:shadow-[0_1px_2px_rgb(0_0_0/0.08),inset_0_0_0_1px_var(--border),0_0_0_2px_var(--ring)]"
           data-thumb
           [style.transform]="'translateX(' + (index - 1) * 100 + '%)'"
-          [style.width]="'calc(100% / ' + options().length + ')'"
+          [style.width]="'calc((100% - 4px) / ' + options().length + ')'"
         ></span>
       }
 

@@ -1,10 +1,11 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
 import { expect, within } from 'storybook/test';
 
-import { BADGE_VARIANTS, type BadgeVariant, UiBadge } from './badge';
+import { BADGE_SIZES, BADGE_VARIANTS, type BadgeSize, type BadgeVariant, UiBadge } from './badge';
 
 type BadgeArgs = {
   variant: BadgeVariant;
+  size: BadgeSize;
   label: string;
 };
 
@@ -37,10 +38,11 @@ account's envelope type.
   },
   render: (args) => ({
     props: args,
-    template: `<ui-badge [variant]="variant">{{ label }}</ui-badge>`,
+    template: `<ui-badge [variant]="variant" [size]="size">{{ label }}</ui-badge>`,
   }),
   args: {
     variant: 'neutral',
+    size: 'md',
     label: 'Badge',
   },
   argTypes: {
@@ -50,6 +52,11 @@ account's envelope type.
       description:
         '`neutral` sits on the `--muted` surface. `outline` is quieter still, for a state that should not compete with the content around it.',
     },
+    size: {
+      control: 'select',
+      options: [...BADGE_SIZES],
+      description: '`md` is 24 px high, `sm` 22 px for dense rows.',
+    },
     label: { control: 'text', description: 'Projected text content.' },
   },
 };
@@ -58,6 +65,10 @@ export default meta;
 type Story = StoryObj<BadgeArgs>;
 
 export const Neutral: Story = {};
+
+export const Small: Story = {
+  args: { size: 'sm' },
+};
 
 export const Outline: Story = {
   args: { variant: 'outline' },

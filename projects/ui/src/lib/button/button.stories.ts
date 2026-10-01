@@ -69,7 +69,7 @@ that action is, so a screen reads at a glance.
       control: 'select',
       options: [...BUTTON_SIZES],
       description:
-        '`md` is the 40/44px touch target used everywhere by default. `lg` (44px) and `xl` (50px) are deliberate exceptions; `icon` is square and needs an `aria-label`.',
+        '`md` is the 40/44px touch target used everywhere by default. `lg` (44px), `xl` (50px) and `xxl` (52px, the full-width action) are deliberate exceptions; `icon` is square and needs an `aria-label`.',
     },
     disabled: {
       control: 'boolean',
@@ -107,6 +107,30 @@ export const Large: Story = {
 
 export const ExtraLarge: Story = {
   args: { size: 'xl' },
+};
+
+export const ExtraExtraLarge: Story = {
+  args: { size: 'xxl' },
+  render: (args) => ({
+    props: args,
+    template: `<button ui-button [variant]="variant" [size]="size" [disabled]="disabled" [loading]="loading" class="w-[320px]">{{ label }}</button>`,
+  }),
+};
+
+export const WithLeadingIcon: Story = {
+  args: { label: 'Ajouter une ligne' },
+  render: (args) => ({
+    props: args,
+    template: `
+      <button ui-button [variant]="variant" [size]="size">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M5 12h14" />
+          <path d="M12 5v14" />
+        </svg>
+        {{ label }}
+      </button>
+    `,
+  }),
 };
 
 export const Icon: Story = {

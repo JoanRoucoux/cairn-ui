@@ -26,6 +26,15 @@ describe('UiRow', () => {
     );
   });
 
+  it('offers a tall row and tighter or no side padding', async () => {
+    await render('<a ui-row size="lg" padding="sm" href="#">A</a><a ui-row padding="none" href="#">B</a>', {
+      imports: [UiRow],
+    });
+
+    expect(screen.getByRole('link', { name: 'A' })).toHaveClass('min-h-15', 'px-2');
+    expect(screen.getByRole('link', { name: 'B' })).toHaveClass('px-0');
+  });
+
   it('marks a selected row current and on the soft background', async () => {
     await render('<a ui-row selected href="#">Row</a>', { imports: [UiRow] });
 
