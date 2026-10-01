@@ -2,7 +2,17 @@ import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vit
 import { expect, within } from 'storybook/test';
 
 import { UiButton } from '../button/button';
-import { ROW_GAPS, ROW_PADDINGS, ROW_SIZES, type RowGap, type RowPadding, type RowSize, UiRow, UiRowItem } from './row';
+import {
+  ROW_GAPS,
+  ROW_PADDINGS,
+  ROW_SIZES,
+  type RowGap,
+  type RowPadding,
+  type RowSize,
+  UiListRow,
+  UiRow,
+  UiRowItem,
+} from './row';
 
 type RowArgs = {
   selected: boolean;
@@ -13,7 +23,7 @@ type RowArgs = {
 
 const meta: Meta<RowArgs> = {
   title: 'Data display/Row',
-  decorators: [moduleMetadata({ imports: [UiButton, UiRow, UiRowItem] })],
+  decorators: [moduleMetadata({ imports: [UiButton, UiListRow, UiRow, UiRowItem] })],
   parameters: {
     docs: {
       description: {
@@ -29,7 +39,7 @@ with a click handler, so keyboard and assistive technology support come for free
 
 #### When not to use
 
-* For a row that is not clickable. A plain row of text does not need this component.
+* For a row that is not clickable. A plain row of text does not need this component. A static list with a hairline between rows, such as the passkeys of a profile, takes \`uiListRow\` on its \`li\`: 72px (68px from 64rem), 12px gap, a hairline under each row.
 * For a primary page action, such as "Add a holding". Use \`ui-button\`.
 
 #### Accessibility
@@ -207,4 +217,50 @@ export const Dense: Story = {
       </button>
     `,
   }),
+};
+
+export const RuledListRows: Story = {
+  name: 'Hairline-separated list rows (Profil clés)',
+  render: () => ({
+    template: `
+      <ul class="w-[326px]">
+        <li uiListRow>
+          <span class="rounded-control grid size-9 flex-none place-items-center bg-(--muted)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" /><circle cx="16.5" cy="7.5" r=".5" fill="currentColor" /></svg></span>
+          <span class="flex min-w-0 flex-1 flex-col">
+            <span class="flex items-center gap-2">
+              <span class="text-body truncate font-medium">iPhone de Joan</span>
+              <span class="rounded-pill text-caption inline-flex h-[22px] flex-none items-center bg-(--muted) px-2 font-medium">Cet appareil</span>
+            </span>
+            <span class="text-caption text-(--subtle-foreground)">iCloud · Créée le 12/03/2025 · Utilisée aujourd'hui</span>
+          </span>
+          <button ui-button variant="quiet-destructive" size="icon-sm" class="-mr-2" aria-label="Supprimer la clé iPhone de Joan"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg></button>
+        </li>
+        <li uiListRow>
+          <span class="rounded-control grid size-9 flex-none place-items-center bg-(--muted)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" /><circle cx="16.5" cy="7.5" r=".5" fill="currentColor" /></svg></span>
+          <span class="flex min-w-0 flex-1 flex-col">
+            <span class="flex items-center gap-2">
+              <span class="text-body truncate font-medium">MacBook Air</span>
+            </span>
+            <span class="text-caption text-(--subtle-foreground)">iCloud · Créée le 12/03/2025 · Utilisée hier</span>
+          </span>
+          <button ui-button variant="quiet-destructive" size="icon-sm" class="-mr-2" aria-label="Supprimer la clé MacBook Air"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg></button>
+        </li>
+        <li uiListRow>
+          <span class="rounded-control grid size-9 flex-none place-items-center bg-(--muted)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" /><circle cx="16.5" cy="7.5" r=".5" fill="currentColor" /></svg></span>
+          <span class="flex min-w-0 flex-1 flex-col">
+            <span class="flex items-center gap-2">
+              <span class="text-body truncate font-medium">YubiKey 5C</span>
+            </span>
+            <span class="text-caption text-(--subtle-foreground)">Clé de sécurité · Créée le 04/11/2025 · Utilisée le 02/09/2026</span>
+          </span>
+          <button ui-button variant="quiet-destructive" size="icon-sm" class="-mr-2" aria-label="Supprimer la clé YubiKey 5C"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg></button>
+        </li>
+      </ul>
+    `,
+  }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(canvas.getAllByRole('listitem')).toHaveLength(3);
+  },
 };

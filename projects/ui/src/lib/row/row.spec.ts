@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/angular';
 
-import { UiRow, UiRowItem } from './row';
+import { UiListRow, UiRow, UiRowItem } from './row';
 
 describe('UiRow', () => {
   it('renders as a link carrying its content', async () => {
@@ -111,5 +111,32 @@ describe('UiRowItem', () => {
     await render(template, { imports: [UiRow, UiRowItem] });
 
     expect(screen.getByTestId('item').className).toContain('[&>:not([ui-row])]:flex-none');
+  });
+});
+
+describe('UiListRow', () => {
+  it('lays a static row out at 72px, 68px from 64rem, with a 12px gap', async () => {
+    await render('<ul><li uiListRow>MacBook Air</li></ul>', { imports: [UiListRow] });
+
+    expect(screen.getByRole('listitem')).toHaveClass(
+      'flex',
+      'min-h-18',
+      'lg:min-h-17',
+      'items-center',
+      'gap-3',
+      'py-1.5',
+    );
+  });
+
+  it('draws the hairline under the row by default', async () => {
+    await render('<ul><li uiListRow>MacBook Air</li></ul>', { imports: [UiListRow] });
+
+    expect(screen.getByRole('listitem')).toHaveClass('shadow-[inset_0_-1px_0_var(--hairline)]');
+  });
+
+  it('leaves the hairline out when not ruled', async () => {
+    await render('<ul><li uiListRow [ruled]="false">MacBook Air</li></ul>', { imports: [UiListRow] });
+
+    expect(screen.getByRole('listitem')).not.toHaveClass('shadow-[inset_0_-1px_0_var(--hairline)]');
   });
 });

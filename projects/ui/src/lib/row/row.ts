@@ -72,3 +72,29 @@ export class UiRow {
   },
 })
 export class UiRowItem {}
+
+/**
+ * Non-interactive row of a list, separated from the next by a hairline: a passkey with its delete
+ * button, a device, a setting. It is a 72px row (68px from 64rem) with a 12px gap; put it on an
+ * `li` or a `div`. Use `ui-row` instead when the whole row is a link or an action.
+ *
+ * @example
+ * <ul>
+ *   <li uiListRow>
+ *     <span class="flex-1">MacBook Air</span>
+ *     <button ui-button variant="quiet-destructive" size="icon-sm" aria-label="Delete MacBook Air">...</button>
+ *   </li>
+ * </ul>
+ */
+@Directive({
+  selector: '[uiListRow]',
+  host: { '[class]': 'classes()' },
+})
+export class UiListRow {
+  readonly ruled = input(true, { transform: booleanAttribute });
+
+  protected readonly classes = computed(
+    () =>
+      `flex min-h-18 items-center gap-3 py-1.5 lg:min-h-17${this.ruled() ? ' shadow-[inset_0_-1px_0_var(--hairline)]' : ''}`,
+  );
+}
