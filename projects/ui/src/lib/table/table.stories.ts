@@ -75,7 +75,7 @@ and \`spaced\` (4px between the header and the first row, as on Comptes and Inst
 \`numeric\` right aligns a column and lines its digits up, on the \`<th>\` and on every \`<td>\`. \`primary\` marks the
 one column that absorbs the free width and truncates; give the others a \`width\` on their header.
 \`td[ui-group-cell]\` is the muted band that opens a group (\`size="lg"\` is the 48px band of Lignes); wrap the
-group in \`<tbody uiGroup>\` for its 4px tail. Its total is a \`ui-amount\`.
+group in \`<tbody uiGroup>\` for its 4px tail. Its total is a \`ui-amount\`. Its heading takes focus with no ring: \`h2[data-group-heading]\`.
 
 \`a[uiRowLink]\` or \`button[uiRowLink]\` in the first cell makes the whole row one target, with a row-wide ring
 (Lignes, Instruments). \`[stretch]="false"\` keeps the target on the name, underlined on hover with its own ring

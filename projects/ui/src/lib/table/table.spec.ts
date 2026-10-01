@@ -283,6 +283,20 @@ describe('UiGroupCell sizes', () => {
     expect(screen.getByRole('heading', { name: 'Saxo' })).toBeInTheDocument();
   });
 
+  it('makes the heading a focus target without a ring', async () => {
+    await render('<table uiTable><tbody><tr uiTr group><td ui-group-cell name="Saxo">1</td></tr></tbody></table>', {
+      imports,
+    });
+    const heading = screen.getByRole('heading', { name: 'Saxo' });
+
+    heading.focus();
+
+    expect(heading).toHaveFocus();
+    expect(heading).toHaveAttribute('tabindex', '-1');
+    expect(heading).toHaveAttribute('data-group-heading');
+    expect(heading).toHaveClass('outline-none');
+  });
+
   it('keeps the name in a heading outside any inline wrapper', async () => {
     await render('<table uiTable><tbody><tr uiTr group><td ui-group-cell name="Saxo">1</td></tr></tbody></table>', {
       imports,
