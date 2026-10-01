@@ -4,7 +4,7 @@ import { Component, DestroyRef, ElementRef, booleanAttribute, computed, inject, 
 export const BUTTON_VARIANTS = ['primary', 'outline', 'ghost', 'destructive'] as const;
 export type ButtonVariant = (typeof BUTTON_VARIANTS)[number];
 
-/** Available button sizes. `md` is the touch target Cairn asks for everywhere (44 px on touch, 40 px with a mouse); `xxl` is the 52 px full-width action. */
+/** Available button sizes. */
 export const BUTTON_SIZES = ['md', 'lg', 'xl', 'xxl', 'icon'] as const;
 export type ButtonSize = (typeof BUTTON_SIZES)[number];
 

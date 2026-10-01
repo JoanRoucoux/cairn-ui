@@ -7,11 +7,10 @@ const SELECT_CLASSES =
   'cursor-pointer appearance-none pr-10 bg-(image:--chevron-down) bg-no-repeat bg-[position:right_0.75rem_center] bg-[size:1.125rem]';
 
 // Spelled out prefix included: Tailwind scans for literal strings, so a prefix applied in code
-// emits nothing. The padding stays under `supports` so base-select does not reset it to a smaller one.
+// emits nothing.
 const PICKER_CLASSES = [
   'pointer-fine:supports-[appearance:base-select]:[appearance:base-select]',
   'pointer-fine:supports-[appearance:base-select]:items-center',
-  'pointer-fine:supports-[appearance:base-select]:pr-10',
   'pointer-fine:supports-[appearance:base-select]:[&_option]:cursor-pointer',
   'pointer-fine:supports-[appearance:base-select]:[&_option]:rounded-control',
   'pointer-fine:supports-[appearance:base-select]:[&_option]:px-2.5',

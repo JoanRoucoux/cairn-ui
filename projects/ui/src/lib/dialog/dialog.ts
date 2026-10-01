@@ -18,11 +18,9 @@ const WIDTH_VALUES: Record<DialogWidth, string> = {
   lg: '560px',
 };
 
-/** Spacing presets, one per screen family of the handoff. `DialogLayout` is derived from this tuple. */
+/** Spacing presets. `DialogLayout` is derived from this tuple. */
 export const DIALOG_LAYOUTS = ['trade', 'form', 'list', 'confirm'] as const;
 export type DialogLayout = (typeof DIALOG_LAYOUTS)[number];
-
-const SAFE = 'var(--dialog-safe,env(safe-area-inset-bottom))';
 
 type LayoutClasses = {
   dialog: string;
@@ -44,7 +42,7 @@ const LAYOUTS: Record<DialogLayout, LayoutClasses> = {
     icon: 'lg:size-5',
     handle: 'pt-[7.5px]',
     body: 'pt-3 pb-4 lg:pt-5 lg:pb-5',
-    footer: `max-lg:pb-[calc(8px+${SAFE})] lg:pb-6`,
+    footer: 'max-lg:pb-[calc(8px+env(safe-area-inset-bottom))] lg:pb-6',
   },
   form: {
     dialog: '',
@@ -54,7 +52,7 @@ const LAYOUTS: Record<DialogLayout, LayoutClasses> = {
     icon: 'lg:size-[22px]',
     handle: 'pt-[7.5px]',
     body: 'pt-2 pb-5 lg:pt-4 lg:pb-5',
-    footer: `max-lg:pb-[calc(12px+${SAFE})] lg:pb-5`,
+    footer: 'max-lg:pb-[calc(12px+env(safe-area-inset-bottom))] lg:pb-5',
   },
   list: {
     dialog: 'max-lg:h-[calc(100dvh-58px)] lg:mt-24 lg:mb-auto lg:max-h-[min(760px,calc(100dvh-96px-32px))]',
@@ -64,7 +62,7 @@ const LAYOUTS: Record<DialogLayout, LayoutClasses> = {
     icon: 'lg:size-[22px]',
     handle: 'pt-[7.5px]',
     body: 'pt-2 pb-4 lg:pt-4 lg:pb-5',
-    footer: `pt-3 shadow-[0_-1px_0_var(--hairline)] max-lg:pb-[calc(8px+${SAFE})] lg:pt-4 lg:pb-4`,
+    footer: 'pt-3 shadow-[0_-1px_0_var(--hairline)] max-lg:pb-[calc(8px+env(safe-area-inset-bottom))] lg:pt-4 lg:pb-4',
   },
   confirm: {
     dialog: '',
@@ -74,7 +72,7 @@ const LAYOUTS: Record<DialogLayout, LayoutClasses> = {
     icon: 'lg:size-[22px]',
     handle: 'pt-[11.5px]',
     body: 'pt-3 pb-5 lg:pt-3 lg:pb-6',
-    footer: `max-lg:pb-[calc(8px+${SAFE})] lg:pb-6`,
+    footer: 'max-lg:pb-[calc(8px+env(safe-area-inset-bottom))] lg:pb-6',
   },
 };
 
@@ -85,20 +83,13 @@ const nextId = (() => {
 })();
 
 /**
- * Modal dialog on the native <dialog>: a sheet rising from the bottom under `64rem`, centered
- * above it. Header (title, optional subtitle, optional close cross), a scrolling body, and a fixed
- * footer fed by [dialogActions]: right-aligned on a desktop, stacked full width (50px) on a sheet,
- * where the primary comes first and a secondary such as Annuler sits under it.
- *
- * `layout` picks the spacing of a screen family: `trade` (default, Acheter and Vendre), `form` (Nouveau
- * compte), `list` (Ajouter une ligne: divided footer, sheet of fixed height) and `confirm` (a
- * confirmation, announced as an alertdialog).
+ * Modal dialog on the native <dialog>: a bottom sheet under `64rem`, centered above it.
  *
  * @example
- * <ui-dialog heading="Acheter" description="Ferrari · PEA" closeLabel="Fermer" width="528px" [open]="buying()" (dismissed)="buying.set(false)">
- *   <p>Corps</p>
- *   <button dialogActions ui-button variant="outline" class="max-lg:hidden" (click)="buying.set(false)">Annuler</button>
- *   <button dialogActions ui-button>Acheter 40 parts</button>
+ * <ui-dialog heading="Buy" description="Ferrari" closeLabel="Close" width="528px" [open]="buying()" (dismissed)="buying.set(false)">
+ *   <p>Body</p>
+ *   <button dialogActions ui-button variant="outline" class="max-lg:hidden" (click)="buying.set(false)">Cancel</button>
+ *   <button dialogActions ui-button>Buy 40 shares</button>
  * </ui-dialog>
  */
 @Component({

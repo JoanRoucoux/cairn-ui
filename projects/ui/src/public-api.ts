@@ -14,7 +14,7 @@ export { type AmountFormatOptions, formatAmount } from './lib/amount/format-amou
 export { ALERT_VARIANTS, UiAlert, type AlertVariant } from './lib/alert/alert';
 export { ASYNC_STATES, UiAsync, type AsyncState } from './lib/async/async';
 export { AVATAR_SIZES, UiAvatar, type AvatarSize } from './lib/avatar/avatar';
-export { BADGE_VARIANTS, UiBadge, type BadgeVariant } from './lib/badge/badge';
+export { BADGE_SIZES, BADGE_VARIANTS, UiBadge, type BadgeSize, type BadgeVariant } from './lib/badge/badge';
 export { BUTTON_SIZES, BUTTON_VARIANTS, UiButton, type ButtonSize, type ButtonVariant } from './lib/button/button';
 export { CARD_PADDINGS, CARD_VARIANTS, UiCard, type CardPadding, type CardVariant } from './lib/card/card';
 export { type ChoiceChipOption, UiChoiceChips } from './lib/choice-chips/choice-chips';
@@ -31,11 +31,11 @@ export {
   type ControlSize,
   type ControlSurface,
 } from './lib/input/input';
-export { type ChartPoint, UiLineChart } from './lib/line-chart/line-chart';
+export { type AxisTicks, type ChartPoint, type TooltipSize, UiLineChart } from './lib/line-chart/line-chart';
 export { UiMenu, UiMenuItem, UiMenuTrigger } from './lib/menu/menu';
 export { METER_TONES, UiMeter, type MeterTone } from './lib/meter/meter';
 export { UiNavItem } from './lib/nav-item/nav-item';
-export { UiRow } from './lib/row/row';
+export { ROW_PADDINGS, ROW_SIZES, UiRow, type RowPadding, type RowSize } from './lib/row/row';
 export { UiSegmented, type SegmentedOption } from './lib/segmented/segmented';
 export { UiSelect } from './lib/select/select';
 export { UiSkeleton } from './lib/skeleton/skeleton';

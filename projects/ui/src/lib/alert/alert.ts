@@ -14,7 +14,7 @@ const VARIANT_CLASSES: Record<AlertVariant, string> = {
  * Inline message explaining a failure or a consequence: an icon, an optional heading and a text.
  *
  * @example
- * <ui-alert heading="La connexion n'a pas abouti">Réessayez.</ui-alert>
+ * <ui-alert heading="Sign-in failed">Try again.</ui-alert>
  */
 @Component({
   selector: 'ui-alert',

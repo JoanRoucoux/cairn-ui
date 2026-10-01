@@ -4,7 +4,7 @@ import { Component, Directive, booleanAttribute, computed, input } from '@angula
 export const CELL_BREAKPOINTS = ['md', 'lg'] as const;
 export type CellBreakpoint = (typeof CELL_BREAKPOINTS)[number];
 
-/** Row heights of the mockups: board and Instruments, Comptes, Lignes with a subtitle. */
+/** Body row heights. */
 export const TABLE_ROWS = ['48', '52', '60'] as const;
 export type TableRow = (typeof TABLE_ROWS)[number];
 
@@ -42,7 +42,7 @@ const PRIMARY_CLASSES = 'w-full max-w-0';
 })
 export class UiTable {
   readonly row = input<TableRow>('48');
-  readonly rule = input(true);
+  readonly rule = input(true, { transform: booleanAttribute });
   readonly spaced = input(false, { transform: booleanAttribute });
 
   protected readonly classes = computed(() =>
@@ -55,7 +55,7 @@ export class UiTable {
   );
 }
 
-/** Body of one group of rows: leaves a 4px tail after its last row, as the Lignes list does. */
+/** Body of one group of rows: leaves a 4px tail after its last row. */
 @Directive({
   selector: 'tbody[uiGroup]',
   host: { class: 'after:table-row after:h-1 after:content-[""]' },
@@ -70,7 +70,7 @@ export class UiGroup {}
  *
  * @example
  * <tr uiTr [selected]="open">...
- * <tr uiTr group><td ui-group-cell name="Saxo Investor">...
+ * <tr uiTr group><td ui-group-cell name="Brokerage">...
  */
 @Directive({
   selector: 'tr[uiTr]',
@@ -120,11 +120,10 @@ const cellClasses = (
 /**
  * Column header, centred in its 36px. `numeric` right-aligns and lines the digits up; `secondary`
  * (or `from`) holds a column back until the viewport is wide enough for it; `primary` makes it
- * the column that absorbs the free width and truncates; `tall` is the 40px header of the Comptes
- * and Instruments tables; `width` fixes the column width and keeps it from shrinking.
+ * the column that absorbs the free width and truncates; `tall` is a 40px header; `width` fixes the column width and keeps it from shrinking.
  *
  * @example
- * <th uiTh numeric secondary width="108px">Quantité</th>
+ * <th uiTh numeric secondary width="108px">Quantity</th>
  */
 @Directive({
   selector: 'th[uiTh]',
@@ -171,7 +170,7 @@ export class UiTd {
   );
 }
 
-/** Band sizes: the board's (44px, 10px lead) and the Lignes list's (48px, 12px lead). */
+/** Group band sizes. */
 export const GROUP_SIZES = ['md', 'lg'] as const;
 export type GroupSize = (typeof GROUP_SIZES)[number];
 
@@ -180,7 +179,7 @@ export type GroupSize = (typeof GROUP_SIZES)[number];
  * total pinned to the right. Spans the whole row through `colspan`.
  *
  * @example
- * <tr uiTr group><td ui-group-cell colspan="4" name="Saxo Investor" meta="PEA · Saxo">...total...</td></tr>
+ * <tr uiTr group><td ui-group-cell colspan="4" name="Brokerage" meta="Savings plan">...total...</td></tr>
  */
 @Component({
   selector: 'td[ui-group-cell]',
@@ -215,12 +214,12 @@ export class UiGroupCell {
 /**
  * Makes a link or button the way into its row. By default an invisible layer stretches over the
  * whole row, so the row is one target for the pointer, the keyboard and a screen reader, and its
- * focus ring wraps the row (Lignes, Instruments). With `[stretch]="false"` only the name is the
- * target: it underlines on hover and takes its own ring (Comptes). `current` marks the open line.
+ * focus ring wraps the row. With `[stretch]="false"` only the name is the
+ * target: it underlines on hover and takes its own ring. `current` marks the open line.
  *
  * @example
  * <td uiTd primary><a uiRowLink href="/lines/42">Ferrari</a></td>
- * <td uiTd primary><a uiRowLink [stretch]="false" href="/accounts/3">PEA Saxo</a></td>
+ * <td uiTd primary><a uiRowLink [stretch]="false" href="/accounts/3">Brokerage</a></td>
  */
 @Directive({
   selector: 'a[uiRowLink], button[uiRowLink]',
@@ -230,7 +229,7 @@ export class UiGroupCell {
   },
 })
 export class UiRowLink {
-  readonly stretch = input(true);
+  readonly stretch = input(true, { transform: booleanAttribute });
   readonly current = input(false, { transform: booleanAttribute });
 
   protected readonly classes = computed(() =>
@@ -263,8 +262,8 @@ const SUB_TONE_CLASSES: Record<SubTone, string> = {
  * so they mask.
  *
  * @example
- * <span uiCellSub narrow>10 × 421,26 € · PRU 388,10 €</span>
- * <span uiCellSub tone="stale">Cours du 24/09</span>
+ * <span uiCellSub narrow>10 × 421.26 € · cost 388.10 €</span>
+ * <span uiCellSub tone="stale">Quote of 24/09</span>
  */
 @Directive({
   selector: '[uiCellSub]',

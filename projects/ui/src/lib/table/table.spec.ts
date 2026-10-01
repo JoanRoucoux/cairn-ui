@@ -239,6 +239,12 @@ describe('UiTable options', () => {
     expect(screen.getByRole('table')).toHaveClass('[--table-rule:none]');
   });
 
+  it('turns the header hairline off with the attribute form', async () => {
+    await host('rule="false"');
+
+    expect(screen.getByRole('table')).toHaveClass('[--table-rule:none]');
+  });
+
   it('opens a 4px gap under the header', async () => {
     await host('spaced');
 
@@ -299,6 +305,12 @@ describe('UiRowLink variants', () => {
     const link = screen.getByRole('link');
     expect(link).toHaveClass('hover:underline', 'focus-visible:outline-2', 'focus-visible:outline-offset-2');
     expect(link).not.toHaveClass('after:absolute');
+  });
+
+  it('stays on the name alone with the attribute form', async () => {
+    await render(`<a uiRowLink stretch="false" href="/a">PEA Saxo</a>`, { imports });
+
+    expect(screen.getByRole('link')).not.toHaveClass('after:absolute');
   });
 
   it('marks the open line with aria-current', async () => {

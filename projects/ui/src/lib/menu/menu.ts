@@ -14,7 +14,7 @@ const MENU_CLASSES =
   'm-0 min-w-44 p-1 rounded-container bg-(--elevated) shadow-[0_8px_24px_rgb(0_0_0/0.16),inset_0_0_0_1px_var(--border)] text-(--foreground) transition-[opacity,transform,overlay,display] transition-discrete duration-(--duration-fast) ease-out starting:open:opacity-0 starting:open:scale-(--enter-scale) opacity-0 scale-(--enter-scale) open:opacity-100 open:scale-100';
 
 const ITEM_CLASSES =
-  'flex w-full items-center gap-3 pointer-fine:gap-2.5 min-h-11 pointer-fine:min-h-9 px-3 pointer-fine:px-2.5 rounded-[calc(var(--radius-container)-4px)] text-body pointer-fine:text-label hover:bg-(--glow) focus-visible:bg-(--glow) outline-none';
+  'flex w-full items-center gap-3 pointer-fine:gap-2.5 min-h-11 pointer-fine:min-h-9 px-3 pointer-fine:px-2.5 rounded-[calc(var(--radius-container)-4px)] text-body pointer-fine:text-label hover:bg-(--glow) focus-visible:bg-(--glow) outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring)';
 
 const nextId = (() => {
   let count = 0;

@@ -143,7 +143,7 @@ describe('UiDialog', () => {
     expect(container.querySelector('[data-dialog-header]')).toHaveClass('items-start', 'lg:pt-6');
     expect(container.querySelector('[data-dialog-footer]')).not.toHaveClass('shadow-[0_-1px_0_var(--hairline)]');
     expect(container.querySelector('[data-dialog-footer]')).toHaveClass(
-      'max-lg:pb-[calc(8px+var(--dialog-safe,env(safe-area-inset-bottom)))]',
+      'max-lg:pb-[calc(8px+env(safe-area-inset-bottom))]',
       'lg:pb-6',
     );
   });
@@ -162,7 +162,7 @@ describe('UiDialog', () => {
 
     expect(container.querySelector('[data-dialog-header]')).toHaveClass('items-center', 'lg:pt-6');
     expect(container.querySelector('[data-dialog-footer]')).toHaveClass(
-      'max-lg:pb-[calc(12px+var(--dialog-safe,env(safe-area-inset-bottom)))]',
+      'max-lg:pb-[calc(12px+env(safe-area-inset-bottom))]',
       'lg:pb-5',
     );
     expect(cross).not.toHaveClass('lg:-mt-1.5');

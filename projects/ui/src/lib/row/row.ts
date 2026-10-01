@@ -1,17 +1,21 @@
 import { Component, booleanAttribute, computed, input } from '@angular/core';
 
-export const ROW_SIZES = ['md', 'lg'] as const;
+export const ROW_SIZES = ['md', 'lg', 'xl'] as const;
 export type RowSize = (typeof ROW_SIZES)[number];
 
 export const ROW_PADDINGS = ['md', 'sm', 'none'] as const;
 export type RowPadding = (typeof ROW_PADDINGS)[number];
 
-const SIZE_CLASSES: Record<RowSize, string> = { md: 'min-h-14', lg: 'min-h-15' };
+const SIZE_CLASSES: Record<RowSize, string> = {
+  md: 'min-h-14 gap-2.5',
+  lg: 'min-h-15 gap-2.5',
+  xl: 'min-h-18 pointer-fine:min-h-17 gap-3',
+};
 
 const PADDING_CLASSES: Record<RowPadding, string> = { md: 'px-2.5', sm: 'px-2', none: 'px-0' };
 
 const BASE_CLASSES =
-  'flex w-full items-center gap-2.5 py-1.5 rounded-control text-left select-none touch-manipulation transition-colors duration-(--duration-press) hover:bg-(--glow) active:bg-(--soft) focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring)';
+  'flex w-full items-center py-1.5 rounded-control text-left select-none touch-manipulation transition-colors duration-(--duration-press) hover:bg-(--glow) active:bg-(--soft) focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring)';
 
 const SELECTED_CLASSES = 'bg-(--soft)';
 

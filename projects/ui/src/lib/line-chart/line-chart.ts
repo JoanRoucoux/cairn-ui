@@ -35,7 +35,8 @@ import { placeStartLabel } from './internal/start-label';
 import { TRANSITION_DURATION, easeOutQuint, interpolateLine, prefersReducedMotion } from './internal/transition';
 import { wideViewport } from './internal/viewport';
 
-export type { ChartPoint };
+export type { AxisTicks, ChartPoint };
+export type { TooltipSize } from './internal/chart-layout';
 
 type PlotRef = ElementRef<SVGSVGElement>;
 
@@ -221,7 +222,6 @@ export class UiLineChart {
   protected readonly svgRef = viewChild.required<PlotRef>('svgRef');
   protected readonly activeIndex = signal<number | null>(null);
   protected readonly animatedLine = signal<string | null>(null);
-
   protected readonly measuredSize = signal<{ width: number; height: number } | null>(null);
 
   protected readonly effectiveWidth = computed(() => this.measuredSize()?.width ?? DEFAULT_WIDTH);

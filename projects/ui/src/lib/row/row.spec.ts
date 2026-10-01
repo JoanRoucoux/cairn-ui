@@ -35,6 +35,13 @@ describe('UiRow', () => {
     expect(screen.getByRole('link', { name: 'B' })).toHaveClass('px-0');
   });
 
+  it('draws the profile row at 72 px on touch, 68 px with a mouse, with a 12 px gap', async () => {
+    await render('<a ui-row size="xl" padding="sm" href="#">Row</a>', { imports: [UiRow] });
+
+    expect(screen.getByRole('link', { name: 'Row' })).toHaveClass('min-h-18', 'pointer-fine:min-h-17', 'gap-3', 'px-2');
+    expect(screen.getByRole('link', { name: 'Row' })).not.toHaveClass('gap-2.5');
+  });
+
   it('marks a selected row current and on the soft background', async () => {
     await render('<a ui-row selected href="#">Row</a>', { imports: [UiRow] });
 

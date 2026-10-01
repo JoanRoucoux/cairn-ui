@@ -61,6 +61,18 @@ describe('UiMenu', () => {
     );
   });
 
+  it('draws the focus ring inside the item on keyboard focus', async () => {
+    await render(template, { imports: [UiMenu, UiMenuTrigger, UiMenuItem], componentProperties: { edited: vi.fn() } });
+    await userEvent.click(screen.getByRole('button', { name: 'More' }));
+
+    expect(screen.getByRole('menuitem', { name: 'Delete the line' })).toHaveClass(
+      'focus-visible:bg-(--glow)',
+      'focus-visible:outline-2',
+      'focus-visible:-outline-offset-2',
+      'focus-visible:outline-(--ring)',
+    );
+  });
+
   it('sizes items 44 px on touch and 36 px with a mouse, and leaves the width to the consumer', async () => {
     await render(template, { imports: [UiMenu, UiMenuTrigger, UiMenuItem], componentProperties: { edited: vi.fn() } });
     await userEvent.click(screen.getByRole('button', { name: 'More' }));
