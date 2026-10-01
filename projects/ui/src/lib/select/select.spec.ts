@@ -70,7 +70,7 @@ describe('UiSelect', () => {
     const select = screen.getByRole('combobox', { name: 'Envelope' });
 
     expect(select).toHaveClass('focus-visible:shadow-[inset_0_0_0_2px_var(--ring)]');
-    expect(select).toHaveClass('disabled:opacity-40');
+    expect(select).toHaveClass('disabled:opacity-50');
   });
 
   it('styles its own drop-down list where the browser has a customizable one', async () => {
