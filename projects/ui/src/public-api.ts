@@ -41,5 +41,16 @@ export { UiSelect } from './lib/select/select';
 export { UiSkeleton } from './lib/skeleton/skeleton';
 export { STAT_SIZES, UiStat, type StatSize } from './lib/stat/stat';
 export { UiSwitch } from './lib/switch/switch';
-export { CELL_BREAKPOINTS, UiTable, UiTd, UiTh, UiTr, type CellBreakpoint } from './lib/table/table';
+export {
+  CELL_BREAKPOINTS,
+  UiCellSub,
+  UiGroupCell,
+  UiRowAction,
+  UiRowLink,
+  UiTable,
+  UiTd,
+  UiTh,
+  UiTr,
+  type CellBreakpoint,
+} from './lib/table/table';
 export { UiTab, UiTabBar } from './lib/tab-bar/tab-bar';
