@@ -75,10 +75,30 @@ export const SingleBar: Story = {
 
 export const Figure: Story = {
   args: { shape: 'figure' },
+  render: (args) => ({
+    props: args,
+    template: `
+      <div class="flex flex-col gap-2">
+        <ui-skeleton class="w-[84px]" [height]="14" />
+        <ui-skeleton [shape]="shape" />
+        <ui-skeleton class="w-[180px]" [height]="14" />
+      </div>
+    `,
+  }),
 };
 
 export const Row: Story = {
   args: { shape: 'row' },
+  render: (args) => ({
+    props: args,
+    template: `
+      <div class="flex w-[280px] flex-col gap-3.5">
+        <ui-skeleton [shape]="shape" />
+        <ui-skeleton [shape]="shape" />
+        <ui-skeleton [shape]="shape" />
+      </div>
+    `,
+  }),
 };
 
 export const Chart: Story = {

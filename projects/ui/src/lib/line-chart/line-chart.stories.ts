@@ -3,6 +3,7 @@ import { signal } from '@angular/core';
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
 import { expect, userEvent, within } from 'storybook/test';
 
+import { plotHeightFor, plotPaddingFor } from './internal/chart-layout';
 import { buildGeometry } from './internal/chart-scale';
 import { type ChartPoint, UiLineChart } from './line-chart';
 
@@ -59,6 +60,11 @@ const crowdedRightEndPoints: ChartPoint[] = Array.from({ length: 60 }, (_, index
   v: index < 54 ? 50000 : 50000 + (index - 53) * 12000,
 }));
 
+const sparklinePoints: ChartPoint[] = [6, 7, 4, 9, 15, 13, 19, 20].map((v, index) => ({
+  t: Date.UTC(2026, 8, 18) + index * 24 * 60 * 60 * 1000,
+  v,
+}));
+
 const meta: Meta<LineChartArgs> = {
   title: 'Data display/Line chart',
   decorators: [moduleMetadata({ imports: [UiLineChart] })],
@@ -82,8 +88,8 @@ The host fills its parent's height (\`block h-full\`); size the chart by sizing 
 
 #### When not to use
 
-* A compact inline figure inside a stat card. This component always renders the full interactive
-  chart, its axis and its screen-reader table — there is no sparkline variant.
+* A compact inline figure with its own axis and tooltip. Pass \`sparkline\` for the 80 x 24 form
+  (curve only, no axis, reference line, dot or tooltip, and out of the tab order).
 * Comparing two or more series at once: the reference line and the tooltip both assume a single
   series.
 
@@ -122,6 +128,11 @@ The host fills its parent's height (\`block h-full\`); size the chart by sizing 
     },
     timeColumnLabel: { control: 'text', description: "Header of the screen-reader table's time column." },
     valueColumnLabel: { control: 'text', description: "Header of the screen-reader table's value column." },
+    sparkline: {
+      control: 'boolean',
+      description:
+        'Draws the curve alone at 1.5px, with no reference line, dot, axis or tooltip, and out of the tab order. Size it with the container.',
+    },
     valueFormat: { control: false, description: 'Formats a point value for the tooltip and the start label.' },
     deltaFormat: { control: false, description: 'Formats the signed change since the first point, for the tooltip.' },
     timeFormat: { control: false, description: "Formats a point's time for the tooltip and the table." },
@@ -133,6 +144,14 @@ export default meta;
 type Story = StoryObj<LineChartArgs>;
 
 export const OneMonth: Story = {};
+
+export const Sparkline: Story = {
+  render: (args) => ({
+    props: { ...args, sparklinePoints },
+    template: `<div class="h-6 w-20"><ui-line-chart sparkline [points]="sparklinePoints" [label]="label" [valueFormat]="valueFormat" [timeFormat]="timeFormat" /></div>`,
+  }),
+  args: { label: 'Évolution sur 7 jours' },
+};
 
 export const OneDay: Story = {
   args: {
@@ -204,7 +223,9 @@ export const RangeTransitionSettles: Story = {
     await userEvent.click(canvas.getByRole('button', { name: 'Switch range' }));
     await new Promise((resolve) => setTimeout(resolve, 400));
 
-    const target = buildGeometry(oneDayPoints, 640, 240, { x: 4, top: 10, bottom: 18 });
+    const plotHeight = plotHeightFor(240, false);
+    const padding = plotPaddingFor(plotHeight, false);
+    const target = buildGeometry(oneDayPoints, 640, plotHeight, { x: 0, top: padding, bottom: padding });
 
     await expect(canvasElement.querySelector('[data-chart-line]')).toHaveAttribute('d', target?.line);
   },

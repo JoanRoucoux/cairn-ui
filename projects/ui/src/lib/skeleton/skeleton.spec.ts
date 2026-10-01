@@ -51,10 +51,10 @@ describe('UiSkeleton', () => {
   });
 
   it.each<[SkeletonShape, string]>([
-    ['figure', 'h-11'],
+    ['figure', 'h-10'],
     ['row', 'h-14'],
-    ['chart', 'h-48'],
-    ['ring', 'rounded-pill'],
+    ['chart', 'h-35'],
+    ['ring', 'size-30'],
   ])('draws the %s shape', async (shape, expectedClass) => {
     const { fixture } = await render('<ui-skeleton [shape]="shape" />', {
       imports: [UiSkeleton],
@@ -62,6 +62,30 @@ describe('UiSkeleton', () => {
     });
 
     expect(fixture.nativeElement.querySelector('span')).toHaveClass(expectedClass);
+  });
+
+  it('draws the chart on the control radius', async () => {
+    const { fixture } = await render('<ui-skeleton shape="chart" />', { imports: [UiSkeleton] });
+
+    expect(fixture.nativeElement.querySelector('span')).toHaveClass('rounded-control', 'w-full');
+  });
+
+  it('draws the ring as an inset band', async () => {
+    const { fixture } = await render('<ui-skeleton shape="ring" />', { imports: [UiSkeleton] });
+
+    expect(fixture.nativeElement.querySelector('span')).toHaveClass(
+      'rounded-pill',
+      'shadow-[inset_0_0_0_22px_var(--muted)]',
+    );
+  });
+
+  it('draws the row as a title and a caption bar on the left and an amount bar on the right', async () => {
+    const { fixture } = await render('<ui-skeleton shape="row" />', { imports: [UiSkeleton] });
+    const row = fixture.nativeElement.querySelector('ui-skeleton > span');
+
+    expect(row).toHaveClass('justify-between');
+    expect(row.querySelectorAll('span')).toHaveLength(4);
+    expect(row.lastElementChild).toHaveClass('w-[90px]', 'h-4');
   });
 
   it('defaults to the text shape, which keeps the lines and height behaviour', async () => {

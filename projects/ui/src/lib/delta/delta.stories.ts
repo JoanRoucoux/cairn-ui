@@ -44,12 +44,12 @@ is responsible for formatting it with its own sign, because color can never carr
   },
   render: (args) => ({
     props: args,
-    template: `<ui-delta [value]="value" [emphasis]="emphasis" unknownLabel="Not available">{{ label }}</ui-delta>`,
+    template: `<ui-delta [value]="value" [emphasis]="emphasis" unknownLabel="Non disponible">{{ label }}</ui-delta>`,
   }),
   args: {
-    value: 316.54,
+    value: 412.56,
     emphasis: 'text',
-    label: '+316.54 EUR',
+    label: '+412,56 € · +0,25 %',
   },
   argTypes: {
     value: {
@@ -72,11 +72,15 @@ type Story = StoryObj<DeltaArgs>;
 export const Gain: Story = {};
 
 export const Loss: Story = {
-  args: { value: -131.3, label: '−131.30 EUR' },
+  args: { value: -240.72, label: '−240,72 € · −3,80 %' },
+};
+
+export const Neutral: Story = {
+  args: { value: 0, label: '0,00 € · 0,00 %' },
 };
 
 export const Pill: Story = {
-  args: { emphasis: 'pill' },
+  args: { emphasis: 'pill', label: '+0,90 %' },
 };
 
 export const Unknown: Story = {
@@ -84,6 +88,6 @@ export const Unknown: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(canvas.getByText('Not available')).toBeInTheDocument();
+    await expect(canvas.getByText('Non disponible')).toBeInTheDocument();
   },
 };

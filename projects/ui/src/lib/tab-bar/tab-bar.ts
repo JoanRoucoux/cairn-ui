@@ -1,7 +1,9 @@
 import { Component, booleanAttribute, computed, input } from '@angular/core';
 
 const TAB_CLASSES =
-  'flex h-[52px] flex-col items-center justify-center gap-0.5 touch-manipulation select-none text-(--muted-foreground) focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring)';
+  'flex h-[52px] flex-col items-center justify-center gap-[3px] font-medium touch-manipulation select-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring)';
+
+const INACTIVE_TAB_CLASSES = 'text-(--muted-foreground)';
 
 const ACTIVE_TAB_CLASSES = 'font-semibold text-(--foreground)';
 
@@ -33,7 +35,7 @@ export class UiTabBar {}
   selector: 'a[ui-tab]',
   template: `
     <span class="size-6" data-tab-icon><ng-content select="[tabIcon]" /></span>
-    <span class="text-caption" data-tab-label><ng-content /></span>
+    <span class="text-caption leading-none" data-tab-label><ng-content /></span>
   `,
   host: {
     '[class]': 'classes()',
@@ -43,5 +45,7 @@ export class UiTabBar {}
 export class UiTab {
   readonly active = input(false, { transform: booleanAttribute });
 
-  protected readonly classes = computed(() => `${TAB_CLASSES}${this.active() ? ` ${ACTIVE_TAB_CLASSES}` : ''}`);
+  protected readonly classes = computed(
+    () => `${TAB_CLASSES} ${this.active() ? ACTIVE_TAB_CLASSES : INACTIVE_TAB_CLASSES}`,
+  );
 }

@@ -4,6 +4,7 @@ import { expect, fn, userEvent, within } from 'storybook/test';
 import { ASYNC_STATES, type AsyncState, UiAsync } from './async';
 
 type AsyncArgs = {
+  title: string;
   state: AsyncState;
   errorTitle: string;
   errorMessage: string;
@@ -47,21 +48,33 @@ One call, one block, its three states: a call that fails never erases the rest o
   render: (args) => ({
     props: args,
     template: `
-      <ui-async [state]="state" [errorTitle]="errorTitle" [errorMessage]="errorMessage" [retryLabel]="retryLabel" (retry)="retry()">
-        <span asyncLoading class="text-label text-(--muted-foreground)">Loading…</span>
-        <span asyncEmpty class="text-label text-(--muted-foreground)">Add a holding to see it here.</span>
-        <span class="text-body">€164,294.28</span>
-      </ui-async>
+      <div class="rounded-container box-content flex w-[300px] flex-col gap-2.5 bg-(--card) p-4 shadow-[inset_0_0_0_1px_var(--border)]">
+        <span class="text-title font-semibold">{{ title }}</span>
+        <ui-async [state]="state" [errorTitle]="errorTitle" [errorMessage]="errorMessage" [retryLabel]="retryLabel" (retry)="retry()">
+          <div asyncLoading class="flex flex-col gap-2.5">
+            <div class="flex justify-between py-1.5"><span class="rounded-control block h-4 bg-(--muted) w-30"></span><span class="rounded-control block h-4 bg-(--muted) w-[90px]"></span></div>
+            <div class="flex justify-between py-1.5"><span class="rounded-control block h-4 bg-(--muted) w-[90px]"></span><span class="rounded-control block h-4 bg-(--muted) w-[90px]"></span></div>
+            <div class="flex justify-between py-1.5"><span class="rounded-control block h-4 bg-(--muted) w-[110px]"></span><span class="rounded-control block h-4 bg-(--muted) w-[90px]"></span></div>
+          </div>
+          <div asyncEmpty class="rounded-control flex flex-col items-start gap-2 bg-(--background) p-4">
+            <span class="text-label text-(--muted-foreground)">Ce compte n'a encore aucune ligne. Ajoutez un titre ou importez un CSV.</span>
+            <button type="button" class="rounded-control text-label h-9 bg-(--card) px-3 font-medium shadow-[inset_0_0_0_1px_var(--border)]">Ajouter une ligne</button>
+          </div>
+          <span class="text-body font-medium tabular-nums">14 318,40 €</span>
+        </ui-async>
+      </div>
     `,
   }),
   args: {
+    title: 'Par enveloppe',
     state: 'ready',
-    errorTitle: 'Total could not be loaded',
-    errorMessage: 'The server did not answer.',
-    retryLabel: 'Retry',
+    errorTitle: "Les enveloppes n'ont pas pu être chargées",
+    errorMessage: "Le serveur n'a pas répondu.",
+    retryLabel: 'Réessayer',
     retry: fn(),
   },
   argTypes: {
+    title: { control: 'text', description: "The block's own title, rendered by the caller above the three states." },
     state: { control: 'inline-radio', options: [...ASYNC_STATES], description: 'Which slot is currently shown.' },
     errorTitle: { control: 'text', description: 'Error state title, next to the block name.' },
     errorMessage: { control: 'text', description: 'Error state detail sentence.' },
@@ -89,7 +102,7 @@ export const Error: Story = {
     const canvas = within(canvasElement);
 
     await expect(canvas.getByRole('alert')).toBeInTheDocument();
-    await userEvent.click(canvas.getByRole('button', { name: 'Retry' }));
+    await userEvent.click(canvas.getByRole('button', { name: 'Réessayer' }));
     await expect(args.retry).toHaveBeenCalledOnce();
   },
 };

@@ -9,7 +9,7 @@ describe('placeStartLabel', () => {
   it('sits above the dashed line at the right end when that space is free', () => {
     const placed = placeStartLabel(flatAt(180), 100, box, label);
 
-    expect(placed).toEqual({ x: 400, y: 100 - 3, anchor: 'end' });
+    expect(placed).toEqual({ x: 400, y: 100 - 6, anchor: 'end' });
   });
 
   it('moves below the line when the curve runs just above it on the right', () => {
@@ -30,7 +30,7 @@ describe('placeStartLabel', () => {
   it('moves to the left end when the curve crowds both slots at the right end', () => {
     const points = flatAt(180).map((p) => (p.x >= 270 ? { ...p, y: 100 } : p));
 
-    expect(placeStartLabel(points, 100, box, label)).toEqual({ x: 0, y: 97, anchor: 'start' });
+    expect(placeStartLabel(points, 100, box, label)).toEqual({ x: 0, y: 94, anchor: 'start' });
   });
 
   it('moves below the left end when the curve also crowds the left end above the line', () => {
@@ -44,7 +44,7 @@ describe('placeStartLabel', () => {
       return p;
     });
 
-    expect(placeStartLabel(points, 100, box, label)).toEqual({ x: 0, y: 117, anchor: 'start' });
+    expect(placeStartLabel(points, 100, box, label)).toEqual({ x: 0, y: 120, anchor: 'start' });
   });
 
   it('falls back to the top-right corner when the four line-adjacent slots are all crowded', () => {
@@ -56,7 +56,7 @@ describe('placeStartLabel', () => {
   it('drops an above-the-line slot that would fall outside the box for a start line near the top edge', () => {
     const placed = placeStartLabel(flatAt(180), 2, box, label);
 
-    expect(placed).toEqual({ x: 400, y: 19, anchor: 'end' });
+    expect(placed).toEqual({ x: 400, y: 22, anchor: 'end' });
   });
 
   it('drops a below-the-line slot that would fall outside the box for a start line near the bottom edge', () => {

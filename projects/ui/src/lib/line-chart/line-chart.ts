@@ -3,6 +3,7 @@ import {
   DestroyRef,
   type ElementRef,
   afterNextRender,
+  booleanAttribute,
   computed,
   effect,
   inject,
@@ -11,8 +12,15 @@ import {
   viewChild,
 } from '@angular/core';
 
-import { axisTicks } from './internal/chart-axis';
+import { axisTicks, isCoreTick } from './internal/chart-axis';
 import { navigateIndex, nearestPointIndex } from './internal/chart-interaction';
+import {
+  START_LABEL_HEIGHT,
+  plotHeightFor,
+  plotPaddingFor,
+  startLabelBaseline,
+  tooltipPlacement,
+} from './internal/chart-layout';
 import { type ChartGeometry, type ChartPoint, type PlottedPoint, buildGeometry } from './internal/chart-scale';
 import { placeStartLabel } from './internal/start-label';
 import { TRANSITION_DURATION, easeOutQuint, interpolateLine, prefersReducedMotion } from './internal/transition';
@@ -21,8 +29,6 @@ export type { ChartPoint };
 
 const DEFAULT_WIDTH = 640;
 const DEFAULT_HEIGHT = 240;
-const PLOT_PADDING = { x: 4, top: 10, bottom: 18 };
-const START_LABEL_HEIGHT = 17;
 
 const identityValue = (value: number): string => `${value}`;
 const identityDelta = (delta: number): string => `${delta > 0 ? '+' : ''}${delta}`;
@@ -42,11 +48,11 @@ type PlotRef = ElementRef<SVGSVGElement>;
     <div class="relative h-full">
       <svg
         #svgRef
-        class="block h-full w-full touch-pan-y"
+        class="block h-full w-full touch-pan-y overflow-visible"
         role="img"
-        tabindex="0"
         [attr.aria-label]="label()"
         [attr.height]="effectiveHeight()"
+        [attr.tabindex]="sparkline() ? null : 0"
         [attr.viewBox]="'0 0 ' + effectiveWidth() + ' ' + effectiveHeight()"
         [attr.width]="effectiveWidth()"
         (keydown)="onKeydown($event)"
@@ -60,94 +66,96 @@ type PlotRef = ElementRef<SVGSVGElement>;
             fill="none"
             stroke-linecap="round"
             stroke-linejoin="round"
-            stroke-width="2"
             [attr.d]="displayLine()"
+            [attr.stroke-width]="sparkline() ? 1.5 : 2"
           />
 
-          <line
-            class="stroke-(--border)"
-            data-chart-start-line
-            stroke-dasharray="4 4"
-            stroke-width="1"
-            x1="0"
-            [attr.x2]="effectiveWidth()"
-            [attr.y1]="geometry.start.y"
-            [attr.y2]="geometry.start.y"
-          />
-
-          @if (startLabelInfo(); as info) {
-            <text
-              class="text-caption fill-(--subtle-foreground)"
-              data-chart-start-label
-              [attr.text-anchor]="info.placement.anchor"
-              [attr.x]="info.placement.x"
-              [attr.y]="info.placement.y"
-            >
-              {{ info.label }}
-            </text>
-          }
-
-          <circle
-            class="fill-(--foreground) stroke-(--card)"
-            data-chart-end
-            r="4"
-            stroke-width="2"
-            [attr.cx]="geometry.end.x"
-            [attr.cy]="geometry.end.y"
-          />
-
-          @for (
-            tick of ticks();
-            track tick.t;
-            let index = $index;
-            let count = $count;
-            let first = $first;
-            let last = $last
-          ) {
-            <text
-              class="text-caption fill-(--subtle-foreground)"
-              data-chart-axis-tick
-              [attr.text-anchor]="first ? 'start' : last ? 'end' : 'middle'"
-              [attr.x]="tick.x"
-              [attr.y]="effectiveHeight() - 4"
-              [class.max-sm:hidden]="!coreTick(index, count)"
-            >
-              {{ axisFormat()(tick.t) }}
-            </text>
-          }
-
-          @if (active(); as point) {
+          @if (!sparkline()) {
             <line
               class="stroke-(--border)"
-              data-chart-crosshair
+              data-chart-start-line
+              stroke-dasharray="3 4"
               stroke-width="1"
-              y1="0"
-              [attr.x1]="point.x"
-              [attr.x2]="point.x"
-              [attr.y2]="effectiveHeight()"
+              x1="0"
+              [attr.x2]="effectiveWidth()"
+              [attr.y1]="geometry.start.y"
+              [attr.y2]="geometry.start.y"
             />
+
+            @if (startLabelInfo(); as info) {
+              <text
+                class="text-caption fill-(--subtle-foreground) tabular-nums"
+                data-chart-start-label
+                [attr.text-anchor]="info.placement.anchor"
+                [attr.x]="info.placement.x"
+                [attr.y]="info.placement.y"
+              >
+                {{ info.label }}
+              </text>
+            }
+
             <circle
-              class="fill-(--foreground) stroke-(--card)"
-              data-chart-active
+              class="fill-(--foreground) stroke-(--card) [paint-order:stroke]"
+              data-chart-end
               r="4"
-              stroke-width="2"
-              [attr.cx]="point.x"
-              [attr.cy]="point.y"
+              stroke-width="6"
+              [attr.cx]="geometry.end.x"
+              [attr.cy]="geometry.end.y"
             />
+
+            @for (
+              tick of ticks();
+              track tick.t;
+              let index = $index;
+              let count = $count;
+              let first = $first;
+              let last = $last
+            ) {
+              <text
+                class="text-caption fill-(--subtle-foreground) tabular-nums"
+                data-chart-axis-tick
+                [attr.text-anchor]="first ? 'start' : last ? 'end' : 'middle'"
+                [attr.x]="tick.x"
+                [attr.y]="effectiveHeight() - 4"
+                [class.max-sm:hidden]="!isCoreTick(index, count)"
+              >
+                {{ axisFormat()(tick.t) }}
+              </text>
+            }
+
+            @if (active(); as point) {
+              <line
+                class="stroke-(--border)"
+                data-chart-crosshair
+                stroke-width="1"
+                y1="0"
+                [attr.x1]="point.x"
+                [attr.x2]="point.x"
+                [attr.y2]="plotHeight()"
+              />
+              <circle
+                class="fill-(--foreground) stroke-(--card) [paint-order:stroke]"
+                data-chart-active
+                r="5"
+                stroke-width="6"
+                [attr.cx]="point.x"
+                [attr.cy]="point.y"
+              />
+            }
           }
         }
       </svg>
 
       @if (active(); as point) {
         <div
-          class="rounded-container text-caption pointer-events-none absolute -translate-x-1/2 -translate-y-full bg-(--card) px-2.5 py-1.5 whitespace-nowrap shadow-[0_4px_16px_rgb(0_0_0/0.12)]"
+          class="rounded-container pointer-events-none absolute top-0 bg-(--elevated) px-3 py-2 whitespace-nowrap [font-variant-numeric:var(--numeric)] shadow-[0_4px_16px_rgb(0_0_0/0.12),inset_0_0_0_1px_var(--border)]"
           data-testid="chart-tooltip"
           role="status"
           [style]="tooltipStyle(point)"
         >
-          <p class="font-medium text-(--foreground)">{{ valueFormat()(point.v) }}</p>
+          <p class="text-body font-medium text-(--foreground)">{{ valueFormat()(point.v) }}</p>
           <p data-chart-delta [class]="deltaClasses(point)">{{ deltaFormat()(deltaFor(point)) }}</p>
-          <p class="text-(--subtle-foreground)">{{ timeFormat()(point.t) }}</p>
+          <p class="text-caption text-(--subtle-foreground)" data-chart-date>{{ timeFormat()(point.t) }}</p>
         </div>
       }
 
@@ -190,12 +198,14 @@ export class UiLineChart {
   readonly startLabel = input('');
   readonly timeColumnLabel = input('Time');
   readonly valueColumnLabel = input('Value');
+  readonly sparkline = input(false, { transform: booleanAttribute });
 
   #destroyRef = inject(DestroyRef);
   #frame: number | null = null;
   #hasRenderedOnce = false;
   #previousGeometry: ChartGeometry | null = null;
 
+  protected readonly isCoreTick = isCoreTick;
   protected readonly svgRef = viewChild.required<PlotRef>('svgRef');
   protected readonly activeIndex = signal<number | null>(null);
   protected readonly animatedLine = signal<string | null>(null);
@@ -205,9 +215,14 @@ export class UiLineChart {
   protected readonly effectiveWidth = computed(() => this.measuredSize()?.width ?? DEFAULT_WIDTH);
   protected readonly effectiveHeight = computed(() => this.measuredSize()?.height ?? DEFAULT_HEIGHT);
 
-  protected readonly geometry = computed(() =>
-    buildGeometry(this.points(), this.effectiveWidth(), this.effectiveHeight(), PLOT_PADDING),
-  );
+  protected readonly plotHeight = computed(() => plotHeightFor(this.effectiveHeight(), this.sparkline()));
+
+  protected readonly geometry = computed(() => {
+    const plotHeight = this.plotHeight();
+    const padding = plotPaddingFor(plotHeight, this.sparkline());
+
+    return buildGeometry(this.points(), this.effectiveWidth(), plotHeight, { x: 0, top: padding, bottom: padding });
+  });
 
   protected readonly displayLine = computed(() => this.animatedLine() ?? this.geometry()!.line);
 
@@ -233,11 +248,11 @@ export class UiLineChart {
     const placement = placeStartLabel(
       geometry.points,
       geometry.start.y,
-      { width: this.effectiveWidth(), height: this.effectiveHeight() },
+      { width: this.effectiveWidth(), height: this.plotHeight() },
       size,
     );
 
-    return { label, placement };
+    return { label, placement: { ...placement, y: startLabelBaseline(placement.y) } };
   });
 
   #renderRef = afterNextRender(() => this.#observeSize());
@@ -327,16 +342,6 @@ export class UiLineChart {
     this.#frame = requestAnimationFrame(step);
   }
 
-  protected coreTick(index: number, count: number): boolean {
-    if (count <= 3) {
-      return true;
-    }
-
-    const middle = Math.floor((count - 1) / 2);
-
-    return index === 0 || index === count - 1 || index === middle;
-  }
-
   protected deltaFor(point: PlottedPoint): number {
     return point.v - this.points()[0]!.v;
   }
@@ -344,17 +349,19 @@ export class UiLineChart {
   protected deltaClasses(point: PlottedPoint): string {
     const delta = this.deltaFor(point);
 
-    return delta > 0 ? 'text-(--positive)' : delta < 0 ? 'text-(--negative)' : 'text-(--muted-foreground)';
+    const tone = delta > 0 ? 'text-(--positive)' : delta < 0 ? 'text-(--negative)' : 'text-(--muted-foreground)';
+
+    return `text-label ${tone}`;
   }
 
   protected tooltipStyle(point: PlottedPoint): string {
-    return `left: ${(point.x / this.effectiveWidth()) * 100}%; top: ${(point.y / this.effectiveHeight()) * 100}%`;
+    return tooltipPlacement(point.x / this.effectiveWidth());
   }
 
   protected onPointerMove(event: PointerEvent): void {
     const geometry = this.geometry();
 
-    if (!geometry || geometry.points.length === 0) {
+    if (this.sparkline() || !geometry || geometry.points.length === 0) {
       return;
     }
 
@@ -372,7 +379,7 @@ export class UiLineChart {
   protected onKeydown(event: KeyboardEvent): void {
     const geometry = this.geometry();
 
-    if (!geometry || geometry.points.length === 0) {
+    if (this.sparkline() || !geometry || geometry.points.length === 0) {
       return;
     }
 

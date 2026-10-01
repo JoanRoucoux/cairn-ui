@@ -8,6 +8,8 @@ type MeterArgs = {
   label: string;
   valueText: string;
   tone: MeterTone;
+  amount: string;
+  share: string;
 };
 
 const meta: Meta<MeterArgs> = {
@@ -47,15 +49,25 @@ comparison when every bar starts at the same edge.
   },
   render: (args) => ({
     props: args,
-    template: `<div class="w-80"><ui-meter [value]="value" [label]="label" [valueText]="valueText" [tone]="tone" /></div>`,
+    template: `
+      <div class="flex w-[300px] flex-col gap-1.5">
+        <div class="text-body flex justify-between font-medium tabular-nums"><span>{{ label }}</span><span>{{ amount }}</span></div>
+        <ui-meter [value]="value" [label]="label" [valueText]="valueText" [tone]="tone" />
+        <span class="text-label text-(--muted-foreground)">{{ share }}</span>
+      </div>
+    `,
   }),
   args: {
-    value: 0.463,
-    label: 'Funds',
-    valueText: '46.3%, 128,656.00 EUR',
+    value: 0.373,
+    label: 'PEA',
+    valueText: '37,3 %, 61 247,83 €',
     tone: 1,
+    amount: '61 247,83 €',
+    share: '37,3 %',
   },
   argTypes: {
+    amount: { control: 'text', description: 'Amount shown on the label line, formatted by the caller.' },
+    share: { control: 'text', description: 'Share of the total shown under the bar, formatted by the caller.' },
     value: {
       control: { type: 'range', min: 0, max: 1, step: 0.01 },
       description: 'Fill proportion, 0 to 1. Also sets `aria-valuenow`.',
@@ -80,7 +92,17 @@ type Story = StoryObj<MeterArgs>;
 export const Default: Story = {};
 
 export const Smallest: Story = {
-  args: { value: 0.038, label: 'Crypto', valueText: '3.8%, 10,525.00 EUR', tone: 4 },
+  args: { value: 0.047, label: 'PER', valueText: '4,7 %, 7 692,94 €', amount: '7 692,94 €', share: '4,7 %' },
+};
+
+export const Empty: Story = {
+  args: {
+    value: 0,
+    label: 'Trade Republic',
+    valueText: '0,0 %, 0,00 €',
+    amount: '0,00 €',
+    share: '0,0 %',
+  },
 };
 
 export const ExposesItsValue: Story = {

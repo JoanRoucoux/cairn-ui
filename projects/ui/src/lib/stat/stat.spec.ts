@@ -49,6 +49,34 @@ describe('UiStat', () => {
     expect(container.querySelector('dd')).toHaveClass(expectedClass);
   });
 
+  it.each<[StatSize, string]>([
+    ['hero', 'font-medium'],
+    ['tile', 'font-normal'],
+  ])('sets the %s label to %s on the muted color', async (size, weight) => {
+    const { container } = await renderStat(size);
+
+    expect(container.querySelector('dt')).toHaveClass(weight, 'text-(--muted-foreground)');
+  });
+
+  it.each<[StatSize, string]>([
+    ['hero', 'gap-1'],
+    ['tile', 'gap-0.5'],
+  ])('stacks the %s label, value and delta on %s', async (size, gap) => {
+    const { container } = await renderStat(size);
+
+    expect(container.querySelector('dl')).toHaveClass(gap);
+    expect(container.querySelector('dl')?.parentElement).toHaveClass(gap);
+  });
+
+  it.each<[StatSize, string]>([
+    ['hero', 'tracking-(--tracking-display)'],
+    ['tile', 'tabular-nums'],
+  ])('sets %s value typography %s', async (size, expectedClass) => {
+    const { container } = await renderStat(size);
+
+    expect(container.querySelector('dd')).toHaveClass(expectedClass);
+  });
+
   it('never sets tabular-nums on the hero value', async () => {
     const { container } = await renderStat('hero');
 

@@ -42,4 +42,22 @@ describe('UiAsync', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Retry' }));
     expect(retried).toHaveBeenCalledTimes(1);
   });
+
+  it('draws the retry button with the rotate-cw icon and 12px of left padding', async () => {
+    await render(template, { imports: [UiAsync], componentProperties: { state: 'error', retried: vi.fn() } });
+
+    const button = screen.getByRole('button', { name: 'Retry' });
+    const icon = button.querySelector('svg');
+
+    expect(icon).toHaveAttribute('aria-hidden', 'true');
+    expect(icon).toHaveAttribute('width', '18');
+    expect(icon?.querySelector('path[d="M21 3v5h-5"]')).not.toBeNull();
+    expect(button).toHaveClass('pl-3', 'pr-4');
+  });
+
+  it('pads the error box 16px whatever the card inset', async () => {
+    await render(template, { imports: [UiAsync], componentProperties: { state: 'error', retried: vi.fn() } });
+
+    expect(screen.getByRole('alert')).toHaveClass('p-4');
+  });
 });

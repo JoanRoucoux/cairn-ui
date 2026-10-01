@@ -89,14 +89,36 @@ Masking comes from the \`UI_AMOUNT_MASKED\` injection token, a signal the app pr
 export default meta;
 type Story = StoryObj<AmountArgs>;
 
-export const Euros: Story = {};
+export const Euros: Story = {
+  args: { value: 14318.4 },
+  render: (args) => ({
+    props: args,
+    template: `<span class="text-body font-medium"><ui-amount [value]="value" [currency]="currency" [numeric]="numeric" locale="fr-FR" /></span>`,
+  }),
+};
+
+export const Display: Story = {
+  args: { numeric: 'proportional' },
+  render: (args) => ({
+    props: args,
+    template: `<span class="text-display font-semibold"><ui-amount [value]="value" [currency]="currency" [numeric]="numeric" locale="fr-FR" /></span>`,
+  }),
+};
 
 export const SignedGain: Story = {
   args: { value: 412.56, signed: true },
+  render: (args) => ({
+    props: args,
+    template: `<span class="text-body font-medium text-(--positive)"><ui-amount [value]="value" [currency]="currency" [signed]="signed" locale="fr-FR" /></span>`,
+  }),
 };
 
 export const SignedLoss: Story = {
   args: { value: -240.72, signed: true },
+  render: (args) => ({
+    props: args,
+    template: `<span class="text-body font-medium text-(--negative)"><ui-amount [value]="value" [currency]="currency" [signed]="signed" locale="fr-FR" /></span>`,
+  }),
 };
 
 export const SignedZero: Story = {
@@ -113,6 +135,10 @@ export const Missing: Story = {
 
 export const Masked: Story = {
   decorators: [moduleMetadata({ providers: [{ provide: UI_AMOUNT_MASKED, useValue: signal(true) }] })],
+  render: (args) => ({
+    props: args,
+    template: `<span class="text-display font-semibold"><ui-amount [value]="value" [currency]="currency" [numeric]="numeric" locale="fr-FR" /></span>`,
+  }),
   play: async ({ canvasElement }) => {
     await expect(canvasElement.querySelector('ui-amount')).toHaveTextContent('••••');
   },
