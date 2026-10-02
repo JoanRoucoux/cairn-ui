@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
 import { UiFlipItem, UiFlipList } from './flip-list';
+import { ROW, animationsFromTransforms, layout, shift, tick } from './internal/flip-list.spec-helper';
 
 type Group = {
   id: string;
@@ -77,40 +78,13 @@ class GroupRows {
 })
 class ChildComponentHost {}
 
-const ROW = 50;
-
-const shownShift = (element: HTMLElement): number => {
-  const match = /^matrix\((.+)\)$/.exec(element.style.transform);
-  return match ? parseFloat((match[1] as string).split(',')[5] as string) : 0;
-};
-
-const shift = (y: number): string => `matrix(1, 0, 0, 1, 0, ${y})`;
-
-const layout = (host: HTMLElement): void => {
-  const place = (element: HTMLElement, top: number): number => {
-    const children = Array.from(element.children) as HTMLElement[];
-    const bottom = children.length === 0 ? top + ROW : children.reduce((cursor, child) => place(child, cursor), top);
-    element.getBoundingClientRect = () => {
-      let offset = 0;
-      for (let node: HTMLElement | null = element; node && node !== host; node = node.parentElement) {
-        offset += shownShift(node);
-      }
-      return { top: top + offset } as DOMRect;
-    };
-    return bottom;
-  };
-  (Array.from(host.children) as HTMLElement[]).reduce((cursor, child) => place(child, cursor), 0);
-  host.getBoundingClientRect = () => ({ top: 0 }) as DOMRect;
-};
-
-const tick = (): Promise<void> => new Promise((resolve) => setTimeout(resolve));
-
 const without =
   (...removed: string[]) =>
   (host: GroupsHost | CardsHost): void =>
     host.groups.set(GROUPS.map((group) => ({ ...group, rows: group.rows.filter((row) => !removed.includes(row)) })));
 
 describe('UiFlipList with uiFlipItem', () => {
+  const originalGetAnimations = Element.prototype.getAnimations;
   const originalAnimate = Element.prototype.animate;
   let animate: ReturnType<typeof vi.fn>;
   let resize: (() => void) | undefined;
@@ -151,6 +125,7 @@ describe('UiFlipList with uiFlipItem', () => {
     }) as unknown as typeof matchMedia;
     animate = vi.fn(() => ({ cancel: vi.fn(), onfinish: null }));
     Element.prototype.animate = animate as unknown as typeof Element.prototype.animate;
+    Element.prototype.getAnimations = animationsFromTransforms;
     observe = vi.fn();
     unobserve = vi.fn();
     vi.stubGlobal(
@@ -169,6 +144,7 @@ describe('UiFlipList with uiFlipItem', () => {
   afterEach(() => {
     vi.unstubAllGlobals();
     Element.prototype.animate = originalAnimate;
+    Element.prototype.getAnimations = originalGetAnimations;
     resize = undefined;
     if (originalMatchMedia) {
       globalThis.matchMedia = originalMatchMedia;
@@ -218,6 +194,91 @@ describe('UiFlipList with uiFlipItem', () => {
     expect(animated()).not.toContain(byId(list, 'f'));
     expect(animated()).not.toContain(byId(list, 'g3-head'));
     expect(fromOf(card)).toEqual({ transform: `translateY(${ROW + 10}px)` });
+  });
+
+  it('slides the rows below and the later groups down when a row comes back', async () => {
+    const { list, change } = await setup(GroupsHost);
+    await change(without('d'));
+    animate.mockClear();
+
+    await change(without());
+
+    expect(animated()).toHaveLength(3);
+    for (const id of ['e', 'g3', 'f']) {
+      expect(fromOf(byId(list, id))).toEqual({ transform: `translateY(${-ROW}px)` });
+    }
+  });
+
+  it('animates nothing under reduced motion', async () => {
+    globalThis.matchMedia = vi.fn().mockReturnValue({
+      matches: true,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    }) as unknown as typeof matchMedia;
+    const { change } = await setup(GroupsHost);
+
+    await change(without('d'));
+
+    expect(animate).not.toHaveBeenCalled();
+  });
+
+  it('slides nothing when an element that is not an item appears inside a group', async () => {
+    const { list } = await setup(GroupsHost);
+
+    byId(list, 'c').parentElement?.appendChild(document.createElement('p'));
+    layout(list);
+    await tick();
+
+    expect(animate).not.toHaveBeenCalled();
+  });
+
+  it('measures out the translate of another animation on a group that is not an item', async () => {
+    const { list, change } = await setup(GroupsHost);
+    const group = byId(list, 'g1').parentElement as HTMLElement;
+    group.style.transform = shift(4);
+    resize?.();
+    group.style.transform = '';
+
+    await change(without('d'));
+
+    expect(animated()).toHaveLength(3);
+    expect(animated()).not.toContain(byId(list, 'a'));
+  });
+
+  it('measures through an animation that does not translate, such as a highlight', async () => {
+    const { list, change } = await setup(GroupsHost);
+    byId(list, 'f').style.transform = 'none';
+    resize?.();
+
+    await change(without('d'));
+
+    expect(fromOf(byId(list, 'f'))).toEqual({ transform: `translateY(${ROW}px)` });
+  });
+
+  it('ignores a translate of the list itself, which moves it and its items alike', async () => {
+    const { list, change } = await setup(GroupsHost);
+    list.style.transform = shift(30);
+    resize?.();
+    list.style.transform = shift(10);
+
+    await change(without('d'));
+
+    expect(animated()).toHaveLength(3);
+    expect(fromOf(byId(list, 'f'))).toEqual({ transform: `translateY(${ROW}px)` });
+  });
+
+  it('follows again an item that was out of the list for a while', async () => {
+    const { list } = await setup(GroupsHost);
+    const f = byId(list, 'f');
+    const group = f.parentElement as HTMLElement;
+
+    f.remove();
+    await tick();
+    group.appendChild(f);
+    layout(list);
+    await tick();
+
+    expect(observe.mock.calls.filter(([element]) => element === f)).toHaveLength(2);
   });
 
   it('stops tracking an item once it has left the list', async () => {

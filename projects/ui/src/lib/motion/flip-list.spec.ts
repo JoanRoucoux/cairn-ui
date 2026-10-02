@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
 import { UiFlipList } from './flip-list';
+import { ROW, animationsFromTransforms, layout, shift, tick } from './internal/flip-list.spec-helper';
 
 @Component({
   imports: [UiFlipList],
@@ -17,35 +18,7 @@ class ListHost {
   readonly items = signal(['a', 'b', 'c']);
 }
 
-const ROW = 50;
-
-const shownShift = (element: HTMLElement): number => {
-  const match = /^matrix\((.+)\)$/.exec(element.style.transform);
-  return match ? parseFloat((match[1] as string).split(',')[5] as string) : 0;
-};
-
-const shift = (y: number): string => `matrix(1, 0, 0, 1, 0, ${y})`;
-
 let origin = 0;
-
-const layout = (host: HTMLElement): void => {
-  const place = (element: HTMLElement, top: number): number => {
-    const children = Array.from(element.children) as HTMLElement[];
-    const bottom = children.length === 0 ? top + ROW : children.reduce((cursor, child) => place(child, cursor), top);
-    element.getBoundingClientRect = () => {
-      let offset = 0;
-      for (let node: HTMLElement | null = element; node && node !== host; node = node.parentElement) {
-        offset += shownShift(node);
-      }
-      return { top: origin + top + offset } as DOMRect;
-    };
-    return bottom;
-  };
-  (Array.from(host.children) as HTMLElement[]).reduce((cursor, child) => place(child, cursor), 0);
-  host.getBoundingClientRect = () => ({ top: origin }) as DOMRect;
-};
-
-const tick = (): Promise<void> => new Promise((resolve) => setTimeout(resolve));
 
 type FakeAnimation = {
   cancel: ReturnType<typeof vi.fn>;
@@ -53,6 +26,7 @@ type FakeAnimation = {
 };
 
 describe('UiFlipList', () => {
+  const originalGetAnimations = Element.prototype.getAnimations;
   const originalAnimate = Element.prototype.animate;
   let animate: ReturnType<typeof vi.fn>;
   let animations: FakeAnimation[];
@@ -77,7 +51,7 @@ describe('UiFlipList', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     const list = (fixture.nativeElement as HTMLElement).querySelector('[uiFlipList]') as HTMLElement;
-    layout(list);
+    layout(list, origin);
     resize?.();
     return {
       host: fixture.componentInstance,
@@ -85,7 +59,7 @@ describe('UiFlipList', () => {
       change: async (update) => {
         update(fixture.componentInstance);
         fixture.detectChanges();
-        layout(list);
+        layout(list, origin);
         await tick();
       },
     };
@@ -109,6 +83,7 @@ describe('UiFlipList', () => {
       return animation;
     });
     Element.prototype.animate = animate as unknown as typeof Element.prototype.animate;
+    Element.prototype.getAnimations = animationsFromTransforms;
     observe = vi.fn();
     unobserve = vi.fn();
     disconnectResize = vi.fn();
@@ -128,6 +103,7 @@ describe('UiFlipList', () => {
   afterEach(() => {
     vi.unstubAllGlobals();
     Element.prototype.animate = originalAnimate;
+    Element.prototype.getAnimations = originalGetAnimations;
     resize = undefined;
     if (originalMatchMedia) {
       globalThis.matchMedia = originalMatchMedia;

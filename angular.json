@@ -31,7 +31,7 @@
           "options": {
             "tsConfig": "projects/ui/tsconfig.spec.json",
             "setupFiles": ["projects/ui/src/test-setup.ts"],
-            "coverageExclude": ["**/*.stories.ts"],
+            "coverageExclude": ["**/*.stories.ts", "**/*.spec-helper.ts"],
             "coverageReporters": ["text-summary", "html", "lcovonly"],
             "coverageThresholds": {
               "statements": 85,
