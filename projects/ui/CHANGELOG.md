@@ -8,26 +8,38 @@
   its marked items instead of its direct children, so a page made of groups slides as one: put `uiFlipList` on the
   element around every group (the `table`, the page column) and `uiFlipItem` on each group heading and row. A
   removal then slides the rows below in the same group and the groups below. An item inside another item (a row
-  inside a card) moves by its own share, the card carrying the rest.
+  inside a card) moves by its own share, the card carrying the rest. A destroyed item stays followed until it
+  leaves the page (its `animate.leave` fade), and a live item that is briefly out of the list is followed again
+  once back.
+- `ui-dialog` `busy` input (boolean, default `false`): while an action runs, Escape, a click on the backdrop and
+  a drag of the sheet leave the dialog open, the cross is disabled and the dialog carries `aria-busy`. The native
+  `cancel` and the Escape `keydown` are prevented, and a close the platform makes without asking reopens the
+  dialog. The owner disables its own buttons and still closes it through `open`.
+- `ui-tab-bar` publishes its height as `--tab-bar-height` (`calc(52px + env(safe-area-inset-bottom))`) on the
+  root element while it is on the page. Use it instead of restating 52px for anything that must clear the bar,
+  e.g. `pb-(--tab-bar-height)`.
 
 ### Changed
 
 - `uiFlipList` slides only when an item is added or removed. A change inside an item (a row that grows, content
   toggled in a cell) re-measures without sliding, as MOUVEMENT.md asks of layout changes. A list without
   `uiFlipItem` keeps following its direct children, as in 0.7.0.
+- `ui-toaster` and `ui-action-bar` sit above `var(--tab-bar-height)`, falling back to the former
+  `calc(52px + env(safe-area-inset-bottom))` when no tab bar is on the page.
 
 ### Fixed
 
 - `uiFlipList` measures every item from the top of the list itself, no longer from the nearest positioned
   ancestor: a list that moved on the page without resizing (the holdings list when the detail panel lays out)
   slides by the gap only, not from a stale place. Containers no longer need `position: relative` for it; drop
-  the `relative` added as a workaround. A move interrupted by the next change restarts from where the item is
-  displayed.
+  the `relative` added as a workaround. Positions leave out the translate of any animation running inside the
+  list (a slide in progress, an enter fade-up). A move interrupted by the next change restarts from where the
+  item is displayed.
 - `uiHighlight` and `animate.enter` on the same element both play: the highlight starts on the next frame and,
-  while the element still runs an animation of its own, once that animation has finished. Angular kept the
-  1400 ms highlight as the longest animation and dropped the enter class after one frame. The enter fade no
-  longer needs to sit on an inner element.
-
+  while the element or a painted cell still runs a finite animation of its own, once that animation has
+  finished, waiting no longer than `--duration-base`. Angular kept the 1400 ms highlight as the longest
+  animation and dropped the enter class after one frame. The enter fade no longer needs to sit on an inner
+  element.
 - `uiStaleLink`: the link keeps its 12/17 caption size but now extends its hit area with a `::before` pseudo-element to 44 px high (40 px with `pointer: fine`), centred on the text, so it meets the touch target of the handoff. Its `::after` chevron is unchanged.
 
 ## 0.7.0
