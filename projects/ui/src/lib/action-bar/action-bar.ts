@@ -5,7 +5,7 @@ const HEIGHT_PROPERTY = '--action-bar-height';
 
 /**
  * Bar of actions fixed above the tab bar on iPhone: the primary actions of a detail screen, within
- * thumb reach. It sits 52px plus the safe area above the bottom edge, so it clears `ui-tab-bar`, and
+ * thumb reach. It sits `--tab-bar-height` (52px plus the safe area) above the bottom edge, so it clears `ui-tab-bar`, and
  * it is hidden from `64rem`, where the same actions live in the page itself. Its children share the
  * width equally. While it is on the page it publishes its height as `--action-bar-height` on the
  * root element, which `ui-toaster` adds to its offset so a confirmation never covers the actions.
@@ -21,7 +21,7 @@ const HEIGHT_PROPERTY = '--action-bar-height';
   template: '<ng-content />',
   host: {
     class:
-      'fixed inset-x-0 bottom-[calc(52px+env(safe-area-inset-bottom))] z-40 grid grid-flow-col auto-cols-fr gap-2 bg-(--background) px-(--gutter) py-3 shadow-[0_-1px_0_var(--hairline)] lg:hidden',
+      'fixed inset-x-0 bottom-[var(--tab-bar-height,calc(52px+env(safe-area-inset-bottom)))] z-40 grid grid-flow-col auto-cols-fr gap-2 bg-(--background) px-(--gutter) py-3 shadow-[0_-1px_0_var(--hairline)] lg:hidden',
   },
 })
 export class UiActionBar {

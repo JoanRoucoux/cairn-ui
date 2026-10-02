@@ -36,6 +36,9 @@ const stubMatchMedia = (matches: boolean): void => {
 };
 
 describe('UiHighlight', () => {
+  const originalAnimate = Element.prototype.animate;
+  const originalGetAnimations = Element.prototype.getAnimations;
+  const originalScrollIntoView = Element.prototype.scrollIntoView;
   let animate: ReturnType<typeof vi.fn>;
   let cancel: ReturnType<typeof vi.fn>;
   let scrollIntoView: ReturnType<typeof vi.fn>;
@@ -53,6 +56,10 @@ describe('UiHighlight', () => {
     };
   };
 
+  const frame = (): void => {
+    vi.advanceTimersToNextFrame();
+  };
+
   const animatedElements = (): Element[] => animate.mock.contexts as Element[];
 
   const offScreen = (element: Element): void => {
@@ -67,10 +74,14 @@ describe('UiHighlight', () => {
     scrollIntoView = vi.fn();
     Element.prototype.animate = animate as unknown as typeof Element.prototype.animate;
     Element.prototype.scrollIntoView = scrollIntoView as unknown as typeof Element.prototype.scrollIntoView;
+    Element.prototype.getAnimations = () => [];
     vi.useFakeTimers();
   });
 
   afterEach(() => {
+    Element.prototype.animate = originalAnimate;
+    Element.prototype.getAnimations = originalGetAnimations;
+    Element.prototype.scrollIntoView = originalScrollIntoView;
     vi.useRealTimers();
     if (originalMatchMedia) {
       globalThis.matchMedia = originalMatchMedia;
@@ -83,6 +94,7 @@ describe('UiHighlight', () => {
     const { host, flush } = setup();
     host.token.set(undefined);
     flush();
+    frame();
 
     expect(animate).not.toHaveBeenCalled();
   });
@@ -94,6 +106,7 @@ describe('UiHighlight', () => {
 
     host.token.set(1);
     flush();
+    frame();
 
     const index = animatedElements().indexOf(plain);
     expect(animate.mock.calls[index]?.[0]).toEqual([
@@ -111,6 +124,7 @@ describe('UiHighlight', () => {
 
     host.token.set(1);
     flush();
+    frame();
 
     const index = animatedElements().indexOf(plain);
     expect(animate.mock.calls[index]?.[1]).toEqual({ duration: 800 });
@@ -122,6 +136,7 @@ describe('UiHighlight', () => {
 
     host.token.set(1);
     flush();
+    frame();
 
     expect(animate.mock.calls[animatedElements().indexOf(plain)]?.[1]).toEqual({ duration: 1400 });
   });
@@ -130,6 +145,7 @@ describe('UiHighlight', () => {
     const { host, root, plain, flush } = setup();
     host.token.set(1);
     flush();
+    frame();
 
     const painted = animatedElements();
     const tr = root.querySelector('[data-testid=tr]');
@@ -146,6 +162,7 @@ describe('UiHighlight', () => {
     const fixture = TestBed.createComponent(HostComponent);
     fixture.componentInstance.token.set('now');
     fixture.detectChanges();
+    frame();
 
     expect(animate).toHaveBeenCalled();
   });
@@ -154,6 +171,7 @@ describe('UiHighlight', () => {
     const fixture = TestBed.createComponent(HostComponent);
     fixture.componentInstance.token.set(1);
     fixture.detectChanges();
+    frame();
     const first = animate.mock.calls.length;
     expect(cancel).not.toHaveBeenCalled();
 
@@ -161,6 +179,7 @@ describe('UiHighlight', () => {
     fixture.detectChanges();
     expect(cancel).toHaveBeenCalledTimes(first);
 
+    frame();
     cancel.mockClear();
     fixture.destroy();
     expect(cancel).toHaveBeenCalledTimes(first);
@@ -196,9 +215,11 @@ describe('UiHighlight', () => {
     flush();
 
     expect(scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'center' });
+    frame();
     expect(animatedElements()).not.toContain(plain);
 
     document.dispatchEvent(new Event('scrollend', { bubbles: true }));
+    frame();
     expect(animatedElements()).toContain(plain);
 
     document.dispatchEvent(new Event('scrollend', { bubbles: true }));
@@ -214,6 +235,7 @@ describe('UiHighlight', () => {
     host.token.set(1);
     flush();
     root.dispatchEvent(new Event('scrollend', { bubbles: true }));
+    frame();
 
     expect(animatedElements()).toContain(plain);
     root.remove();
@@ -247,6 +269,7 @@ describe('UiHighlight', () => {
     expect(animatedElements()).not.toContain(plain);
 
     vi.advanceTimersByTime(50);
+    frame();
     expect(animatedElements()).toContain(plain);
   });
 
@@ -262,6 +285,7 @@ describe('UiHighlight', () => {
     expect(animatedElements()).not.toContain(plain);
 
     vi.advanceTimersByTime(1);
+    frame();
     expect(animatedElements()).toContain(plain);
   });
 
@@ -275,6 +299,7 @@ describe('UiHighlight', () => {
     expect(animatedElements()).not.toContain(plain);
 
     vi.advanceTimersByTime(1);
+    frame();
     expect(animatedElements()).toContain(plain);
   });
 
@@ -287,6 +312,7 @@ describe('UiHighlight', () => {
     host.token.set(2);
     flush();
     vi.advanceTimersByTime(300);
+    frame();
     expect(animatedElements().filter((element) => element === plain)).toHaveLength(1);
 
     host.token.set(3);
@@ -301,6 +327,7 @@ describe('UiHighlight', () => {
 
     host.token.set(1);
     flush();
+    frame();
 
     expect(scrollIntoView).toHaveBeenCalledWith({ behavior: 'auto', block: 'center' });
     expect(animatedElements()).toContain(plain);

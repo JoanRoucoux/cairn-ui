@@ -54,7 +54,7 @@ sentence in the single slot of the \`<ui-toaster />\` the app shell renders once
 replaces the current one in place; the message fades out after \`--toast-duration\` (5 s) and the timer
 stops while the pointer is over it or focus is within.
 
-Below \`64rem\` it is centred 8px above \`ui-tab-bar\` (52px plus \`env(safe-area-inset-bottom)\`), or 8px above
+Below \`64rem\` it is centred 8px above \`ui-tab-bar\` (its \`--tab-bar-height\`, 52px plus the safe area), or 8px above
 \`ui-action-bar\` when one is on the page (the bar publishes its height as \`--action-bar-height\`); from \`64rem\` it sits
 bottom right, 24px from the edges. It enters with opacity and an 8px rise over \`--duration-base\`, and
 leaves with opacity over \`--duration-exit\`. Under \`prefers-reduced-motion: reduce\` it only fades.

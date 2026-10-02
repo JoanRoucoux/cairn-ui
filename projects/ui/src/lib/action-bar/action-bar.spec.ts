@@ -17,7 +17,7 @@ describe('UiActionBar', () => {
 
     expect(container.querySelector('ui-action-bar')).toHaveClass(
       'fixed',
-      'bottom-[calc(52px+env(safe-area-inset-bottom))]',
+      'bottom-[var(--tab-bar-height,calc(52px+env(safe-area-inset-bottom)))]',
       'inset-x-0',
     );
   });

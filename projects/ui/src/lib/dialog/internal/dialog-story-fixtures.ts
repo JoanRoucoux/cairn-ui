@@ -1,5 +1,7 @@
-import type { StoryObj } from '@storybook/angular-vite';
+import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
+
+import { DIALOG_LAYOUTS } from '../dialog';
 
 export const field = (label: string): string => `
   <label class="flex flex-col gap-1.5">
@@ -118,6 +120,7 @@ export const defaultTemplate = `
         [layout]="layout"
         [width]="width"
         [open]="open"
+        [busy]="busy"
         (dismissed)="open = false"
       >
         <p class="text-label text-(--muted-foreground)">
@@ -151,4 +154,39 @@ export const pressCross = async (cross: HTMLElement): Promise<void> => {
   await expect(getComputedStyle(cross).transitionProperty).toBe('scale, background-color, color');
   await expect(getComputedStyle(cross).transitionDuration).toBe('0.12s, 0.18s, 0.18s');
   await userEvent.click(cross);
+};
+
+export const dialogArgTypes: Meta['argTypes'] = {
+  heading: {
+    control: 'text',
+    description: 'Visible title, also wired as the accessible name via `aria-labelledby`.',
+  },
+  description: {
+    control: 'text',
+    description: 'Optional subtitle under the title, also wired as `aria-describedby`.',
+  },
+  closeLabel: {
+    control: 'text',
+    description: 'Accessible name of the close cross. The cross is shown only when this is set.',
+  },
+  width: {
+    control: 'text',
+    description: 'Max width of the dialog on a desktop: `md`, `lg` or any CSS length such as `528px`.',
+  },
+  layout: {
+    control: 'inline-radio',
+    options: [...DIALOG_LAYOUTS],
+    description:
+      'Spacing preset: `trade` (default), `form`, `list` (divided footer, fixed-height sheet) or `confirm` (alertdialog).',
+  },
+  busy: {
+    control: 'boolean',
+    description:
+      'While an action runs: Escape, a click on the backdrop and a drag of the sheet leave the dialog open, and the cross is disabled. The owner still closes it through `open`.',
+  },
+  open: {
+    control: 'boolean',
+    description:
+      'Controls `showModal()`/`close()` on the native `<dialog>`. Setting it to `false` plays the exit, then emits `closed` with `programmatic`.',
+  },
 };

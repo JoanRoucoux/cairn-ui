@@ -13,7 +13,7 @@ const meta: Meta = {
     docs: {
       description: {
         component: `Bar of actions fixed above the tab bar on iPhone, such as Vendre and Acheter on a holding's
-detail: the primary actions, within thumb reach. It sits \`52px + env(safe-area-inset-bottom)\` above the
+detail: the primary actions, within thumb reach. It sits \`--tab-bar-height\` (52px plus the safe area) above the
 bottom edge, so it clears \`ui-tab-bar\`, draws a hairline on top over the page background, pads with the
 gutter, and splits its width equally between its children. It is hidden from \`64rem\`, where the same
 actions live in the page.

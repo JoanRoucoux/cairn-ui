@@ -1,4 +1,9 @@
-import { Component, booleanAttribute, computed, input } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Component, DestroyRef, booleanAttribute, computed, inject, input } from '@angular/core';
+
+const HEIGHT_PROPERTY = '--tab-bar-height';
+
+const HEIGHT = 'calc(52px + env(safe-area-inset-bottom))';
 
 const TAB_CLASSES =
   'flex h-[52px] flex-col items-center justify-center gap-[3px] touch-manipulation select-none transition-transform duration-(--duration-press) ease-out active:scale-(--press-scale) focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring)';
@@ -8,7 +13,9 @@ const INACTIVE_TAB_CLASSES = 'font-medium text-(--muted-foreground)';
 const ACTIVE_TAB_CLASSES = 'font-semibold text-(--foreground)';
 
 /**
- * Bottom navigation bar for iPhone: 52px of tabs plus the home indicator's safe area.
+ * Bottom navigation bar for iPhone: 52px of tabs plus the home indicator's safe area. While it is on the
+ * page it publishes that height as `--tab-bar-height` on the root element, which `ui-action-bar` and
+ * `ui-toaster` sit above; use it rather than restating 52px for anything that must clear the bar.
  *
  * @example
  * <nav ui-tab-bar>
@@ -23,7 +30,14 @@ const ACTIVE_TAB_CLASSES = 'font-semibold text-(--foreground)';
       'grid grid-flow-col auto-cols-fr items-stretch bg-(--background)/90 backdrop-blur [@media(prefers-reduced-transparency:reduce)]:bg-(--background) shadow-[inset_0_1px_0_var(--hairline)] pb-[env(safe-area-inset-bottom)]',
   },
 })
-export class UiTabBar {}
+export class UiTabBar {
+  constructor() {
+    const root = inject(DOCUMENT).documentElement;
+
+    root.style.setProperty(HEIGHT_PROPERTY, HEIGHT);
+    inject(DestroyRef).onDestroy(() => root.style.removeProperty(HEIGHT_PROPERTY));
+  }
+}
 
 /**
  * One destination of `ui-tab-bar`.

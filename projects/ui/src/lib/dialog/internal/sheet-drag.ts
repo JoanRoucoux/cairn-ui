@@ -20,12 +20,14 @@ export class SheetDrag {
   readonly #panel: HTMLElement;
   readonly #grips: readonly HTMLElement[];
   readonly #dismiss: () => void;
+  readonly #enabled: () => boolean;
   #gesture: Gesture | null = null;
 
-  constructor(panel: HTMLElement, grips: readonly HTMLElement[], dismiss: () => void) {
+  constructor(panel: HTMLElement, grips: readonly HTMLElement[], dismiss: () => void, enabled: () => boolean) {
     this.#panel = panel;
     this.#grips = grips;
     this.#dismiss = dismiss;
+    this.#enabled = enabled;
 
     for (const grip of grips) {
       grip.addEventListener('pointerdown', this.#onDown);
@@ -53,7 +55,7 @@ export class SheetDrag {
   readonly #onDown = (event: PointerEvent): void => {
     const grip = event.currentTarget as HTMLElement;
 
-    if (event.button !== 0 || !isSheet() || (event.target as Element).closest(CONTROLS)) {
+    if (event.button !== 0 || !this.#enabled() || !isSheet() || (event.target as Element).closest(CONTROLS)) {
       return;
     }
 

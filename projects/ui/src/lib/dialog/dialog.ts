@@ -96,6 +96,9 @@ const nextId = (() => {
 /**
  * Modal dialog on the native <dialog>: a bottom sheet under `64rem`, centered above it.
  *
+ * `busy` keeps it open while its action runs: Escape, a click on the backdrop and a drag of the sheet do
+ * nothing and the cross is disabled. The owner disables its own buttons and still closes it through `open`.
+ *
  * @example
  * <ui-dialog heading="Buy" description="Ferrari" closeLabel="Close" width="528px" [open]="buying()" (dismissed)="buying.set(false)">
  *   <p>Body</p>
@@ -105,10 +108,15 @@ const nextId = (() => {
  */
 @Component({
   selector: 'ui-dialog',
-  host: { '(pointerdown)': 'onPointerDown($event)', '(click)': 'onClick($event)' },
+  host: {
+    '(pointerdown)': 'onPointerDown($event)',
+    '(click)': 'onClick($event)',
+    '(keydown)': 'onKeydown($event)',
+  },
   template: `
     <dialog
       #dlg
+      [attr.aria-busy]="busy() || null"
       [attr.aria-describedby]="describedBy()"
       [attr.aria-labelledby]="headingId"
       [attr.role]="layout() === 'confirm' ? 'alertdialog' : 'dialog'"
@@ -142,7 +150,13 @@ const nextId = (() => {
         </div>
 
         @if (closeLabel()) {
-          <button type="button" [attr.aria-label]="closeLabel()" [class]="crossClasses()" (click)="close('cross')">
+          <button
+            type="button"
+            [attr.aria-label]="closeLabel()"
+            [class]="crossClasses()"
+            [disabled]="busy()"
+            (click)="close('cross')"
+          >
             <svg
               aria-hidden="true"
               class="block size-[22px] fill-none stroke-current stroke-[1.75]"
@@ -187,6 +201,7 @@ export class UiDialog {
   readonly truncateDescription = input(false, { transform: booleanAttribute });
   readonly width = input<DialogWidth | (string & {})>('lg');
   readonly open = input(false, { transform: booleanAttribute });
+  readonly busy = input(false, { transform: booleanAttribute });
   readonly dismissed = output<void>();
   readonly closed = output<DialogCloseReason>();
 
@@ -220,7 +235,7 @@ export class UiDialog {
 
   protected readonly crossClasses = computed(
     () =>
-      `rounded-pill lg:rounded-control grid size-11 flex-none cursor-pointer place-items-center text-(--muted-foreground) transition-[scale,background-color,color] [transition-duration:var(--duration-press),var(--duration-fast),var(--duration-fast)] ease-out outline-none focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-(--ring) active:scale-(--press-scale) active:bg-(--soft) lg:size-9 lg:hover:bg-(--glow) lg:hover:text-(--foreground) ${this.spec().cross}`,
+      `rounded-pill lg:rounded-control grid size-11 flex-none cursor-pointer place-items-center text-(--muted-foreground) transition-[scale,background-color,color] [transition-duration:var(--duration-press),var(--duration-fast),var(--duration-fast)] ease-out outline-none focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-(--ring) active:scale-(--press-scale) active:bg-(--soft) disabled:pointer-events-none disabled:opacity-40 lg:size-9 lg:hover:bg-(--glow) lg:hover:text-(--foreground) ${this.spec().cross}`,
   );
 
   protected readonly iconClasses = computed(() => this.spec().icon);
@@ -246,7 +261,12 @@ export class UiDialog {
         (grip) => host.querySelector(grip) as HTMLElement,
       );
 
-      this.#drag = new SheetDrag(this.#dialog, grips, () => this.close('drag'));
+      this.#drag = new SheetDrag(
+        this.#dialog,
+        grips,
+        () => this.close('drag'),
+        () => !this.busy(),
+      );
       destroyRef.onDestroy(() => {
         this.#drag?.destroy();
         this.#cancelExit();
@@ -295,7 +315,15 @@ export class UiDialog {
       return;
     }
     event.preventDefault();
-    this.close('escape');
+    if (!this.busy()) {
+      this.close('escape');
+    }
+  }
+
+  protected onKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Escape' && this.busy()) {
+      event.preventDefault();
+    }
   }
 
   protected onPointerDown(event: MouseEvent): void {
@@ -303,7 +331,7 @@ export class UiDialog {
   }
 
   protected onClick(event: MouseEvent): void {
-    if (this.#pressedOnBackdrop && event.target === this.#dialog && this.#outside(event)) {
+    if (this.#pressedOnBackdrop && !this.busy() && event.target === this.#dialog && this.#outside(event)) {
       this.close('backdrop');
     }
     this.#pressedOnBackdrop = false;
@@ -322,12 +350,17 @@ export class UiDialog {
   }
 
   protected onNativeClose(): void {
-    const reason = this.#reason ?? 'escape';
+    const asked = this.#reason;
 
     this.#reason = null;
     if (this.#dialog.open) {
       return;
     }
+    if (asked === null && this.busy()) {
+      this.#dialog.showModal();
+      return;
+    }
+    const reason = asked ?? 'escape';
     if (reason !== 'programmatic') {
       this.dismissed.emit();
     }

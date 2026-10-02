@@ -20,6 +20,7 @@ describe('SheetDrag', () => {
   let cross: HTMLButtonElement;
   let dismiss: ReturnType<typeof vi.fn<() => void>>;
   let drag: SheetDrag;
+  let enabled: boolean;
 
   beforeAll(() => {
     Object.defineProperty(Element.prototype, 'setPointerCapture', { value: vi.fn(), configurable: true });
@@ -40,7 +41,8 @@ describe('SheetDrag', () => {
     document.body.append(panel);
     vi.spyOn(panel, 'getBoundingClientRect').mockReturnValue({ height: 400 } as DOMRect);
     dismiss = vi.fn<() => void>();
-    drag = new SheetDrag(panel, [handle, header], dismiss);
+    enabled = true;
+    drag = new SheetDrag(panel, [handle, header], dismiss, () => enabled);
   });
 
   afterEach(() => {
@@ -50,6 +52,17 @@ describe('SheetDrag', () => {
   });
 
   const offset = (): string => panel.style.getPropertyValue('--drag-y');
+
+  it('does not follow the pointer while disabled', () => {
+    enabled = false;
+    pointer(handle, 'pointerdown', { y: 100, at: 0 });
+    pointer(handle, 'pointermove', { y: 300, at: 100 });
+    pointer(handle, 'pointerup', { y: 300, at: 400 });
+
+    expect(offset()).toBe('');
+    expect(panel).not.toHaveAttribute('data-dragging');
+    expect(dismiss).not.toHaveBeenCalled();
+  });
 
   it('makes the panel follow the pointer down, without a transition', () => {
     pointer(handle, 'pointerdown', { y: 100, at: 0 });

@@ -61,6 +61,16 @@ describe('UiTabBar', () => {
     expect(iconSlot).toHaveClass('size-6');
   });
 
+  it('publishes its height on the root element while it is on the page', async () => {
+    const { fixture } = await render(template, { imports: [UiTabBar, UiTab] });
+    const root = document.documentElement;
+
+    expect(root.style.getPropertyValue('--tab-bar-height')).toBe('calc(52px + env(safe-area-inset-bottom))');
+
+    fixture.destroy();
+    expect(root.style.getPropertyValue('--tab-bar-height')).toBe('');
+  });
+
   it('accepts active as a bare attribute', async () => {
     await render(template, { imports: [UiTabBar, UiTab] });
 
