@@ -25,7 +25,8 @@ const meta: Meta<StaleLinkArgs> = {
 #### Accessibility
 
 * A native \`<a>\`: the caption names the destination. The optional chevron is a decoration drawn by CSS, so it is not read.
-* Underlined on hover, with a 2px ring on keyboard focus.`,
+* Underlined on hover, with a 2px ring on keyboard focus.
+* The caption stays 12/17, but a \`::before\` pseudo-element extends the hit area to 44px high (40px with a mouse), centred on the text.`,
       },
     },
   },
@@ -47,7 +48,15 @@ export const Default: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(canvas.getByRole('link', { name: '1 cours en retard' })).toBeVisible();
+    const link = canvas.getByRole('link', { name: '1 cours en retard' });
+    await expect(link).toBeVisible();
+
+    const box = link.getBoundingClientRect();
+    const x = box.left + box.width / 2;
+    const y = box.top + box.height / 2;
+    await expect(document.elementFromPoint(x, y - 19)).toBe(link);
+    await expect(document.elementFromPoint(x, y + 19)).toBe(link);
+    await expect(box.height).toBeLessThan(24);
   },
 };
 

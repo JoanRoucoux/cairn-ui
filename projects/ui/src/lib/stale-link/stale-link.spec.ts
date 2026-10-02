@@ -27,6 +27,20 @@ describe('UiStaleLink', () => {
     );
   });
 
+  it('extends its hit area to 44 px, 40 px with a mouse, without growing the caption', async () => {
+    await render('<a uiStaleLink href="#">Cours</a>', { imports: [UiStaleLink] });
+
+    expect(screen.getByRole('link', { name: 'Cours' })).toHaveClass(
+      'relative',
+      'before:absolute',
+      'before:inset-x-0',
+      'before:top-1/2',
+      'before:-translate-y-1/2',
+      'before:h-11',
+      'pointer-fine:before:h-10',
+    );
+  });
+
   it('has no chevron by default', async () => {
     await render('<a uiStaleLink href="#">Cours</a>', { imports: [UiStaleLink] });
 
