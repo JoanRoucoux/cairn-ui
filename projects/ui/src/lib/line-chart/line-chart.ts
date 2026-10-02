@@ -12,7 +12,7 @@ import {
   viewChild,
 } from '@angular/core';
 
-import { axisTicks, isCoreTick } from './internal/chart-axis';
+import { axisTicks, tickLabels } from './internal/chart-axis';
 import { navigateIndex, nearestPointIndex } from './internal/chart-interaction';
 import {
   type AxisTicks,
@@ -42,6 +42,11 @@ type PlotRef = ElementRef<SVGSVGElement>;
 
 /**
  * Value over time: a monotone curve with a dashed line at the starting value and a tooltip.
+ *
+ * Axis labels are never repeated: a tick whose `axisFormat` text equals the previous drawn label is
+ * not rendered. The first tick always is, so only the last edge label can drop. With `axisTicks="3"`
+ * only the first, middle and last ticks count; with `auto` every tick counts from `sm` up and the
+ * three core ticks below it. Tick positions are unchanged.
  *
  * @example
  * <ui-line-chart [points]="points" label="Net worth over one month" startLabel="Since" [valueFormat]="formatEur" />
@@ -107,25 +112,19 @@ type PlotRef = ElementRef<SVGSVGElement>;
               [attr.cy]="geometry.end.y"
             />
 
-            @for (
-              tick of ticks();
-              track tick.t;
-              let index = $index;
-              let count = $count;
-              let first = $first;
-              let last = $last
-            ) {
-              <text
-                class="text-caption fill-(--subtle-foreground) tabular-nums"
-                data-chart-axis-tick
-                [attr.text-anchor]="first ? 'start' : last ? 'end' : 'middle'"
-                [attr.x]="tick.x"
-                [attr.y]="effectiveHeight() - 4"
-                [class.hidden]="axisTicks() === 3 && !isCoreTick(index, count)"
-                [class.max-sm:hidden]="axisTicks() === 'auto' && !isCoreTick(index, count)"
-              >
-                {{ axisFormat()(tick.t) }}
-              </text>
+            @for (tick of ticks(); track tick.t; let index = $index; let first = $first; let last = $last) {
+              @if (tickTexts()[index]; as label) {
+                <text
+                  class="text-caption fill-(--subtle-foreground) tabular-nums"
+                  data-chart-axis-tick
+                  [attr.text-anchor]="first ? 'start' : last ? 'end' : 'middle'"
+                  [attr.x]="tick.x"
+                  [attr.y]="effectiveHeight() - 4"
+                  [class]="label.classes"
+                >
+                  {{ label.text }}
+                </text>
+              }
             }
 
             @if (active(); as point) {
@@ -218,7 +217,6 @@ export class UiLineChart {
   #hasRenderedOnce = false;
   #previousGeometry: ChartGeometry | null = null;
 
-  protected readonly isCoreTick = isCoreTick;
   protected readonly svgRef = viewChild.required<PlotRef>('svgRef');
   protected readonly activeIndex = signal<number | null>(null);
   protected readonly animatedLine = signal<string | null>(null);
@@ -245,6 +243,8 @@ export class UiLineChart {
   protected readonly displayLine = computed(() => this.animatedLine() ?? this.geometry()!.line);
 
   protected readonly ticks = computed(() => axisTicks(this.geometry()!.points));
+
+  protected readonly tickTexts = computed(() => tickLabels(this.ticks(), this.axisFormat(), this.axisTicks()));
 
   protected readonly active = computed<PlottedPoint | null>(() => {
     const geometry = this.geometry();
