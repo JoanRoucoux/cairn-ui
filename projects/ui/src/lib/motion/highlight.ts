@@ -5,6 +5,7 @@ import { injectReducedMotion } from './reduced-motion';
 
 const HOLD_MS = 200;
 const SCROLL_SETTLE_MS = 200;
+const SCROLL_START_MS = 300;
 
 function paintedElements(host: HTMLElement): HTMLElement[] {
   if (host.tagName === 'TR') {
@@ -89,7 +90,7 @@ export class UiHighlight {
       window.removeEventListener('scrollend', onScrollEnd, true);
       window.removeEventListener('scroll', onScroll, true);
     };
-    timer = setTimeout(start, SCROLL_SETTLE_MS);
+    timer = setTimeout(start, SCROLL_START_MS);
     window.addEventListener('scrollend', onScrollEnd, true);
     window.addEventListener('scroll', onScroll, true);
 

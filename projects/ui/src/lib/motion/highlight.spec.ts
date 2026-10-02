@@ -239,6 +239,34 @@ describe('UiHighlight', () => {
     expect(animatedElements()).toContain(plain);
   });
 
+  it('counts the settle delay from the first scroll event, not from the scroll request', () => {
+    const { host, plain, flush } = setup();
+    offScreen(plain);
+
+    host.token.set(1);
+    flush();
+    vi.advanceTimersByTime(250);
+    document.dispatchEvent(new Event('scroll', { bubbles: true }));
+    vi.advanceTimersByTime(199);
+    expect(animatedElements()).not.toContain(plain);
+
+    vi.advanceTimersByTime(1);
+    expect(animatedElements()).toContain(plain);
+  });
+
+  it('still highlights after 300 ms when the page does not scroll at all', () => {
+    const { host, plain, flush } = setup();
+    offScreen(plain);
+
+    host.token.set(1);
+    flush();
+    vi.advanceTimersByTime(299);
+    expect(animatedElements()).not.toContain(plain);
+
+    vi.advanceTimersByTime(1);
+    expect(animatedElements()).toContain(plain);
+  });
+
   it('drops a pending highlight when a new token arrives, then cancels the running one', () => {
     const { host, plain, flush } = setup();
     offScreen(plain);
@@ -247,7 +275,7 @@ describe('UiHighlight', () => {
     flush();
     host.token.set(2);
     flush();
-    vi.advanceTimersByTime(200);
+    vi.advanceTimersByTime(300);
     expect(animatedElements().filter((element) => element === plain)).toHaveLength(1);
 
     host.token.set(3);
