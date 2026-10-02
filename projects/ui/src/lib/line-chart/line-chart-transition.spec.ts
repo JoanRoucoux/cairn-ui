@@ -236,18 +236,16 @@ describe('UiLineChart range transition', () => {
   it('shows the new series at once, without a fade, when the --duration-base token is 0ms', async () => {
     globalThis.matchMedia = vi.fn().mockReturnValue(mediaQuery(false)) as unknown as typeof matchMedia;
     const template = `<ui-line-chart label="x" startLabel="Départ" style="--duration-base: 0ms" [points]="points" />`;
-    const { fixture, rerender } = await render(template, { imports: [UiLineChart], componentProperties: { points } });
     const next = points.map((point) => ({ ...point, v: point.v * 2 }));
+    const target = await render(template, { imports: [UiLineChart], componentProperties: { points: next } });
+    const targetLine = target.fixture.nativeElement.querySelector('[data-chart-line]').getAttribute('d');
 
     TestBed.resetTestingModule();
-    const target = await render(template, { imports: [UiLineChart], componentProperties: { points: next } });
+    const { fixture, rerender } = await render(template, { imports: [UiLineChart], componentProperties: { points } });
     await rerender({ componentProperties: { points: next } });
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.querySelector('[data-chart-line]')).toHaveAttribute(
-      'd',
-      target.fixture.nativeElement.querySelector('[data-chart-line]').getAttribute('d'),
-    );
+    expect(fixture.nativeElement.querySelector('[data-chart-line]')).toHaveAttribute('d', targetLine);
     expect(fixture.nativeElement.querySelector('[data-chart-start-label]')).not.toHaveClass('opacity-0');
   });
 
