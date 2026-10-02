@@ -21,6 +21,10 @@ off screen, holds the \`--soft\` fill for 200 ms, then fades back to the element
 * After Buy, Sell, Edit or Add, on the row that changed.
 * On arrival at a precise place, on the heading of the account the user came for.
 * On \`ui-row\`, \`tr[uiTr]\` (it paints the cells), \`td[ui-group-cell]\` (it paints the band) or any plain element.
+* Give the element \`scroll-margin-top\` and \`scroll-margin-bottom\` equal to what is pinned above and below it
+  (header, tab bar, action bar): a row hidden under them counts as off screen and is scrolled out.
+* For an arrival, scroll to the element at once first (\`scrollIntoView\` in \`afterNextRender\`), then set the
+  token: a token present at first render scrolls smoothly from where the page is.
 
 #### When not to use
 

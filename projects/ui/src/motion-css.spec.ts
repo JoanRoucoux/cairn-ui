@@ -42,8 +42,9 @@ describe('motion.css', () => {
   it('turns view transitions and entry offsets off under reduced motion', () => {
     const reduced = motion.slice(motion.indexOf('prefers-reduced-motion'));
 
-    expect(reduced).toContain('::view-transition-group(*)');
-    expect(reduced).toContain('animation: none');
+    expect(reduced).toMatch(
+      /::view-transition-group\(\*\),\s*::view-transition-old\(root\),\s*::view-transition-new\(root\)\s*\{\s*animation: none;/,
+    );
     expect(reduced).toMatch(/\.ui-enter-fade-up,\s*\.ui-enter-panel\s*\{\s*animation-name: cairn-fade-in;/);
   });
 

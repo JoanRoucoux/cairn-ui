@@ -177,6 +177,17 @@ describe('UiHighlight', () => {
     expect(scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'center' });
   });
 
+  it('treats an element under the bottom scroll margin, such as a tab bar, as off screen', () => {
+    const { host, plain, flush } = setup();
+    plain.style.scrollMarginBottom = '120px';
+    plain.getBoundingClientRect = () => ({ top: window.innerHeight - 100, bottom: window.innerHeight - 60 }) as DOMRect;
+
+    host.token.set(1);
+    flush();
+
+    expect(scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'center' });
+  });
+
   it('scrolls smoothly then highlights on scrollend', () => {
     const { host, plain, flush } = setup();
     offScreen(plain);

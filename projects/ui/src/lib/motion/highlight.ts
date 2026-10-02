@@ -25,6 +25,12 @@ function paintedElements(host: HTMLElement): HTMLElement[] {
  * cells, on a `td[ui-group-cell]` the band, anywhere else the host. Under `prefers-reduced-motion` the
  * scroll is instant and the fade lasts 600 ms.
  *
+ * Give the element `scroll-margin-top` and `scroll-margin-bottom` equal to what is pinned above and
+ * below it (header, tab bar, action bar): a row under them counts as off screen and is scrolled out.
+ * For an arrival on a page opened at the element, scroll to it at once first (`scrollIntoView` in
+ * `afterNextRender`) and set the token afterwards: a token present at first render scrolls smoothly
+ * from where the page is.
+ *
  * @example
  * <a ui-row [uiHighlight]="changed() === holding.id ? token() : null" routerLink="/holdings/1">...</a>
  */
@@ -102,8 +108,10 @@ export class UiHighlight {
 
   private isVisible(): boolean {
     const rect = this.host.getBoundingClientRect();
-    const margin = parseFloat(getComputedStyle(this.host).scrollMarginTop) || 0;
-    return rect.top >= margin && rect.bottom <= window.innerHeight;
+    const style = getComputedStyle(this.host);
+    const top = parseFloat(style.scrollMarginTop) || 0;
+    const bottom = parseFloat(style.scrollMarginBottom) || 0;
+    return rect.top >= top && rect.bottom <= window.innerHeight - bottom;
   }
 
   private flash(): () => void {
