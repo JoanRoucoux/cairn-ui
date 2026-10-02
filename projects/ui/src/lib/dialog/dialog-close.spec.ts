@@ -116,6 +116,38 @@ describe('UiDialog close protocol', () => {
     expect(onClosed).toHaveBeenCalledExactlyOnceWith('escape');
   });
 
+  it('stays open when a file picker inside it is cancelled, while Escape on it still closes', async () => {
+    const { dialog, onDismissed, onClosed } = await renderDialog();
+    const input = document.createElement('input');
+    input.type = 'file';
+    dialog.querySelector('[data-dialog-body]')?.append(input);
+    const pickerCancel = new Event('cancel', { bubbles: true, cancelable: true });
+
+    input.dispatchEvent(pickerCancel);
+
+    expect(pickerCancel.defaultPrevented).toBe(false);
+    expect(dialog).toHaveAttribute('open');
+    expect(onDismissed).not.toHaveBeenCalled();
+
+    dialog.dispatchEvent(new Event('cancel', { cancelable: true }));
+    transitionEnd(dialog);
+
+    expect(dialog).not.toHaveAttribute('open');
+    expect(onClosed).toHaveBeenCalledExactlyOnceWith('escape');
+  });
+
+  it('emits closed once for a close that follows a reopen during the exit', async () => {
+    const { dialog, onClosed, reopen } = await renderDialog();
+
+    reopen(false);
+    reopen(true);
+    reopen(false);
+    transitionEnd(dialog);
+    vi.advanceTimersByTime(1000);
+
+    expect(onClosed).toHaveBeenCalledExactlyOnceWith('programmatic');
+  });
+
   it('treats a close the platform made without asking as Escape', async () => {
     const { dialog, onDismissed, onClosed } = await renderDialog();
 
@@ -318,6 +350,23 @@ describe('UiDialog close protocol', () => {
 
       expect(container.querySelector('[data-dialog-handle]')).toHaveClass('touch-none');
       expect(container.querySelector('[data-dialog-header]')).toHaveClass('max-lg:touch-none');
+    });
+
+    it('drops a gesture cut short by a close, so the next opening animates again', async () => {
+      vi.stubGlobal('matchMedia', (query: string) => ({ matches: false, media: query }));
+      const { container, dialog, onClosed, reopen } = await renderDialog();
+      const handle = container.querySelector('[data-dialog-handle]') as HTMLElement;
+
+      vi.spyOn(dialog, 'getBoundingClientRect').mockReturnValue({ height: 400 } as DOMRect);
+      pointer(handle, 'pointerdown', 100, 0);
+      pointer(handle, 'pointermove', 140, 100);
+      reopen(false);
+      transitionEnd(dialog);
+      reopen(true);
+
+      expect(onClosed).toHaveBeenCalledExactlyOnceWith('programmatic');
+      expect(dialog).not.toHaveAttribute('data-dragging');
+      expect(dialog.style.getPropertyValue('--drag-y')).toBe('');
     });
 
     it('starts from its resting place when it opens again after a drag', async () => {

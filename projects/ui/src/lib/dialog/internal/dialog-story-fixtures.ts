@@ -87,6 +87,7 @@ export const keptMountedUntilClosed: StoryObj['play'] = async ({ canvasElement }
   await expect(canvasElement.querySelector('ui-dialog')).not.toBeNull();
   await waitFor(() => expect(canvasElement.querySelector('ui-dialog')).toBeNull());
   await expect(closed).toHaveTextContent('1 cross');
+  await expect(canvas.getByRole('button', { name: 'Ouvrir' })).toHaveFocus();
 
   await userEvent.click(canvas.getByRole('button', { name: 'Ouvrir' }));
   await waitFor(() => expect(canvas.getByRole('dialog', { name: 'Saisir un cours' })).toBeVisible());

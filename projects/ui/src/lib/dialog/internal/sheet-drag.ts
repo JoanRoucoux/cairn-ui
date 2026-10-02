@@ -36,6 +36,8 @@ export class SheetDrag {
   }
 
   reset(): void {
+    this.#gesture = null;
+    this.#panel.removeAttribute('data-dragging');
     this.#panel.style.removeProperty('--drag-y');
   }
 

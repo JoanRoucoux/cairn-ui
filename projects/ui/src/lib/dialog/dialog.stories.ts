@@ -54,7 +54,7 @@ Every way out goes through one close: Escape, the backdrop, the cross, a drag of
 owner setting \`open\` back to \`false\`. \`dismissed\` fires at once for a close the reader started, never
 for one the owner asked for. \`closed\` fires once per close, after the exit transition has played,
 with what started it: \`escape\`, \`backdrop\`, \`cross\`, \`drag\` or \`programmatic\`. When there is no
-transition to wait for, it fires at once.
+transition to wait for, it fires at once. Reopening during the exit, or destroying the dialog, drops it.
 
 A consumer that mounts the dialog under \`@if\` keeps it mounted until \`closed\`. It sets \`open\` to
 \`false\` (on \`dismissed\`, or after a save), and only removes the wrapper and reports to its own

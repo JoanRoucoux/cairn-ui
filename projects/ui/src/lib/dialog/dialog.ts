@@ -291,6 +291,9 @@ export class UiDialog {
   }
 
   protected onCancel(event: Event): void {
+    if (event.target !== event.currentTarget) {
+      return;
+    }
     event.preventDefault();
     this.close('escape');
   }
@@ -332,6 +335,7 @@ export class UiDialog {
   }
 
   #awaitExit(reason: DialogCloseReason): void {
+    this.#cancelExit();
     this.#cancelExit = afterExit(this.#dialog, () => {
       this.#cancelExit = () => undefined;
       this.#drag?.reset();
