@@ -25,7 +25,7 @@ const BASE_CLASSES =
   'flex w-full items-center py-1.5 rounded-control text-left select-none touch-manipulation focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring)';
 
 const INTERACTIVE_CLASSES =
-  'transition-[transform,background-color] [transition-duration:var(--duration-press),var(--duration-fast)] ease-out hover:bg-(--glow) active:bg-(--soft) active:scale-(--press-scale)';
+  'transition-[scale,background-color] [transition-duration:var(--duration-press),var(--duration-fast)] ease-out hover:bg-(--glow) active:bg-(--soft) active:scale-(--press-scale)';
 
 const UNAVAILABLE_CLASSES = 'opacity-50 cursor-not-allowed';
 

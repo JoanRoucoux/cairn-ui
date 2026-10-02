@@ -26,7 +26,7 @@ describe('UiSegmented', () => {
     await renderSegmented();
 
     expect(screen.getByRole('radio', { name: '1D' })).toHaveClass(
-      'transition-[transform,color]',
+      'transition-[scale,color]',
       'duration-(--duration-press)',
       'ease-out',
       'active:scale-(--press-scale)',

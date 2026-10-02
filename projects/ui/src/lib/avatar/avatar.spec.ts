@@ -64,7 +64,7 @@ describe('UiAvatarLink', () => {
     await render(link, { imports: [UiAvatar, UiAvatarLink] });
 
     expect(screen.getByRole('link', { name: 'Profil' })).toHaveClass(
-      'transition-[transform,background-color]',
+      'transition-[scale,background-color]',
       '[transition-duration:var(--duration-press),var(--duration-fast)]',
     );
   });

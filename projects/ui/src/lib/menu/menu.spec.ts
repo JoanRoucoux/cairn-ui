@@ -64,7 +64,7 @@ describe('UiMenu', () => {
     await userEvent.click(screen.getByRole('button', { name: 'More' }));
 
     expect(screen.getByRole('menuitem', { name: 'Edit' })).toHaveClass(
-      'transition-colors',
+      'transition-[background-color]',
       'duration-(--duration-fast)',
       'ease-out',
     );

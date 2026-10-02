@@ -80,7 +80,7 @@ describe('UiRow', () => {
     await render('<a ui-row href="#">Row</a>', { imports: [UiRow] });
 
     expect(screen.getByRole('link', { name: 'Row' })).toHaveClass(
-      'transition-[transform,background-color]',
+      'transition-[scale,background-color]',
       '[transition-duration:var(--duration-press),var(--duration-fast)]',
       'ease-out',
       'active:scale-(--press-scale)',

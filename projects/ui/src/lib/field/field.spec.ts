@@ -72,7 +72,7 @@ describe('UiField', () => {
     );
 
     expect(screen.getByRole('button', { name: 'Show' })).toHaveClass(
-      'transition-colors',
+      'transition-[color]',
       'duration-(--duration-fast)',
       'ease-out',
     );

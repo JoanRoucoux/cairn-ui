@@ -111,7 +111,14 @@ with a click handler, so keyboard and assistive technology support come for free
 export default meta;
 type Story = StoryObj<RowArgs>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  play: async ({ canvasElement }) => {
+    const style = getComputedStyle(canvasElement.querySelector('a[ui-row]')!);
+
+    await expect(style.transitionProperty).toBe('scale, background-color');
+    await expect(style.transitionDuration).toBe('0.12s, 0.18s');
+  },
+};
 
 export const Selected: Story = {
   args: { selected: true },

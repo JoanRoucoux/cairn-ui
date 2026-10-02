@@ -60,7 +60,7 @@ describe('UiAsync', () => {
     await render(template, { imports: [UiAsync], componentProperties: { state: 'error', retried: vi.fn() } });
 
     expect(screen.getByRole('button', { name: 'Retry' })).toHaveClass(
-      'transition-[transform,background-color,opacity]',
+      'transition-[scale,background-color,opacity]',
       '[transition-duration:var(--duration-press),var(--duration-fast),var(--duration-fast)]',
     );
   });

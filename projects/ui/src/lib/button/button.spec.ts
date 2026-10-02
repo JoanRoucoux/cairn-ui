@@ -85,7 +85,7 @@ describe('UiButton', () => {
     await render('<button ui-button>Save</button>', { imports: [UiButton] });
 
     expect(screen.getByRole('button', { name: 'Save' })).toHaveClass(
-      'transition-[transform,background-color,opacity]',
+      'transition-[scale,background-color,opacity]',
       '[transition-duration:var(--duration-press),var(--duration-fast),var(--duration-fast)]',
     );
   });

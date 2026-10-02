@@ -11,6 +11,7 @@ import {
   field,
   keptMountedTemplate,
   keptMountedUntilClosed,
+  pressCross,
   sheetFitsTheScreen,
   sheetHasGrips,
   sheetStaysFixed,
@@ -161,8 +162,7 @@ export const CrossCloses: Story = {
 
     await userEvent.click(canvas.getByRole('button', { name: 'Ouvrir' }));
     await waitFor(() => expect(canvas.getByRole('dialog', { name: 'Saisir un cours' })).toBeVisible());
-    await expect(canvas.getByRole('button', { name: 'Fermer' })).toHaveFocus();
-    await userEvent.click(canvas.getByRole('button', { name: 'Fermer' }));
+    await pressCross(canvas.getByRole('button', { name: 'Fermer' }));
 
     await waitFor(() => expect(canvas.queryByRole('dialog')).not.toBeInTheDocument());
     await expect(canvas.getByRole('button', { name: 'Ouvrir' })).toHaveFocus();

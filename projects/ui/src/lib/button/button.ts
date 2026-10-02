@@ -32,7 +32,7 @@ export const BUTTON_SIZES = [
 export type ButtonSize = (typeof BUTTON_SIZES)[number];
 
 const BASE_CLASSES =
-  'relative inline-flex items-center justify-center rounded-control font-medium whitespace-nowrap cursor-pointer select-none touch-manipulation transition-[transform,background-color,opacity] [transition-duration:var(--duration-press),var(--duration-fast),var(--duration-fast)] ease-out active:scale-(--press-scale) focus-visible:outline-2 focus-visible:outline-(--ring) disabled:pointer-events-none disabled:opacity-40 aria-disabled:not-aria-busy:opacity-40';
+  'relative inline-flex items-center justify-center rounded-control font-medium whitespace-nowrap cursor-pointer select-none touch-manipulation transition-[scale,background-color,opacity] [transition-duration:var(--duration-press),var(--duration-fast),var(--duration-fast)] ease-out active:scale-(--press-scale) focus-visible:outline-2 focus-visible:outline-(--ring) disabled:pointer-events-none disabled:opacity-40 aria-disabled:not-aria-busy:opacity-40';
 
 const RING_OUTSIDE = 'focus-visible:outline-offset-2';
 const RING_INSIDE = 'focus-visible:-outline-offset-2';

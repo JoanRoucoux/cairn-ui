@@ -220,7 +220,7 @@ export class UiDialog {
 
   protected readonly crossClasses = computed(
     () =>
-      `rounded-pill lg:rounded-control grid size-11 flex-none cursor-pointer place-items-center text-(--muted-foreground) transition-[transform,background-color,color] duration-(--duration-press) ease-out outline-none focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-(--ring) active:scale-(--press-scale) active:bg-(--soft) lg:size-9 lg:hover:bg-(--glow) lg:hover:text-(--foreground) ${this.spec().cross}`,
+      `rounded-pill lg:rounded-control grid size-11 flex-none cursor-pointer place-items-center text-(--muted-foreground) transition-[scale,background-color,color] [transition-duration:var(--duration-press),var(--duration-fast),var(--duration-fast)] ease-out outline-none focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-(--ring) active:scale-(--press-scale) active:bg-(--soft) lg:size-9 lg:hover:bg-(--glow) lg:hover:text-(--foreground) ${this.spec().cross}`,
   );
 
   protected readonly iconClasses = computed(() => this.spec().icon);

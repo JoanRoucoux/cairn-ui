@@ -145,3 +145,10 @@ export const addLineTemplate = (results: number): string => `
         <button dialogActions ui-button (click)="open = false">Ajouter la ligne</button>
       </ui-dialog>
 `;
+
+export const pressCross = async (cross: HTMLElement): Promise<void> => {
+  await expect(cross).toHaveFocus();
+  await expect(getComputedStyle(cross).transitionProperty).toBe('scale, background-color, color');
+  await expect(getComputedStyle(cross).transitionDuration).toBe('0.12s, 0.18s, 0.18s');
+  await userEvent.click(cross);
+};

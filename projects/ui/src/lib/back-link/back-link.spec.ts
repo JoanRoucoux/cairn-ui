@@ -15,7 +15,7 @@ describe('UiBackLink', () => {
     await render('<a ui-back-link href="/">Retour</a>', { imports: [UiBackLink] });
 
     expect(screen.getByRole('link', { name: 'Retour' })).toHaveClass(
-      'transition-[transform,background-color,color]',
+      'transition-[scale,background-color,color]',
       '[transition-duration:var(--duration-press),var(--duration-fast),var(--duration-fast)]',
     );
   });

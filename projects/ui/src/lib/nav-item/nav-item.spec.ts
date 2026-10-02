@@ -45,7 +45,7 @@ describe('UiNavItem', () => {
 
     for (const name of ['Portfolio', 'Holdings']) {
       expect(screen.getByRole('link', { name })).toHaveClass(
-        'transition-[transform,background-color,color]',
+        'transition-[scale,background-color,color]',
         '[transition-duration:var(--duration-press),var(--duration-fast),var(--duration-fast)]',
         'ease-out',
         'active:scale-(--press-scale)',
