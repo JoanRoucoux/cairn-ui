@@ -64,16 +64,6 @@ const BAR_CLASSES = 'block rounded-control bg-(--muted)';
     'aria-hidden': 'true',
     class: 'flex flex-col gap-2',
   },
-  styles: `
-    @keyframes cairn-pulse {
-      from {
-        opacity: 1;
-      }
-      to {
-        opacity: 0.45;
-      }
-    }
-  `,
 })
 export class UiSkeleton {
   readonly shape = input<SkeletonShape>('text');

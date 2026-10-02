@@ -152,6 +152,9 @@ describe('design tokens', () => {
     '--press-scale',
     '--enter-scale',
     '--pulse-duration',
+    '--duration-spin',
+    '--duration-highlight',
+    '--toast-duration',
     '--chevron-down',
   ])('declares %s', (token) => {
     expect(tokens).toContain(`${token}:`);
@@ -171,6 +174,37 @@ describe('design tokens', () => {
     expect(reduced).toContain('--press-scale: 1');
     expect(reduced).toContain('--enter-scale: 1');
     expect(reduced).toContain('--pulse-duration: 0ms');
+  });
+
+  it('slows the spinner and shortens the highlight under reduced motion', () => {
+    const reduced = tokens.slice(tokens.indexOf('prefers-reduced-motion'));
+
+    expect(reduced).toContain('--duration-spin: 1600ms');
+    expect(reduced).toContain('--duration-highlight: 600ms');
+  });
+
+  it('declares the motion durations of the handoff', () => {
+    const values = parseDeclarations(tokens.slice(0, tokens.indexOf('prefers-reduced-motion')));
+
+    expect(values.get('--duration-spin')).toBe('800ms');
+    expect(values.get('--duration-highlight')).toBe('1200ms');
+    expect(values.get('--toast-duration')).toBe('5000ms');
+  });
+
+  it('defaults every Tailwind transition to the Cairn curve and duration', () => {
+    const values = parseDeclarations(theme);
+
+    expect(values.get('--default-transition-timing-function')).toBe('var(--ease-out)');
+    expect(values.get('--default-transition-duration')).toBe('var(--duration-fast)');
+  });
+
+  it('registers the spinner and pulse animations on the Cairn tokens', () => {
+    const values = parseDeclarations(theme);
+
+    expect(values.get('--animate-cairn-spin')).toBe('cairn-spin var(--duration-spin) linear infinite');
+    expect(values.get('--animate-cairn-pulse')).toBe(
+      'cairn-pulse var(--pulse-duration) var(--ease-out) infinite alternate',
+    );
   });
 
   it('draws the chevron-down in the --muted-foreground of each scheme', () => {

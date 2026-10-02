@@ -1,5 +1,7 @@
 import { Component, booleanAttribute, computed, input, output } from '@angular/core';
 
+import { delayedState } from './delayed-state';
+
 /** Available async block states. `AsyncState` is derived from this tuple. */
 export const ASYNC_STATES = ['loading', 'error', 'empty', 'ready'] as const;
 export type AsyncState = (typeof ASYNC_STATES)[number];
@@ -13,7 +15,7 @@ export const ASYNC_ALIGNS = ['start', 'center', 'auto'] as const;
 export type AsyncAlign = (typeof ASYNC_ALIGNS)[number];
 
 const RETRY_BASE_CLASSES =
-  'relative inline-flex items-center justify-center rounded-control font-medium whitespace-nowrap cursor-pointer select-none touch-manipulation transition-[transform,background-color,opacity] duration-(--duration-press) ease-out active:scale-(--press-scale) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring) text-label';
+  'relative inline-flex items-center justify-center rounded-control font-medium whitespace-nowrap cursor-pointer select-none touch-manipulation transition-[scale,background-color,opacity] [transition-duration:var(--duration-press),var(--duration-fast),var(--duration-fast)] ease-out active:scale-(--press-scale) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring) text-label';
 
 const RETRY_OUTLINE_CLASSES =
   'bg-(--card) text-(--foreground) shadow-[inset_0_0_0_1px_var(--border)] hover:bg-(--glow)';
@@ -97,7 +99,8 @@ const INLINE_BOX_CLASSES = 'flex-row items-center justify-between gap-3 pt-1.5 p
 @Component({
   selector: 'ui-async',
   template: `
-    @switch (state()) {
+    @switch (shown()) {
+      @case (null) {}
       @case ('loading') {
         <ng-content select="[asyncLoading]" />
       }
@@ -156,7 +159,9 @@ export class UiAsync {
   readonly fill = input(false, { transform: booleanAttribute });
   readonly retry = output<void>();
 
-  protected readonly filling = computed(() => this.fill() && this.state() === 'error');
+  protected readonly shown = delayedState(this.state);
+
+  protected readonly filling = computed(() => this.fill() && this.shown() === 'error');
 
   protected readonly iconSize = computed(() => (this.variant() === 'inline' ? 16 : 18));
 
@@ -179,9 +184,9 @@ export class UiAsync {
     return `flex flex-col ${surface} ${spec.gap} ${ALIGN_CLASSES[this.align()]} ${spec.padding[this.align()]}${fill}`;
   });
 
-  protected readonly titleClasses = computed(() => this.#spec()?.title ?? '');
+  protected readonly titleClasses = computed(() => this.#spec()!.title);
 
-  protected readonly messageClasses = computed(() => this.#spec()?.message[this.align()] ?? '');
+  protected readonly messageClasses = computed(() => this.#spec()!.message[this.align()]);
 
   protected readonly retryButtonClasses = computed(() => {
     const spec = this.#spec();

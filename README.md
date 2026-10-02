@@ -30,13 +30,14 @@ pnpm start      # Storybook on http://localhost:6006
 
 ## Publishing and consuming
 
-The publishable artifact is built from `projects/ui` into `dist/ui`. Consumers must import two stylesheets, in
+The publishable artifact is built from `projects/ui` into `dist/ui`. Consumers must import three stylesheets, in
 order, and register the package as a Tailwind source (templates in `node_modules` are not scanned by default):
 
 ```css
 @import 'tailwindcss';
 @import '@joanroucoux/cairn-ui/styles/tokens.css';
 @import '@joanroucoux/cairn-ui/styles/theme.css';
+@import '@joanroucoux/cairn-ui/styles/motion.css';
 @source '../node_modules/@joanroucoux/cairn-ui';
 ```
 
@@ -44,6 +45,8 @@ order, and register the package as a Tailwind source (templates in `node_modules
 `rounded-control`, `ease-out`...) and removes Tailwind's default scales. A consumer that only needs the custom
 properties, without Tailwind, can import `tokens.css` alone: it stays a pure token sheet with no dependency on
 `theme.css`.
+
+`motion.css` ships the keyframes (`cairn-spin`, `cairn-pulse`), the `ui-enter-*` and `ui-leave-fade` classes for Angular's `animate.enter` / `animate.leave`, and the view-transition and theme-switch rules.
 
 `fonts.css` self-hosts Rubik and must **not** be routed through the Tailwind entry above: its `@font-face` rules
 carry `url(./fonts/...)` relative to itself, and a bundler that inlines it into another CSS file's `@import` (as

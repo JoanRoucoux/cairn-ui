@@ -94,7 +94,14 @@ that action is, so a screen reads at a glance.
 export default meta;
 type Story = StoryObj<ButtonArgs>;
 
-export const Primary: Story = {};
+export const Primary: Story = {
+  play: async ({ canvasElement }) => {
+    const style = getComputedStyle(within(canvasElement).getByRole('button', { name: 'Button' }));
+
+    await expect(style.transitionProperty).toBe('scale, background-color, opacity');
+    await expect(style.transitionDuration).toBe('0.12s, 0.18s, 0.18s');
+  },
+};
 
 export const Outline: Story = {
   args: { variant: 'outline' },
@@ -168,6 +175,8 @@ export const Loading: Story = {
 
     await expect(button).toHaveAttribute('aria-busy', 'true');
     await expect(button).toHaveAttribute('aria-disabled', 'true');
+    await expect(getComputedStyle(button.querySelector('[aria-hidden="true"]')!).animationName).toBe('cairn-spin');
+    await expect(getComputedStyle(canvas.getByText('Sell')).color).toBe('rgba(0, 0, 0, 0)');
   },
 };
 

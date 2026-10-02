@@ -1,0 +1,83 @@
+@keyframes cairn-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@keyframes cairn-pulse {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.45;
+  }
+}
+
+@keyframes cairn-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes cairn-fade-up-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+@keyframes cairn-panel-in {
+  from {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+}
+
+@keyframes cairn-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+.ui-enter-fade {
+  animation: cairn-fade-in var(--duration-fast) var(--ease-out);
+}
+
+.ui-enter-fade-up {
+  animation: cairn-fade-up-in var(--duration-fast) var(--ease-out);
+}
+
+.ui-enter-panel {
+  animation: cairn-panel-in var(--duration-base) var(--ease-out);
+}
+
+.ui-leave-fade {
+  animation: cairn-fade-out var(--duration-exit) var(--ease-out) forwards;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--duration-base);
+  animation-timing-function: var(--ease-out);
+}
+
+@view-transition {
+  navigation: auto;
+}
+
+[data-theme-switching] * {
+  transition: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-enter-fade-up,
+  .ui-enter-panel {
+    animation-name: cairn-fade-in;
+  }
+
+  ::view-transition-group(*),
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}

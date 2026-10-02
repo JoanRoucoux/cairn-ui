@@ -16,6 +16,17 @@ describe('UiTabBar', () => {
     expect(screen.getByRole('link', { name: 'Portfolio' })).toHaveClass('h-[52px]');
   });
 
+  it('scales a tab on press at the press duration', async () => {
+    await render(template, { imports: [UiTabBar, UiTab] });
+
+    expect(screen.getByRole('link', { name: 'Holdings' })).toHaveClass(
+      'transition-transform',
+      'duration-(--duration-press)',
+      'ease-out',
+      'active:scale-(--press-scale)',
+    );
+  });
+
   it('marks the active tab current, bold and on the foreground color', async () => {
     await render(template, { imports: [UiTabBar, UiTab] });
 

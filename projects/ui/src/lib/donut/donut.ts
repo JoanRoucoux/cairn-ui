@@ -1,7 +1,7 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { Component, computed, input, output, signal } from '@angular/core';
 
-import { ACTIVE_RING_WIDTH, RADIUS, RING_WIDTH, positionSlices } from './internal/donut-geometry';
+import { RADIUS, RING_WIDTH, positionSlices } from './internal/donut-geometry';
 import { type DonutSlice, type Ramp, type RankedSlice, rankSlices, shareSlices } from './internal/donut-slices';
 
 export type { DonutSlice };
@@ -10,7 +10,10 @@ const identityValue = (value: number): string => `${value}`;
 const identityShare = (share: number): string => `${Math.round(share * 100)}%`;
 
 const ROW_CLASSES =
-  'flex w-full items-center gap-3 min-h-14 px-2 py-1 [font-variant-numeric:var(--numeric)] rounded-control text-left transition-colors duration-(--duration-fast) ease-out hover:bg-(--glow) active:bg-(--soft) focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring)';
+  'flex w-full items-center gap-3 min-h-14 px-2 py-1 [font-variant-numeric:var(--numeric)] rounded-control text-left transition-[scale,background-color] [transition-duration:var(--duration-press),var(--duration-fast)] ease-out hover:bg-(--glow) active:bg-(--soft) active:scale-(--press-scale) focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring)';
+
+const SLICE_CLASSES =
+  'cursor-pointer origin-center [transform-box:view-box] transition-[scale,opacity] duration-(--duration-fast) ease-out';
 
 const RAMP_DOT_CLASSES: Record<Ramp, string> = {
   1: 'bg-(--ramp-1)',
@@ -43,7 +46,6 @@ const RAMP_DOT_CLASSES: Record<Ramp, string> = {
         />
         @for (slice of positioned(); track slice.id) {
           <circle
-            class="cursor-pointer transition-[stroke-width] duration-(--duration-fast) ease-out"
             cx="100"
             cy="100"
             data-slice
@@ -51,8 +53,9 @@ const RAMP_DOT_CLASSES: Record<Ramp, string> = {
             [attr.r]="radius"
             [attr.stroke-dasharray]="slice.dash"
             [attr.stroke-dashoffset]="slice.offset"
+            [attr.stroke-width]="ringWidth"
+            [class]="sliceClasses(slice)"
             [style.stroke]="strokeColor(slice)"
-            [style.stroke-width.px]="strokeWidth(slice)"
             (click)="select(slice)"
             (pointerenter)="highlight(slice.id)"
             (pointerleave)="clearHighlight(slice.id)"
@@ -163,8 +166,13 @@ export class UiDonut {
     return `var(--ramp-${slice.ramp})`;
   }
 
-  protected strokeWidth(slice: RankedSlice): number {
-    return this.isActive(slice) ? ACTIVE_RING_WIDTH : RING_WIDTH;
+  protected sliceClasses(slice: RankedSlice): string {
+    const id = this.activeId();
+    if (id === null) {
+      return SLICE_CLASSES;
+    }
+
+    return `${SLICE_CLASSES} ${id === slice.id ? 'scale-104 motion-reduce:scale-100' : 'opacity-50'}`;
   }
 
   protected dotClasses(slice: RankedSlice): string {

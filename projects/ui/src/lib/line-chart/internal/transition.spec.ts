@@ -1,8 +1,8 @@
 import { type ChartPoint, buildGeometry } from './chart-scale';
-import { easeOutQuint, interpolateLine, prefersReducedMotion } from './transition';
+import { durationFrom, easeOutQuint, polyline, sameSeries, shapeAt, shapeTransition } from './transition';
 
-const geometryOf = (points: ChartPoint[]): NonNullable<ReturnType<typeof buildGeometry>> =>
-  buildGeometry(points, 300, 100)!;
+const shapeOf = (points: ChartPoint[]): NonNullable<ReturnType<typeof buildGeometry>>['points'] =>
+  buildGeometry(points, 300, 100)!.points;
 
 describe('easeOutQuint', () => {
   it('starts at 0 and ends at 1', () => {
@@ -15,98 +15,120 @@ describe('easeOutQuint', () => {
   });
 });
 
-describe('prefersReducedMotion', () => {
-  let original: typeof matchMedia | undefined;
-
-  beforeEach(() => {
-    original = globalThis.matchMedia;
+describe('durationFrom', () => {
+  it('reads a token in milliseconds or in seconds', () => {
+    expect(durationFrom('260ms')).toBe(260);
+    expect(durationFrom(' 0.4s')).toBe(400);
   });
 
-  afterEach(() => {
-    if (original) {
-      globalThis.matchMedia = original;
-    } else {
-      Reflect.deleteProperty(globalThis, 'matchMedia');
-    }
+  it('falls back to 260 ms for an empty or unreadable token', () => {
+    expect(durationFrom('')).toBe(260);
+    expect(durationFrom('fast')).toBe(260);
   });
 
-  it('is false when matchMedia is unavailable', () => {
-    Reflect.deleteProperty(globalThis, 'matchMedia');
-
-    expect(prefersReducedMotion()).toBe(false);
-  });
-
-  it('reflects the media query when matchMedia is available', () => {
-    globalThis.matchMedia = vi.fn().mockReturnValue({ matches: true }) as unknown as typeof matchMedia;
-    expect(prefersReducedMotion()).toBe(true);
-
-    globalThis.matchMedia = vi.fn().mockReturnValue({ matches: false }) as unknown as typeof matchMedia;
-    expect(prefersReducedMotion()).toBe(false);
+  it('reads a zero token as zero, so a consumer can turn the morph off', () => {
+    expect(durationFrom('0ms')).toBe(0);
+    expect(durationFrom('0s')).toBe(0);
   });
 });
 
-describe('interpolateLine', () => {
-  const from = geometryOf([
+describe('sameSeries', () => {
+  const series = [
+    { t: 0, v: 1 },
+    { t: 1, v: 2 },
+  ];
+
+  it('matches the same array, or another array with the same times and values', () => {
+    expect(sameSeries(series, series)).toBe(true);
+    expect(
+      sameSeries(
+        series,
+        series.map((point) => ({ ...point })),
+      ),
+    ).toBe(true);
+  });
+
+  it('tells apart no previous series, another length, another time or another value', () => {
+    expect(sameSeries(series, null)).toBe(false);
+    expect(sameSeries(series, series.slice(1))).toBe(false);
+    expect(sameSeries(series, [series[0]!, { t: 2, v: 2 }])).toBe(false);
+    expect(sameSeries(series, [series[0]!, { t: 1, v: 3 }])).toBe(false);
+  });
+});
+
+describe('polyline', () => {
+  it('moves to the first vertex and draws a line to each next one', () => {
+    expect(polyline([0, 1.5], [2, 3.25])).toBe('M0.00,2.00 L1.50,3.25');
+  });
+});
+
+describe('shapeTransition', () => {
+  const from = shapeOf([
     { t: 0, v: 100 },
     { t: 1, v: 200 },
   ]);
-  const to = geometryOf([
+  const to = shapeOf([
     { t: 0, v: 100 },
     { t: 1, v: 150 },
     { t: 2, v: 400 },
   ]);
 
-  it('draws a path starting with a move command and 120 points', () => {
-    const line = interpolateLine(from, to, 0);
+  it('resamples both shapes on 120 x positions across the target range', () => {
+    const transition = shapeTransition(from, to);
 
-    expect(line).toMatch(/^M/);
-    expect(line.split(' ')).toHaveLength(120);
+    expect(transition.xs).toHaveLength(120);
+    expect(transition.xs[0]).toBe(to[0]!.x);
+    expect(transition.xs.at(-1)).toBe(to.at(-1)!.x);
+    expect(transition.from).toHaveLength(120);
+    expect(transition.to).toHaveLength(120);
   });
 
-  it('settles exactly on the target geometry at progress 1', () => {
-    const line = interpolateLine(from, to, 1);
-    const last = line.split(' ').at(-1)!;
-    const [, y] = last.slice(1).split(',').map(Number);
+  it('starts exactly on the previous shape and settles exactly on the target', () => {
+    const transition = shapeTransition(from, to);
 
-    expect(y).toBeCloseTo(to.end.y, 1);
+    expect(shapeAt(transition, 0)[0]).toBeCloseTo(from[0]!.y, 6);
+    expect(shapeAt(transition, 1).at(-1)).toBeCloseTo(to.at(-1)!.y, 6);
   });
 
-  it('starts exactly on the previous geometry at progress 0, resampled onto the target x range', () => {
-    const line = interpolateLine(from, to, 0);
-    const first = line.slice(1).split(' ')[0]!;
-    const [, y] = first.split(',').map(Number);
+  it('keeps a shape that is already resampled unchanged, so a restart starts from what is drawn', () => {
+    const drawn = shapeTransition(from, to);
+    const ys = shapeAt(drawn, 0.4);
+    const restart = shapeTransition(
+      drawn.xs.map((x, index) => ({ x, y: ys[index]! })),
+      to,
+    );
 
-    expect(y).toBeCloseTo(from.points[0]!.y, 1);
+    restart.from.forEach((y, index) => expect(y).toBeCloseTo(ys[index]!, 6));
   });
 
   it('never produces NaN across a segment with a repeated timestamp', () => {
-    const withDuplicate = geometryOf([
+    const withDuplicate = shapeOf([
       { t: 0, v: 10 },
       { t: 0, v: 10 },
       { t: 5, v: 50 },
     ]);
 
-    expect(interpolateLine(from, withDuplicate, 0.5)).not.toContain('NaN');
+    expect(shapeAt(shapeTransition(from, withDuplicate), 0.5).some(Number.isNaN)).toBe(false);
   });
 
   it('clamps the tangent for a sharply uneven step without producing NaN', () => {
-    const unevenSteps = geometryOf([
+    const unevenSteps = shapeOf([
       { t: 0, v: 0 },
       { t: 1, v: 1 },
       { t: 2, v: 1.01 },
       { t: 3, v: 100 },
     ]);
 
-    expect(interpolateLine(from, unevenSteps, 0.5)).not.toContain('NaN');
+    expect(shapeAt(shapeTransition(from, unevenSteps), 0.5).some(Number.isNaN)).toBe(false);
   });
 
   it('never produces NaN for a series with a direction reversal', () => {
-    const reversal = geometryOf([
+    const reversal = shapeOf([
       { t: 0, v: 10 },
       { t: 1, v: 200 },
       { t: 2, v: 5 },
     ]);
 
-    expect(interpolateLine(from, reversal, 0.5)).not.toContain('NaN');
+    expect(shapeAt(shapeTransition(from, reversal), 0.5).some(Number.isNaN)).toBe(false);
   });
 });

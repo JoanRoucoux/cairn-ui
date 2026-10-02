@@ -294,7 +294,7 @@ export const Etroit: Story = {
 const ACCOUNTS = [
   { name: 'Saxo Investor', env: 'PEA', inst: 'Saxo', lines: '8 lignes', value: '61 247,83 €', share: '37,3 %' },
   { name: 'Esalia', env: 'PEE', inst: 'Amundi ESR', lines: '3 lignes', value: '38 512,40 €', share: '23,4 %' },
-  { name: 'Fortuneo', env: 'Épargne', inst: 'Fortuneo', lines: '2 livrets', value: '15 402,18 €', share: '9,4 %' },
+  { name: 'Fortuneo', env: 'Épargne', inst: 'Fortuneo', lines: '1 ligne', value: '15 402,18 €', share: '9,4 %' },
   { name: 'Trade Republic', env: 'CTO', inst: 'Trade Republic', lines: 'Aucune ligne', value: '0,00 €', share: '—' },
 ];
 

@@ -7,6 +7,7 @@
 @import 'tailwindcss';
 @import '../projects/ui/styles/tokens.css';
 @import '../projects/ui/styles/theme.css';
+@import '../projects/ui/styles/motion.css';
 
 body {
   margin: 0;

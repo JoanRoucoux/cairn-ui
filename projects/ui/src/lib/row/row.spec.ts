@@ -1,8 +1,58 @@
 import { render, screen } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 
 import { UiListRow, UiRow, UiRowItem, UiRowTile } from './row';
 
 describe('UiRow', () => {
+  it('shows a spinner in the trailing slot and marks itself busy and disabled while busy', async () => {
+    await render('<button ui-row type="button" busy>Import</button>', { imports: [UiRow] });
+    const row = screen.getByText('Import', { selector: 'button' });
+
+    expect(row).toHaveAttribute('aria-busy', 'true');
+    expect(row).toHaveAttribute('aria-disabled', 'true');
+    expect(row).not.toHaveAttribute('inert');
+    expect(row).toHaveClass('pointer-events-none');
+    expect(row.querySelector('[aria-hidden="true"]')).toHaveClass('animate-cairn-spin');
+  });
+
+  it('swallows activation while busy and keeps the focus on the row', async () => {
+    const clicked = vi.fn();
+    await render('<button ui-row type="button" busy (click)="clicked()">Import</button>', {
+      imports: [UiRow],
+      componentProperties: { clicked },
+    });
+    const row = screen.getByText('Import', { selector: 'button' });
+
+    row.focus();
+    await userEvent.keyboard('{Enter}');
+    await userEvent.keyboard(' ');
+    row.click();
+
+    expect(clicked).not.toHaveBeenCalled();
+    expect(row).toHaveFocus();
+  });
+
+  it('lets a click through when not busy', async () => {
+    const clicked = vi.fn();
+    await render('<button ui-row type="button" (click)="clicked()">Import</button>', {
+      imports: [UiRow],
+      componentProperties: { clicked },
+    });
+
+    await userEvent.click(screen.getByRole('button', { name: 'Import' }));
+
+    expect(clicked).toHaveBeenCalledTimes(1);
+  });
+
+  it('draws no spinner and stays interactive when not busy', async () => {
+    await render('<button ui-row type="button">Import</button>', { imports: [UiRow] });
+    const row = screen.getByRole('button', { name: 'Import' });
+
+    expect(row).not.toHaveAttribute('aria-busy');
+    expect(row).not.toHaveAttribute('aria-disabled');
+    expect(row.querySelector('[aria-hidden="true"]')).toBeNull();
+  });
+
   it('renders as a link carrying its content', async () => {
     await render('<a ui-row href="/holdings/1">Amundi MSCI World</a>', { imports: [UiRow] });
 
@@ -23,6 +73,17 @@ describe('UiRow', () => {
       'rounded-control',
       'hover:bg-(--glow)',
       'active:bg-(--soft)',
+    );
+  });
+
+  it('eases the press scale at the press duration and the hover fill at the fast one', async () => {
+    await render('<a ui-row href="#">Row</a>', { imports: [UiRow] });
+
+    expect(screen.getByRole('link', { name: 'Row' })).toHaveClass(
+      'transition-[scale,background-color]',
+      '[transition-duration:var(--duration-press),var(--duration-fast)]',
+      'ease-out',
+      'active:scale-(--press-scale)',
     );
   });
 
@@ -83,6 +144,72 @@ describe('UiRow', () => {
     const row = screen.getByRole('link', { name: 'Row' });
     expect(row).toHaveClass('gap-2', 'min-h-18', 'pointer-fine:min-h-17');
     expect(row).not.toHaveClass('gap-3');
+  });
+
+  it('greys an unavailable row, forbids the cursor and drops hover and press', async () => {
+    await render('<button ui-row unavailable type="button">Row</button>', { imports: [UiRow] });
+
+    const row = screen.getByRole('button', { name: 'Row' });
+    expect(row).toHaveAttribute('aria-disabled', 'true');
+    expect(row).toHaveClass('opacity-50', 'cursor-not-allowed');
+    expect(row).not.toHaveClass('hover:bg-(--glow)');
+    expect(row).not.toHaveClass('active:bg-(--soft)');
+    expect(row).not.toHaveClass('active:scale-(--press-scale)');
+  });
+
+  it('keeps its busy rules on a row that is both busy and unavailable', async () => {
+    const onClick = vi.fn();
+    await render('<button ui-row busy unavailable type="button" (click)="onClick()">Row</button>', {
+      imports: [UiRow],
+      componentProperties: { onClick },
+    });
+    const row = screen.getByText('Row', { selector: 'button' });
+
+    row.focus();
+    await userEvent.keyboard('{Enter}');
+    row.click();
+
+    expect(onClick).not.toHaveBeenCalled();
+    expect(row).toHaveFocus();
+    expect(row).toHaveAttribute('aria-busy', 'true');
+    expect(row).toHaveAttribute('aria-disabled', 'true');
+    expect(row).toHaveClass('pointer-events-none', 'opacity-50', 'cursor-not-allowed');
+    expect(row).not.toHaveClass('hover:bg-(--glow)');
+    expect(row).not.toHaveClass('active:scale-(--press-scale)');
+    expect(row.querySelector('[aria-hidden="true"]')).toHaveClass('animate-cairn-spin');
+  });
+
+  it('keeps hover and press and no aria-disabled on an available row', async () => {
+    await render('<button ui-row type="button">Row</button>', { imports: [UiRow] });
+
+    const row = screen.getByRole('button', { name: 'Row' });
+    expect(row).not.toHaveAttribute('aria-disabled');
+    expect(row).not.toHaveClass('opacity-50');
+    expect(row).toHaveClass('hover:bg-(--glow)', 'active:bg-(--soft)');
+  });
+
+  it('swallows the clicks of an unavailable row', async () => {
+    const onClick = vi.fn();
+    await render('<button ui-row unavailable type="button" (click)="onClick()">Row</button>', {
+      imports: [UiRow],
+      componentProperties: { onClick },
+    });
+
+    await userEvent.click(screen.getByRole('button', { name: 'Row' }));
+
+    expect(onClick).not.toHaveBeenCalled();
+  });
+
+  it('lets an available row click through', async () => {
+    const onClick = vi.fn();
+    await render('<button ui-row type="button" (click)="onClick()">Row</button>', {
+      imports: [UiRow],
+      componentProperties: { onClick },
+    });
+
+    await userEvent.click(screen.getByRole('button', { name: 'Row' }));
+
+    expect(onClick).toHaveBeenCalledOnce();
   });
 });
 

@@ -122,6 +122,24 @@ describe('UiTr', () => {
     expect(screen.getByRole('row')).toHaveClass('active:[&>td]:bg-(--soft)');
   });
 
+  it('scales an interactive row on press and fades the hover fill at the fast duration', async () => {
+    await render('<table uiTable><tbody><tr uiTr interactive><td uiTd>Ferrari</td></tr></tbody></table>', { imports });
+
+    expect(screen.getByRole('row')).toHaveClass(
+      'transition-transform',
+      'duration-(--duration-press)',
+      'active:scale-(--press-scale)',
+      '[&>td]:transition-colors',
+      '[&>td]:duration-(--duration-fast)',
+    );
+  });
+
+  it('does not scale a row that opens nothing', async () => {
+    await render('<table uiTable><tbody><tr uiTr><td uiTd>Ferrari</td></tr></tbody></table>', { imports });
+
+    expect(screen.getByRole('row')).not.toHaveClass('active:scale-(--press-scale)');
+  });
+
   it('fills a selected row with the soft color and says so', async () => {
     await render(`<table uiTable><tbody><tr uiTr selected><td uiTd>Ferrari</td></tr></tbody></table>`, { imports });
 

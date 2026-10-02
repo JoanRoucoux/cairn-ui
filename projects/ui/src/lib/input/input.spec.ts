@@ -26,6 +26,12 @@ describe('UiInput', () => {
     );
   });
 
+  it('shows the focus and invalid rings at once, with no transition', async () => {
+    await render('<input uiInput aria-label="Email" />', { imports: [UiInput] });
+
+    expect(screen.getByRole('textbox', { name: 'Email' }).className).not.toContain('transition');
+  });
+
   it('draws a 2px negative ring when marked invalid', async () => {
     await render('<input uiInput aria-label="Email" aria-invalid="true" />', { imports: [UiInput] });
 

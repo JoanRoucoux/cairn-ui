@@ -77,6 +77,12 @@ as d3's \`curveMonotoneX\`) that never overshoots the data between two points, a
 line at the range's starting value with its "Départ" label, a focus/hover tooltip with the change
 since the start, and a shape transition when \`points\` changes to a new range.
 
+The transition runs only for a new \`points\` array: mounting, the first measured size and any later
+resize draw at once. It lasts \`--duration-base\` with an ease-out, restarts from the shape on screen
+when the range changes again, and moves the end dot along the curve. The "Départ" label and the
+dashed line fade out when it starts and back in at their new place when it ends; the tooltip waits
+for the end. Under \`prefers-reduced-motion\` the new series shows at once.
+
 Formatting and locale are the consumer's business: \`valueFormat\`, \`deltaFormat\`, \`timeFormat\` and
 \`axisFormat\` all arrive as inputs, so masking amounts is a matter of passing a formatter that
 returns bullets instead of digits — the curve's shape stays visible either way.
@@ -278,7 +284,7 @@ export const RangeTransitionSettles: Story = {
       props: {
         points,
         valueFormat: eur,
-        switchRange: () => points.set(oneDayPoints),
+        switchRange: () => points.update((current) => (current === oneDayPoints ? oneMonthPoints : oneDayPoints)),
       },
       template: `
         <div style="width: 640px; height: 240px;">

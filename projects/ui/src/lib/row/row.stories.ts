@@ -17,6 +17,8 @@ import {
 
 type RowArgs = {
   selected: boolean;
+  busy: boolean;
+  unavailable: boolean;
   size: RowSize;
   padding: RowPadding;
   gap: RowGap;
@@ -28,7 +30,7 @@ const meta: Meta<RowArgs> = {
   parameters: {
     docs: {
       description: {
-        component: `A clickable row for lists: holdings, envelopes, accounts. It replaces the per-row cards and
+        component: `A clickable row for lists: holdings, accounts, search results. It replaces the per-row cards and
 text "Edit" / "Delete" buttons the previous version used.
 
 Applies to a native \`<a>\` for navigation or a \`<button>\` for an in-place action — never a \`<div>\`
@@ -36,7 +38,7 @@ with a click handler, so keyboard and assistive technology support come for free
 
 #### When to use
 
-* For every row of a list the user can open: a holding, an account, an envelope.
+* For every row of a list the user can open: a holding, an account, a search result.
 
 #### When not to use
 
@@ -46,6 +48,8 @@ with a click handler, so keyboard and assistive technology support come for free
 #### Accessibility
 
 * \`selected\` sets \`aria-current="true"\`, for the row whose detail is open next to it.
+* \`busy\` sets \`aria-busy\` and \`aria-disabled\`, shows a spinner in the trailing slot and swallows the clicks while the row keeps its focus.
+* \`unavailable\` sets \`aria-disabled="true"\`, greys the row to half opacity, shows a not-allowed cursor, drops hover and press, and swallows the clicks. The row stays focusable, so a screen reader finds it and reads why it cannot be picked: put the reason in the row.
 * Follows the native element's own semantics: an \`<a>\` for navigation, a \`<button>\` for an action.`,
       },
     },
@@ -53,7 +57,7 @@ with a click handler, so keyboard and assistive technology support come for free
   render: (args) => ({
     props: args,
     template: `
-      <a ui-row href="#" [selected]="selected" [size]="size" [padding]="padding" [gap]="gap" class="w-[340px]">
+      <a ui-row href="#" [selected]="selected" [busy]="busy" [unavailable]="unavailable" [size]="size" [padding]="padding" [gap]="gap" class="w-[340px]">
         <div class="flex min-w-0 flex-1 flex-col">
           <span class="text-body font-medium">Amundi MSCI World</span>
           <span class="text-label text-(--muted-foreground)">500 × 28,64 €</span>
@@ -67,12 +71,24 @@ with a click handler, so keyboard and assistive technology support come for free
   }),
   args: {
     selected: false,
+    busy: false,
+    unavailable: false,
     size: 'md',
     padding: 'md',
     gap: 'default',
   },
   argTypes: {
     selected: { control: 'boolean', description: 'Sets `aria-current="true"` and the soft background.' },
+    busy: {
+      control: 'boolean',
+      description:
+        'An action started from the row is in flight: a spinner turns in the trailing slot, the row sets `aria-busy` and `aria-disabled`, swallows clicks and keeps its focus, so it cannot be activated twice.',
+    },
+    unavailable: {
+      control: 'boolean',
+      description:
+        'Greys the row (half opacity), forbids the cursor, drops hover and press and swallows clicks. Sets `aria-disabled="true"`.',
+    },
     size: {
       control: 'select',
       options: [...ROW_SIZES],
@@ -95,10 +111,56 @@ with a click handler, so keyboard and assistive technology support come for free
 export default meta;
 type Story = StoryObj<RowArgs>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  play: async ({ canvasElement }) => {
+    const style = getComputedStyle(canvasElement.querySelector('a[ui-row]')!);
+
+    await expect(style.transitionProperty).toBe('scale, background-color');
+    await expect(style.transitionDuration).toBe('0.12s, 0.18s');
+  },
+};
 
 export const Selected: Story = {
   args: { selected: true },
+};
+
+export const Busy: Story = {
+  args: { busy: true },
+  play: async ({ canvasElement }) => {
+    const row = canvasElement.querySelector('a[ui-row]')!;
+
+    await expect(row).toHaveAttribute('aria-busy', 'true');
+    await expect(row).toHaveAttribute('aria-disabled', 'true');
+    await expect(getComputedStyle(row.querySelector('[aria-hidden="true"]')!).animationName).toBe('cairn-spin');
+  },
+};
+
+export const Unavailable: Story = {
+  name: 'Unavailable result row (non-EUR candidate)',
+  args: { size: 'dense', unavailable: true },
+  render: (args) => ({
+    props: args,
+    template: `
+      <button ui-row type="button" [size]="size" [unavailable]="unavailable" class="w-[340px] lg:w-[680px]">
+        <span class="flex min-w-0 flex-1 flex-col">
+          <span class="text-body truncate font-medium">iShares Core MSCI World UCITS ETF USD (Acc)</span>
+          <span class="text-caption text-pretty text-(--subtle-foreground)">Coté en USD. Cairn ne suit que les cotations en euros.</span>
+        </span>
+        <span class="flex flex-none flex-col items-end">
+          <span class="text-label font-medium">London Stock Exchange</span>
+          <span class="text-caption text-(--subtle-foreground)">indisponible</span>
+        </span>
+      </button>
+    `,
+  }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(canvas.getByRole('button', { name: /iShares Core MSCI World/ })).toHaveAttribute(
+      'aria-disabled',
+      'true',
+    );
+  },
 };
 
 export const Tall: Story = {

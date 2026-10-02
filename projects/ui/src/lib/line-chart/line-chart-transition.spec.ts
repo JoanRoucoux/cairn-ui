@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { render } from '@testing-library/angular';
+import { fireEvent, render, screen } from '@testing-library/angular';
 
 import { type ChartPoint, UiLineChart } from './line-chart';
 
@@ -9,6 +9,12 @@ const points: ChartPoint[] = [
   { t: Date.UTC(2026, 8, 10), v: 163000 },
   { t: Date.UTC(2026, 8, 25), v: 164294.28 },
 ];
+
+const mediaQuery = (matches: boolean): Partial<MediaQueryList> => ({
+  matches,
+  addEventListener: vi.fn(),
+  removeEventListener: vi.fn(),
+});
 
 describe('UiLineChart range transition', () => {
   let frames: FrameRequestCallback[];
@@ -67,7 +73,7 @@ describe('UiLineChart range transition', () => {
   });
 
   it('interpolates the shape between two ranges and settles on the exact target path', async () => {
-    globalThis.matchMedia = vi.fn().mockReturnValue({ matches: false }) as unknown as typeof matchMedia;
+    globalThis.matchMedia = vi.fn().mockReturnValue(mediaQuery(false)) as unknown as typeof matchMedia;
     const short: ChartPoint[] = [
       { t: 0, v: 100 },
       { t: 1, v: 200 },
@@ -103,7 +109,7 @@ describe('UiLineChart range transition', () => {
   });
 
   it('skips the animation under prefers-reduced-motion', async () => {
-    globalThis.matchMedia = vi.fn().mockReturnValue({ matches: true }) as unknown as typeof matchMedia;
+    globalThis.matchMedia = vi.fn().mockReturnValue(mediaQuery(true)) as unknown as typeof matchMedia;
     const short: ChartPoint[] = [
       { t: 0, v: 100 },
       { t: 1, v: 200 },
@@ -154,7 +160,7 @@ describe('UiLineChart range transition', () => {
   });
 
   it('skips the animation when the previous or the next series is empty', async () => {
-    globalThis.matchMedia = vi.fn().mockReturnValue({ matches: false }) as unknown as typeof matchMedia;
+    globalThis.matchMedia = vi.fn().mockReturnValue(mediaQuery(false)) as unknown as typeof matchMedia;
     const { fixture, rerender } = await render(`<ui-line-chart label="x" [points]="points" />`, {
       imports: [UiLineChart],
       componentProperties: { points: [] as ChartPoint[] },
@@ -174,7 +180,7 @@ describe('UiLineChart range transition', () => {
   });
 
   it('cancels a running frame when the range changes again mid-animation, and on destroy', async () => {
-    globalThis.matchMedia = vi.fn().mockReturnValue({ matches: false }) as unknown as typeof matchMedia;
+    globalThis.matchMedia = vi.fn().mockReturnValue(mediaQuery(false)) as unknown as typeof matchMedia;
     const first: ChartPoint[] = [
       { t: 0, v: 100 },
       { t: 1, v: 200 },
@@ -205,20 +211,46 @@ describe('UiLineChart range transition', () => {
     expect(cancelled.length).toBeGreaterThan(1);
   });
 
-  it('animates even when the new points array has the same values, since only the reference is memoized', async () => {
-    globalThis.matchMedia = vi.fn().mockReturnValue({ matches: false }) as unknown as typeof matchMedia;
-    const { rerender } = await render(`<ui-line-chart label="x" [points]="points" />`, {
+  it('does not move, fade or drop the tooltip for a new points array that carries the same values', async () => {
+    globalThis.matchMedia = vi.fn().mockReturnValue(mediaQuery(false)) as unknown as typeof matchMedia;
+    vi.spyOn(performance, 'now').mockReturnValue(1000);
+    const { fixture, rerender } = await render(`<ui-line-chart label="x" startLabel="Départ" [points]="points" />`, {
       imports: [UiLineChart],
       componentProperties: { points },
     });
+    const before = fixture.nativeElement.querySelector('[data-chart-line]').getAttribute('d');
+    fireEvent.pointerMove(fixture.nativeElement.querySelector('svg'), { clientX: 600, clientY: 0 });
+    fixture.detectChanges();
 
-    await rerender({ componentProperties: { points: [...points] } });
+    await rerender({ componentProperties: { points: points.map((point) => ({ ...point })) } });
+    flushFrame(1100);
+    fixture.detectChanges();
 
-    expect(frames.length).toBeGreaterThan(0);
+    expect(fixture.nativeElement.querySelector('[data-chart-line]')).toHaveAttribute('d', before);
+    expect(fixture.nativeElement.querySelector('[data-chart-start-label]')).not.toHaveClass('opacity-0');
+    expect(fixture.nativeElement.querySelector('[data-chart-start-line]')).not.toHaveClass('opacity-0');
+    expect(screen.getByTestId('chart-tooltip')).toBeInTheDocument();
+    vi.restoreAllMocks();
+  });
+
+  it('shows the new series at once, without a fade, when the --duration-base token is 0ms', async () => {
+    globalThis.matchMedia = vi.fn().mockReturnValue(mediaQuery(false)) as unknown as typeof matchMedia;
+    const template = `<ui-line-chart label="x" startLabel="Départ" style="--duration-base: 0ms" [points]="points" />`;
+    const next = points.map((point) => ({ ...point, v: point.v * 2 }));
+    const target = await render(template, { imports: [UiLineChart], componentProperties: { points: next } });
+    const targetLine = target.fixture.nativeElement.querySelector('[data-chart-line]').getAttribute('d');
+
+    TestBed.resetTestingModule();
+    const { fixture, rerender } = await render(template, { imports: [UiLineChart], componentProperties: { points } });
+    await rerender({ componentProperties: { points: next } });
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[data-chart-line]')).toHaveAttribute('d', targetLine);
+    expect(fixture.nativeElement.querySelector('[data-chart-start-label]')).not.toHaveClass('opacity-0');
   });
 
   it('never animates a transition into or out of an empty series, even after a real transition already happened', async () => {
-    globalThis.matchMedia = vi.fn().mockReturnValue({ matches: false }) as unknown as typeof matchMedia;
+    globalThis.matchMedia = vi.fn().mockReturnValue(mediaQuery(false)) as unknown as typeof matchMedia;
     const a: ChartPoint[] = [
       { t: 0, v: 10 },
       { t: 1, v: 20 },
@@ -251,8 +283,29 @@ describe('UiLineChart range transition', () => {
     expect(fixture.nativeElement.querySelector('[data-chart-line]')).toHaveAttribute('d', targetLine.getAttribute('d'));
   });
 
+  it('never animates out of a single-point series', async () => {
+    globalThis.matchMedia = vi.fn().mockReturnValue(mediaQuery(false)) as unknown as typeof matchMedia;
+    const single: ChartPoint[] = [{ t: 0, v: 10 }];
+    const { fixture, rerender } = await render(`<ui-line-chart label="x" [points]="points" />`, {
+      imports: [UiLineChart],
+      componentProperties: { points: single },
+    });
+
+    await rerender({ componentProperties: { points } });
+    fixture.detectChanges();
+
+    TestBed.resetTestingModule();
+    const target = await render(`<ui-line-chart label="x" [points]="points" />`, {
+      imports: [UiLineChart],
+      componentProperties: { points },
+    });
+    const targetLine = target.fixture.nativeElement.querySelector('[data-chart-line]');
+
+    expect(fixture.nativeElement.querySelector('[data-chart-line]')).toHaveAttribute('d', targetLine.getAttribute('d'));
+  });
+
   it('skips the inner animation step for a transition landing on a single-point series', async () => {
-    globalThis.matchMedia = vi.fn().mockReturnValue({ matches: false }) as unknown as typeof matchMedia;
+    globalThis.matchMedia = vi.fn().mockReturnValue(mediaQuery(false)) as unknown as typeof matchMedia;
     const first: ChartPoint[] = [
       { t: 0, v: 10 },
       { t: 1, v: 20 },

@@ -39,6 +39,46 @@ describe('UiActionBar', () => {
     );
   });
 
+  it('publishes its height on the root for the toaster, and removes it when it leaves', async () => {
+    vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(73);
+    const { fixture } = await render(template, { imports: [UiActionBar] });
+
+    expect(document.documentElement.style.getPropertyValue('--action-bar-height')).toBe('73px');
+
+    fixture.destroy();
+
+    expect(document.documentElement.style.getPropertyValue('--action-bar-height')).toBe('');
+    vi.restoreAllMocks();
+  });
+
+  it('follows its height as it changes', async () => {
+    const original = globalThis.ResizeObserver;
+    let resized: () => void = () => undefined;
+    const disconnect = vi.fn();
+    globalThis.ResizeObserver = class {
+      constructor(callback: () => void) {
+        resized = callback;
+      }
+
+      observe = vi.fn();
+      disconnect = disconnect;
+      unobserve = vi.fn();
+    } as unknown as typeof ResizeObserver;
+    const height = vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(73);
+    const { fixture } = await render(template, { imports: [UiActionBar] });
+
+    height.mockReturnValue(0);
+    resized();
+
+    expect(document.documentElement.style.getPropertyValue('--action-bar-height')).toBe('0px');
+
+    fixture.destroy();
+
+    expect(disconnect).toHaveBeenCalled();
+    globalThis.ResizeObserver = original;
+    vi.restoreAllMocks();
+  });
+
   it('is hidden from 64rem', async () => {
     const { container } = await render(template, { imports: [UiActionBar] });
 

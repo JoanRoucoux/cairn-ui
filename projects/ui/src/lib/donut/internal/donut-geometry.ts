@@ -4,7 +4,6 @@ export type PositionedSlice = RankedSlice & { dash: string; offset: string };
 
 export const RADIUS = 78;
 export const RING_WIDTH = 30;
-export const ACTIVE_RING_WIDTH = 38;
 export const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 const GAP = 2;

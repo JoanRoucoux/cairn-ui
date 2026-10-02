@@ -22,6 +22,17 @@ describe('UiSegmented', () => {
     expect(screen.getByRole('radio', { name: '1D' })).toHaveClass('h-10', 'pointer-fine:h-8');
   });
 
+  it('transitions the press scale at the press duration', async () => {
+    await renderSegmented();
+
+    expect(screen.getByRole('radio', { name: '1D' })).toHaveClass(
+      'transition-[scale,color]',
+      'duration-(--duration-press)',
+      'ease-out',
+      'active:scale-(--press-scale)',
+    );
+  });
+
   it('draws 30 px options with a mouse at the sm size', async () => {
     await render('<ui-segmented [options]="options" label="Range" size="sm" value="1d" />', {
       imports: [UiSegmented],

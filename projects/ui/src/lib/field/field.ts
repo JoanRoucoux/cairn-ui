@@ -55,7 +55,7 @@ export class UiFieldLeading {}
   selector: '[uiFieldTrailing]',
   host: {
     class:
-      'absolute right-0 grid h-full aspect-square place-items-center rounded-control cursor-pointer text-(--muted-foreground) hover:text-(--foreground) focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-(--ring)',
+      'absolute right-0 grid h-full aspect-square place-items-center rounded-control cursor-pointer text-(--muted-foreground) transition-[color] duration-(--duration-fast) ease-out hover:text-(--foreground) focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-(--ring)',
   },
 })
 export class UiFieldTrailing {}
@@ -108,7 +108,9 @@ export class UiFieldTrailing {}
       }
 
       @if (message()) {
-        <p class="text-label font-medium text-(--negative)" role="alert" [id]="errorId">{{ message() }}</p>
+        <p animate.enter="ui-enter-fade" class="text-label font-medium text-(--negative)" role="alert" [id]="errorId">
+          {{ message() }}
+        </p>
       }
     </div>
   `,

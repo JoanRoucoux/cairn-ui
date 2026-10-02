@@ -60,6 +60,15 @@ describe('UiAvatarLink', () => {
     );
   });
 
+  it('splits the press transform from the hover fill durations', async () => {
+    await render(link, { imports: [UiAvatar, UiAvatarLink] });
+
+    expect(screen.getByRole('link', { name: 'Profil' })).toHaveClass(
+      'transition-[scale,background-color]',
+      '[transition-duration:var(--duration-press),var(--duration-fast)]',
+    );
+  });
+
   it('draws no pressed fill', async () => {
     await render(link, { imports: [UiAvatar, UiAvatarLink] });
 

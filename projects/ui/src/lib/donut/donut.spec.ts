@@ -48,7 +48,7 @@ describe('UiDonut', () => {
     expect(centre.getByText('60.00 EUR')).toBeInTheDocument();
   });
 
-  it('moves the centre and thickens the stroke on the same ring when a legend row is hovered, focused or touched', async () => {
+  it('moves the centre, grows the hovered arc around the ring centre and dims the others when a legend row is hovered, focused or touched', async () => {
     const { fixture } = await render(
       `<ui-donut [slices]="slices" label="Par classe d'actif" othersLabel="Autres" [valueFormat]="eur" [shareFormat]="pct" />`,
       { imports: [UiDonut], componentProperties: { slices: threeSlices, eur, pct } },
@@ -57,26 +57,72 @@ describe('UiDonut', () => {
     const centre = within(fixture.nativeElement.querySelector('[data-testid="donut-centre"]'));
     const arcs = fixture.nativeElement.querySelectorAll('svg circle[data-slice]');
 
-    expect(arcs[0].getAttribute('style')).toContain('stroke-width: 38');
-    expect(arcs[1].getAttribute('style')).toContain('stroke-width: 30');
+    for (const arc of arcs) {
+      expect(arc).not.toHaveClass('scale-104');
+      expect(arc).not.toHaveClass('opacity-50');
+    }
 
     await userEvent.hover(row);
 
     expect(centre.getByText('Fonds')).toBeInTheDocument();
-    expect(arcs[1].getAttribute('style')).toContain('stroke-width: 38');
-    expect(arcs[0].getAttribute('style')).toContain('stroke-width: 30');
-    expect(fixture.nativeElement.querySelector('svg [style*="scale"]')).toBeNull();
-    expect(fixture.nativeElement.querySelector('svg [style*="translate"]')).toBeNull();
+    expect(arcs[1]).toHaveClass('scale-104', 'motion-reduce:scale-100');
+    expect(arcs[1]).not.toHaveClass('opacity-50');
+    expect(arcs[0]).not.toHaveClass('scale-104');
+    expect(arcs[0]).toHaveClass('opacity-50');
+    expect(arcs[2]).toHaveClass('opacity-50');
+    expect(arcs[1].getAttribute('style')).not.toContain('stroke-width');
 
     await userEvent.unhover(row);
     fireEvent.focus(row);
 
     expect(centre.getByText('Fonds')).toBeInTheDocument();
+    expect(arcs[1]).toHaveClass('scale-104');
 
     fireEvent.blur(row);
+
+    expect(arcs[1]).not.toHaveClass('scale-104');
+
     fireEvent.pointerEnter(row, { pointerType: 'touch' });
 
     expect(centre.getByText('Fonds')).toBeInTheDocument();
+    expect(arcs[1]).toHaveClass('scale-104');
+  });
+
+  it('scales every arc from the ring centre and animates only scale and opacity at the fast duration', async () => {
+    const { fixture } = await render(`<ui-donut [slices]="slices" label="x" othersLabel="Autres" />`, {
+      imports: [UiDonut],
+      componentProperties: { slices: threeSlices },
+    });
+    const arcs = fixture.nativeElement.querySelectorAll('svg circle[data-slice]');
+
+    for (const arc of arcs) {
+      expect(arc).toHaveClass(
+        'origin-center',
+        '[transform-box:view-box]',
+        'transition-[scale,opacity]',
+        'duration-(--duration-fast)',
+        'ease-out',
+      );
+      expect(arc.getAttribute('stroke-width')).toBe('30');
+      expect(arc).not.toHaveClass('transition-[stroke-width]');
+    }
+  });
+
+  it('presses a legend row with an eased scale and fades its hover fill at the fast duration', async () => {
+    await render(
+      `<ui-donut [slices]="slices" label="Par classe d'actif" othersLabel="Autres" [valueFormat]="eur" [shareFormat]="pct" />`,
+      {
+        imports: [UiDonut],
+        componentProperties: { slices: threeSlices, eur, pct },
+      },
+    );
+
+    expect(screen.getByRole('button', { name: /Fonds/ })).toHaveClass(
+      'transition-[scale,background-color]',
+      '[transition-duration:var(--duration-press),var(--duration-fast)]',
+      'ease-out',
+      'active:scale-(--press-scale)',
+    );
   });
 
   it('draws a muted track and every slice on the same r=78 circle', async () => {

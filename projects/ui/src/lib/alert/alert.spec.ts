@@ -3,6 +3,18 @@ import { render, screen } from '@testing-library/angular';
 import { UiAlert } from './alert';
 
 describe('UiAlert', () => {
+  it('fades in when it appears', async () => {
+    await render('<ui-alert>Text</ui-alert>', { imports: [UiAlert] });
+
+    expect(screen.getByRole('alert')).toHaveClass('ui-enter-fade');
+  });
+
+  it('shows without motion when fadeIn is off, for an alert present as the page opens', async () => {
+    await render('<ui-alert [fadeIn]="false">Text</ui-alert>', { imports: [UiAlert] });
+
+    expect(screen.getByRole('alert')).not.toHaveClass('ui-enter-fade');
+  });
+
   it('is an alert on the card surface by default', async () => {
     await render('<ui-alert>Identifiant ou mot de passe incorrect.</ui-alert>', { imports: [UiAlert] });
 

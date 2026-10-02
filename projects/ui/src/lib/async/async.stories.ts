@@ -134,6 +134,34 @@ export const Loading: Story = {
   args: { state: 'loading' },
 };
 
+export const DelayedSkeleton: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The skeleton appears only once a call has lasted 150 ms and stays at least 400 ms. The 100 ms call never shows it, the 300 ms call shows it until 550 ms.',
+      },
+    },
+  },
+  render: () => ({
+    props: {
+      state: 'ready' as AsyncState,
+      run(duration: number): void {
+        this.state = 'loading';
+        setTimeout(() => (this.state = 'ready'), duration);
+      },
+    },
+    template: `
+      <button type="button" class="text-label" (click)="run(100)">Appel de 100 ms</button>
+      <button type="button" class="text-label ml-3" (click)="run(300)">Appel de 300 ms</button>
+      <ui-async [state]="state" class="mt-3 block">
+        <span asyncLoading>Chargement</span>
+        <span>Contenu</span>
+      </ui-async>
+    `,
+  }),
+};
+
 export const Empty: Story = {
   args: { state: 'empty' },
 };

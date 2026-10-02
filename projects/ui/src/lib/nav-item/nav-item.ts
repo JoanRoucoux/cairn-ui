@@ -1,7 +1,7 @@
 import { Component, booleanAttribute, computed, input } from '@angular/core';
 
 const BASE_CLASSES =
-  'flex items-center gap-3 h-10 px-3 rounded-control text-label leading-normal font-medium transition-colors duration-(--duration-press) hover:bg-(--glow) hover:text-(--foreground) focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring)';
+  'flex items-center gap-3 h-10 px-3 rounded-control text-label leading-normal font-medium transition-[scale,background-color,color] [transition-duration:var(--duration-press),var(--duration-fast),var(--duration-fast)] ease-out active:scale-(--press-scale) hover:bg-(--glow) hover:text-(--foreground) focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring)';
 
 const ACTIVE_CLASSES = 'bg-(--soft) text-(--foreground)';
 

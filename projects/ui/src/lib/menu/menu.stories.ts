@@ -81,6 +81,12 @@ export const Opens: Story = {
 
     await waitFor(() => expect(canvas.getByRole('menu', { name: 'Line actions' })).toBeVisible());
     await expect(canvas.getByRole('menuitem', { name: 'Edit' })).toHaveFocus();
+    await expect(getComputedStyle(canvas.getByRole('menu', { name: 'Line actions' })).transitionProperty).toBe(
+      'opacity, scale, overlay, display',
+    );
+    await expect(getComputedStyle(canvas.getByRole('menuitem', { name: 'Edit' })).transitionProperty).toBe(
+      'background-color',
+    );
   },
 };
 
@@ -185,6 +191,6 @@ export const FixedWidth: StoryObj<{ width: number }> = {
 
     const menu = canvas.getByRole('menu', { name: 'Actions du compte' });
     await waitFor(() => expect(menu).toBeVisible());
-    await expect(menu.getBoundingClientRect().width).toBe(218);
+    await expect(menu.offsetWidth).toBe(218);
   },
 };

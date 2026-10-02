@@ -185,7 +185,7 @@ describe('UiLineChart against the board', () => {
       [true, 'top-0', 33],
     ])('auto on a viewport at or above lg: %s', (wide, topClass, band) => {
       beforeEach(() => {
-        vi.stubGlobal('matchMedia', () => ({ matches: wide }));
+        vi.stubGlobal('matchMedia', () => ({ matches: wide, addEventListener: vi.fn(), removeEventListener: vi.fn() }));
       });
       afterEach(() => vi.unstubAllGlobals());
 
@@ -204,9 +204,11 @@ describe('UiLineChart against the board', () => {
     });
 
     it('follows the viewport when it crosses lg', async () => {
-      const query: { matches: boolean; onchange: ((event: { matches: boolean }) => void) | null } = {
+      const query = {
         matches: false,
-        onchange: null,
+        onchange: null as ((event: { matches: boolean }) => void) | null,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
       };
       vi.stubGlobal('matchMedia', () => query);
       const { fixture } = await render(`<ui-line-chart label="x" tooltip="auto" [points]="points" />`, {

@@ -5,7 +5,7 @@ export const BACK_LINK_SIZES = ['md', 'sm', 'header'] as const;
 export type BackLinkSize = (typeof BACK_LINK_SIZES)[number];
 
 const BASE_CLASSES =
-  'inline-flex items-center gap-0.5 rounded-control text-body font-medium whitespace-nowrap cursor-pointer select-none touch-manipulation transition-[transform,background-color,color] duration-(--duration-press) ease-out active:scale-(--press-scale) focus-visible:outline-2 focus-visible:outline-(--ring)';
+  'inline-flex items-center gap-0.5 rounded-control text-body font-medium whitespace-nowrap cursor-pointer select-none touch-manipulation transition-[scale,background-color,color] [transition-duration:var(--duration-press),var(--duration-fast),var(--duration-fast)] ease-out active:scale-(--press-scale) focus-visible:outline-2 focus-visible:outline-(--ring)';
 
 const SIZE_CLASSES: Record<BackLinkSize, string> = {
   md: 'h-11 pr-3 pl-1 text-(--foreground) focus-visible:outline-offset-2',
