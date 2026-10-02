@@ -1,4 +1,4 @@
-import { Component, Directive, booleanAttribute, computed, input } from '@angular/core';
+import { Component, DestroyRef, Directive, ElementRef, booleanAttribute, computed, inject, input } from '@angular/core';
 
 export const ROW_SIZES = ['md', 'lg', 'xl', 'card', 'dense'] as const;
 export type RowSize = (typeof ROW_SIZES)[number];
@@ -48,7 +48,7 @@ const SELECTED_CLASSES = 'bg-(--soft)';
   host: {
     '[class]': 'classes()',
     '[attr.aria-busy]': 'busy() || null',
-    '[attr.inert]': "busy() ? '' : null",
+    '[attr.aria-disabled]': 'busy() || null',
     '[attr.aria-current]': "selected() ? 'true' : null",
   },
 })
@@ -61,8 +61,21 @@ export class UiRow {
 
   protected readonly classes = computed(
     () =>
-      `${BASE_CLASSES} ${SIZE_CLASSES[this.size()]} ${this.gap() === 'sm' ? 'gap-2' : SIZE_GAPS[this.size()]} ${PADDING_CLASSES[this.padding()]}${this.selected() ? ` ${SELECTED_CLASSES}` : ''}`,
+      `${BASE_CLASSES} ${SIZE_CLASSES[this.size()]} ${this.gap() === 'sm' ? 'gap-2' : SIZE_GAPS[this.size()]} ${PADDING_CLASSES[this.padding()]}${this.selected() ? ` ${SELECTED_CLASSES}` : ''}${this.busy() ? ' pointer-events-none' : ''}`,
   );
+
+  constructor() {
+    const host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+    const guard = (event: Event): void => {
+      if (this.busy()) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
+    };
+
+    host.addEventListener('click', guard, { capture: true });
+    inject(DestroyRef).onDestroy(() => host.removeEventListener('click', guard, { capture: true }));
+  }
 }
 
 /**

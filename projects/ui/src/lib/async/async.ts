@@ -184,9 +184,9 @@ export class UiAsync {
     return `flex flex-col ${surface} ${spec.gap} ${ALIGN_CLASSES[this.align()]} ${spec.padding[this.align()]}${fill}`;
   });
 
-  protected readonly titleClasses = computed(() => this.#spec()?.title ?? '');
+  protected readonly titleClasses = computed(() => this.#spec()!.title);
 
-  protected readonly messageClasses = computed(() => this.#spec()?.message[this.align()] ?? '');
+  protected readonly messageClasses = computed(() => this.#spec()!.message[this.align()]);
 
   protected readonly retryButtonClasses = computed(() => {
     const spec = this.#spec();

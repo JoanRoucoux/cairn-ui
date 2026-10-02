@@ -78,7 +78,7 @@ with a click handler, so keyboard and assistive technology support come for free
     busy: {
       control: 'boolean',
       description:
-        'An action started from the row is in flight: a spinner turns in the trailing slot, the row sets `aria-busy` and `inert`, so it cannot be activated twice.',
+        'An action started from the row is in flight: a spinner turns in the trailing slot, the row sets `aria-busy` and `aria-disabled`, swallows clicks and keeps its focus, so it cannot be activated twice.',
     },
     size: {
       control: 'select',
@@ -114,7 +114,7 @@ export const Busy: Story = {
     const row = canvasElement.querySelector('a[ui-row]')!;
 
     await expect(row).toHaveAttribute('aria-busy', 'true');
-    await expect(row).toHaveAttribute('inert');
+    await expect(row).toHaveAttribute('aria-disabled', 'true');
     await expect(getComputedStyle(row.querySelector('[aria-hidden="true"]')!).animationName).toBe('cairn-spin');
   },
 };

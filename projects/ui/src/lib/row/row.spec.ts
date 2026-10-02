@@ -1,15 +1,47 @@
 import { render, screen } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 
 import { UiListRow, UiRow, UiRowItem, UiRowTile } from './row';
 
 describe('UiRow', () => {
-  it('shows a spinner in the trailing slot, marks itself busy and inert while busy', async () => {
+  it('shows a spinner in the trailing slot and marks itself busy and disabled while busy', async () => {
     await render('<button ui-row type="button" busy>Import</button>', { imports: [UiRow] });
     const row = screen.getByText('Import', { selector: 'button' });
 
     expect(row).toHaveAttribute('aria-busy', 'true');
-    expect(row).toHaveAttribute('inert');
+    expect(row).toHaveAttribute('aria-disabled', 'true');
+    expect(row).not.toHaveAttribute('inert');
+    expect(row).toHaveClass('pointer-events-none');
     expect(row.querySelector('[aria-hidden="true"]')).toHaveClass('animate-cairn-spin');
+  });
+
+  it('swallows activation while busy and keeps the focus on the row', async () => {
+    const clicked = vi.fn();
+    await render('<button ui-row type="button" busy (click)="clicked()">Import</button>', {
+      imports: [UiRow],
+      componentProperties: { clicked },
+    });
+    const row = screen.getByText('Import', { selector: 'button' });
+
+    row.focus();
+    await userEvent.keyboard('{Enter}');
+    await userEvent.keyboard(' ');
+    row.click();
+
+    expect(clicked).not.toHaveBeenCalled();
+    expect(row).toHaveFocus();
+  });
+
+  it('lets a click through when not busy', async () => {
+    const clicked = vi.fn();
+    await render('<button ui-row type="button" (click)="clicked()">Import</button>', {
+      imports: [UiRow],
+      componentProperties: { clicked },
+    });
+
+    await userEvent.click(screen.getByRole('button', { name: 'Import' }));
+
+    expect(clicked).toHaveBeenCalledTimes(1);
   });
 
   it('draws no spinner and stays interactive when not busy', async () => {
@@ -17,7 +49,7 @@ describe('UiRow', () => {
     const row = screen.getByRole('button', { name: 'Import' });
 
     expect(row).not.toHaveAttribute('aria-busy');
-    expect(row).not.toHaveAttribute('inert');
+    expect(row).not.toHaveAttribute('aria-disabled');
     expect(row.querySelector('[aria-hidden="true"]')).toBeNull();
   });
 
