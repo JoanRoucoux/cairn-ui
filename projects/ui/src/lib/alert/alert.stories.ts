@@ -1,11 +1,12 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
-import { expect, waitFor, within } from 'storybook/test';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
 
 import { ALERT_VARIANTS, type AlertVariant, UiAlert } from './alert';
 
 type AlertArgs = {
   variant: AlertVariant;
   heading: string;
+  fadeIn: boolean;
   text: string;
 };
 
@@ -38,11 +39,12 @@ Lucide icon in the \`--negative\` color, an optional heading and a text.
   },
   render: (args) => ({
     props: args,
-    template: `<div style="max-width: 342px"><ui-alert [variant]="variant" [heading]="heading">{{ text }}</ui-alert></div>`,
+    template: `<div style="max-width: 342px"><ui-alert [variant]="variant" [heading]="heading" [fadeIn]="fadeIn">{{ text }}</ui-alert></div>`,
   }),
   args: {
     variant: 'error',
     heading: "La connexion n'a pas abouti",
+    fadeIn: true,
     text: "La demande a été annulée ou la clé n'a pas été reconnue. Réessayez.",
   },
   argTypes: {
@@ -54,6 +56,11 @@ Lucide icon in the \`--negative\` color, an optional heading and a text.
     },
     heading: { control: 'text', description: 'Optional heading. The text below it turns muted.' },
     text: { control: 'text', description: 'Projected text content.' },
+    fadeIn: {
+      control: 'boolean',
+      description:
+        'Fades the alert in over `--duration-fast` when it appears (default). Turn it off for an alert that is part of the page as it opens, such as an error state after a load: that one shows without motion.',
+    },
   },
 };
 
@@ -102,3 +109,29 @@ export const AppearsAndLeaves: Story = {
     docs: { description: { story: 'The alert fades in when it appears and fades out when it is removed.' } },
   },
 };
+
+const appearing = (fadeIn: boolean): Story => ({
+  render: () => ({
+    props: { shown: false, fadeIn },
+    template: `
+      <div style="max-width: 342px" class="flex flex-col gap-3">
+        <button type="button" class="rounded-control border border-(--border) px-4 py-2" (click)="shown = true">Se connecter</button>
+        @if (shown) {
+          <ui-alert [fadeIn]="fadeIn">Identifiant ou mot de passe incorrect.</ui-alert>
+        }
+      </div>
+    `,
+  }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Se connecter' }));
+
+    const alert = await canvas.findByRole('alert');
+    await expect(getComputedStyle(alert).animationName).toBe(fadeIn ? 'cairn-fade-in' : 'none');
+  },
+});
+
+export const FadesInAfterASubmit: Story = { name: 'Fades in after a submit', ...appearing(true) };
+
+export const ShowsAtOnceWithoutFadeIn: Story = { name: 'Shows at once with fadeIn off', ...appearing(false) };

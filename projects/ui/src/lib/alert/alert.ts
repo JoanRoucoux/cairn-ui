@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, booleanAttribute, computed, input } from '@angular/core';
 
 export const ALERT_VARIANTS = ['error', 'warning'] as const;
 export type AlertVariant = (typeof ALERT_VARIANTS)[number];
@@ -12,6 +12,8 @@ const VARIANT_CLASSES: Record<AlertVariant, string> = {
 
 /**
  * Inline message explaining a failure or a consequence: an icon, an optional heading and a text.
+ * It fades in when it appears; set `[fadeIn]="false"` on an alert that is part of the page as it
+ * opens (an error state after a load), which shows without motion.
  *
  * @example
  * <ui-alert heading="Sign-in failed">Try again.</ui-alert>
@@ -61,7 +63,6 @@ const VARIANT_CLASSES: Record<AlertVariant, string> = {
     </div>
   `,
   host: {
-    'animate.enter': 'ui-enter-fade',
     'animate.leave': 'ui-leave-fade',
     '[class]': 'classes()',
     '[attr.role]': "variant() === 'warning' ? 'status' : 'alert'",
@@ -70,6 +71,9 @@ const VARIANT_CLASSES: Record<AlertVariant, string> = {
 export class UiAlert {
   readonly variant = input<AlertVariant>('error');
   readonly heading = input<string>();
+  readonly fadeIn = input(true, { transform: booleanAttribute });
 
-  protected readonly classes = computed(() => `${BASE_CLASSES} ${VARIANT_CLASSES[this.variant()]}`);
+  protected readonly classes = computed(
+    () => `${BASE_CLASSES} ${VARIANT_CLASSES[this.variant()]}${this.fadeIn() ? ' ui-enter-fade' : ''}`,
+  );
 }
