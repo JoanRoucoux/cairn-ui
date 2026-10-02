@@ -91,8 +91,10 @@ export class UiTr {
     return [
       'relative [&>td:first-child]:rounded-l-control [&>td:last-child]:rounded-r-control',
       this.selected() ? '[&>td]:bg-(--soft)' : '',
-      'hover:[&>td]:bg-(--glow)',
-      this.interactive() ? 'active:[&>td]:bg-(--soft)' : '',
+      'hover:[&>td]:bg-(--glow) [&>td]:transition-colors [&>td]:duration-(--duration-fast) [&>td]:ease-out',
+      this.interactive()
+        ? 'active:[&>td]:bg-(--soft) transition-transform duration-(--duration-press) ease-out active:scale-(--press-scale)'
+        : '',
     ]
       .filter(Boolean)
       .join(' ');

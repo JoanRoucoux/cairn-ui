@@ -51,6 +51,15 @@ describe('UiAsync', () => {
     expect(retried).toHaveBeenCalledTimes(1);
   });
 
+  it('splits the retry press transform from its hover fill durations', async () => {
+    await render(template, { imports: [UiAsync], componentProperties: { state: 'error', retried: vi.fn() } });
+
+    expect(screen.getByRole('button', { name: 'Retry' })).toHaveClass(
+      'transition-[transform,background-color,opacity]',
+      '[transition-duration:var(--duration-press),var(--duration-fast),var(--duration-fast)]',
+    );
+  });
+
   it('draws the retry button with the rotate-cw icon and 12px of left padding', async () => {
     await render(template, { imports: [UiAsync], componentProperties: { state: 'error', retried: vi.fn() } });
 

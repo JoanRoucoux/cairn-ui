@@ -59,6 +59,26 @@ describe('UiMenu', () => {
     expect(screen.getByRole('menuitem', { name: 'Delete the line' })).toHaveClass('active:bg-(--soft)');
   });
 
+  it('fades an item hover fill at the fast duration', async () => {
+    await render(template, { imports: [UiMenu, UiMenuTrigger, UiMenuItem], componentProperties: { edited: vi.fn() } });
+    await userEvent.click(screen.getByRole('button', { name: 'More' }));
+
+    expect(screen.getByRole('menuitem', { name: 'Edit' })).toHaveClass(
+      'transition-colors',
+      'duration-(--duration-fast)',
+      'ease-out',
+    );
+  });
+
+  it('enters at the fast duration and leaves in 120 ms', async () => {
+    const { container } = await render(template, {
+      imports: [UiMenu, UiMenuTrigger, UiMenuItem],
+      componentProperties: { edited: vi.fn() },
+    });
+
+    expect(container.querySelector('ui-menu')).toHaveClass('duration-(--duration-fast)', 'not-open:duration-[120ms]');
+  });
+
   it('paints a destructive item in the negative color', async () => {
     await render(template, { imports: [UiMenu, UiMenuTrigger, UiMenuItem], componentProperties: { edited: vi.fn() } });
     await userEvent.click(screen.getByRole('button', { name: 'More' }));

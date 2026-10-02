@@ -10,7 +10,7 @@ const identityValue = (value: number): string => `${value}`;
 const identityShare = (share: number): string => `${Math.round(share * 100)}%`;
 
 const ROW_CLASSES =
-  'flex w-full items-center gap-3 min-h-14 px-2 py-1 [font-variant-numeric:var(--numeric)] rounded-control text-left transition-colors duration-(--duration-fast) ease-out hover:bg-(--glow) active:bg-(--soft) focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring)';
+  'flex w-full items-center gap-3 min-h-14 px-2 py-1 [font-variant-numeric:var(--numeric)] rounded-control text-left transition-[transform,background-color] [transition-duration:var(--duration-press),var(--duration-fast)] ease-out hover:bg-(--glow) active:bg-(--soft) active:scale-(--press-scale) focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring)';
 
 const RAMP_DOT_CLASSES: Record<Ramp, string> = {
   1: 'bg-(--ramp-1)',

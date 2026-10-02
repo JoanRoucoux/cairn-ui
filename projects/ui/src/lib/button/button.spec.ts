@@ -81,6 +81,15 @@ describe('UiButton', () => {
     expect(screen.getByRole('button', { name: 'Save' })).toHaveClass('active:scale-(--press-scale)');
   });
 
+  it('splits the press transform from the hover fill durations', async () => {
+    await render('<button ui-button>Save</button>', { imports: [UiButton] });
+
+    expect(screen.getByRole('button', { name: 'Save' })).toHaveClass(
+      'transition-[transform,background-color,opacity]',
+      '[transition-duration:var(--duration-press),var(--duration-fast),var(--duration-fast)]',
+    );
+  });
+
   it('announces a loading button as busy, dims it and swallows clicks', async () => {
     const clicked = vi.fn();
     await render('<button ui-button [loading]="true" (click)="clicked()">Sell</button>', {

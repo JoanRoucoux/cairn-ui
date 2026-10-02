@@ -26,6 +26,17 @@ describe('UiRow', () => {
     );
   });
 
+  it('eases the press scale at the press duration and the hover fill at the fast one', async () => {
+    await render('<a ui-row href="#">Row</a>', { imports: [UiRow] });
+
+    expect(screen.getByRole('link', { name: 'Row' })).toHaveClass(
+      'transition-[transform,background-color]',
+      '[transition-duration:var(--duration-press),var(--duration-fast)]',
+      'ease-out',
+      'active:scale-(--press-scale)',
+    );
+  });
+
   it('offers a tall row and tighter or no side padding', async () => {
     await render('<a ui-row size="lg" padding="sm" href="#">A</a><a ui-row padding="none" href="#">B</a>', {
       imports: [UiRow],

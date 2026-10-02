@@ -79,6 +79,23 @@ describe('UiDonut', () => {
     expect(centre.getByText('Fonds')).toBeInTheDocument();
   });
 
+  it('presses a legend row with an eased scale and fades its hover fill at the fast duration', async () => {
+    await render(
+      `<ui-donut [slices]="slices" label="Par classe d'actif" othersLabel="Autres" [valueFormat]="eur" [shareFormat]="pct" />`,
+      {
+        imports: [UiDonut],
+        componentProperties: { slices: threeSlices, eur, pct },
+      },
+    );
+
+    expect(screen.getByRole('button', { name: /Fonds/ })).toHaveClass(
+      'transition-[transform,background-color]',
+      '[transition-duration:var(--duration-press),var(--duration-fast)]',
+      'ease-out',
+      'active:scale-(--press-scale)',
+    );
+  });
+
   it('draws a muted track and every slice on the same r=78 circle', async () => {
     const { fixture } = await render(`<ui-donut [slices]="slices" label="x" othersLabel="Autres" />`, {
       imports: [UiDonut],

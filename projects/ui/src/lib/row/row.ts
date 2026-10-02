@@ -22,7 +22,7 @@ const SIZE_GAPS: Record<RowSize, string> = { md: 'gap-2.5', lg: 'gap-2.5', xl: '
 const PADDING_CLASSES: Record<RowPadding, string> = { md: 'px-2.5', sm: 'px-2', none: 'px-0' };
 
 const BASE_CLASSES =
-  'flex w-full items-center py-1.5 rounded-control text-left select-none touch-manipulation transition-colors duration-(--duration-press) hover:bg-(--glow) active:bg-(--soft) focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring)';
+  'flex w-full items-center py-1.5 rounded-control text-left select-none touch-manipulation transition-[transform,background-color] [transition-duration:var(--duration-press),var(--duration-fast)] ease-out hover:bg-(--glow) active:bg-(--soft) active:scale-(--press-scale) focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring)';
 
 const SELECTED_CLASSES = 'bg-(--soft)';
 

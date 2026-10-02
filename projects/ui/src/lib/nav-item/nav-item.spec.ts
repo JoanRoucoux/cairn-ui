@@ -38,6 +38,21 @@ describe('UiNavItem', () => {
     expect(screen.getByRole('link', { name: 'Portfolio' })).toHaveAttribute('aria-current', 'page');
   });
 
+  it('presses with a eased scale and fades its hover fill at the fast duration', async () => {
+    await render('<a ui-nav-item active href="/">Portfolio</a><a ui-nav-item href="/">Holdings</a>', {
+      imports: [UiNavItem],
+    });
+
+    for (const name of ['Portfolio', 'Holdings']) {
+      expect(screen.getByRole('link', { name })).toHaveClass(
+        'transition-[transform,background-color,color]',
+        '[transition-duration:var(--duration-press),var(--duration-fast),var(--duration-fast)]',
+        'ease-out',
+        'active:scale-(--press-scale)',
+      );
+    }
+  });
+
   it('keeps the inherited line height and fills on press when idle', async () => {
     await render('<a ui-nav-item href="/">Portfolio</a>', { imports: [UiNavItem] });
 

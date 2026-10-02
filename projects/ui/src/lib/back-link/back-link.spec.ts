@@ -11,6 +11,15 @@ describe('UiBackLink', () => {
     expect(container.querySelector('svg')).toHaveAttribute('width', '22');
   });
 
+  it('splits the press transform from the hover fill durations', async () => {
+    await render('<a ui-back-link href="/">Retour</a>', { imports: [UiBackLink] });
+
+    expect(screen.getByRole('link', { name: 'Retour' })).toHaveClass(
+      'transition-[transform,background-color,color]',
+      '[transition-duration:var(--duration-press),var(--duration-fast),var(--duration-fast)]',
+    );
+  });
+
   it('is the 44 px foreground link by default', async () => {
     await render('<a ui-back-link href="/">Retour</a>', { imports: [UiBackLink] });
 

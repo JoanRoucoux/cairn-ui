@@ -65,6 +65,19 @@ describe('UiField', () => {
     expect(control).not.toHaveAttribute('aria-invalid');
   });
 
+  it('fades the trailing button color at the fast duration', async () => {
+    await render(
+      '<ui-field label="Password"><input uiInput type="password" /><button uiFieldTrailing type="button" aria-label="Show">x</button></ui-field>',
+      { imports: [UiField, UiInput, UiFieldTrailing] },
+    );
+
+    expect(screen.getByRole('button', { name: 'Show' })).toHaveClass(
+      'transition-colors',
+      'duration-(--duration-fast)',
+      'ease-out',
+    );
+  });
+
   it('works the same around a select', async () => {
     await render('<ui-field label="Envelope"><select uiSelect><option value="pea">PEA</option></select></ui-field>', {
       imports: [UiField, UiSelect],
