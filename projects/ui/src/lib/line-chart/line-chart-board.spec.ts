@@ -154,7 +154,7 @@ describe('UiLineChart against the board', () => {
       );
 
     it.each<[string, string, boolean[]]>([
-      ['3', 'hidden', [false, true, false, true, false]],
+      ['3', 'hidden', [false, false, false]],
       ['5', 'hidden', [false, false, false, false, false]],
       ['5', 'max-sm:hidden', [false, false, false, false, false]],
       ['auto', 'max-sm:hidden', [false, true, false, true, false]],

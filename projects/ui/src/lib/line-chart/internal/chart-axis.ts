@@ -26,3 +26,47 @@ export const isCoreTick = (index: number, count: number): boolean => {
 
   return index === 0 || index === count - 1 || index === middle;
 };
+
+export type TickLabel = { text: string; classes: string };
+
+const firstOfEachRun = (labels: readonly string[], included: (index: number) => boolean): boolean[] => {
+  let previous: string | null = null;
+
+  return labels.map((text, index) => {
+    if (!included(index)) {
+      return false;
+    }
+
+    const distinct = text !== previous;
+
+    previous = text;
+
+    return distinct;
+  });
+};
+
+export const tickLabels = (
+  ticks: readonly { t: number }[],
+  format: (time: number) => string,
+  mode: 3 | 5 | 'auto',
+): (TickLabel | null)[] => {
+  const labels = ticks.map((tick) => format(tick.t));
+  const count = labels.length;
+  const core = (index: number): boolean => isCoreTick(index, count);
+  const everyTick = firstOfEachRun(labels, () => true);
+  const coreTicks = firstOfEachRun(labels, core);
+
+  return labels.map((text, index) => {
+    const wide = mode === 3 ? coreTicks[index]! : everyTick[index]!;
+    const narrow = coreTicks[index]!;
+
+    if (!wide && !narrow) {
+      return null;
+    }
+
+    const classes =
+      mode === 'auto' ? `${narrow ? '' : 'max-sm:hidden'} ${wide ? '' : 'sm:hidden'}`.trim() : wide ? '' : 'hidden';
+
+    return { text, classes };
+  });
+};

@@ -86,6 +86,8 @@ The host fills its parent's height (\`block h-full\`); size the chart by sizing 
 #### When to use
 
 * Portfolio or instrument value over a selectable range, one series at a time.
+* A short history under a coarse \`axisFormat\` (years on a 5-year range): a tick label equal to the
+  previous drawn one is skipped, so the axis never reads "2026 2026 2026".
 
 #### When not to use
 
@@ -206,6 +208,29 @@ export const OneDay: Story = {
     startLabel: 'Départ',
     timeFormat: hourFormat,
     axisFormat: hourFormat,
+  },
+};
+
+const yearFormat = (time: number): string => String(new Date(time).getUTCFullYear());
+
+const shortHistoryPoints: ChartPoint[] = Array.from({ length: 12 }, (_, index) => ({
+  t: Date.UTC(2026, 3, 1) + index * 14 * 24 * 60 * 60 * 1000,
+  v: 52000 + index * 900 + Math.sin(index) * 400,
+}));
+
+export const ShortFiveYearHistory: Story = {
+  name: 'Short history on a 5-year range',
+  args: {
+    points: shortHistoryPoints,
+    label: 'Net worth, five-year range with a few months of data',
+    axisFormat: yearFormat,
+  },
+  play: async ({ canvasElement }) => {
+    const labels = [...canvasElement.querySelectorAll('[data-chart-axis-tick]')].map((tick) =>
+      tick.textContent?.trim(),
+    );
+
+    await expect(labels).toEqual(['2026']);
   },
 };
 
