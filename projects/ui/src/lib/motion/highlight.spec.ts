@@ -187,22 +187,55 @@ describe('UiHighlight', () => {
     expect(scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'center' });
     expect(animatedElements()).not.toContain(plain);
 
-    window.dispatchEvent(new Event('scrollend'));
+    document.dispatchEvent(new Event('scrollend', { bubbles: true }));
     expect(animatedElements()).toContain(plain);
 
-    window.dispatchEvent(new Event('scrollend'));
+    document.dispatchEvent(new Event('scrollend', { bubbles: true }));
     vi.advanceTimersByTime(1000);
     expect(animatedElements().filter((element) => element === plain)).toHaveLength(1);
   });
 
-  it('highlights after a timeout when scrollend never fires', () => {
+  it('highlights on the scrollend of the scroller that contains the element', () => {
+    const { host, root, plain, flush } = setup();
+    offScreen(plain);
+    document.body.appendChild(root);
+
+    host.token.set(1);
+    flush();
+    root.dispatchEvent(new Event('scrollend', { bubbles: true }));
+
+    expect(animatedElements()).toContain(plain);
+    root.remove();
+  });
+
+  it('ignores the scroll of an unrelated element', () => {
+    const { host, plain, flush } = setup();
+    offScreen(plain);
+    const other = document.createElement('div');
+    document.body.appendChild(other);
+
+    host.token.set(1);
+    flush();
+    other.dispatchEvent(new Event('scrollend', { bubbles: true }));
+    other.dispatchEvent(new Event('scroll', { bubbles: true }));
+    vi.advanceTimersByTime(199);
+
+    expect(animatedElements()).not.toContain(plain);
+    other.remove();
+  });
+
+  it('waits for the scroll to settle when scrollend never fires', () => {
     const { host, plain, flush } = setup();
     offScreen(plain);
 
     host.token.set(1);
     flush();
-    vi.advanceTimersByTime(700);
+    vi.advanceTimersByTime(150);
+    document.dispatchEvent(new Event('scroll', { bubbles: true }));
+    vi.advanceTimersByTime(150);
+    expect(animatedElements()).not.toContain(plain);
 
+    vi.advanceTimersByTime(50);
     expect(animatedElements()).toContain(plain);
   });
 
@@ -214,7 +247,7 @@ describe('UiHighlight', () => {
     flush();
     host.token.set(2);
     flush();
-    vi.advanceTimersByTime(700);
+    vi.advanceTimersByTime(200);
     expect(animatedElements().filter((element) => element === plain)).toHaveLength(1);
 
     host.token.set(3);

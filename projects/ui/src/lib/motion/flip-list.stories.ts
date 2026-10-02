@@ -44,6 +44,9 @@ export const RemoveThenReinsert: Story = {
       remove(this: { items: string[] }) {
         this.items = this.items.filter((item) => item !== 'LDDS');
       },
+      removeFirst(this: { items: string[] }) {
+        this.items = this.items.filter((item) => item !== 'Livret A');
+      },
       restore(this: { items: string[]; all: string[] }) {
         this.items = [...this.all];
       },
@@ -52,6 +55,7 @@ export const RemoveThenReinsert: Story = {
       <div class="flex w-[340px] flex-col gap-3 p-4">
         <div class="flex gap-2">
           <button ui-button type="button" (click)="remove()">Remove LDDS</button>
+          <button ui-button type="button" (click)="removeFirst()">Remove Livret A</button>
           <button ui-button type="button" (click)="restore()">Put it back</button>
         </div>
         <ul uiFlipList class="m-0 list-none p-0" data-testid="list">

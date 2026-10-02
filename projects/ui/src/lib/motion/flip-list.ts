@@ -22,30 +22,55 @@ import { injectReducedMotion } from './reduced-motion';
 export class UiFlipList {
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   private readonly reduced = injectReducedMotion();
+  private readonly mutations = new MutationObserver(() => this.onChange());
+  private readonly resizes = new ResizeObserver(() => this.measure());
+  private readonly running = new Map<HTMLElement, Animation>();
+  private readonly watched = new Set<HTMLElement>();
   private tops = new Map<HTMLElement, number>();
 
   constructor() {
-    const mutations = new MutationObserver(() => this.onChange());
-    const resizes = new ResizeObserver(() => this.measure());
-
     afterNextRender(() => {
       this.measure();
-      mutations.observe(this.host, { childList: true });
-      resizes.observe(this.host);
+      this.mutations.observe(this.host, { childList: true });
+      this.resizes.observe(this.host);
     });
 
     inject(DestroyRef).onDestroy(() => {
-      mutations.disconnect();
-      resizes.disconnect();
+      this.mutations.disconnect();
+      this.resizes.disconnect();
     });
   }
 
-  private children(): HTMLElement[] {
-    return Array.from(this.host.children).filter((child): child is HTMLElement => child instanceof HTMLElement);
+  private measure(): void {
+    const children = Array.from(this.host.children).filter(
+      (child): child is HTMLElement => child instanceof HTMLElement,
+    );
+    this.tops = new Map(children.map((child) => [child, child.offsetTop]));
+
+    for (const child of children) {
+      if (!this.watched.has(child)) {
+        this.watched.add(child);
+        this.resizes.observe(child);
+      }
+    }
+    for (const child of this.watched) {
+      if (!this.tops.has(child)) {
+        this.watched.delete(child);
+        this.running.delete(child);
+        this.resizes.unobserve(child);
+      }
+    }
   }
 
-  private measure(): void {
-    this.tops = new Map(this.children().map((child) => [child, child.offsetTop]));
+  private interruptedOffset(child: HTMLElement): number {
+    const running = this.running.get(child);
+    if (!running) {
+      return 0;
+    }
+    const shown = child.getBoundingClientRect().top;
+    running.cancel();
+    this.running.delete(child);
+    return shown - child.getBoundingClientRect().top;
   }
 
   private onChange(): void {
@@ -64,10 +89,11 @@ export class UiFlipList {
       if (previous === undefined || previous === top) {
         continue;
       }
-      child.animate([{ transform: `translateY(${previous - top}px)` }, { transform: 'translateY(0)' }], {
-        duration,
-        easing,
-      });
+      const from = previous - top + this.interruptedOffset(child);
+      this.running.set(
+        child,
+        child.animate([{ transform: `translateY(${from}px)` }, { transform: 'translateY(0)' }], { duration, easing }),
+      );
     }
   }
 }

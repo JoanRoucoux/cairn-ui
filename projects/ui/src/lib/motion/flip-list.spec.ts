@@ -30,6 +30,9 @@ const tick = (): Promise<void> => new Promise((resolve) => setTimeout(resolve));
 describe('UiFlipList', () => {
   let animate: ReturnType<typeof vi.fn>;
   let resize: (() => void) | undefined;
+  let observe: ReturnType<typeof vi.fn>;
+  let unobserve: ReturnType<typeof vi.fn>;
+  let disconnectResize: ReturnType<typeof vi.fn>;
   let originalMatchMedia: typeof matchMedia | undefined;
 
   const stubMatchMedia = (matches: boolean): void => {
@@ -66,18 +69,18 @@ describe('UiFlipList', () => {
   beforeEach(() => {
     originalMatchMedia = globalThis.matchMedia;
     stubMatchMedia(false);
-    animate = vi.fn();
+    animate = vi.fn(() => ({ cancel: vi.fn() }));
     Element.prototype.animate = animate as unknown as typeof Element.prototype.animate;
+    observe = vi.fn();
+    unobserve = vi.fn();
+    disconnectResize = vi.fn();
     globalThis.ResizeObserver = class {
       constructor(callback: () => void) {
         resize = callback;
       }
-      observe(): void {
-        return;
-      }
-      disconnect(): void {
-        return;
-      }
+      observe = observe;
+      unobserve = unobserve;
+      disconnect = disconnectResize;
     } as unknown as typeof ResizeObserver;
   });
 
@@ -127,11 +130,66 @@ describe('UiFlipList', () => {
     expect(animate).not.toHaveBeenCalled();
   });
 
-  it('stops observing when destroyed', async () => {
+  it('disconnects both observers when destroyed', async () => {
+    const disconnectMutations = vi.spyOn(MutationObserver.prototype, 'disconnect');
     const fixture = TestBed.createComponent(HostComponent);
     fixture.detectChanges();
     await fixture.whenStable();
 
-    expect(() => fixture.destroy()).not.toThrow();
+    fixture.destroy();
+
+    expect(disconnectMutations).toHaveBeenCalledTimes(1);
+    expect(disconnectResize).toHaveBeenCalledTimes(1);
+    disconnectMutations.mockRestore();
+  });
+
+  it('watches the size of every child and stops watching a removed one', async () => {
+    const { list, change } = await setup();
+    const [a, b, c] = Array.from(list.children);
+
+    expect(observe).toHaveBeenCalledWith(a);
+    expect(observe).toHaveBeenCalledWith(b);
+    expect(observe).toHaveBeenCalledWith(c);
+
+    await change(['a', 'c']);
+
+    expect(unobserve).toHaveBeenCalledWith(b);
+    expect(unobserve).toHaveBeenCalledTimes(1);
+  });
+
+  it('uses the new positions when a sibling resized while the list kept its size', async () => {
+    const { list, change } = await setup();
+    Object.defineProperty(list.children[2], 'offsetTop', { value: ROW + 30, configurable: true });
+    resize?.();
+
+    await change(['a', 'c']);
+
+    expect(animate.mock.calls[0]?.[0]).toEqual([{ transform: `translateY(${30}px)` }, { transform: 'translateY(0)' }]);
+  });
+
+  it('restarts an interrupted move from where the child is displayed', async () => {
+    const { list, change } = await setup();
+    const cancels: ReturnType<typeof vi.fn>[] = [];
+    animate.mockImplementation(() => {
+      const cancel = vi.fn();
+      cancels.push(cancel);
+      return { cancel };
+    });
+
+    await change(['a', 'c']);
+    const c = list.children[1] as HTMLElement;
+    expect(animate.mock.calls[0]?.[0][0]).toEqual({ transform: `translateY(${ROW}px)` });
+    animate.mockClear();
+
+    let cancelled = false;
+    cancels[0]?.mockImplementation(() => {
+      cancelled = true;
+    });
+    c.getBoundingClientRect = () => ({ top: cancelled ? 0 : 20 }) as DOMRect;
+
+    await change(['c']);
+
+    expect(cancels[0]).toHaveBeenCalledTimes(1);
+    expect(animate.mock.calls[0]?.[0][0]).toEqual({ transform: `translateY(${ROW + 20}px)` });
   });
 });

@@ -4,7 +4,7 @@ import { readDuration, readEasing } from './internal/tokens';
 import { injectReducedMotion } from './reduced-motion';
 
 const HOLD_MS = 200;
-const SCROLL_TIMEOUT_MS = 700;
+const SCROLL_SETTLE_MS = 200;
 
 function paintedElements(host: HTMLElement): HTMLElement[] {
   if (host.tagName === 'TR') {
@@ -66,16 +66,32 @@ export class UiHighlight {
     }
 
     let stopFlash: (() => void) | null = null;
+    let timer: ReturnType<typeof setTimeout>;
+    const moves = (event: Event): boolean =>
+      event.target === document || (event.target instanceof Node && event.target.contains(this.host));
     const start = (): void => {
       stopListening();
       stopFlash = this.flash();
     };
-    const timer = setTimeout(start, SCROLL_TIMEOUT_MS);
-    window.addEventListener('scrollend', start, true);
+    const onScrollEnd = (event: Event): void => {
+      if (moves(event)) {
+        start();
+      }
+    };
+    const onScroll = (event: Event): void => {
+      if (moves(event)) {
+        clearTimeout(timer);
+        timer = setTimeout(start, SCROLL_SETTLE_MS);
+      }
+    };
     const stopListening = (): void => {
       clearTimeout(timer);
-      window.removeEventListener('scrollend', start, true);
+      window.removeEventListener('scrollend', onScrollEnd, true);
+      window.removeEventListener('scroll', onScroll, true);
     };
+    timer = setTimeout(start, SCROLL_SETTLE_MS);
+    window.addEventListener('scrollend', onScrollEnd, true);
+    window.addEventListener('scroll', onScroll, true);
 
     this.cancel = () => {
       stopListening();
