@@ -42,5 +42,6 @@ export const config: SheriffConfig = {
     'component:row': ['component:button'],
     'component:stat': ['component:delta'],
     'component:toast': ['component:tab-bar'],
+    'component:line-chart': ['component:motion'],
   },
 };

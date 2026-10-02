@@ -1,7 +1,7 @@
 import {
   Component,
   DestroyRef,
-  type ElementRef,
+  ElementRef,
   afterNextRender,
   booleanAttribute,
   computed,
@@ -9,9 +9,11 @@ import {
   inject,
   input,
   signal,
+  untracked,
   viewChild,
 } from '@angular/core';
 
+import { injectReducedMotion } from '../motion/reduced-motion';
 import { axisTicks, tickLabels } from './internal/chart-axis';
 import { navigateIndex, nearestPointIndex } from './internal/chart-interaction';
 import {
@@ -32,13 +34,15 @@ import {
 } from './internal/chart-layout';
 import { type ChartGeometry, type ChartPoint, type PlottedPoint, buildGeometry } from './internal/chart-scale';
 import { placeStartLabel } from './internal/start-label';
-import { TRANSITION_DURATION, easeOutQuint, interpolateLine, prefersReducedMotion } from './internal/transition';
+import { ShapeMotion, durationFrom } from './internal/transition';
 import { wideViewport } from './internal/viewport';
 
 export type { AxisTicks, ChartPoint };
 export type { TooltipSize } from './internal/chart-layout';
 
 type PlotRef = ElementRef<SVGSVGElement>;
+type LineRef = ElementRef<SVGPathElement>;
+type EndRef = ElementRef<SVGCircleElement>;
 
 /**
  * Value over time: a monotone curve with a dashed line at the starting value and a tooltip.
@@ -68,48 +72,52 @@ type PlotRef = ElementRef<SVGSVGElement>;
         (pointerleave)="onPointerLeave()"
         (pointermove)="onPointerMove($event)"
       >
-        @if (geometry(); as geometry) {
+        @if (shown(); as shape) {
           <path
+            #lineRef
             class="stroke-(--foreground)"
             data-chart-line
             fill="none"
             stroke-linecap="round"
             stroke-linejoin="round"
-            [attr.d]="displayLine()"
+            [attr.d]="shape.line"
             [attr.stroke-width]="sparkline() ? 1.5 : 2"
           />
 
           @if (!sparkline()) {
             <line
-              class="stroke-(--border)"
+              class="stroke-(--border) transition-opacity ease-(--ease-out)"
               data-chart-start-line
               stroke-dasharray="3 4"
               stroke-width="1"
               x1="0"
               [attr.x2]="effectiveWidth()"
-              [attr.y1]="geometry.start.y"
-              [attr.y2]="geometry.start.y"
+              [attr.y1]="shape.start.y"
+              [attr.y2]="shape.start.y"
+              [class]="startFade()"
             />
 
             @if (startLabelInfo(); as info) {
               <text
-                class="text-caption fill-(--subtle-foreground) tabular-nums"
+                class="text-caption fill-(--subtle-foreground) tabular-nums transition-opacity ease-(--ease-out)"
                 data-chart-start-label
                 [attr.text-anchor]="info.placement.anchor"
                 [attr.x]="info.placement.x"
                 [attr.y]="info.placement.y"
+                [class]="startFade()"
               >
                 {{ info.label }}
               </text>
             }
 
             <circle
+              #endRef
               class="fill-(--foreground) stroke-(--card) [paint-order:stroke]"
               data-chart-end
               r="4"
               stroke-width="6"
-              [attr.cx]="geometry.end.x"
-              [attr.cy]="geometry.end.y"
+              [attr.cx]="shape.end.x"
+              [attr.cy]="shape.end.y"
             />
 
             @for (tick of ticks(); track tick.t; let index = $index; let first = $first; let last = $last) {
@@ -212,14 +220,26 @@ export class UiLineChart {
   readonly axisTicks = input<AxisTicks, AxisTicks | string>('auto', { transform: parseAxisTicks });
 
   #destroyRef = inject(DestroyRef);
+  #host = inject<ElementRef<HTMLElement>>(ElementRef);
   #wide = wideViewport();
-  #frame: number | null = null;
-  #hasRenderedOnce = false;
-  #previousGeometry: ChartGeometry | null = null;
+  #reducedMotion = injectReducedMotion();
+  #motion = new ShapeMotion({
+    hold: (geometry) => {
+      this.held.set(geometry);
+      this.activeIndex.update((index) => (geometry ? null : index));
+    },
+    draw: (line, end) => {
+      this.lineRef()?.nativeElement.setAttribute('d', line);
+      this.endRef()?.nativeElement.setAttribute('cx', String(end.x));
+      this.endRef()?.nativeElement.setAttribute('cy', String(end.y));
+    },
+  });
 
   protected readonly svgRef = viewChild.required<PlotRef>('svgRef');
+  protected readonly lineRef = viewChild<LineRef>('lineRef');
+  protected readonly endRef = viewChild<EndRef>('endRef');
   protected readonly activeIndex = signal<number | null>(null);
-  protected readonly animatedLine = signal<string | null>(null);
+  protected readonly held = signal<ChartGeometry | null>(null);
   protected readonly measuredSize = signal<{ width: number; height: number } | null>(null);
 
   protected readonly effectiveWidth = computed(() => this.measuredSize()?.width ?? DEFAULT_WIDTH);
@@ -240,7 +260,11 @@ export class UiLineChart {
     return buildGeometry(this.points(), this.effectiveWidth(), plotHeight, { x: 0, top: padding, bottom: padding });
   });
 
-  protected readonly displayLine = computed(() => this.animatedLine() ?? this.geometry()!.line);
+  protected readonly shown = computed(() => this.held() ?? this.geometry());
+
+  protected readonly startFade = computed(() =>
+    this.held() ? 'opacity-0 duration-(--duration-exit)' : 'duration-(--duration-fast)',
+  );
 
   protected readonly ticks = computed(() => axisTicks(this.geometry()!.points));
 
@@ -250,12 +274,12 @@ export class UiLineChart {
     const geometry = this.geometry();
     const index = this.activeIndex();
 
-    return geometry && index !== null ? (geometry.points[index] as PlottedPoint) : null;
+    return geometry && index !== null && !this.held() ? (geometry.points[index] as PlottedPoint) : null;
   });
 
   protected readonly startLabelInfo = computed(() => {
     const text = this.startLabel();
-    const geometry = this.geometry();
+    const geometry = this.shown();
 
     if (!text || !geometry) {
       return null;
@@ -277,35 +301,18 @@ export class UiLineChart {
 
   constructor() {
     effect(() => {
+      const points = this.points();
       const geometry = this.geometry();
-      const previous = this.#previousGeometry;
 
-      if (previous === geometry) {
-        return;
-      }
-
-      this.#previousGeometry = geometry;
-      this.#cancelAnimation();
-
-      if (!this.#hasRenderedOnce) {
-        this.#hasRenderedOnce = true;
-        return;
-      }
-
-      if (!previous || !geometry) {
-        this.animatedLine.set(null);
-        return;
-      }
-
-      if (prefersReducedMotion()) {
-        this.animatedLine.set(null);
-        return;
-      }
-
-      this.#animate(previous, geometry);
+      untracked(() =>
+        this.#motion.follow(points, geometry, {
+          reduced: this.#reducedMotion(),
+          duration: () => durationFrom(getComputedStyle(this.#host.nativeElement).getPropertyValue('--duration-base')),
+        }),
+      );
     });
 
-    this.#destroyRef.onDestroy(() => this.#cancelAnimation());
+    this.#destroyRef.onDestroy(() => this.#motion.stop());
   }
 
   #observeSize(): void {
@@ -316,40 +323,20 @@ export class UiLineChart {
     }
 
     const element = this.svgRef().nativeElement;
+    const { width, height } = element.getBoundingClientRect();
+
+    if (width > 0 && height > 0) {
+      this.measuredSize.set({ width, height });
+    }
 
     const observer = new ResizeObserver(([entry]) => {
       if (entry) {
-        const { width, height } = entry.contentRect;
-
-        this.measuredSize.set({ width, height });
+        this.measuredSize.set({ width: entry.contentRect.width, height: entry.contentRect.height });
       }
     });
 
     observer.observe(element);
     this.#destroyRef.onDestroy(() => observer.disconnect());
-  }
-
-  #cancelAnimation(): void {
-    cancelAnimationFrame(this.#frame ?? 0);
-    this.#frame = null;
-  }
-
-  #animate(from: ChartGeometry, to: ChartGeometry): void {
-    if (from.points.length < 2 || to.points.length < 2) {
-      this.animatedLine.set(null);
-      return;
-    }
-
-    const startTime = performance.now();
-
-    const step = (now: number): void => {
-      const t = Math.min(1, (now - startTime) / TRANSITION_DURATION);
-
-      this.animatedLine.set(t < 1 ? interpolateLine(from, to, easeOutQuint(t)) : null);
-      this.#frame = t < 1 ? requestAnimationFrame(step) : null;
-    };
-
-    this.#frame = requestAnimationFrame(step);
   }
 
   protected deltaFor(point: PlottedPoint): number {
