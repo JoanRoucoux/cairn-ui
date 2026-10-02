@@ -22,12 +22,17 @@ const SIZE_GAPS: Record<RowSize, string> = { md: 'gap-2.5', lg: 'gap-2.5', xl: '
 const PADDING_CLASSES: Record<RowPadding, string> = { md: 'px-2.5', sm: 'px-2', none: 'px-0' };
 
 const BASE_CLASSES =
-  'flex w-full items-center py-1.5 rounded-control text-left select-none touch-manipulation transition-[transform,background-color] [transition-duration:var(--duration-press),var(--duration-fast)] ease-out hover:bg-(--glow) active:bg-(--soft) active:scale-(--press-scale) focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring)';
+  'flex w-full items-center py-1.5 rounded-control text-left select-none touch-manipulation focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring)';
+
+const INTERACTIVE_CLASSES =
+  'transition-[transform,background-color] [transition-duration:var(--duration-press),var(--duration-fast)] ease-out hover:bg-(--glow) active:bg-(--soft) active:scale-(--press-scale)';
+
+const UNAVAILABLE_CLASSES = 'opacity-50 cursor-not-allowed';
 
 const SELECTED_CLASSES = 'bg-(--soft)';
 
 /**
- * Clickable row of a list: a holding, an envelope, an account.
+ * Clickable row of a list: a holding, an account, a search result.
  *
  * @example
  * <a ui-row [selected]="holding.id === openId()" [routerLink]="['/holdings', holding.id]">
@@ -48,26 +53,27 @@ const SELECTED_CLASSES = 'bg-(--soft)';
   host: {
     '[class]': 'classes()',
     '[attr.aria-busy]': 'busy() || null',
-    '[attr.aria-disabled]': 'busy() || null',
+    '[attr.aria-disabled]': "busy() || unavailable() ? 'true' : null",
     '[attr.aria-current]': "selected() ? 'true' : null",
   },
 })
 export class UiRow {
   readonly selected = input(false, { transform: booleanAttribute });
   readonly busy = input(false, { transform: booleanAttribute });
+  readonly unavailable = input(false, { transform: booleanAttribute });
   readonly size = input<RowSize>('md');
   readonly padding = input<RowPadding>('md');
   readonly gap = input<RowGap>('default');
 
   protected readonly classes = computed(
     () =>
-      `${BASE_CLASSES} ${SIZE_CLASSES[this.size()]} ${this.gap() === 'sm' ? 'gap-2' : SIZE_GAPS[this.size()]} ${PADDING_CLASSES[this.padding()]}${this.selected() ? ` ${SELECTED_CLASSES}` : ''}${this.busy() ? ' pointer-events-none' : ''}`,
+      `${BASE_CLASSES} ${SIZE_CLASSES[this.size()]} ${this.gap() === 'sm' ? 'gap-2' : SIZE_GAPS[this.size()]} ${PADDING_CLASSES[this.padding()]}${this.unavailable() ? ` ${UNAVAILABLE_CLASSES}` : ` ${INTERACTIVE_CLASSES}`}${this.selected() ? ` ${SELECTED_CLASSES}` : ''}${this.busy() ? ' pointer-events-none' : ''}`,
   );
 
   constructor() {
     const host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
     const guard = (event: Event): void => {
-      if (this.busy()) {
+      if (this.busy() || this.unavailable()) {
         event.preventDefault();
         event.stopImmediatePropagation();
       }

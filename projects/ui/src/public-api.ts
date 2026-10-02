@@ -57,6 +57,7 @@ export {
   type DialogWidth,
 } from './lib/dialog/dialog';
 export { type DonutSlice, UiDonut } from './lib/donut/donut';
+export { UiEmpty } from './lib/empty/empty';
 export { UiExternalLink } from './lib/external-link/external-link';
 export { FACT_SIZES, FACT_SUB_TONES, UiFact, UiFacts, type FactSize, type FactSubTone } from './lib/fact/fact';
 export { UiField, UiFieldLeading, UiFieldTrailing } from './lib/field/field';
@@ -91,6 +92,7 @@ export {
 export { SEGMENTED_SIZES, UiSegmented, type SegmentedOption, type SegmentedSize } from './lib/segmented/segmented';
 export { UiSelect } from './lib/select/select';
 export { SKELETON_SHAPES, UiSkeleton, type SkeletonShape } from './lib/skeleton/skeleton';
+export { UiStaleLink } from './lib/stale-link/stale-link';
 export { STAT_SIZES, UiStat, type StatSize } from './lib/stat/stat';
 export { UiSwitch } from './lib/switch/switch';
 export { UiTab, UiTabBar } from './lib/tab-bar/tab-bar';

@@ -145,6 +145,72 @@ describe('UiRow', () => {
     expect(row).toHaveClass('gap-2', 'min-h-18', 'pointer-fine:min-h-17');
     expect(row).not.toHaveClass('gap-3');
   });
+
+  it('greys an unavailable row, forbids the cursor and drops hover and press', async () => {
+    await render('<button ui-row unavailable type="button">Row</button>', { imports: [UiRow] });
+
+    const row = screen.getByRole('button', { name: 'Row' });
+    expect(row).toHaveAttribute('aria-disabled', 'true');
+    expect(row).toHaveClass('opacity-50', 'cursor-not-allowed');
+    expect(row).not.toHaveClass('hover:bg-(--glow)');
+    expect(row).not.toHaveClass('active:bg-(--soft)');
+    expect(row).not.toHaveClass('active:scale-(--press-scale)');
+  });
+
+  it('keeps its busy rules on a row that is both busy and unavailable', async () => {
+    const onClick = vi.fn();
+    await render('<button ui-row busy unavailable type="button" (click)="onClick()">Row</button>', {
+      imports: [UiRow],
+      componentProperties: { onClick },
+    });
+    const row = screen.getByText('Row', { selector: 'button' });
+
+    row.focus();
+    await userEvent.keyboard('{Enter}');
+    row.click();
+
+    expect(onClick).not.toHaveBeenCalled();
+    expect(row).toHaveFocus();
+    expect(row).toHaveAttribute('aria-busy', 'true');
+    expect(row).toHaveAttribute('aria-disabled', 'true');
+    expect(row).toHaveClass('pointer-events-none', 'opacity-50', 'cursor-not-allowed');
+    expect(row).not.toHaveClass('hover:bg-(--glow)');
+    expect(row).not.toHaveClass('active:scale-(--press-scale)');
+    expect(row.querySelector('[aria-hidden="true"]')).toHaveClass('animate-cairn-spin');
+  });
+
+  it('keeps hover and press and no aria-disabled on an available row', async () => {
+    await render('<button ui-row type="button">Row</button>', { imports: [UiRow] });
+
+    const row = screen.getByRole('button', { name: 'Row' });
+    expect(row).not.toHaveAttribute('aria-disabled');
+    expect(row).not.toHaveClass('opacity-50');
+    expect(row).toHaveClass('hover:bg-(--glow)', 'active:bg-(--soft)');
+  });
+
+  it('swallows the clicks of an unavailable row', async () => {
+    const onClick = vi.fn();
+    await render('<button ui-row unavailable type="button" (click)="onClick()">Row</button>', {
+      imports: [UiRow],
+      componentProperties: { onClick },
+    });
+
+    await userEvent.click(screen.getByRole('button', { name: 'Row' }));
+
+    expect(onClick).not.toHaveBeenCalled();
+  });
+
+  it('lets an available row click through', async () => {
+    const onClick = vi.fn();
+    await render('<button ui-row type="button" (click)="onClick()">Row</button>', {
+      imports: [UiRow],
+      componentProperties: { onClick },
+    });
+
+    await userEvent.click(screen.getByRole('button', { name: 'Row' }));
+
+    expect(onClick).toHaveBeenCalledOnce();
+  });
 });
 
 describe('UiRowItem', () => {
