@@ -65,7 +65,7 @@ describe('UiDonut', () => {
     await userEvent.hover(row);
 
     expect(centre.getByText('Fonds')).toBeInTheDocument();
-    expect(arcs[1]).toHaveClass('scale-104');
+    expect(arcs[1]).toHaveClass('scale-104', 'motion-reduce:scale-100');
     expect(arcs[1]).not.toHaveClass('opacity-50');
     expect(arcs[0]).not.toHaveClass('scale-104');
     expect(arcs[0]).toHaveClass('opacity-50');
@@ -118,7 +118,7 @@ describe('UiDonut', () => {
     );
 
     expect(screen.getByRole('button', { name: /Fonds/ })).toHaveClass(
-      'transition-[transform,background-color]',
+      'transition-[scale,background-color]',
       '[transition-duration:var(--duration-press),var(--duration-fast)]',
       'ease-out',
       'active:scale-(--press-scale)',

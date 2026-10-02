@@ -10,7 +10,7 @@ const identityValue = (value: number): string => `${value}`;
 const identityShare = (share: number): string => `${Math.round(share * 100)}%`;
 
 const ROW_CLASSES =
-  'flex w-full items-center gap-3 min-h-14 px-2 py-1 [font-variant-numeric:var(--numeric)] rounded-control text-left transition-[transform,background-color] [transition-duration:var(--duration-press),var(--duration-fast)] ease-out hover:bg-(--glow) active:bg-(--soft) active:scale-(--press-scale) focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring)';
+  'flex w-full items-center gap-3 min-h-14 px-2 py-1 [font-variant-numeric:var(--numeric)] rounded-control text-left transition-[scale,background-color] [transition-duration:var(--duration-press),var(--duration-fast)] ease-out hover:bg-(--glow) active:bg-(--soft) active:scale-(--press-scale) focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring)';
 
 const SLICE_CLASSES =
   'cursor-pointer origin-center [transform-box:view-box] transition-[scale,opacity] duration-(--duration-fast) ease-out';
@@ -172,7 +172,7 @@ export class UiDonut {
       return SLICE_CLASSES;
     }
 
-    return `${SLICE_CLASSES} ${id === slice.id ? 'scale-104' : 'opacity-50'}`;
+    return `${SLICE_CLASSES} ${id === slice.id ? 'scale-104 motion-reduce:scale-100' : 'opacity-50'}`;
   }
 
   protected dotClasses(slice: RankedSlice): string {
