@@ -17,6 +17,7 @@ import {
 
 type RowArgs = {
   selected: boolean;
+  busy: boolean;
   size: RowSize;
   padding: RowPadding;
   gap: RowGap;
@@ -53,7 +54,7 @@ with a click handler, so keyboard and assistive technology support come for free
   render: (args) => ({
     props: args,
     template: `
-      <a ui-row href="#" [selected]="selected" [size]="size" [padding]="padding" [gap]="gap" class="w-[340px]">
+      <a ui-row href="#" [selected]="selected" [busy]="busy" [size]="size" [padding]="padding" [gap]="gap" class="w-[340px]">
         <div class="flex min-w-0 flex-1 flex-col">
           <span class="text-body font-medium">Amundi MSCI World</span>
           <span class="text-label text-(--muted-foreground)">500 × 28,64 €</span>
@@ -67,12 +68,18 @@ with a click handler, so keyboard and assistive technology support come for free
   }),
   args: {
     selected: false,
+    busy: false,
     size: 'md',
     padding: 'md',
     gap: 'default',
   },
   argTypes: {
     selected: { control: 'boolean', description: 'Sets `aria-current="true"` and the soft background.' },
+    busy: {
+      control: 'boolean',
+      description:
+        'An action started from the row is in flight: a spinner turns in the trailing slot, the row sets `aria-busy` and `inert`, so it cannot be activated twice.',
+    },
     size: {
       control: 'select',
       options: [...ROW_SIZES],
@@ -99,6 +106,17 @@ export const Default: Story = {};
 
 export const Selected: Story = {
   args: { selected: true },
+};
+
+export const Busy: Story = {
+  args: { busy: true },
+  play: async ({ canvasElement }) => {
+    const row = canvasElement.querySelector('a[ui-row]')!;
+
+    await expect(row).toHaveAttribute('aria-busy', 'true');
+    await expect(row).toHaveAttribute('inert');
+    await expect(getComputedStyle(row.querySelector('[aria-hidden="true"]')!).animationName).toBe('cairn-spin');
+  },
 };
 
 export const Tall: Story = {

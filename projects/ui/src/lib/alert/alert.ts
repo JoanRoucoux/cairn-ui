@@ -61,6 +61,8 @@ const VARIANT_CLASSES: Record<AlertVariant, string> = {
     </div>
   `,
   host: {
+    'animate.enter': 'ui-enter-fade',
+    'animate.leave': 'ui-leave-fade',
     '[class]': 'classes()',
     '[attr.role]': "variant() === 'warning' ? 'status' : 'alert'",
   },

@@ -1,5 +1,5 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
-import { expect, within } from 'storybook/test';
+import { expect, waitFor, within } from 'storybook/test';
 
 import { ALERT_VARIANTS, type AlertVariant, UiAlert } from './alert';
 
@@ -64,7 +64,7 @@ export const WithHeading: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(canvas.getByRole('alert')).toBeVisible();
+    await waitFor(() => expect(canvas.getByRole('alert')).toBeVisible());
     await expect(canvas.getByText("La connexion n'a pas abouti")).toBeVisible();
   },
 };
@@ -82,6 +82,23 @@ export const Warning: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(canvas.getByRole('status')).toBeVisible();
+    await waitFor(() => expect(canvas.getByRole('status')).toBeVisible());
+  },
+};
+
+export const AppearsAndLeaves: Story = {
+  render: () => ({
+    props: { shown: false },
+    template: `
+      <button type="button" class="text-label" (click)="shown = !shown">Basculer</button>
+      <div class="mt-3 w-[340px]">
+        @if (shown) {
+          <ui-alert variant="warning">Vous vendez toute la ligne. Cette action est définitive.</ui-alert>
+        }
+      </div>
+    `,
+  }),
+  parameters: {
+    docs: { description: { story: 'The alert fades in when it appears and fades out when it is removed.' } },
   },
 };

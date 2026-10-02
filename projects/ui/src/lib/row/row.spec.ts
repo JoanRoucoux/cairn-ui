@@ -3,6 +3,24 @@ import { render, screen } from '@testing-library/angular';
 import { UiListRow, UiRow, UiRowItem, UiRowTile } from './row';
 
 describe('UiRow', () => {
+  it('shows a spinner in the trailing slot, marks itself busy and inert while busy', async () => {
+    await render('<button ui-row type="button" busy>Import</button>', { imports: [UiRow] });
+    const row = screen.getByText('Import', { selector: 'button' });
+
+    expect(row).toHaveAttribute('aria-busy', 'true');
+    expect(row).toHaveAttribute('inert');
+    expect(row.querySelector('[aria-hidden="true"]')).toHaveClass('animate-cairn-spin');
+  });
+
+  it('draws no spinner and stays interactive when not busy', async () => {
+    await render('<button ui-row type="button">Import</button>', { imports: [UiRow] });
+    const row = screen.getByRole('button', { name: 'Import' });
+
+    expect(row).not.toHaveAttribute('aria-busy');
+    expect(row).not.toHaveAttribute('inert');
+    expect(row.querySelector('[aria-hidden="true"]')).toBeNull();
+  });
+
   it('renders as a link carrying its content', async () => {
     await render('<a ui-row href="/holdings/1">Amundi MSCI World</a>', { imports: [UiRow] });
 

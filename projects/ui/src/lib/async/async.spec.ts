@@ -24,7 +24,12 @@ describe('UiAsync', () => {
     ['empty', 'nothing yet'],
     ['ready', 'the content'],
   ])('shows only the %s slot', async (state, visible) => {
-    await render(template, { imports: [UiAsync], componentProperties: { state, retried: vi.fn() } });
+    const { fixture } = await render(template, {
+      imports: [UiAsync],
+      componentProperties: { state, retried: vi.fn() },
+    });
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    fixture.detectChanges();
 
     expect(screen.getByText(visible)).toBeInTheDocument();
     for (const other of ['loading-skeleton', 'nothing yet', 'the content'].filter((t) => t !== visible)) {
@@ -205,5 +210,65 @@ describe('UiAsync', () => {
       expect(alert).not.toHaveClass('flex-1');
       expect(host).not.toHaveClass('flex');
     });
+  });
+});
+
+describe('UiAsync skeleton timing', () => {
+  const template = `
+    <ui-async [state]="state" errorTitle="Failed" errorMessage="Nope" retryLabel="Retry">
+      <span asyncLoading>skeleton</span>
+      <span>content</span>
+    </ui-async>`;
+
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => vi.useRealTimers());
+
+  const change = async (
+    fixture: { componentInstance: { state: string }; detectChanges: () => void; whenStable: () => Promise<void> },
+    state: string,
+    elapsed = 0,
+  ): Promise<void> => {
+    fixture.componentInstance.state = state;
+    fixture.detectChanges();
+    await vi.advanceTimersByTimeAsync(elapsed);
+    fixture.detectChanges();
+  };
+
+  it('renders no skeleton for a 100 ms call', async () => {
+    const { fixture } = await render(template, { imports: [UiAsync], componentProperties: { state: 'loading' } });
+
+    await vi.advanceTimersByTimeAsync(100);
+    expect(screen.queryByText('skeleton')).not.toBeInTheDocument();
+    expect(screen.queryByText('content')).not.toBeInTheDocument();
+    await change(fixture, 'ready');
+    expect(screen.getByText('content')).toBeInTheDocument();
+    expect(screen.queryByText('skeleton')).not.toBeInTheDocument();
+  });
+
+  it('shows the skeleton from 150 ms and keeps it until 550 ms for a 300 ms call', async () => {
+    const { fixture } = await render(template, { imports: [UiAsync], componentProperties: { state: 'loading' } });
+
+    await vi.advanceTimersByTimeAsync(300);
+    fixture.detectChanges();
+    expect(screen.getByText('skeleton')).toBeInTheDocument();
+    await change(fixture, 'ready', 249);
+    expect(screen.getByText('skeleton')).toBeInTheDocument();
+    await change(fixture, 'ready', 1);
+    expect(screen.queryByText('skeleton')).not.toBeInTheDocument();
+    expect(screen.getByText('content')).toBeInTheDocument();
+  });
+
+  it('shows the skeleton again on a retry after an error', async () => {
+    const { fixture } = await render(template, { imports: [UiAsync], componentProperties: { state: 'error' } });
+
+    expect(screen.getByRole('alert')).toBeInTheDocument();
+    await change(fixture, 'loading', 150);
+    expect(screen.getByText('skeleton')).toBeInTheDocument();
+  });
+
+  it('stays marked busy as soon as the source is loading', async () => {
+    const { fixture } = await render(template, { imports: [UiAsync], componentProperties: { state: 'loading' } });
+
+    expect(fixture.nativeElement.querySelector('ui-async')).toHaveAttribute('aria-busy', 'true');
   });
 });

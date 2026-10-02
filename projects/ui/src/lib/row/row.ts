@@ -36,14 +36,25 @@ const SELECTED_CLASSES = 'bg-(--soft)';
  */
 @Component({
   selector: 'a[ui-row], button[ui-row]',
-  template: '<ng-content />',
+  template: `
+    <ng-content />
+    @if (busy()) {
+      <span
+        aria-hidden="true"
+        class="rounded-pill animate-cairn-spin size-4 flex-none border-2 border-current border-r-transparent"
+      ></span>
+    }
+  `,
   host: {
     '[class]': 'classes()',
+    '[attr.aria-busy]': 'busy() || null',
+    '[attr.inert]': "busy() ? '' : null",
     '[attr.aria-current]': "selected() ? 'true' : null",
   },
 })
 export class UiRow {
   readonly selected = input(false, { transform: booleanAttribute });
+  readonly busy = input(false, { transform: booleanAttribute });
   readonly size = input<RowSize>('md');
   readonly padding = input<RowPadding>('md');
   readonly gap = input<RowGap>('default');

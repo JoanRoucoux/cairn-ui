@@ -108,7 +108,9 @@ export class UiFieldTrailing {}
       }
 
       @if (message()) {
-        <p class="text-label font-medium text-(--negative)" role="alert" [id]="errorId">{{ message() }}</p>
+        <p animate.enter="ui-enter-fade" class="text-label font-medium text-(--negative)" role="alert" [id]="errorId">
+          {{ message() }}
+        </p>
       }
     </div>
   `,

@@ -22,6 +22,7 @@ export {
   type AsyncState,
   type AsyncVariant,
 } from './lib/async/async';
+export { delayedState } from './lib/async/delayed-state';
 export { AVATAR_SIZES, UiAvatar, UiAvatarLink, type AvatarSize } from './lib/avatar/avatar';
 export { BACK_LINK_SIZES, UiBackLink, type BackLinkSize } from './lib/back-link/back-link';
 export { BADGE_SIZES, BADGE_VARIANTS, UiBadge, type BadgeSize, type BadgeVariant } from './lib/badge/badge';

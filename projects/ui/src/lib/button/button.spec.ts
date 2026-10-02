@@ -146,7 +146,7 @@ describe('UiButton', () => {
   it('tightens the start padding when an icon leads the label', async () => {
     await render('<button ui-button>Add</button>', { imports: [UiButton] });
 
-    expect(screen.getByRole('button', { name: 'Add' })).toHaveClass('has-[>svg:first-child]:pl-3');
+    expect(screen.getByRole('button', { name: 'Add' })).toHaveClass('has-[>span>svg:first-child]:pl-3');
   });
 
   it('steps xxl down from 52 px to 44 px at 64rem, with body text', async () => {
@@ -157,7 +157,7 @@ describe('UiButton', () => {
       'lg:h-11',
       'px-6',
       'lg:px-5',
-      'lg:has-[>svg:first-child]:pl-4',
+      'lg:has-[>span>svg:first-child]:pl-4',
       'text-body',
     );
   });
@@ -218,6 +218,27 @@ describe('UiButton', () => {
       const { container } = await render('<button ui-button loading>Go</button>', { imports: [UiButton] });
 
       expect(container.querySelector('[aria-hidden="true"]')).not.toBeNull();
+    });
+
+    it('turns the spinner on the cairn-spin token and overlays it, so reduced motion and width are unchanged', async () => {
+      const { container } = await render('<button ui-button loading>Go</button>', { imports: [UiButton] });
+      const spinner = container.querySelector('[aria-hidden="true"]');
+
+      expect(spinner).toHaveClass('animate-cairn-spin', 'absolute', 'inset-0', 'm-auto');
+      expect(spinner).not.toHaveClass('motion-safe:animate-spin');
+    });
+
+    it('hides the label under the spinner instead of removing it', async () => {
+      await render('<button ui-button loading>Go</button>', { imports: [UiButton] });
+
+      expect(screen.getByText('Go')).toHaveClass('text-transparent');
+    });
+
+    it('keeps the label visible and draws no spinner when idle', async () => {
+      const { container } = await render('<button ui-button>Go</button>', { imports: [UiButton] });
+
+      expect(screen.getByText('Go')).not.toHaveClass('text-transparent');
+      expect(container.querySelector('[aria-hidden="true"]')).toBeNull();
     });
   });
 });

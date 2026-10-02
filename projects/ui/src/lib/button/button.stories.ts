@@ -168,6 +168,8 @@ export const Loading: Story = {
 
     await expect(button).toHaveAttribute('aria-busy', 'true');
     await expect(button).toHaveAttribute('aria-disabled', 'true');
+    await expect(getComputedStyle(button.querySelector('[aria-hidden="true"]')!).animationName).toBe('cairn-spin');
+    await expect(getComputedStyle(canvas.getByText('Sell')).color).toBe('rgba(0, 0, 0, 0)');
   },
 };
 

@@ -56,10 +56,10 @@ const SIZE_CLASSES: Record<ButtonSize, string> = {
   slim: 'h-11 lg:h-8 gap-1.5 px-2.5 text-label',
   xs: 'h-8 gap-1.5 px-2.5 text-label',
   sm: 'h-9 gap-2 px-3 text-label',
-  md: 'min-h-(--row-min) gap-2 px-4 text-label has-[>svg:first-child]:pl-3',
+  md: 'min-h-(--row-min) gap-2 px-4 text-label has-[>span>svg:first-child]:pl-3',
   lg: 'h-11 gap-2 px-[18px] text-label',
   xl: 'h-[50px] gap-2 px-6 text-body',
-  xxl: 'h-[52px] lg:h-11 gap-2.5 px-6 lg:px-5 text-body lg:has-[>svg:first-child]:pl-4',
+  xxl: 'h-[52px] lg:h-11 gap-2.5 px-6 lg:px-5 text-body lg:has-[>span>svg:first-child]:pl-4',
   tall: 'h-12 lg:h-10 gap-2 px-4 text-body',
   block: 'h-[50px] lg:h-11 gap-2 px-4 text-body',
   icon: 'size-(--row-min) gap-2 p-0',
@@ -79,10 +79,10 @@ const SIZE_CLASSES: Record<ButtonSize, string> = {
     @if (loading()) {
       <span
         aria-hidden="true"
-        class="rounded-pill size-4 border-2 border-current border-r-transparent motion-safe:animate-spin"
+        class="rounded-pill animate-cairn-spin absolute inset-0 m-auto size-4 border-2 border-current border-r-transparent"
       ></span>
     }
-    <ng-content />
+    <span class="contents" [class.text-transparent]="loading()"><ng-content /></span>
   `,
   host: {
     '[class]': 'classes()',
