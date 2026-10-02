@@ -101,6 +101,9 @@
   --press-scale: 0.97;
   --enter-scale: 0.95; /* dialogs and menus start at scale(0.95) and opacity 0, never scale(0) */
   --pulse-duration: 1600ms; /* skeleton opacity pulse */
+  --duration-spin: 800ms; /* button spinner, one turn */
+  --duration-highlight: 1200ms; /* a freshly edited row fading back to its background */
+  --toast-duration: 5000ms; /* how long a confirmation stays */
 
   /* Browser theme color (meta theme-color, iOS status bar) follows the top of the page:
      light #f7f8f8, dark #0a0b0b - the --background values. */
@@ -137,6 +140,8 @@
     --enter-scale: 1; /* slides and scales become short fades */
     --duration-base: 150ms;
     --pulse-duration: 0ms;
+    --duration-highlight: 600ms;
+    --duration-spin: 1600ms; /* the spinner still says work is in progress, only slower */
   }
 }
 
