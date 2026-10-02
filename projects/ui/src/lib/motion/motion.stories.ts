@@ -58,7 +58,8 @@ export const EnterAndLeave: Story = {
 
     await userEvent.click(canvas.getByRole('button', { name: 'Leave' }));
 
-    await expect(canvas.queryByTestId('fade')).not.toBeNull();
+    await waitFor(() => expect(canvas.getByTestId('fade')).toHaveClass('ui-leave-fade'));
+    await expect(animationOf('fade')).toBe('cairn-fade-out');
     await waitFor(() => expect(canvas.queryByTestId('fade')).toBeNull());
   },
 };

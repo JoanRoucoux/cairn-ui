@@ -44,6 +44,7 @@ describe('motion.css', () => {
 
     expect(reduced).toContain('::view-transition-group(*)');
     expect(reduced).toContain('animation: none');
+    expect(reduced).toMatch(/\.ui-enter-fade-up,\s*\.ui-enter-panel\s*\{\s*animation-name: cairn-fade-in;/);
   });
 
   it('removes every transition while the theme switches', () => {
