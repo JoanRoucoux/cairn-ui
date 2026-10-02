@@ -67,8 +67,12 @@ export class UiToaster {
       untracked(() => {
         if (!toast) {
           this.stop();
+          this.hovered.set(false);
+          this.focused.set(false);
           return;
         }
+
+        this.host.querySelectorAll('.ui-leave-fade').forEach((leaving) => leaving.remove());
 
         if (paused) {
           this.pause();

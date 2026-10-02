@@ -185,3 +185,57 @@ describe('UiToaster', () => {
     expect(vi.getTimerCount()).toBe(0);
   });
 });
+
+describe('UiToaster replacement and reset', () => {
+  beforeEach(() => vi.useFakeTimers({ shouldAdvanceTime: false }));
+  afterEach(() => vi.useRealTimers());
+
+  it('drops a message still leaving when a new one is shown', async () => {
+    const { toasts, host } = await setup();
+
+    toasts.show('Un');
+    await flush();
+    const first = screen.getByText('Un');
+    first.classList.add('ui-leave-fade');
+    toasts.dismiss();
+    await flush();
+    toasts.show('Deux');
+    await flush();
+
+    expect(first.isConnected).toBe(false);
+    expect(host.children).toHaveLength(1);
+    expect(host).toHaveTextContent('Deux');
+  });
+
+  it('starts the next timer unpaused after a programmatic dismiss while hovered', async () => {
+    const { toasts } = await setup();
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+
+    toasts.show('Un');
+    await flush();
+    await user.hover(screen.getByText('Un'));
+    toasts.dismiss();
+    await flush();
+    toasts.show('Deux');
+    await flush();
+    await vi.advanceTimersByTimeAsync(5000);
+
+    expect(toasts.toast()).toBeNull();
+  });
+
+  it('starts the next timer unpaused after a programmatic dismiss while focused', async () => {
+    const { toasts } = await setup();
+
+    toasts.show('Un');
+    await flush();
+    screen.getByText('Un').dispatchEvent(new FocusEvent('focusin', { bubbles: true }));
+    await flush();
+    toasts.dismiss();
+    await flush();
+    toasts.show('Deux');
+    await flush();
+    await vi.advanceTimersByTimeAsync(5000);
+
+    expect(toasts.toast()).toBeNull();
+  });
+});
