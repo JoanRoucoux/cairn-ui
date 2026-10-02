@@ -258,6 +258,15 @@ describe('UiMenu', () => {
       );
     });
 
+    it('fades without sliding when the reader asks for reduced motion', async () => {
+      const { container } = await render(sheetTemplate, { imports });
+
+      expect(container.querySelector('ui-menu')).toHaveClass(
+        'max-lg:motion-reduce:translate-y-0',
+        'max-lg:motion-reduce:starting:open:translate-y-0',
+      );
+    });
+
     it('names the sheet with a heading that is not a menu item', async () => {
       await render(sheetTemplate, { imports });
 
