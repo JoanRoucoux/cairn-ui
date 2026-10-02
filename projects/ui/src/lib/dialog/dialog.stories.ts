@@ -2,12 +2,13 @@ import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vit
 import { expect, userEvent, waitFor, within } from 'storybook/test';
 
 import { UiButton } from '../button/button';
-import { DIALOG_LAYOUTS, type DialogLayout, type DialogWidth, UiDialog } from './dialog';
+import { type DialogLayout, type DialogWidth, UiDialog } from './dialog';
 import {
   addLineTemplate,
   bodyReachable,
   defaultTemplate,
   desktopAnchored,
+  dialogArgTypes,
   field,
   keptMountedTemplate,
   keptMountedUntilClosed,
@@ -24,6 +25,7 @@ type DialogArgs = {
   width: DialogWidth | (string & {});
   layout?: DialogLayout;
   open: boolean;
+  busy?: boolean;
 };
 
 const meta: Meta<DialogArgs> = {
@@ -75,6 +77,10 @@ On a desktop the dialog fades and scales up from \`--enter-scale\` in \`--durati
 \`--ease-sheet\`, while the veil fades. The handle and the header of a sheet can be dragged down: the
 panel follows the finger, closes past 30 % of its height or on a release faster than 0.5 px/ms, and
 otherwise springs back on \`--ease-sheet\` in \`--duration-base\`. The body scrolls and never drags.
+
+\`busy\` keeps the dialog open while its action runs, so the outcome stays on screen: Escape, a click on the
+backdrop and a drag of the sheet do nothing, the cross is disabled and the dialog carries \`aria-busy\`. The
+owner disables its own buttons and still closes it by setting \`open\` to \`false\`.
 With \`prefers-reduced-motion: reduce\` the sheet fades instead of sliding.
 
 #### When to use
@@ -109,36 +115,9 @@ With \`prefers-reduced-motion: reduce\` the sheet fades instead of sliding.
     layout: 'trade',
     width: '440px',
     open: false,
+    busy: false,
   },
-  argTypes: {
-    heading: {
-      control: 'text',
-      description: 'Visible title, also wired as the accessible name via `aria-labelledby`.',
-    },
-    description: {
-      control: 'text',
-      description: 'Optional subtitle under the title, also wired as `aria-describedby`.',
-    },
-    closeLabel: {
-      control: 'text',
-      description: 'Accessible name of the close cross. The cross is shown only when this is set.',
-    },
-    width: {
-      control: 'text',
-      description: 'Max width of the dialog on a desktop: `md`, `lg` or any CSS length such as `528px`.',
-    },
-    layout: {
-      control: 'inline-radio',
-      options: [...DIALOG_LAYOUTS],
-      description:
-        'Spacing preset: `trade` (default), `form`, `list` (divided footer, fixed-height sheet) or `confirm` (alertdialog).',
-    },
-    open: {
-      control: 'boolean',
-      description:
-        'Controls `showModal()`/`close()` on the native `<dialog>`. Setting it to `false` plays the exit, then emits `closed` with `programmatic`.',
-    },
-  },
+  argTypes: dialogArgTypes,
 };
 
 export default meta;
@@ -183,6 +162,21 @@ export const BackdropCloses: Story = {
 
     await waitFor(() => expect(canvas.queryByRole('dialog')).not.toBeInTheDocument());
     await expect(canvas.getByRole('button', { name: 'Ouvrir' })).toHaveFocus();
+  },
+};
+
+export const BusyStaysOpen: Story = {
+  args: { open: true, busy: true },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const dialog = await canvas.findByRole('dialog', { name: 'Saisir un cours' });
+
+    await expect(dialog).toHaveAttribute('aria-busy', 'true');
+    await expect(canvas.getByRole('button', { name: 'Fermer' })).toBeDisabled();
+    await userEvent.keyboard('{Escape}');
+    await userEvent.pointer({ keys: '[MouseLeft]', target: dialog, coords: { clientX: 4, clientY: 4 } });
+
+    await expect(dialog).toHaveAttribute('open');
   },
 };
 
