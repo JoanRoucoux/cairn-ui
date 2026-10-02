@@ -27,6 +27,14 @@ const targetOf = (points: ChartPoint[], width = 640, height = 240): ChartGeometr
   return buildGeometry(points, width, plotHeight, { x: 0, top: padding, bottom: padding })!;
 };
 
+const endOf = (container: Element): number[] =>
+  ['cx', 'cy'].map((name) => Number(container.querySelector('[data-chart-end]')!.getAttribute(name)));
+
+const fadedOf = (container: Element): boolean[] =>
+  ['[data-chart-start-label]', '[data-chart-start-line]'].map((selector) =>
+    container.querySelector(selector)!.classList.contains('opacity-0'),
+  );
+
 const vertices = (d: string): number[][] => d.split(' ').map((vertex) => vertex.slice(1).split(',').map(Number));
 
 const template = `<ui-line-chart label="x" startLabel="Départ" [points]="points" [style]="style" />`;
@@ -35,6 +43,7 @@ describe('UiLineChart motion', () => {
   let frames: Map<number, FrameRequestCallback>;
   let now: number;
   let reduced: boolean;
+  let reducedListeners: ((event: { matches: boolean }) => void)[];
   let triggerResize: (size: { width: number; height: number }) => void;
   let originals: {
     raf: typeof requestAnimationFrame;
@@ -62,6 +71,7 @@ describe('UiLineChart motion', () => {
     frames = new Map();
     now = 1000;
     reduced = false;
+    reducedListeners = [];
     originals = {
       raf: globalThis.requestAnimationFrame,
       caf: globalThis.cancelAnimationFrame,
@@ -80,7 +90,11 @@ describe('UiLineChart motion', () => {
     vi.spyOn(performance, 'now').mockImplementation(() => now);
     globalThis.matchMedia = ((query: string) => ({
       matches: query.includes('reduce') ? reduced : false,
-      addEventListener: vi.fn(),
+      addEventListener: (_: string, listener: (event: { matches: boolean }) => void) => {
+        if (query.includes('reduce')) {
+          reducedListeners.push(listener);
+        }
+      },
       removeEventListener: vi.fn(),
     })) as unknown as typeof matchMedia;
 
@@ -107,7 +121,8 @@ describe('UiLineChart motion', () => {
 
   describe('on mount and on resize', () => {
     it('draws at the container size from the first paint, before the observer reports it', async () => {
-      vi.spyOn(Element.prototype, 'getBoundingClientRect').mockReturnValue({ width: 320, height: 192 } as DOMRect);
+      vi.spyOn(Element.prototype, 'clientWidth', 'get').mockReturnValue(320);
+      vi.spyOn(Element.prototype, 'clientHeight', 'get').mockReturnValue(192);
       const { fixture } = await mount(rising);
 
       expect(fixture.nativeElement.querySelector('svg')).toHaveAttribute('viewBox', '0 0 320 192');
@@ -137,6 +152,31 @@ describe('UiLineChart motion', () => {
       fixture.detectChanges();
 
       expect(line(fixture.nativeElement)).toBe(targetOf(rising, 500, 200).line);
+    });
+
+    it('measures the layout size at mount, so a scaled ancestor does not shrink the first paint', async () => {
+      vi.spyOn(Element.prototype, 'clientWidth', 'get').mockReturnValue(320);
+      vi.spyOn(Element.prototype, 'clientHeight', 'get').mockReturnValue(192);
+      vi.spyOn(Element.prototype, 'getBoundingClientRect').mockReturnValue({ width: 304, height: 182.4 } as DOMRect);
+      const { fixture } = await mount(rising);
+
+      expect(fixture.nativeElement.querySelector('svg')).toHaveAttribute('viewBox', '0 0 320 192');
+    });
+
+    it('snaps to the target at the new size when a resize lands mid-change, label and line back in place', async () => {
+      const { fixture, rerender } = await mount(rising);
+
+      await rerender({ componentProperties: { points: wavy } });
+      flushFrame(1100);
+      triggerResize({ width: 320, height: 192 });
+      fixture.detectChanges();
+      flushFrame(1150);
+      fixture.detectChanges();
+
+      expect(frames.size).toBe(0);
+      expect(line(fixture.nativeElement)).toBe(targetOf(wavy, 320, 192).line);
+      expect(endOf(fixture.nativeElement)).toEqual([targetOf(wavy, 320, 192).end.x, targetOf(wavy, 320, 192).end.y]);
+      expect(fadedOf(fixture.nativeElement)).toEqual([false, false]);
     });
   });
 
@@ -192,14 +232,7 @@ describe('UiLineChart motion', () => {
       fixture.detectChanges();
 
       expect(line(fixture.nativeElement)).toBe(targetOf(rising).line);
-      expect(fixture.nativeElement.querySelector('[data-chart-end]')).toHaveAttribute(
-        'cx',
-        String(targetOf(rising).end.x),
-      );
-      expect(fixture.nativeElement.querySelector('[data-chart-end]')).toHaveAttribute(
-        'cy',
-        String(targetOf(rising).end.y),
-      );
+      expect(endOf(fixture.nativeElement)).toEqual([targetOf(rising).end.x, targetOf(rising).end.y]);
     });
 
     it('lasts --duration-base and settles on the exact target path', async () => {
@@ -232,16 +265,11 @@ describe('UiLineChart motion', () => {
 
     it('moves the end point along the interpolated path, then onto the new end', async () => {
       const { fixture, rerender } = await mount(rising);
-      const end = (): number[] => {
-        const circle = fixture.nativeElement.querySelector('[data-chart-end]') as SVGCircleElement;
-
-        return [Number(circle.getAttribute('cx')), Number(circle.getAttribute('cy'))];
-      };
 
       await rerender({ componentProperties: { points: wavy } });
       flushFrame(1050);
 
-      const [x, y] = end();
+      const [x, y] = endOf(fixture.nativeElement);
       const last = vertices(line(fixture.nativeElement)).at(-1)!;
       expect(x).toBeCloseTo(last[0]!, 1);
       expect(y).toBeCloseTo(last[1]!, 1);
@@ -249,7 +277,7 @@ describe('UiLineChart motion', () => {
       flushFrame(1260);
       fixture.detectChanges();
 
-      expect(end()).toEqual([targetOf(wavy).end.x, targetOf(wavy).end.y]);
+      expect(endOf(fixture.nativeElement)).toEqual([targetOf(wavy).end.x, targetOf(wavy).end.y]);
     });
 
     it('fades the start label and the dashed line out at their old place, then back in at the new one', async () => {
@@ -311,11 +339,45 @@ describe('UiLineChart motion', () => {
       fixture.detectChanges();
 
       expect(line(fixture.nativeElement)).toBe(targetOf(wavy).line);
-      expect(fixture.nativeElement.querySelector('[data-chart-start-label]')).not.toHaveClass('opacity-0');
+      expect(fadedOf(fixture.nativeElement)).toEqual([false, false]);
       expect(fixture.nativeElement.querySelector('[data-chart-start-line]')).toHaveAttribute(
         'y1',
         String(targetOf(wavy).start.y),
       );
+    });
+
+    it('lets a running change finish when the same values arrive again in a new array', async () => {
+      const { fixture, rerender } = await mount(rising);
+
+      await rerender({ componentProperties: { points: wavy } });
+      flushFrame(1100);
+      const onScreen = line(fixture.nativeElement);
+
+      await rerender({ componentProperties: { points: wavy.map((point) => ({ ...point })) } });
+      fixture.detectChanges();
+
+      expect(line(fixture.nativeElement)).toBe(onScreen);
+      expect(fadedOf(fixture.nativeElement)).toEqual([true, true]);
+
+      flushFrame(1260);
+      fixture.detectChanges();
+
+      expect(line(fixture.nativeElement)).toBe(targetOf(wavy).line);
+      expect(fadedOf(fixture.nativeElement)).toEqual([false, false]);
+    });
+
+    it('snaps to the end when reduced motion is switched on mid-change', async () => {
+      const { fixture, rerender } = await mount(rising);
+
+      await rerender({ componentProperties: { points: wavy } });
+      flushFrame(1100);
+      reducedListeners.forEach((listener) => listener({ matches: true }));
+      fixture.detectChanges();
+
+      expect(frames.size).toBe(0);
+      expect(line(fixture.nativeElement)).toBe(targetOf(wavy).line);
+      expect(fadedOf(fixture.nativeElement)).toEqual([false, false]);
+      expect(fixture.nativeElement.querySelector('[data-chart-start-label]')).toHaveTextContent('Départ 300');
     });
 
     it('stops the frames when the chart is destroyed mid-change', async () => {

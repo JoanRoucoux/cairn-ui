@@ -1,4 +1,4 @@
-import type { ChartGeometry } from './chart-scale';
+import type { ChartGeometry, ChartPoint } from './chart-scale';
 
 export const TRANSITION_SAMPLES = 120;
 export const TRANSITION_DURATION = 260;
@@ -13,8 +13,14 @@ export const durationFrom = (value: string): number => {
   const match = /^\s*([\d.]+)(ms|s)\s*$/.exec(value);
   const duration = match ? Number(match[1]) * (match[2] === 's' ? 1000 : 1) : Number.NaN;
 
-  return duration > 0 ? duration : TRANSITION_DURATION;
+  return Number.isFinite(duration) ? duration : TRANSITION_DURATION;
 };
+
+export const sameSeries = (a: readonly ChartPoint[], b: readonly ChartPoint[] | null): boolean =>
+  a === b ||
+  (b !== null &&
+    a.length === b.length &&
+    a.every((point, index) => point.t === b[index]!.t && point.v === b[index]!.v));
 
 const monotoneTangents = (xs: readonly number[], ys: readonly number[]): number[] => {
   const n = xs.length;
@@ -147,7 +153,7 @@ export type ShapeMotionOptions = { reduced: boolean; duration: () => number };
 
 export class ShapeMotion {
   readonly #view: ShapeView;
-  #points: unknown = null;
+  #points: readonly ChartPoint[] | null = null;
   #target: ChartGeometry | null = null;
   #held: ChartGeometry | null = null;
   #drawn: readonly Vertex[] | null = null;
@@ -157,12 +163,19 @@ export class ShapeMotion {
     this.#view = view;
   }
 
-  follow(points: unknown, geometry: ChartGeometry | null, options: ShapeMotionOptions): void {
-    const newSeries = points !== this.#points;
+  follow(points: readonly ChartPoint[], geometry: ChartGeometry | null, options: ShapeMotionOptions): void {
+    const newSeries = !sameSeries(points, this.#points);
+
+    this.#points = points;
+
+    if (this.#stop && !newSeries && !options.reduced && geometry?.line === this.#target?.line) {
+      this.#target = geometry;
+      return;
+    }
+
     const from = this.#drawn;
     const held = this.#held ?? this.#target;
 
-    this.#points = points;
     this.#target = geometry;
     this.stop();
 
@@ -171,11 +184,18 @@ export class ShapeMotion {
       return;
     }
 
+    const duration = options.duration();
+
+    if (duration <= 0) {
+      this.#settle(geometry);
+      return;
+    }
+
     this.#hold(held);
     this.#stop = animateShape(
       from,
       geometry.points,
-      options.duration(),
+      duration,
       (shape, line) => this.#draw(shape, line, shape.at(-1)!),
       () => this.#settle(geometry),
     );
@@ -183,6 +203,7 @@ export class ShapeMotion {
 
   stop(): void {
     this.#stop?.();
+    this.#stop = null;
   }
 
   #hold(geometry: ChartGeometry | null): void {
@@ -191,6 +212,7 @@ export class ShapeMotion {
   }
 
   #settle(geometry: ChartGeometry | null): void {
+    this.#stop = null;
     this.#hold(null);
     this.#drawn = null;
 

@@ -1,5 +1,5 @@
 import { type ChartPoint, buildGeometry } from './chart-scale';
-import { durationFrom, easeOutQuint, polyline, shapeAt, shapeTransition } from './transition';
+import { durationFrom, easeOutQuint, polyline, sameSeries, shapeAt, shapeTransition } from './transition';
 
 const shapeOf = (points: ChartPoint[]): NonNullable<ReturnType<typeof buildGeometry>>['points'] =>
   buildGeometry(points, 300, 100)!.points;
@@ -21,10 +21,38 @@ describe('durationFrom', () => {
     expect(durationFrom(' 0.4s')).toBe(400);
   });
 
-  it('falls back to 260 ms for an empty, unreadable or zero token', () => {
+  it('falls back to 260 ms for an empty or unreadable token', () => {
     expect(durationFrom('')).toBe(260);
     expect(durationFrom('fast')).toBe(260);
-    expect(durationFrom('0ms')).toBe(260);
+  });
+
+  it('reads a zero token as zero, so a consumer can turn the morph off', () => {
+    expect(durationFrom('0ms')).toBe(0);
+    expect(durationFrom('0s')).toBe(0);
+  });
+});
+
+describe('sameSeries', () => {
+  const series = [
+    { t: 0, v: 1 },
+    { t: 1, v: 2 },
+  ];
+
+  it('matches the same array, or another array with the same times and values', () => {
+    expect(sameSeries(series, series)).toBe(true);
+    expect(
+      sameSeries(
+        series,
+        series.map((point) => ({ ...point })),
+      ),
+    ).toBe(true);
+  });
+
+  it('tells apart no previous series, another length, another time or another value', () => {
+    expect(sameSeries(series, null)).toBe(false);
+    expect(sameSeries(series, series.slice(1))).toBe(false);
+    expect(sameSeries(series, [series[0]!, { t: 2, v: 2 }])).toBe(false);
+    expect(sameSeries(series, [series[0]!, { t: 1, v: 3 }])).toBe(false);
   });
 });
 

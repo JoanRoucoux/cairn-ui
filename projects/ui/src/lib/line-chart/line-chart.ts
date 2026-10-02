@@ -33,6 +33,7 @@ import {
   tooltipPlacement,
 } from './internal/chart-layout';
 import { type ChartGeometry, type ChartPoint, type PlottedPoint, buildGeometry } from './internal/chart-scale';
+import { observeSize } from './internal/observe-size';
 import { placeStartLabel } from './internal/start-label';
 import { ShapeMotion, durationFrom } from './internal/transition';
 import { wideViewport } from './internal/viewport';
@@ -297,46 +298,26 @@ export class UiLineChart {
     return { label, placement: { ...placement, y: startLabelBaseline(placement.y) } };
   });
 
-  #renderRef = afterNextRender(() => this.#observeSize());
+  #renderRef = afterNextRender(() => {
+    this.#destroyRef.onDestroy(() => this.#renderRef.destroy());
+    observeSize(this.svgRef().nativeElement, this.#destroyRef, (size) => this.measuredSize.set(size));
+  });
 
   constructor() {
     effect(() => {
       const points = this.points();
       const geometry = this.geometry();
+      const reduced = this.#reducedMotion();
 
       untracked(() =>
         this.#motion.follow(points, geometry, {
-          reduced: this.#reducedMotion(),
+          reduced,
           duration: () => durationFrom(getComputedStyle(this.#host.nativeElement).getPropertyValue('--duration-base')),
         }),
       );
     });
 
     this.#destroyRef.onDestroy(() => this.#motion.stop());
-  }
-
-  #observeSize(): void {
-    this.#destroyRef.onDestroy(() => this.#renderRef.destroy());
-
-    if (typeof ResizeObserver === 'undefined') {
-      return;
-    }
-
-    const element = this.svgRef().nativeElement;
-    const { width, height } = element.getBoundingClientRect();
-
-    if (width > 0 && height > 0) {
-      this.measuredSize.set({ width, height });
-    }
-
-    const observer = new ResizeObserver(([entry]) => {
-      if (entry) {
-        this.measuredSize.set({ width: entry.contentRect.width, height: entry.contentRect.height });
-      }
-    });
-
-    observer.observe(element);
-    this.#destroyRef.onDestroy(() => observer.disconnect());
   }
 
   protected deltaFor(point: PlottedPoint): number {
