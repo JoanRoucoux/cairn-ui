@@ -84,6 +84,8 @@ export { SKELETON_SHAPES, UiSkeleton, type SkeletonShape } from './lib/skeleton/
 export { STAT_SIZES, UiStat, type StatSize } from './lib/stat/stat';
 export { UiSwitch } from './lib/switch/switch';
 export { UiTab, UiTabBar } from './lib/tab-bar/tab-bar';
+export { UiToaster } from './lib/toast/toast';
+export { UiToasts, type Toast } from './lib/toast/toasts';
 export {
   CELL_BREAKPOINTS,
   GROUP_SIZES,
