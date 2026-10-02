@@ -55,7 +55,7 @@ describe('UiToaster', () => {
 
     expect(screen.getByRole('status')).toHaveClass(
       'fixed',
-      'bottom-[calc(52px+env(safe-area-inset-bottom)+8px)]',
+      'bottom-[calc(52px+env(safe-area-inset-bottom)+var(--action-bar-height,0px)+8px)]',
       'lg:right-6',
       'lg:bottom-6',
     );

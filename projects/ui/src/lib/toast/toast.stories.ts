@@ -1,15 +1,17 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
 
+import { UiActionBar } from '../action-bar/action-bar';
+import { UiButton } from '../button/button';
 import { UiTab, UiTabBar } from '../tab-bar/tab-bar';
 import { UiToaster } from './toast';
 import { UiToasts } from './toasts';
 
 @Component({
   selector: 'ui-toast-demo',
-  imports: [UiToaster, UiTab, UiTabBar],
+  imports: [UiActionBar, UiButton, UiToaster, UiTab, UiTabBar],
   template: `
     <div class="p-4">
       <button class="rounded-control border border-(--border) px-4 py-2" type="button" (click)="show()">
@@ -17,6 +19,12 @@ import { UiToasts } from './toasts';
       </button>
     </div>
     <ui-toaster />
+    @if (actionBar()) {
+      <ui-action-bar>
+        <button size="tall" type="button" ui-button variant="outline">Vendre</button>
+        <button size="tall" type="button" ui-button>Acheter</button>
+      </ui-action-bar>
+    }
     <nav class="fixed inset-x-0 bottom-0 lg:hidden" ui-tab-bar>
       <a active href="#" ui-tab>Portefeuille</a>
       <a href="#" ui-tab>Lignes</a>
@@ -26,6 +34,8 @@ import { UiToasts } from './toasts';
   `,
 })
 class ToastDemo {
+  readonly actionBar = input(false);
+
   private readonly toasts = inject(UiToasts);
 
   protected show(): void {
@@ -44,7 +54,8 @@ sentence in the single slot of the \`<ui-toaster />\` the app shell renders once
 replaces the current one in place; the message fades out after \`--toast-duration\` (5 s) and the timer
 stops while the pointer is over it or focus is within.
 
-Below \`64rem\` it is centred 8px above \`ui-tab-bar\` (52px plus \`env(safe-area-inset-bottom)\`); from \`64rem\` it sits
+Below \`64rem\` it is centred 8px above \`ui-tab-bar\` (52px plus \`env(safe-area-inset-bottom)\`), or 8px above
+\`ui-action-bar\` when one is on the page (the bar publishes its height as \`--action-bar-height\`); from \`64rem\` it sits
 bottom right, 24px from the edges. It enters with opacity and an 8px rise over \`--duration-base\`, and
 leaves with opacity over \`--duration-exit\`. Under \`prefers-reduced-motion: reduce\` it only fades.
 
@@ -79,11 +90,34 @@ const play: Story['play'] = async ({ canvasElement }) => {
 
   await waitFor(() => expect(status).toHaveTextContent('Achat enregistré'));
   await expect(within(status).queryByRole('button')).toBeNull();
+  await expect(getComputedStyle(status.firstElementChild!).transitionProperty).toBe('opacity, translate');
+};
+
+const gapAbove = async (canvasElement: HTMLElement, selector: string): Promise<void> => {
+  const toast = within(canvasElement).getByRole('status').firstElementChild!;
+  const below = canvasElement.querySelector(selector)!;
+
+  await waitFor(() =>
+    expect(Math.round(below.getBoundingClientRect().top - toast.getBoundingClientRect().bottom)).toBe(8),
+  );
 };
 
 export const Phone: Story = {
   parameters: { viewport: { width: 390, height: 600 } },
-  play,
+  play: async (context) => {
+    await play(context);
+    await gapAbove(context.canvasElement, '[ui-tab-bar]');
+  },
+};
+
+export const PhoneWithActionBar: Story = {
+  name: 'Phone, above the action bar',
+  parameters: { viewport: { width: 390, height: 600 } },
+  render: () => ({ template: '<ui-toast-demo [actionBar]="true" />' }),
+  play: async (context) => {
+    await play(context);
+    await gapAbove(context.canvasElement, 'ui-action-bar');
+  },
 };
 
 export const Desktop: Story = {

@@ -44,7 +44,7 @@ const readDuration = (host: HTMLElement): number => {
   host: {
     role: 'status',
     class:
-      'pointer-events-none fixed inset-x-0 z-50 flex justify-center bottom-[calc(52px+env(safe-area-inset-bottom)+8px)] lg:inset-x-auto lg:right-6 lg:bottom-6',
+      'pointer-events-none fixed inset-x-0 z-50 flex justify-center bottom-[calc(52px+env(safe-area-inset-bottom)+var(--action-bar-height,0px)+8px)] lg:inset-x-auto lg:right-6 lg:bottom-6',
   },
 })
 export class UiToaster {

@@ -20,6 +20,9 @@ actions live in the page.
 
 Pad the scrolling content by the bar's height (about 73px) so its end is not hidden behind it.
 
+While it is on the page the bar publishes its height as \`--action-bar-height\` on the root element:
+\`ui-toaster\` adds it to its offset, so a confirmation sits 8px above the bar and never covers the actions.
+
 #### When to use
 
 * For the one or two actions that define a detail screen on a phone.
