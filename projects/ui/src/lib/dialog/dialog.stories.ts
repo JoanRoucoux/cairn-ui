@@ -3,7 +3,18 @@ import { expect, userEvent, waitFor, within } from 'storybook/test';
 
 import { UiButton } from '../button/button';
 import { DIALOG_LAYOUTS, type DialogLayout, type DialogWidth, UiDialog } from './dialog';
-import { desktopAnchored, field, result, sheetStaysFixed } from './internal/dialog-story-fixtures';
+import {
+  addLineTemplate,
+  bodyReachable,
+  defaultTemplate,
+  desktopAnchored,
+  field,
+  keptMountedTemplate,
+  keptMountedUntilClosed,
+  sheetFitsTheScreen,
+  sheetHasGrips,
+  sheetStaysFixed,
+} from './internal/dialog-story-fixtures';
 
 type DialogArgs = {
   heading: string;
@@ -39,6 +50,32 @@ buttons. Put the dismissing action first. On a desktop the footer is right-align
 actions stack at full width and 50px, the primary on top, so hide Annuler there with
 \`max-lg:hidden\` when the sheet has only the primary.
 
+Every way out goes through one close: Escape, the backdrop, the cross, a drag of the sheet and the
+owner setting \`open\` back to \`false\`. \`dismissed\` fires at once for a close the reader started, never
+for one the owner asked for. \`closed\` fires once per close, after the exit transition has played,
+with what started it: \`escape\`, \`backdrop\`, \`cross\`, \`drag\` or \`programmatic\`. When there is no
+transition to wait for, it fires at once.
+
+A consumer that mounts the dialog under \`@if\` keeps it mounted until \`closed\`. It sets \`open\` to
+\`false\` (on \`dismissed\`, or after a save), and only removes the wrapper and reports to its own
+parent in \`(closed)\`. Removing the wrapper together with \`open = false\`, or on \`dismissed\`, cuts the
+exit: the \`<dialog>\` leaves the page before the exit has played.
+
+\`\`\`html
+@if (selling()) {
+  <ui-dialog heading="Vendre" [open]="open()" (dismissed)="open.set(false)" (closed)="selling.set(false); sold.emit()">
+    ...
+  </ui-dialog>
+}
+\`\`\`
+
+On a desktop the dialog fades and scales up from \`--enter-scale\` in \`--duration-base\` and leaves in
+\`--duration-exit\`, on \`--ease-out\`. As a sheet the panel only slides, from \`translateY(100%)\`, on
+\`--ease-sheet\`, while the veil fades. The handle and the header of a sheet can be dragged down: the
+panel follows the finger, closes past 30 % of its height or on a release faster than 0.5 px/ms, and
+otherwise springs back on \`--ease-sheet\` in \`--duration-base\`. The body scrolls and never drags.
+With \`prefers-reduced-motion: reduce\` the sheet fades instead of sliding.
+
 #### When to use
 
 * When an answer is needed before anything else can continue, such as confirming a deletion.
@@ -58,32 +95,12 @@ actions stack at full width and 50px, the primary on top, so hide Annuler there 
   the native element, including the initial focus move and the focus return on close.
 * The close cross is named by \`closeLabel\`, which the consumer translates. Without it there is no
   cross, and Escape stays the way out.
-* Every way out is handled the same: Escape, the cross, a dismissing button, and the owner setting
-  \`open\` back to \`false\`.`,
+* Every way out is handled the same: Escape, the cross, the backdrop, a drag of the sheet and the
+  owner setting \`open\` back to \`false\`.`,
       },
     },
   },
-  render: (args) => ({
-    props: args,
-    template: `
-      <button ui-button (click)="open = true">Ouvrir</button>
-      <ui-dialog
-        [heading]="heading"
-        [description]="description"
-        [closeLabel]="closeLabel"
-        [layout]="layout"
-        [width]="width"
-        [open]="open"
-        (dismissed)="open = false"
-      >
-        <p class="text-label text-(--muted-foreground)">
-          Le cours saisi remplace la dernière valeur connue jusqu'à la prochaine actualisation.
-        </p>
-        <button dialogActions ui-button variant="outline" class="max-lg:hidden" (click)="open = false">Annuler</button>
-        <button dialogActions ui-button (click)="open = false">Enregistrer</button>
-      </ui-dialog>
-    `,
-  }),
+  render: (args) => ({ props: args, template: defaultTemplate }),
   args: {
     heading: 'Saisir un cours',
     description: 'Ferrari · PEA',
@@ -115,7 +132,11 @@ actions stack at full width and 50px, the primary on top, so hide Annuler there 
       description:
         'Spacing preset: `trade` (default), `form`, `list` (divided footer, fixed-height sheet) or `confirm` (alertdialog).',
     },
-    open: { control: 'boolean', description: 'Controls `showModal()`/`close()` on the native `<dialog>`.' },
+    open: {
+      control: 'boolean',
+      description:
+        'Controls `showModal()`/`close()` on the native `<dialog>`. Setting it to `false` plays the exit, then emits `closed` with `programmatic`.',
+    },
   },
 };
 
@@ -250,23 +271,7 @@ const addLine = (results: number): Story => ({
   args: { heading: 'Ajouter une ligne', description: undefined, width: '560px', layout: 'list', open: true },
   render: (args) => ({
     props: args,
-    template: `
-      <ui-dialog
-        [heading]="heading"
-        [closeLabel]="closeLabel"
-        [layout]="layout"
-        [width]="width"
-        [open]="open"
-        (dismissed)="open = false"
-      >
-        <div class="flex flex-col gap-4" data-story-body>
-          ${field('Compte')}${field('Titre')}
-          <div class="flex flex-col">${Array.from({ length: results }, (_, index) => result(index + 1)).join('')}</div>
-        </div>
-        <button dialogActions ui-button variant="outline" class="max-lg:hidden" (click)="open = false">Annuler</button>
-        <button dialogActions ui-button (click)="open = false">Ajouter la ligne</button>
-      </ui-dialog>
-    `,
+    template: addLineTemplate(results),
   }),
 });
 
@@ -344,18 +349,7 @@ export const TextOnlyScrollingBody: Story = {
       </ui-dialog>
     `,
   }),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const dialog = canvas.getByRole('alertdialog', { name: 'Conditions' });
-    const body = dialog.querySelector('[data-dialog-body]') as HTMLElement;
-
-    await waitFor(() => expect(body).toHaveAttribute('tabindex', '0'));
-    await expect(body).toHaveAccessibleName('Conditions');
-    await expect(body).not.toHaveFocus();
-
-    await userEvent.tab();
-    await expect(body).toHaveFocus();
-  },
+  play: bodyReachable,
 };
 
 export const Wide: Story = {
@@ -386,15 +380,21 @@ export const SheetOnAnIPhone: Story = {
     `,
   }),
   args: { heading: 'Acheter Ferrari', open: true },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const dialog = canvas.getByRole('dialog', { name: 'Acheter Ferrari' });
-    const footer = dialog.querySelector('[data-dialog-footer]') as HTMLElement;
-    const body = dialog.querySelector('[data-dialog-body]') as HTMLElement;
-    const primary = canvas.getByRole('button', { name: 'Acheter 10 parts' });
+  play: sheetFitsTheScreen,
+};
 
-    await waitFor(() => expect(footer.getBoundingClientRect().bottom).toBeLessThanOrEqual(window.innerHeight));
-    await expect(body.scrollHeight).toBeGreaterThan(body.clientHeight);
-    await expect(primary.getBoundingClientRect().height).toBe(50);
-  },
+export const KeptMountedUntilClosed: Story = {
+  name: 'Wrapper kept mounted until closed',
+  render: (args) => ({
+    props: { ...args, mounted: false, closedCount: 0, closedReason: '' },
+    template: keptMountedTemplate,
+  }),
+  play: keptMountedUntilClosed,
+};
+
+export const SheetDragToDismiss: Story = {
+  ...KeptMountedUntilClosed,
+  name: 'Sheet, drag to dismiss',
+  parameters: { viewport: { width: 390, height: 844 } },
+  play: sheetHasGrips,
 };

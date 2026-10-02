@@ -47,7 +47,15 @@ export {
   type DeltaSize,
   type DeltaWeight,
 } from './lib/delta/delta';
-export { DIALOG_LAYOUTS, DIALOG_WIDTHS, UiDialog, type DialogLayout, type DialogWidth } from './lib/dialog/dialog';
+export {
+  DIALOG_CLOSE_REASONS,
+  DIALOG_LAYOUTS,
+  DIALOG_WIDTHS,
+  UiDialog,
+  type DialogCloseReason,
+  type DialogLayout,
+  type DialogWidth,
+} from './lib/dialog/dialog';
 export { type DonutSlice, UiDonut } from './lib/donut/donut';
 export { UiExternalLink } from './lib/external-link/external-link';
 export { FACT_SIZES, FACT_SUB_TONES, UiFact, UiFacts, type FactSize, type FactSubTone } from './lib/fact/fact';

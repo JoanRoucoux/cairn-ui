@@ -12,6 +12,10 @@ import {
   signal,
 } from '@angular/core';
 
+import { afterExit } from './internal/dialog-exit';
+import { DIALOG_STYLES } from './internal/dialog-styles';
+import { SheetDrag } from './internal/sheet-drag';
+
 /** Named dialog widths; any other CSS length is accepted as is. `DialogWidth` is derived from this tuple. */
 export const DIALOG_WIDTHS = ['md', 'lg'] as const;
 export type DialogWidth = (typeof DIALOG_WIDTHS)[number];
@@ -79,6 +83,10 @@ const LAYOUTS: Record<DialogLayout, LayoutClasses> = {
   },
 };
 
+/** What started a close, as `closed` reports it. `DialogCloseReason` is derived from this tuple. */
+export const DIALOG_CLOSE_REASONS = ['escape', 'backdrop', 'cross', 'drag', 'programmatic'] as const;
+export type DialogCloseReason = (typeof DIALOG_CLOSE_REASONS)[number];
+
 const nextId = (() => {
   let count = 0;
 
@@ -106,9 +114,15 @@ const nextId = (() => {
       [attr.role]="layout() === 'confirm' ? 'alertdialog' : 'dialog'"
       [class]="classes()"
       [style.--dialog-width]="widthValue()"
+      (cancel)="onCancel($event)"
       (close)="onNativeClose()"
     >
-      <div aria-hidden="true" class="flex h-5 justify-center lg:hidden" data-dialog-handle [class]="spec().handle">
+      <div
+        aria-hidden="true"
+        class="flex h-5 touch-none justify-center lg:hidden"
+        data-dialog-handle
+        [class]="spec().handle"
+      >
         <span class="rounded-pill h-[5px] w-9 bg-(--border)"></span>
       </div>
 
@@ -128,7 +142,7 @@ const nextId = (() => {
         </div>
 
         @if (closeLabel()) {
-          <button type="button" [attr.aria-label]="closeLabel()" [class]="crossClasses()" (click)="dlg.close()">
+          <button type="button" [attr.aria-label]="closeLabel()" [class]="crossClasses()" (click)="close('cross')">
             <svg
               aria-hidden="true"
               class="block size-[22px] fill-none stroke-current stroke-[1.75]"
@@ -163,64 +177,7 @@ const nextId = (() => {
       </div>
     </dialog>
   `,
-  styles: `
-    dialog {
-      --dialog-ease: var(--ease-sheet);
-      transition:
-        opacity var(--duration-base) var(--dialog-ease),
-        transform var(--duration-base) var(--dialog-ease),
-        overlay var(--duration-base) allow-discrete,
-        display var(--duration-base) allow-discrete;
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    dialog:not([open]) {
-      opacity: 0;
-      transform: translateY(100%);
-      transition-duration: var(--duration-exit);
-    }
-
-    @starting-style {
-      dialog[open] {
-        opacity: 0;
-        transform: translateY(100%);
-      }
-    }
-
-    @media (min-width: 64rem) {
-      dialog {
-        --dialog-ease: var(--ease-out);
-        transform: scale(1);
-      }
-
-      dialog:not([open]) {
-        transform: scale(var(--enter-scale));
-      }
-
-      @starting-style {
-        dialog[open] {
-          transform: scale(var(--enter-scale));
-        }
-      }
-    }
-
-    dialog::backdrop {
-      transition: opacity var(--duration-base) var(--ease-out);
-      opacity: 1;
-    }
-
-    dialog:not([open])::backdrop {
-      opacity: 0;
-      transition-duration: var(--duration-exit);
-    }
-
-    @starting-style {
-      dialog[open]::backdrop {
-        opacity: 0;
-      }
-    }
-  `,
+  styles: DIALOG_STYLES,
 })
 export class UiDialog {
   readonly heading = input.required<string>();
@@ -231,6 +188,7 @@ export class UiDialog {
   readonly width = input<DialogWidth | (string & {})>('lg');
   readonly open = input(false, { transform: booleanAttribute });
   readonly dismissed = output<void>();
+  readonly closed = output<DialogCloseReason>();
 
   protected readonly headingId = nextId();
   protected readonly descriptionId = `${this.headingId}-description`;
@@ -255,7 +213,7 @@ export class UiDialog {
 
   protected readonly headerClasses = computed(
     () =>
-      `flex gap-2 pl-4 lg:gap-3 lg:pl-6 ${this.spec().header} ${this.closeLabel() ? 'pr-2 lg:pr-4' : 'pr-4 lg:pr-6'}`,
+      `flex gap-2 pl-4 max-lg:touch-none lg:gap-3 lg:pl-6 ${this.spec().header} ${this.closeLabel() ? 'pr-2 lg:pr-4' : 'pr-4 lg:pr-6'}`,
   );
 
   protected readonly titleClasses = computed(() => this.spec().title);
@@ -283,6 +241,17 @@ export class UiDialog {
     const destroyRef = inject(DestroyRef);
 
     afterNextRender(() => {
+      const host = this.#host.nativeElement;
+      const grips = ['[data-dialog-handle]', '[data-dialog-header]'].map(
+        (grip) => host.querySelector(grip) as HTMLElement,
+      );
+
+      this.#drag = new SheetDrag(this.#dialog, grips, () => this.close('drag'));
+      destroyRef.onDestroy(() => {
+        this.#drag?.destroy();
+        this.#cancelExit();
+      });
+
       if (typeof ResizeObserver === 'undefined') {
         return;
       }
@@ -300,14 +269,31 @@ export class UiDialog {
       const dialog = this.#host.nativeElement.querySelector('dialog') as HTMLDialogElement;
 
       if (this.open() && !dialog.open) {
+        this.#cancelExit();
+        this.#drag?.reset();
         dialog.showModal();
       } else if (!this.open() && dialog.open) {
-        dialog.close();
+        this.close('programmatic');
       }
     });
   }
 
   #pressedOnBackdrop = false;
+  #drag: SheetDrag | null = null;
+  #reason: DialogCloseReason | null = null;
+  #cancelExit: () => void = () => undefined;
+
+  protected close(reason: DialogCloseReason): void {
+    if (this.#dialog.open) {
+      this.#reason = reason;
+      this.#dialog.close();
+    }
+  }
+
+  protected onCancel(event: Event): void {
+    event.preventDefault();
+    this.close('escape');
+  }
 
   protected onPointerDown(event: MouseEvent): void {
     this.#pressedOnBackdrop = event.target === this.#dialog && this.#outside(event);
@@ -315,7 +301,7 @@ export class UiDialog {
 
   protected onClick(event: MouseEvent): void {
     if (this.#pressedOnBackdrop && event.target === this.#dialog && this.#outside(event)) {
-      this.#dialog.close();
+      this.close('backdrop');
     }
     this.#pressedOnBackdrop = false;
   }
@@ -333,9 +319,23 @@ export class UiDialog {
   }
 
   protected onNativeClose(): void {
-    // The owner already knows about a close it asked for; only a close it did not ask for is news.
-    if (this.open()) {
+    const reason = this.#reason ?? 'escape';
+
+    this.#reason = null;
+    if (this.#dialog.open) {
+      return;
+    }
+    if (reason !== 'programmatic') {
       this.dismissed.emit();
     }
+    this.#awaitExit(reason);
+  }
+
+  #awaitExit(reason: DialogCloseReason): void {
+    this.#cancelExit = afterExit(this.#dialog, () => {
+      this.#cancelExit = () => undefined;
+      this.#drag?.reset();
+      this.closed.emit(reason);
+    });
   }
 }
