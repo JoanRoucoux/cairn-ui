@@ -36,6 +36,6 @@ describe('UiStaleLink', () => {
   it('adds a trailing chevron on request', async () => {
     await render('<a uiStaleLink chevron href="#">Cours</a>', { imports: [UiStaleLink] });
 
-    expect(screen.getByRole('link', { name: 'Cours' })).toHaveClass('after:size-3.5', 'after:bg-current');
+    expect(screen.getByRole('link', { name: 'Cours' })).toHaveClass('after:size-4', 'after:bg-current');
   });
 });
