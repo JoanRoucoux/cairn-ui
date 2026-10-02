@@ -80,6 +80,14 @@ Keep them in sync with the starter:
 - `.generator/templates/` stays excluded in [.prettierignore](.prettierignore) and the ESLint `globalIgnores`.
 - The `generate` job in [ci.yml](.github/workflows/ci.yml) generates a project from the working tree and runs its quality gates — it fails when the manifest or templates drift.
 
+## Release
+
+The library is published to npm by [release.yml](.github/workflows/release.yml) through npm trusted publishing (OIDC, no token). Never run `npm publish` by hand.
+
+1. In a PR, bump `version` in `projects/ui/package.json` and add the entry to `projects/ui/CHANGELOG.md`.
+2. Merge the PR into `main`.
+3. Push the tag `vX.Y.Z` on the merge commit. The workflow checks that the tag equals `v` + the library version and that the commit is on `main`, runs the CI checks, builds, then publishes `dist/ui`.
+
 ## Gotchas
 
 - `typescript` is pinned to `~6.0.2`: TypeScript 7 breaks `typescript-eslint` (via `ts-api-utils`). Do not bump until typescript-eslint supports TS 7. (This is also why the Storybook framework is `@storybook/angular-vite` — the webpack `@storybook/angular` peer range only allows TS ≤5.)
@@ -89,7 +97,7 @@ Keep them in sync with the starter:
 - `UiMenu.close()` only calls `hidePopover()` when the menu was open: `hidePopover()` throws on a closed popover, and it fires the `toggle` event that calls `close()` again.
 - GitHub Actions in `.github/workflows/ci.yml` are pinned by commit SHA (Dependabot keeps them updated) — when adding one, pin it the same way.
 - npm consumers of the published library must add `@source '../node_modules/<pkg>'` to their Tailwind CSS — templates in `node_modules` are not scanned by default. Keep this documented in the README.
-- The root package version (release-please) is the starter's version; the library's own version lives in `projects/ui/package.json` and is bumped manually before publishing `dist/ui`.
+- The root package version (release-please) is the starter's version; the library's own version lives in `projects/ui/package.json` and is bumped manually, with `projects/ui/CHANGELOG.md`, in the release PR (see Release).
 - Angular's zoneless scheduler calls `requestAnimationFrame` itself during bootstrap: assert on the rendered output, never on a count of animation frames.
 - Text tokens clear 4.5:1 on `--background`, `--card`, `--elevated`, `--muted` and on `--soft` over `--background` or `--card`; `tokens.spec.ts` computes it, so a token edit that breaks it fails the test (ratios in `docs/colors.mdx`).
 - Nothing is committed or pushed without an explicit request from the maintainer.
