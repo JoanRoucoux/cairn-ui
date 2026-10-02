@@ -56,7 +56,7 @@ ramp (\`--ramp-1\` to \`--ramp-6\`). Beyond six slices, the five largest keep th
 merge into one "Others" slice on \`--ramp-6\`, whose legend sub-label lists the merged names — the
 ring's \`aria-label\` still names every original slice.
 
-Hovering, focusing or touching a legend row (or its arc) thickens that arc in place, on the same ring, and shows its name, share
+Hovering, focusing or touching a legend row (or its arc) grows that arc by 4 % around the ring centre, dims the other arcs to half opacity, and shows its name, share
 and value at the centre; activating a row (click or Enter) emits \`sliceSelect\` with its id, for the
 caller to navigate with. With \`legendHref\`, rows are real links: a plain click is cancelled and emitted as \`sliceSelect\` so a router can navigate, while Ctrl/Cmd/Shift-click and middle-click keep the browser's behaviour. Formatting is the caller's business: \`valueFormat\` and \`shareFormat\` both
 arrive as inputs, so masking amounts is a matter of a formatter that returns bullets — shares stay
@@ -166,17 +166,17 @@ export const SelectingARowEmitsSliceSelect: Story = {
   },
 };
 
-export const HighlightStaysOnTheRing: Story = {
-  name: 'The highlighted slice stays on the ring',
+export const HighlightedSliceGrowsInPlace: Story = {
+  name: 'The highlighted slice grows in place and the others dim',
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
     await userEvent.hover(canvas.getByRole('button', { name: /Crypto/ }));
 
     const arcs = canvasElement.querySelectorAll<SVGCircleElement>('svg circle[data-slice]');
-    await expect(arcs[arcs.length - 1]?.style.strokeWidth).toBe('38px');
-    await expect(arcs[0]?.style.strokeWidth).toBe('30px');
-    await expect(canvasElement.querySelector('svg [style*="transform"]')).toBeNull();
+    await expect(arcs[arcs.length - 1]).toHaveClass('scale-104');
+    await expect(arcs[0]).toHaveClass('opacity-50');
+    await expect(arcs[0]?.getAttribute('stroke-width')).toBe('30');
   },
 };
 
