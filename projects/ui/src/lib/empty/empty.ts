@@ -13,8 +13,8 @@ import { Component, input } from '@angular/core';
   selector: 'ui-empty',
   template: `
     <span class="text-body font-medium text-pretty">{{ heading() }}</span>
-    @if (hint(); as hint) {
-      <span class="text-label text-(--muted-foreground)">{{ hint }}</span>
+    @if (hint()) {
+      <span class="text-label text-(--muted-foreground)">{{ hint() }}</span>
     }
     <div class="mt-2 empty:hidden"><ng-content /></div>
   `,

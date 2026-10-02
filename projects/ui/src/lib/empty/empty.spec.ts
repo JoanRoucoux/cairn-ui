@@ -39,11 +39,13 @@ describe('UiEmpty', () => {
     );
   });
 
-  it('omits the hint and the action when absent', async () => {
+  it('omits the hint and leaves the action slot empty when absent', async () => {
     const { container } = await render('<ui-empty heading="Rien" />', { imports: [UiEmpty] });
+    const host = container.querySelector('ui-empty')!;
 
-    expect(screen.getByText('Rien')).toBeInTheDocument();
-    expect(container.querySelectorAll('span')).toHaveLength(1);
-    expect(container.querySelector('.mt-2')).toBeEmptyDOMElement();
+    expect(host).toHaveTextContent(/^Rien$/);
+    expect(screen.queryByRole('button')).toBeNull();
+    expect(host.lastElementChild).not.toBe(screen.getByText('Rien'));
+    expect(host.lastElementChild).toBeEmptyDOMElement();
   });
 });

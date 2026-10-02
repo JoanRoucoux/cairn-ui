@@ -62,3 +62,20 @@ export const Default: Story = {
 export const WithoutHint: Story = {
   args: { hint: '' },
 };
+
+export const HeadingOnly: Story = {
+  args: { hint: '' },
+  render: (args) => ({
+    props: args,
+    template: `<ui-empty data-testid="empty" class="w-[342px] lg:w-[680px]" [heading]="heading" [hint]="hint" />`,
+  }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const empty = canvas.getByTestId('empty');
+    const heading = canvas.getByText('Aucun instrument ne correspond à « zzz »');
+
+    await expect(heading).toBeVisible();
+    await expect(empty.lastElementChild).not.toBe(heading);
+    await expect(empty.lastElementChild).not.toBeVisible();
+  },
+};
