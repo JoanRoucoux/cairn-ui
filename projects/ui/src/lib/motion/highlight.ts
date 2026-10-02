@@ -25,9 +25,9 @@ function paintedElements(host: HTMLElement): HTMLElement[] {
  * cells, on a `td[ui-group-cell]` the band, anywhere else the host. Under `prefers-reduced-motion` the
  * scroll is instant and the fade lasts 600 ms.
  *
- * It starts on the next frame and, when the element is still playing an animation of its own (an
- * `animate.enter` fade on a new row), once that animation has finished: the element fades in, then
- * lights up. Both can sit on the same element.
+ * It starts on the next frame and, when the element is still playing a finite animation of its own (an
+ * `animate.enter` fade on a new row), once that animation has finished, waiting no longer than
+ * `--duration-base`: the element fades in, then lights up. Both can sit on the same element.
  *
  * Give the element `scroll-margin-top` and `scroll-margin-bottom` equal to what is pinned above and
  * below it (header, tab bar, action bar): a row under them counts as off screen and is scrolled out.
@@ -121,12 +121,9 @@ export class UiHighlight {
   private flash(): () => void {
     const painted = paintedElements(this.host);
     let animations: Animation[] = [];
-    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
 
     const paint = (): void => {
-      if (cancelled) {
-        return;
-      }
       const fade = readDuration(this.host, '--duration-highlight', 1200);
       const easing = readEasing(this.host, '--ease-out', 'ease-out');
       const total = HOLD_MS + fade;
@@ -143,19 +140,23 @@ export class UiHighlight {
     };
 
     const frame = requestAnimationFrame(() => {
-      const entering = Array.from(new Set([this.host, ...painted]))
+      const remaining = Array.from(new Set([this.host, ...painted]))
         .flatMap((element) => element.getAnimations())
-        .filter((animation) => animation.effect?.getTiming().iterations !== Infinity);
-      if (entering.length === 0) {
+        .map((animation) => {
+          const timing = (animation.effect as AnimationEffect).getComputedTiming();
+          return Number(timing.endTime) - Number(timing.localTime ?? 0);
+        })
+        .filter((left) => Number.isFinite(left));
+      if (remaining.length === 0) {
         paint();
         return;
       }
-      void Promise.allSettled(entering.map((animation) => animation.finished)).then(paint);
+      timer = setTimeout(paint, Math.min(Math.max(...remaining), readDuration(this.host, '--duration-base', 260)));
     });
 
     return () => {
-      cancelled = true;
       cancelAnimationFrame(frame);
+      clearTimeout(timer);
       animations.forEach((animation) => animation.cancel());
     };
   }
