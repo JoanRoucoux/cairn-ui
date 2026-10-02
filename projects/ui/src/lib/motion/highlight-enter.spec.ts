@@ -42,6 +42,8 @@ const entering = (iterations = 1): Entering => {
 };
 
 describe('UiHighlight with an enter animation', () => {
+  const originalAnimate = Element.prototype.animate;
+  const originalGetAnimations = Element.prototype.getAnimations;
   let animate: ReturnType<typeof vi.fn>;
   let running: Map<Element, Animation[]>;
   let originalMatchMedia: typeof matchMedia | undefined;
@@ -82,6 +84,8 @@ describe('UiHighlight with an enter animation', () => {
   });
 
   afterEach(() => {
+    Element.prototype.animate = originalAnimate;
+    Element.prototype.getAnimations = originalGetAnimations;
     vi.useRealTimers();
     if (originalMatchMedia) {
       globalThis.matchMedia = originalMatchMedia;

@@ -53,6 +53,7 @@ type FakeAnimation = {
 };
 
 describe('UiFlipList', () => {
+  const originalAnimate = Element.prototype.animate;
   let animate: ReturnType<typeof vi.fn>;
   let animations: FakeAnimation[];
   let resize: (() => void) | undefined;
@@ -111,17 +112,22 @@ describe('UiFlipList', () => {
     observe = vi.fn();
     unobserve = vi.fn();
     disconnectResize = vi.fn();
-    globalThis.ResizeObserver = class {
-      constructor(callback: () => void) {
-        resize = callback;
-      }
-      observe = observe;
-      unobserve = unobserve;
-      disconnect = disconnectResize;
-    } as unknown as typeof ResizeObserver;
+    vi.stubGlobal(
+      'ResizeObserver',
+      class {
+        constructor(callback: () => void) {
+          resize = callback;
+        }
+        observe = observe;
+        unobserve = unobserve;
+        disconnect = disconnectResize;
+      },
+    );
   });
 
   afterEach(() => {
+    vi.unstubAllGlobals();
+    Element.prototype.animate = originalAnimate;
     resize = undefined;
     if (originalMatchMedia) {
       globalThis.matchMedia = originalMatchMedia;

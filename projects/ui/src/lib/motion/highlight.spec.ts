@@ -36,6 +36,9 @@ const stubMatchMedia = (matches: boolean): void => {
 };
 
 describe('UiHighlight', () => {
+  const originalAnimate = Element.prototype.animate;
+  const originalGetAnimations = Element.prototype.getAnimations;
+  const originalScrollIntoView = Element.prototype.scrollIntoView;
   let animate: ReturnType<typeof vi.fn>;
   let cancel: ReturnType<typeof vi.fn>;
   let scrollIntoView: ReturnType<typeof vi.fn>;
@@ -76,6 +79,9 @@ describe('UiHighlight', () => {
   });
 
   afterEach(() => {
+    Element.prototype.animate = originalAnimate;
+    Element.prototype.getAnimations = originalGetAnimations;
+    Element.prototype.scrollIntoView = originalScrollIntoView;
     vi.useRealTimers();
     if (originalMatchMedia) {
       globalThis.matchMedia = originalMatchMedia;

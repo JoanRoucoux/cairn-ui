@@ -58,6 +58,25 @@ class CardsHost {
 })
 class OrphanHost {}
 
+@Component({
+  selector: 'section[ui-group-rows]',
+  imports: [UiFlipItem],
+  template: `
+    @for (row of rows(); track row) {
+      <p uiFlipItem [attr.data-id]="row">{{ row }}</p>
+    }
+  `,
+})
+class GroupRows {
+  readonly rows = signal(['a', 'b', 'c']);
+}
+
+@Component({
+  imports: [UiFlipList, GroupRows],
+  template: `<div uiFlipList><section ui-group-rows></section></div>`,
+})
+class ChildComponentHost {}
+
 const ROW = 50;
 
 const shownShift = (element: HTMLElement): number => {
@@ -92,6 +111,7 @@ const without =
     host.groups.set(GROUPS.map((group) => ({ ...group, rows: group.rows.filter((row) => !removed.includes(row)) })));
 
 describe('UiFlipList with uiFlipItem', () => {
+  const originalAnimate = Element.prototype.animate;
   let animate: ReturnType<typeof vi.fn>;
   let resize: (() => void) | undefined;
   let observe: ReturnType<typeof vi.fn>;
@@ -133,17 +153,22 @@ describe('UiFlipList with uiFlipItem', () => {
     Element.prototype.animate = animate as unknown as typeof Element.prototype.animate;
     observe = vi.fn();
     unobserve = vi.fn();
-    globalThis.ResizeObserver = class {
-      constructor(callback: () => void) {
-        resize = callback;
-      }
-      observe = observe;
-      unobserve = unobserve;
-      disconnect = vi.fn();
-    } as unknown as typeof ResizeObserver;
+    vi.stubGlobal(
+      'ResizeObserver',
+      class {
+        constructor(callback: () => void) {
+          resize = callback;
+        }
+        observe = observe;
+        unobserve = unobserve;
+        disconnect = vi.fn();
+      },
+    );
   });
 
   afterEach(() => {
+    vi.unstubAllGlobals();
+    Element.prototype.animate = originalAnimate;
     resize = undefined;
     if (originalMatchMedia) {
       globalThis.matchMedia = originalMatchMedia;
@@ -208,6 +233,29 @@ describe('UiFlipList with uiFlipItem', () => {
     const { list } = await setup(GroupsHost);
 
     expect(observe).not.toHaveBeenCalledWith(list.children[0]);
+  });
+
+  it('follows the items a child component declares in its own template', async () => {
+    const fixture = TestBed.createComponent(ChildComponentHost);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const root = fixture.nativeElement as HTMLElement;
+    const list = root.querySelector('[uiFlipList]') as HTMLElement;
+    layout(list);
+    resize?.();
+    const c = byId(list, 'c');
+
+    fixture.debugElement
+      .query((node) => node.name === 'section')
+      .injector.get(GroupRows)
+      .rows.set(['a', 'c']);
+    fixture.detectChanges();
+    layout(list);
+    await tick();
+
+    expect(observe).not.toHaveBeenCalledWith(list.children[0]);
+    expect(animated()).toEqual([c]);
+    expect(fromOf(c)).toEqual({ transform: `translateY(${ROW}px)` });
   });
 
   it('does nothing for an item outside any list', () => {
