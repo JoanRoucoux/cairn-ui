@@ -38,6 +38,7 @@ export const config: SheriffConfig = {
     'component:fact': ['component:card'],
     'component:dialog': ['component:button'],
     'component:menu': ['component:button'],
+    'component:motion': ['component:button', 'component:row', 'component:table'],
     'component:row': ['component:button'],
     'component:stat': ['component:delta'],
     'component:toast': ['component:tab-bar'],

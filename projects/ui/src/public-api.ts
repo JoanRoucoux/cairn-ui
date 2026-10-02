@@ -64,6 +64,8 @@ export {
 export { type AxisTicks, type ChartPoint, type TooltipSize, UiLineChart } from './lib/line-chart/line-chart';
 export { UiMenu, UiMenuItem, UiMenuTrigger } from './lib/menu/menu';
 export { METER_SIZES, METER_TONES, UiMeter, type MeterSize, type MeterTone } from './lib/meter/meter';
+export { UiFlipList } from './lib/motion/flip-list';
+export { UiHighlight } from './lib/motion/highlight';
 export { injectReducedMotion } from './lib/motion/reduced-motion';
 export { UiNavItem } from './lib/nav-item/nav-item';
 export {
