@@ -23,6 +23,11 @@
   slides by the gap only, not from a stale place. Containers no longer need `position: relative` for it; drop
   the `relative` added as a workaround. A move interrupted by the next change restarts from where the item is
   displayed.
+- `uiHighlight` and `animate.enter` on the same element both play: the highlight starts on the next frame and,
+  while the element still runs an animation of its own, once that animation has finished. Angular kept the
+  1400 ms highlight as the longest animation and dropped the enter class after one frame. The enter fade no
+  longer needs to sit on an inner element.
+
 - `uiStaleLink`: the link keeps its 12/17 caption size but now extends its hit area with a `::before` pseudo-element to 44 px high (40 px with `pointer: fine`), centred on the text, so it meets the touch target of the handoff. Its `::after` chevron is unchanged.
 
 ## 0.7.0

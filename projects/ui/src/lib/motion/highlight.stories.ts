@@ -25,6 +25,8 @@ off screen, holds the \`--soft\` fill for 200 ms, then fades back to the element
   (header, tab bar, action bar): a row hidden under them counts as off screen and is scrolled out.
 * For an arrival, scroll to the element at once first (\`scrollIntoView\` in \`afterNextRender\`), then set the
   token: a token present at first render scrolls smoothly from where the page is.
+* On a new row with \`animate.enter\`, on the same element: the highlight starts once the enter animation has
+  finished, so the row fades in, then lights up.
 
 #### When not to use
 
@@ -109,6 +111,53 @@ export const OnTableRowAndGroupHeading: Story = {
     await waitFor(() => expect(canvas.getByTestId('heading').getAnimations().length).toBeGreaterThan(0));
     await expect(canvas.getByTestId('tr').children[0]?.getAnimations().length).toBeGreaterThan(0);
     await expect(canvas.getByTestId('tr').getAnimations()).toHaveLength(0);
+  },
+};
+
+export const EnterThenHighlight: Story = {
+  render: () => ({
+    props: {
+      rows: ['Livret A', 'LDDS'],
+      added: 'PEA',
+      token: null as unknown,
+      add(this: { rows: string[]; added: string; token: unknown }) {
+        this.rows = [...this.rows, this.added];
+        this.token = {};
+      },
+    },
+    template: `
+      <div class="flex w-[340px] flex-col gap-3 p-4">
+        <button ui-button type="button" (click)="add()">Add PEA</button>
+        @for (row of rows; track row) {
+          <a ui-row href="#" animate.enter="ui-enter-fade" [uiHighlight]="row === added ? token : null" [attr.data-testid]="row">{{ row }}</a>
+        }
+      </div>
+    `,
+  }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const ended: string[] = [];
+    const onEnd = (event: AnimationEvent): void => {
+      if ((event.target as HTMLElement).dataset['testid'] === 'PEA') {
+        ended.push(event.animationName);
+      }
+    };
+    document.addEventListener('animationend', onEnd, true);
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Add PEA' }));
+    const row = await canvas.findByTestId('PEA');
+
+    await waitFor(() => expect(ended).toContain('cairn-fade-in'));
+    await waitFor(() =>
+      expect(
+        row.getAnimations().some((animation) => {
+          const keyframes = (animation.effect as KeyframeEffect).getKeyframes();
+          return keyframes[0]?.['backgroundColor'] !== undefined;
+        }),
+      ).toBe(true),
+    );
+    await expect(row.classList.contains('ui-enter-fade')).toBe(false);
+    document.removeEventListener('animationend', onEnd, true);
   },
 };
 
