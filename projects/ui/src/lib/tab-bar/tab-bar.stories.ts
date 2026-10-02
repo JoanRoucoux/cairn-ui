@@ -16,7 +16,9 @@ never a fixed 34px, so it sits above the home indicator on every device. \`ui-na
 sidebar counterpart on the desktop layout.
 
 The component only lays out its tabs; the app positions the bar itself (\`fixed\` or \`sticky\`) and
-pads the page content by the same height so nothing hides behind it.
+pads the page content by the same height so nothing hides behind it. While it is on the page the bar
+publishes that height as \`--tab-bar-height\` on the root element, so the app pads with
+\`pb-(--tab-bar-height)\` instead of restating 52px; \`ui-action-bar\` and \`ui-toaster\` sit above it.
 
 #### When to use
 
