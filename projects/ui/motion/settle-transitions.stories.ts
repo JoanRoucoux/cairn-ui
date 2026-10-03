@@ -9,7 +9,7 @@ import { UiSegmented } from '@joanroucoux/cairn-ui/segmented';
 import { UiSwitch } from '@joanroucoux/cairn-ui/switch';
 import { UiTable, UiTd, UiTr } from '@joanroucoux/cairn-ui/table';
 import type { Meta, StoryObj } from '@storybook/angular-vite';
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
 
 @Component({
   selector: 'ui-story-mounted-page',
@@ -118,7 +118,7 @@ export const TransitionsRunAfterMount: Story = {
     const canvas = within(canvasElement);
 
     await userEvent.click(canvas.getByRole('button', { name: 'Open the page' }));
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    await waitFor(() => expect(canvasElement.querySelector('[data-ui-settling]')).toBeNull());
 
     const runs: string[] = [];
     const record = (event: TransitionEvent): void => {
@@ -126,9 +126,7 @@ export const TransitionsRunAfterMount: Story = {
     };
     document.addEventListener('transitionrun', record, true);
     await userEvent.click(canvas.getByRole('switch', { name: 'Masquer les montants' }));
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    await waitFor(() => expect(runs).toContain('background-color'));
     document.removeEventListener('transitionrun', record, true);
-
-    await expect(runs).toContain('background-color');
   },
 };
