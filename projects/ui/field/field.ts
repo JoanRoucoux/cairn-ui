@@ -10,7 +10,7 @@ import {
   input,
 } from '@angular/core';
 
-import { UI_CONTROL } from '../control/control';
+import { UI_CONTROL } from '@joanroucoux/cairn-ui/control';
 
 const nextId = (() => {
   let count = 0;

@@ -1,7 +1,7 @@
+import { UiButton } from '@joanroucoux/cairn-ui/button';
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
 import { expect, within } from 'storybook/test';
 
-import { UiButton } from '../button/button';
 import { UiEmpty } from './empty';
 
 type EmptyArgs = { heading: string; hint: string };

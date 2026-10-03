@@ -1,9 +1,9 @@
 import { signal } from '@angular/core';
 
+import { UiInput } from '@joanroucoux/cairn-ui/input';
+import { UiSelect } from '@joanroucoux/cairn-ui/select';
 import { type RenderResult, render, screen } from '@testing-library/angular';
 
-import { UiInput } from '../input/input';
-import { UiSelect } from '../select/select';
 import { UiField, UiFieldLeading, UiFieldTrailing } from './field';
 
 const renderField = (attributes = '', control = '<input uiInput />'): Promise<RenderResult<unknown>> =>

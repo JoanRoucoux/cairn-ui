@@ -1,7 +1,7 @@
+import { UiInput } from '@joanroucoux/cairn-ui/input';
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
 import { expect, within } from 'storybook/test';
 
-import { UiInput } from '../input/input';
 import { UiField, UiFieldLeading, UiFieldTrailing } from './field';
 
 type FieldArgs = {

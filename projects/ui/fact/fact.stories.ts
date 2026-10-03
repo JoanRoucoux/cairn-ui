@@ -1,7 +1,7 @@
+import { UiCard } from '@joanroucoux/cairn-ui/card';
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
 import { expect, within } from 'storybook/test';
 
-import { UiCard } from '../card/card';
 import { FACT_SIZES, FACT_SUB_TONES, type FactSize, type FactSubTone, UiFact, UiFacts } from './fact';
 
 type FactArgs = {
