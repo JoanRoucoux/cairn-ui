@@ -19,9 +19,8 @@ const nextId = (() => {
 })();
 
 /**
- * Marks an element, typically an 18px svg icon, as the leading content of a `ui-field`: it sits
- * inside the control's left edge and the control's text is inset to clear it. Decorative, so hidden
- * from assistive technologies.
+ * Marks an element, typically an 18px svg icon, as the leading content of a `ui-field`, inside the
+ * control's left edge. Decorative, so hidden from assistive technologies.
  *
  * @example
  * <ui-field label="Search" labelHidden>
@@ -39,17 +38,15 @@ const nextId = (() => {
 export class UiFieldLeading {}
 
 /**
- * Marks an element, typically an icon button, as the trailing action of a `ui-field`: it sits on the
- * control's right edge, square to the control's height, and the control's text is padded to clear it.
+ * Marks an element, typically an icon button, as the trailing action of a `ui-field`, on the
+ * control's right edge. A toggle should carry `aria-pressed`. The slot shares the right edge with
+ * `unit`: set one or the other, not both.
  *
  * @example
  * <ui-field label="Password">
  *   <input uiInput type="password" size="xl" />
  *   <button uiFieldTrailing type="button" aria-label="Show the password" [attr.aria-pressed]="shown()">...</button>
  * </ui-field>
- *
- * A toggle such as this one should carry `aria-pressed`. The slot shares the right edge with `unit`:
- * set one or the other, not both.
  */
 @Directive({
   selector: '[uiFieldTrailing]',
@@ -61,11 +58,9 @@ export class UiFieldLeading {}
 export class UiFieldTrailing {}
 
 /**
- * Label, control, hint and error as one unit. The control stays a plain native element:
- * the field finds it in its own projected content and wires the ARIA attributes onto it.
- *
- * The message comes from the caller's `error`, or, where none is set, from the projected control's
- * own validation state once it is touched.
+ * Label, control, hint and error as one unit. The projected native control is found and wired with
+ * the ARIA attributes. The message comes from `error`, which wins, or else from the control's own
+ * validation state once touched.
  *
  * @example
  * <ui-field label="Quantity" hint="Leave empty if unknown">
@@ -147,10 +142,6 @@ export class UiField {
     this.labelHidden() ? 'sr-only' : 'text-label leading-[17px] font-medium text-(--muted-foreground)',
   );
 
-  /**
-   * The caller's own `error` wins: it is the only way to report something the control does not
-   * know about, such as a search box refusing an empty query.
-   */
   protected readonly message = computed(() => {
     const explicit = this.error();
 
@@ -171,7 +162,6 @@ export class UiField {
     let markedByField = false;
 
     afterRenderEffect(() => {
-      // querySelector, not viewChild.required, so the "no control found" guard below stays reachable and testable.
       const control = this.#host.nativeElement.querySelector<HTMLElement>('input, select, textarea');
 
       if (!control) {

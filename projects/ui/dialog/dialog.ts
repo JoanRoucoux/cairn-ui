@@ -16,7 +16,7 @@ import { afterExit } from './internal/dialog-exit';
 import { DIALOG_STYLES } from './internal/dialog-styles';
 import { SheetDrag } from './internal/sheet-drag';
 
-/** Named dialog widths; any other CSS length is accepted as is. `DialogWidth` is derived from this tuple. */
+/** Named dialog widths; any other CSS length is accepted as is. */
 export const DIALOG_WIDTHS = ['md', 'lg'] as const;
 export type DialogWidth = (typeof DIALOG_WIDTHS)[number];
 
@@ -25,7 +25,7 @@ const WIDTH_VALUES: Record<DialogWidth, string> = {
   lg: '560px',
 };
 
-/** Spacing presets. `DialogLayout` is derived from this tuple. */
+/** Spacing presets. */
 export const DIALOG_LAYOUTS = ['trade', 'form', 'list', 'confirm'] as const;
 export type DialogLayout = (typeof DIALOG_LAYOUTS)[number];
 
@@ -83,7 +83,7 @@ const LAYOUTS: Record<DialogLayout, LayoutClasses> = {
   },
 };
 
-/** What started a close, as `closed` reports it. `DialogCloseReason` is derived from this tuple. */
+/** What started a close, as `closed` reports it. */
 export const DIALOG_CLOSE_REASONS = ['escape', 'backdrop', 'cross', 'drag', 'programmatic'] as const;
 export type DialogCloseReason = (typeof DIALOG_CLOSE_REASONS)[number];
 
@@ -96,8 +96,8 @@ const nextId = (() => {
 /**
  * Modal dialog on the native <dialog>: a bottom sheet under `64rem`, centered above it.
  *
- * `busy` keeps it open while its action runs: Escape, a click on the backdrop and a drag of the sheet do
- * nothing and the cross is disabled. The owner disables its own buttons and still closes it through `open`.
+ * `busy` keeps it open while its action runs: Escape, a backdrop click and a sheet drag do nothing
+ * and the cross is disabled. The owner disables its own buttons and still closes it through `open`.
  *
  * @example
  * <ui-dialog heading="Buy" description="Ferrari" closeLabel="Close" width="528px" [open]="buying()" (dismissed)="buying.set(false)">
@@ -180,7 +180,6 @@ const nextId = (() => {
         [attr.tabindex]="scrollable() ? 0 : null"
         [id]="bodyId"
       >
-        <!-- empty:hidden keeps a body-less dialog from carrying the body's vertical padding. -->
         <div class="flex flex-col gap-4 empty:hidden" [class]="spec().body">
           <ng-content />
         </div>
@@ -285,7 +284,6 @@ export class UiDialog {
     });
 
     afterRenderEffect(() => {
-      // viewChild.required can't target a #private field (NG1053); safe because the template has exactly one <dialog>.
       const dialog = this.#host.nativeElement.querySelector('dialog') as HTMLDialogElement;
 
       if (this.open() && !dialog.open) {

@@ -1,12 +1,9 @@
-# Build outputs and caches
 /.angular
 /coverage
 /dist
 /storybook-static
 node_modules
 
-# Lockfile
 pnpm-lock.yaml
 
-# Kept by hand in its own layout
 CHANGELOG.md

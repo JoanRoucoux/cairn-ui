@@ -17,9 +17,8 @@ const SELECTED_PILL_CLASSES = 'bg-(--primary) text-(--primary-foreground)';
 const UNSELECTED_PILL_CLASSES = 'bg-(--card) text-(--foreground) shadow-[inset_0_0_0_1px_var(--border)]';
 
 /**
- * A row of single-choice filter pills, each with an optional count, that narrows a list in place:
- * an asset class, a status. On touch it scrolls on one line, bleeding to the screen edges; with a
- * fine pointer it wraps.
+ * A row of single-choice filter pills, each with an optional count, that narrows a list in place.
+ * On touch it scrolls on one line; with a fine pointer it wraps.
  *
  * @example
  * <ui-filter-chips ariaLabel="Filter by class" [options]="classes()" [(value)]="selectedClass" />

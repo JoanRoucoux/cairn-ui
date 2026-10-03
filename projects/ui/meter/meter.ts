@@ -1,6 +1,6 @@
 import { Component, computed, input } from '@angular/core';
 
-/** Track thicknesses. `MeterSize` is derived from this tuple. */
+/** Track thicknesses. */
 export const METER_SIZES = ['md', 'sm'] as const;
 export type MeterSize = (typeof METER_SIZES)[number];
 
@@ -9,7 +9,7 @@ const TRACK_CLASSES: Record<MeterSize, string> = {
   sm: 'h-1',
 };
 
-/** Ramp step used to paint the fill. `MeterTone` is derived from this tuple. */
+/** Ramp step used to paint the fill. */
 export const METER_TONES = [1, 2, 3, 4, 5, 6] as const;
 export type MeterTone = (typeof METER_TONES)[number];
 
@@ -23,8 +23,7 @@ const TONE_CLASSES: Record<MeterTone, string> = {
 };
 
 /**
- * Proportion of a whole, drawn as a single bar. One bar per category, never a stacked
- * strip: without hue to separate segments, length has to do the work alone.
+ * Proportion of a whole, drawn as a single bar. One bar per category, never a stacked strip.
  *
  * @example
  * <ui-meter [value]="0.463" label="Funds" valueText="46.3% - 128,656.00 EUR" [tone]="1" />

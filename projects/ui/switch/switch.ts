@@ -7,7 +7,6 @@ const CLASSES =
 
 /**
  * Native checkbox styled as an iOS-style switch, exposed to assistive technology as `role="switch"`.
- * 51 by 31 on touch, 40 by 24 with a mouse.
  *
  * @example
  * <input type="checkbox" uiSwitch [checked]="hidden()" (change)="toggle()" aria-label="Hide amounts" />

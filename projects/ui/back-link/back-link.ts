@@ -2,7 +2,7 @@ import { Component, computed, input } from '@angular/core';
 
 import { holdTransitionsUntilRendered } from '@joanroucoux/cairn-ui/motion';
 
-/** Available back link sizes. `BackLinkSize` is derived from this tuple. */
+/** Available back link sizes. */
 export const BACK_LINK_SIZES = ['md', 'sm', 'header'] as const;
 export type BackLinkSize = (typeof BACK_LINK_SIZES)[number];
 

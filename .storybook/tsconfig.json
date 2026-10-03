@@ -1,4 +1,3 @@
-/* Typechecking context for Storybook config and stories (stories are excluded from the library build). */
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {

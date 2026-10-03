@@ -1,18 +1,18 @@
 import { Component, booleanAttribute, computed, input } from '@angular/core';
 
-/** Available card variants. `CardVariant` is derived from this tuple. */
+/** Available card variants. */
 export const CARD_VARIANTS = ['default', 'elevated', 'inset'] as const;
 export type CardVariant = (typeof CARD_VARIANTS)[number];
 
-/** Available card paddings. `CardPadding` is derived from this tuple. */
+/** Available card paddings. */
 export const CARD_PADDINGS = ['none', 'xs', 'sm', 'md', 'list', 'rows', 'recap', 'panel'] as const;
 export type CardPadding = (typeof CARD_PADDINGS)[number];
 
-/** Where the card surface (fill, border, radius) and its padding apply. `CardSurface` is derived from this tuple. */
+/** Where the card surface (fill, border, radius) and its padding apply. */
 export const CARD_SURFACES = ['always', 'lg', 'max-lg'] as const;
 export type CardSurface = (typeof CARD_SURFACES)[number];
 
-/** Border of the card surface; `auto` follows the variant. `CardBorder` is derived from this tuple. */
+/** Border of the card surface; `auto` follows the variant. */
 export const CARD_BORDERS = ['auto', 'none', 'border', 'hairline'] as const;
 export type CardBorder = (typeof CARD_BORDERS)[number];
 
@@ -101,9 +101,8 @@ const PADDING_CLASSES: Record<CardPadding, Record<CardSurface, string>> = {
 
 /**
  * Surface that groups related content: a summary block, a table, a side panel. `surface` limits the
- * fill, border, radius and padding to one side of `64rem`, for a block that is a card on a desktop and
- * plain on an iPhone, or the reverse. `variant="inset"` is the `--background` box that sits inside a
- * card or a dialog: a picked title, a results list, a recap, an empty-state panel.
+ * card styling to one side of `64rem`. `variant="inset"` is the `--background` box that sits inside
+ * a card or a dialog.
  *
  * @example
  * <ui-card variant="elevated" padding="sm">Total</ui-card>

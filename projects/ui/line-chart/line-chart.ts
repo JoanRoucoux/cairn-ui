@@ -50,13 +50,11 @@ type EndRef = ElementRef<SVGCircleElement>;
  * Value over time: a monotone curve with a dashed line at the starting value and a tooltip.
  *
  * Axis labels are never repeated: a tick whose `axisFormat` text equals the previous drawn label is
- * not rendered. The first tick always is, so only the last edge label can drop. With `axisTicks="3"`
- * only the first, middle and last ticks count; with `auto` every tick counts from `sm` up and the
- * three core ticks below it. Tick positions are unchanged.
+ * not rendered, so only the last edge label can drop.
  *
- * A new series interpolates from the drawn curve, fading the start label and the dashed line. With
- * `rangeKey` bound, only a series that comes with a new key does so: a new series under the same key
- * (a reload after a buy) is drawn at once, with no fade. The key may change before its series arrives.
+ * A new series animates from the drawn curve. With `rangeKey` bound, only a series that comes with
+ * a new key does: a new series under the same key (a reload) is drawn at once. The key may change
+ * before its series arrives.
  *
  * @example
  * <ui-line-chart [points]="points" label="Net worth over one month" startLabel="Since" [valueFormat]="formatEur" />

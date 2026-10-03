@@ -7,9 +7,8 @@ export const SKELETON_MIN_MS = 400;
 
 /**
  * Turns the live state of a call into the state to draw: `loading` only appears once the call has
- * lasted 150 ms and, once shown, stays at least 400 ms, so a fast call never flashes a skeleton and a
- * slow one never blinks. Until then the previous state stays on screen (a reload keeps its content);
- * `null` means nothing to draw yet, for a first load still under 150 ms. Call it in an injection context.
+ * lasted 150 ms and, once shown, stays at least 400 ms. Until then the previous state stays on
+ * screen; `null` means nothing to draw yet (a first load under 150 ms). Call it in an injection context.
  *
  * @example
  * protected readonly shown = delayedState(this.state);

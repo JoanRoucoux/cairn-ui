@@ -29,9 +29,8 @@ const TEXTUAL_CLASSES = 'text-left';
 const PRIMARY_CLASSES = 'w-full max-w-0';
 
 /**
- * Styled native table. The rows and cells stay plain <tr> and <td>. `row` sets the height of every
- * body row, `rule` draws or drops the hairline under the header, `spaced` leaves 4px between the
- * header and the first row.
+ * Styled native table. `row` sets the height of every body row, `rule` draws or drops the hairline
+ * under the header, `spaced` leaves a gap between the header and the first row.
  *
  * @example
  * <table uiTable row="60" [rule]="false">
@@ -61,7 +60,7 @@ export class UiTable {
   }
 }
 
-/** Body of one group of rows: leaves a 4px tail after its last row. */
+/** Body of one group of rows. */
 @Directive({
   selector: 'tbody[uiGroup]',
   host: { class: 'after:table-row after:h-1 after:content-[""]' },
@@ -69,10 +68,8 @@ export class UiTable {
 export class UiGroup {}
 
 /**
- * Body or group row. An ordinary row glows on hover and takes the soft fill when `selected`; an
- * `interactive` row (one that opens something) also presses to the soft fill. A row with no action keeps a
- * plain name: `<td uiTd primary class="truncate font-medium">`.
- * `group` marks the row that holds a group band: it carries no hover state.
+ * Body or group row. `selected` takes the soft fill, `interactive` (a row that opens something) also
+ * presses to it. `group` marks the row that holds a group band: it has no hover state.
  *
  * @example
  * <tr uiTr [selected]="open">...
@@ -126,9 +123,9 @@ const cellClasses = (
 };
 
 /**
- * Column header, centred in its 36px. `numeric` right-aligns and lines the digits up; `secondary`
- * (or `from`) holds a column back until the viewport is wide enough for it; `primary` makes it
- * the column that absorbs the free width and truncates; `tall` is a 40px header; `width` fixes the column width and keeps it from shrinking.
+ * Column header. `numeric` right-aligns, `secondary` (or `from`) hides the column below a
+ * breakpoint, `primary` makes it the column that absorbs the free width, `tall` is a 40px header,
+ * `width` fixes the column width.
  *
  * @example
  * <th uiTh numeric secondary width="108px">Quantity</th>
@@ -160,7 +157,7 @@ export class UiTh {
   );
 }
 
-/** Body cell. Same inputs as `UiTh` (bar `tall` and `width`), and they must be set on both to match. */
+/** Body cell. Same inputs as `UiTh` bar `tall` and `width`, which must be set on both to match. */
 @Directive({
   selector: 'td[uiTd]',
   host: {
@@ -183,8 +180,8 @@ export const GROUP_SIZES = ['md', 'lg'] as const;
 export type GroupSize = (typeof GROUP_SIZES)[number];
 
 /**
- * The band that opens a group of rows: name in 600 (a heading), meta beside it, the projected
- * total pinned to the right. Spans the whole row through `colspan`.
+ * The band that opens a group of rows: name, meta beside it, the projected total on the right.
+ * Spans the whole row through `colspan`.
  *
  * @example
  * <tr uiTr group><td ui-group-cell colspan="4" name="Brokerage" meta="Savings plan">...total...</td></tr>
@@ -222,10 +219,9 @@ export class UiGroupCell {
 }
 
 /**
- * Makes a link or button the way into its row. By default an invisible layer stretches over the
- * whole row, so the row is one target for the pointer, the keyboard and a screen reader, and its
- * focus ring wraps the row. With `[stretch]="false"` only the name is the
- * target: it underlines on hover and takes its own ring. `current` marks the open line.
+ * Makes a link or button the way into its row: by default it stretches over the whole row, so the
+ * row is one target. With `[stretch]="false"` only the name is the target. `current` marks the open
+ * line. Other controls in the row need `uiRowAction` to stay clickable.
  *
  * @example
  * <td uiTd primary><a uiRowLink href="/lines/42">Ferrari</a></td>
@@ -249,7 +245,7 @@ export class UiRowLink {
   );
 }
 
-/** A control in another cell of a stretched-link row: lifts it above the layer that covers the row. */
+/** A control in another cell of a stretched-link row: keeps it clickable above the row-wide link. */
 @Directive({
   selector: '[uiRowAction]',
   host: { class: 'relative z-1' },
@@ -267,9 +263,8 @@ const SUB_TONE_CLASSES: Record<SubTone, string> = {
 };
 
 /**
- * A second line under a cell's main text. `narrow` shows it only under 1024px, where it carries
- * the quantity, average cost and quote that were held back. Its amounts go through `ui-amount`
- * so they mask.
+ * A second line under a cell's main text. `narrow` shows it only under 1024px, for the data held
+ * back by `secondary` columns.
  *
  * @example
  * <span uiCellSub narrow>10 × 421.26 € · cost 388.10 €</span>

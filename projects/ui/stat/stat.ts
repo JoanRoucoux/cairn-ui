@@ -1,6 +1,6 @@
 import { Component, computed, input } from '@angular/core';
 
-/** Available stat sizes. `StatSize` is derived from this tuple. */
+/** Available stat sizes. */
 export const STAT_SIZES = ['hero', 'tile'] as const;
 export type StatSize = (typeof STAT_SIZES)[number];
 
@@ -20,12 +20,9 @@ const STACK_CLASSES: Record<StatSize, string> = {
 };
 
 /**
- * Label, figure and a named period of change, at two sizes: a `hero` for a screen's single
- * headline number, or a smaller `tile` repeated in a grid. The figure itself, its delta and its
- * caption are all projected, so the component carries no formatting and no currency of its own.
- *
- * The `hero` size never sets `tabular-nums` on the figure: a lone headline number reads better
- * with its digits at their natural width, unlike a column of aligned figures.
+ * Label, figure and a named period of change: a `hero` for a screen's single headline number, or a
+ * smaller `tile` repeated in a grid. The figure, its delta and its caption are projected, so the
+ * component does no formatting. The `hero` figure does not use `tabular-nums`.
  *
  * @example
  * <ui-stat label="Net worth" size="hero">

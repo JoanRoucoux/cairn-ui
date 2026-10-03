@@ -1,8 +1,7 @@
 import { Component, input } from '@angular/core';
 
 /**
- * Centred empty state: a title, a hint and an action slot, such as a catalogue search that matches
- * nothing. The padding is 24px, 48px from 64rem.
+ * Centred empty state: a title, a hint and an action slot, such as a search that matches nothing.
  *
  * @example
  * <ui-empty heading="Aucun instrument ne correspond à « zzz »" hint="La recherche porte sur le nom et l'ISIN.">

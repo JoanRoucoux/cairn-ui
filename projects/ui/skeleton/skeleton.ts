@@ -1,6 +1,6 @@
 import { Component, computed, input } from '@angular/core';
 
-/** Available skeleton shapes. `SkeletonShape` is derived from this tuple. */
+/** Available skeleton shapes. */
 export const SKELETON_SHAPES = ['text', 'figure', 'row', 'chart', 'ring', 'dot'] as const;
 export type SkeletonShape = (typeof SKELETON_SHAPES)[number];
 
@@ -11,8 +11,7 @@ const PULSE_ANIMATION = 'cairn-pulse var(--pulse-duration) var(--ease-out) infin
 const BAR_CLASSES = 'block rounded-control bg-(--muted)';
 
 /**
- * Decorative, pulsing placeholder for content that is still loading, at the shape of the content
- * it stands in for.
+ * Decorative, pulsing placeholder for content that is still loading.
  *
  * @example
  * <ui-skeleton shape="figure" />
