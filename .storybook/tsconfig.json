@@ -4,6 +4,6 @@
   "compilerOptions": {
     "types": ["node"]
   },
-  "include": ["./*.ts", "../projects/ui/src/**/*.ts"],
-  "exclude": ["../projects/ui/src/**/*.spec.ts", "../projects/ui/src/test-setup.ts"]
+  "include": ["./*.ts", "../projects/ui/**/*.ts"],
+  "exclude": ["../projects/ui/**/*.spec.ts", "../projects/ui/src/test-setup.ts"]
 }

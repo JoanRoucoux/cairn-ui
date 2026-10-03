@@ -25,11 +25,12 @@ Before considering a change done, run the same pipeline as CI: `format:check`, `
 
 ## Architecture
 
-- `projects/ui/src/lib/<component>/` — one folder per component: `<name>.ts` + `<name>.spec.ts` + `<name>.stories.ts` co-located, no `.component`/`.directive` suffixes.
-- `projects/ui/src/public-api.ts` — the library's **only** entry point (required by ng-packagr): every public symbol is exported there.
+- `projects/ui/<component>/`: one folder per component, `<name>.ts` + `<name>.spec.ts` + `<name>.stories.ts` co-located, no `.component`/`.directive` suffixes.
+- **One folder, one ng-packagr entry point.** Each component folder holds an `ng-package.json` (`{ "lib": { "entryFile": "index.ts" } }`) and an `index.ts` exporting its public symbols. Consumers import `@joanroucoux/cairn-ui/<folder>`; a new component gets its own `ng-package.json` + `index.ts`. Cross-entry imports in production code, specs and stories go through the package path (`@joanroucoux/cairn-ui/motion`, resolved by `paths` in the root `tsconfig.json`), never a relative `../<folder>/...`. Imports inside a folder, `./internal/...` included, stay relative. A symbol another entry needs must be exported from `index.ts`, so it becomes public.
+- `projects/ui/src/public-api.ts` — the primary entry point, required by ng-packagr, which **exports nothing** on purpose: a root barrel (or a single fesm) forces every component into the consumer's initial chunk, defeating esbuild's per-module splitting. Never export an entry from it.
 - `projects/ui/styles/tokens.css` — the design tokens, shipped as a package asset (`dist/ui/styles/tokens.css`). It must stay a **pure token sheet**: no resets, no element styles. Preview-only chrome belongs in `.storybook/preview.css`.
 - `projects/ui/docs/` — Storybook "Foundations" MDX pages (colors, typography).
-- Module boundaries are enforced at lint time by Sheriff ([sheriff.config.ts](sheriff.config.ts)): **components never import each other** — shared building blocks get their own module. Modules are barrel-less: no `index.ts`, import files directly; private files go in an `internal/` subdirectory (`public-api.ts` is the ng-packagr entry, not a barrel).
+- Module boundaries are enforced at lint time by Sheriff ([sheriff.config.ts](sheriff.config.ts)): **components never import each other**, shared building blocks get their own module. Each module's `index.ts` is its public surface and the ng-packagr entry (not an import shortcut inside the folder); private files go in an `internal/` subdirectory.
 - The palette is **monochrome**: `--primary` carries no hue, which leaves `--positive`,
   `--negative` and `--stale` as the only colors in the interface. Their light values are darker
   than their dark values on purpose - a green that reads at 7.76:1 on near-black only reaches
