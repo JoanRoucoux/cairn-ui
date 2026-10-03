@@ -1,7 +1,11 @@
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/github/banner-dark.png">
-  <img alt="Cairn UI: Components and tokens behind Cairn." src="docs/github/banner-light.png">
-</picture>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/github/banner-dark.png">
+    <img alt="Cairn UI: Components and tokens behind Cairn." src="docs/github/banner-light.png">
+  </picture>
+</p>
+
+<br>
 
 <div align="center">
 
