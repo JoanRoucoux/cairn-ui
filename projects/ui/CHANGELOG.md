@@ -1,5 +1,39 @@
 # Changelog
 
+## 0.7.2
+
+### Added
+
+- `uiStaleLink` `size` input: `caption` (default, 12/17) or `label` (14/20), both at weight 500, for the dashboard
+  total's "1 cours en retard ›". The hit area stays 44px high, 40px with a mouse. `STALE_LINK_SIZES` and
+  `StaleLinkSize` are exported.
+- `ui-line-chart` `rangeKey` input (`string | null`, default `null`): when bound, a new series interpolates and
+  fades "Départ" and the dashed line only if it comes with a new key. A new series under the same key (a reload
+  after a buy) is drawn at once, with no fade. The key may change before its series arrives; the interpolation
+  runs when the series does. Unbound, every new series interpolates, as before.
+- `holdTransitionsUntilRendered()`: called in a constructor, it holds the transitions of the host and of everything
+  inside it until two frames after its first render, through `data-ui-settling` and the matching rule of
+  `styles/motion.css`. For a consumer element whose bound classes carry a transition.
+
+### Changed
+
+- `ui-button` (and the `ui-async` retry button) no longer fades its opacity when it becomes disabled, busy or
+  enabled, and a `ui-segmented` option switches its label colour at once: MOUVEMENT.md animates neither. The press
+  scale and the hover fill keep their transitions.
+- `uiAvatarLink` draws its current-page halo as a background image, so it appears at once when the route changes;
+  the hover glow keeps its 180 ms fade.
+
+### Fixed
+
+- Nothing transitions on page open any more. A route's elements are created a tick before their classes are bound,
+  and a layout read in between (the router's scroll to the top, a view transition) turned the bound fill, colour
+  or switch track into a 180 ms transition. `ui-button`, `ui-async`, `ui-back-link`, `ui-nav-item`, `ui-row`,
+  `uiSwitch`, `ui-segmented` and `uiTable` now hold their transitions until rendered. Consumers already import
+  `styles/motion.css`, which carries the rule.
+- `ui-menu` items stay on one line, left aligned (`whitespace-nowrap`, `text-left`). The menu places itself from
+  its layout size instead of its box scaled by the entry animation, and frees its right and bottom edges, so a
+  menu opened beside the right edge of a phone no longer narrows and wraps a long label.
+
 ## 0.7.1
 
 ### Added
