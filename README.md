@@ -1,8 +1,9 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/github/banner-dark.png">
+  <img alt="Cairn UI: Components and tokens behind Cairn." src="docs/github/banner-light.png">
+</picture>
+
 <div align="center">
-
-<img src="docs/github/logo.svg" alt="Cairn UI logo" width="72" height="72" />
-
-# Cairn UI
 
 A monochrome, accessible Angular design system, built for Cairn.
 
