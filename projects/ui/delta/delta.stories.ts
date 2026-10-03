@@ -57,11 +57,11 @@ is responsible for formatting it with its own sign, because color can never carr
     template: `<ui-delta [value]="value" [emphasis]="emphasis" [size]="size" [weight]="weight" unknownLabel="Non disponible">{{ label }}</ui-delta>`,
   }),
   args: {
-    value: 412.56,
+    value: 361.4,
     emphasis: 'text',
     size: 'label',
     weight: 'medium',
-    label: '+412,56 € · +0,25 %',
+    label: '+361,40 € · +0,25 %',
   },
   argTypes: {
     value: {

@@ -112,7 +112,7 @@ export const States: Story = {
               [disabled]="state === 'Désactivé'"
               [attr.aria-label]="state"
             >
-              <option>Saxo Investor · PEA</option>
+              <option>Northwind PEA · PEA</option>
             </select>
             <span class="text-caption text-(--subtle-foreground)">{{ state }}</span>
           </div>

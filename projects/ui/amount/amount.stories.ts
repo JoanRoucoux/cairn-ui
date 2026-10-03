@@ -61,7 +61,7 @@ Masking comes from the \`UI_AMOUNT_MASKED\` injection token, a signal the app pr
     template: `<ui-amount [value]="value" [currency]="currency" [signed]="signed" [numeric]="numeric" [whenMasked]="whenMasked" [fractionDigits]="fractionDigits" locale="fr-FR" />`,
   }),
   args: {
-    value: 164294.28,
+    value: 144539.35,
     currency: 'EUR',
     signed: false,
     numeric: 'tabular',
@@ -90,7 +90,7 @@ export default meta;
 type Story = StoryObj<AmountArgs>;
 
 export const Euros: Story = {
-  args: { value: 14318.4 },
+  args: { value: 8592 },
   render: (args) => ({
     props: args,
     template: `<span class="text-body font-medium"><ui-amount [value]="value" [currency]="currency" [numeric]="numeric" locale="fr-FR" /></span>`,
@@ -106,7 +106,7 @@ export const Display: Story = {
 };
 
 export const SignedGain: Story = {
-  args: { value: 412.56, signed: true },
+  args: { value: 361.4, signed: true },
   render: (args) => ({
     props: args,
     template: `<span class="text-body font-medium text-(--positive)"><ui-amount [value]="value" [currency]="currency" [signed]="signed" locale="fr-FR" /></span>`,
@@ -161,5 +161,5 @@ export const HiddenNextToAPercentage: Story = {
       </span>
     `,
   }),
-  args: { value: 412.56 },
+  args: { value: 361.4 },
 };

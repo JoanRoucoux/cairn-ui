@@ -6,9 +6,9 @@ import userEvent from '@testing-library/user-event';
 import { type ChartPoint, UiLineChart } from './line-chart';
 
 const points: ChartPoint[] = [
-  { t: Date.UTC(2026, 7, 25), v: 161389.51 },
-  { t: Date.UTC(2026, 8, 10), v: 163000 },
-  { t: Date.UTC(2026, 8, 25), v: 164294.28 },
+  { t: Date.UTC(2026, 7, 25), v: 142120.75 },
+  { t: Date.UTC(2026, 8, 10), v: 143000 },
+  { t: Date.UTC(2026, 8, 25), v: 144539.35 },
 ];
 const fmt = (v: number): string => `${v.toFixed(2)} EUR`;
 const delta = (d: number): string => `${d > 0 ? '+' : ''}${d.toFixed(2)} EUR`;
@@ -36,7 +36,7 @@ describe('UiLineChart', () => {
       componentProperties: { points, fmt },
     });
 
-    expect(screen.getByText('Depart 161389.51 EUR')).toBeInTheDocument();
+    expect(screen.getByText('Depart 142120.75 EUR')).toBeInTheDocument();
   });
 
   it('shows the value, the change since the start and the date for the key-selected point', async () => {
@@ -49,8 +49,8 @@ describe('UiLineChart', () => {
     await userEvent.keyboard('{End}');
 
     const tooltip = screen.getByTestId('chart-tooltip');
-    expect(tooltip).toHaveTextContent('164294.28 EUR');
-    expect(tooltip).toHaveTextContent('+2904.77 EUR');
+    expect(tooltip).toHaveTextContent('144539.35 EUR');
+    expect(tooltip).toHaveTextContent('+2418.60 EUR');
     expect(tooltip).toHaveTextContent('2026-09-25');
   });
 
@@ -106,7 +106,7 @@ describe('UiLineChart', () => {
     fireEvent.pointerMove(svg, { clientX: 0, clientY: 0 });
 
     expect(fixture.nativeElement.querySelector('[data-chart-crosshair]')).toBeInTheDocument();
-    expect(screen.getByTestId('chart-tooltip')).toHaveTextContent('161389.51 EUR');
+    expect(screen.getByTestId('chart-tooltip')).toHaveTextContent('142120.75 EUR');
   });
 
   it('hides the tooltip on pointer leave', async () => {
@@ -133,19 +133,19 @@ describe('UiLineChart', () => {
     chart.focus();
     await user.keyboard('{ArrowRight}');
 
-    expect(screen.getByTestId('chart-tooltip')).toHaveTextContent('161389.51 EUR');
+    expect(screen.getByTestId('chart-tooltip')).toHaveTextContent('142120.75 EUR');
 
     await user.keyboard('{ArrowRight}');
 
-    expect(screen.getByTestId('chart-tooltip')).toHaveTextContent('163000.00 EUR');
+    expect(screen.getByTestId('chart-tooltip')).toHaveTextContent('143000.00 EUR');
 
     await user.keyboard('{End}');
 
-    expect(screen.getByTestId('chart-tooltip')).toHaveTextContent('164294.28 EUR');
+    expect(screen.getByTestId('chart-tooltip')).toHaveTextContent('144539.35 EUR');
 
     await user.keyboard('{Home}');
 
-    expect(screen.getByTestId('chart-tooltip')).toHaveTextContent('161389.51 EUR');
+    expect(screen.getByTestId('chart-tooltip')).toHaveTextContent('142120.75 EUR');
 
     await user.keyboard('{Escape}');
 
@@ -153,15 +153,15 @@ describe('UiLineChart', () => {
 
     await user.keyboard('{ArrowLeft}');
 
-    expect(screen.getByTestId('chart-tooltip')).toHaveTextContent('164294.28 EUR');
+    expect(screen.getByTestId('chart-tooltip')).toHaveTextContent('144539.35 EUR');
 
     await user.keyboard('{ArrowLeft}');
 
-    expect(screen.getByTestId('chart-tooltip')).toHaveTextContent('163000.00 EUR');
+    expect(screen.getByTestId('chart-tooltip')).toHaveTextContent('143000.00 EUR');
 
     await user.keyboard('{Tab}');
 
-    expect(screen.getByTestId('chart-tooltip')).toHaveTextContent('163000.00 EUR');
+    expect(screen.getByTestId('chart-tooltip')).toHaveTextContent('143000.00 EUR');
   });
 
   it('formats the value and the time as-is when no formatter is given', async () => {
@@ -173,7 +173,7 @@ describe('UiLineChart', () => {
 
     fireEvent.pointerMove(svg, { clientX: 0, clientY: 0 });
 
-    expect(screen.getByTestId('chart-tooltip')).toHaveTextContent('161389.51');
+    expect(screen.getByTestId('chart-tooltip')).toHaveTextContent('142120.75');
   });
 
   it('scales the pointer position by the plot area actual rendered width', async () => {
@@ -186,7 +186,7 @@ describe('UiLineChart', () => {
 
     fireEvent.pointerMove(svg, { clientX: 640, clientY: 0 });
 
-    expect(screen.getByTestId('chart-tooltip')).toHaveTextContent('164294.28 EUR');
+    expect(screen.getByTestId('chart-tooltip')).toHaveTextContent('144539.35 EUR');
   });
 
   it('colors a flat change neutral', async () => {

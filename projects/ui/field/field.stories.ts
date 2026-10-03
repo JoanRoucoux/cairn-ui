@@ -227,7 +227,7 @@ export const SignIn: Story = {
     template: `
       <div class="flex max-w-sm flex-col gap-4">
         <ui-field label="Identifiant">
-          <input uiInput surface="card" size="xl" value="joan" />
+          <input uiInput surface="card" size="xl" value="alex" />
         </ui-field>
         <ui-field label="Mot de passe" invalid>
           <input uiInput surface="card" size="xl" type="password" value="motdepasse" />
@@ -259,7 +259,7 @@ export const OptionalSheetForm: Story = {
           <input uiInput size="lg" placeholder="Livret A" />
         </ui-field>
         <ui-field label="Établissement" optional="(facultatif)">
-          <input uiInput size="lg" placeholder="Boursorama" />
+          <input uiInput size="lg" placeholder="Northwind Bank" />
         </ui-field>
       </div>
     `,

@@ -79,7 +79,7 @@ inside a form. \`align\` centres the block (\`auto\`: from 64rem), \`card\` draw
             <span class="text-label text-(--muted-foreground)">Ce compte n'a encore aucune ligne. Ajoutez un titre ou importez un CSV.</span>
             <button type="button" class="rounded-control text-label h-9 bg-(--card) px-3 font-medium shadow-[inset_0_0_0_1px_var(--border)]">Ajouter une ligne</button>
           </div>
-          <span class="text-body font-medium tabular-nums">14 318,40 €</span>
+          <span class="text-body font-medium tabular-nums">8 592,00 €</span>
         </ui-async>
       </div>
     `,

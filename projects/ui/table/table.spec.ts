@@ -147,17 +147,17 @@ describe('UiTr', () => {
   });
 
   it('leaves a group row without hover', async () => {
-    await render(`<table uiTable><tbody><tr uiTr group><td uiTd>Saxo</td></tr></tbody></table>`, { imports });
+    await render(`<table uiTable><tbody><tr uiTr group><td uiTd>Northwind PEA</td></tr></tbody></table>`, { imports });
 
     expect(screen.getByRole('row')).not.toHaveClass('hover:[&>td]:bg-(--glow)');
   });
 });
 
 describe('UiGroupCell', () => {
-  const renderBand = (meta = 'meta="PEA · Saxo"'): Promise<RenderResult<unknown>> =>
+  const renderBand = (meta = 'meta="PEA · Northwind Bank"'): Promise<RenderResult<unknown>> =>
     render(
       `<table uiTable><tbody><tr uiTr group>
-         <td ui-group-cell colspan="3" name="Saxo Investor" ${meta}>61 247,83 €</td>
+         <td ui-group-cell colspan="3" name="Northwind PEA" ${meta}>48 215,60 €</td>
        </tr></tbody></table>`,
       { imports },
     );
@@ -165,15 +165,15 @@ describe('UiGroupCell', () => {
   it('shows the name in 600, the meta beside it and the total', async () => {
     await renderBand();
 
-    expect(screen.getByText('Saxo Investor')).toHaveClass('font-semibold');
-    expect(screen.getByText('PEA · Saxo')).toBeInTheDocument();
-    expect(screen.getByText('61 247,83 €')).toHaveClass('font-semibold', 'tabular-nums');
+    expect(screen.getByText('Northwind PEA')).toHaveClass('font-semibold');
+    expect(screen.getByText('PEA · Northwind Bank')).toBeInTheDocument();
+    expect(screen.getByText('48 215,60 €')).toHaveClass('font-semibold', 'tabular-nums');
   });
 
   it('draws the muted band at least 44px tall', async () => {
     await renderBand();
 
-    expect(screen.getByText('Saxo Investor').closest('div')?.parentElement).toHaveClass(
+    expect(screen.getByText('Northwind PEA').closest('div')?.parentElement).toHaveClass(
       'bg-(--muted)',
       'rounded-control',
       'min-h-11',
@@ -183,7 +183,7 @@ describe('UiGroupCell', () => {
   it('omits the meta when there is none', async () => {
     await renderBand('');
 
-    expect(screen.queryByText('PEA · Saxo')).not.toBeInTheDocument();
+    expect(screen.queryByText('PEA · Northwind Bank')).not.toBeInTheDocument();
   });
 });
 
@@ -222,9 +222,9 @@ describe('UiCellSub', () => {
   });
 
   it('shows a narrow subtitle only under 1024px', async () => {
-    await render(`<span uiCellSub narrow>10 × 421,26 €</span>`, { imports });
+    await render(`<span uiCellSub narrow>8 × 421,26 €</span>`, { imports });
 
-    expect(screen.getByText('10 × 421,26 €')).toHaveClass('lg:hidden');
+    expect(screen.getByText('8 × 421,26 €')).toHaveClass('lg:hidden');
   });
 });
 
@@ -294,18 +294,24 @@ describe('UiGroupCell sizes', () => {
   });
 
   it('names the group with a heading', async () => {
-    await render(`<table uiTable><tbody><tr uiTr group><td ui-group-cell name="Saxo">1</td></tr></tbody></table>`, {
-      imports,
-    });
+    await render(
+      `<table uiTable><tbody><tr uiTr group><td ui-group-cell name="Northwind PEA">1</td></tr></tbody></table>`,
+      {
+        imports,
+      },
+    );
 
-    expect(screen.getByRole('heading', { name: 'Saxo' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Northwind PEA' })).toBeInTheDocument();
   });
 
   it('makes the heading a focus target without a ring', async () => {
-    await render('<table uiTable><tbody><tr uiTr group><td ui-group-cell name="Saxo">1</td></tr></tbody></table>', {
-      imports,
-    });
-    const heading = screen.getByRole('heading', { name: 'Saxo' });
+    await render(
+      '<table uiTable><tbody><tr uiTr group><td ui-group-cell name="Northwind PEA">1</td></tr></tbody></table>',
+      {
+        imports,
+      },
+    );
+    const heading = screen.getByRole('heading', { name: 'Northwind PEA' });
 
     heading.focus();
 
@@ -316,9 +322,12 @@ describe('UiGroupCell sizes', () => {
   });
 
   it('keeps the name in a heading outside any inline wrapper', async () => {
-    await render('<table uiTable><tbody><tr uiTr group><td ui-group-cell name="Saxo">1</td></tr></tbody></table>', {
-      imports,
-    });
+    await render(
+      '<table uiTable><tbody><tr uiTr group><td ui-group-cell name="Northwind PEA">1</td></tr></tbody></table>',
+      {
+        imports,
+      },
+    );
 
     expect(screen.getByRole('heading').parentElement?.tagName).toBe('DIV');
   });
@@ -332,7 +341,7 @@ describe('UiGroupCell sizes', () => {
 
 describe('UiRowLink variants', () => {
   it('can stay on the name alone, underlined on hover, with its own ring', async () => {
-    await render(`<a uiRowLink [stretch]="false" href="/a">PEA Saxo</a>`, { imports });
+    await render(`<a uiRowLink [stretch]="false" href="/a">Northwind PEA</a>`, { imports });
 
     const link = screen.getByRole('link');
     expect(link).toHaveClass('hover:underline', 'focus-visible:outline-2', 'focus-visible:outline-offset-2');
@@ -340,7 +349,7 @@ describe('UiRowLink variants', () => {
   });
 
   it('stays on the name alone with the attribute form', async () => {
-    await render(`<a uiRowLink stretch="false" href="/a">PEA Saxo</a>`, { imports });
+    await render(`<a uiRowLink stretch="false" href="/a">Northwind PEA</a>`, { imports });
 
     expect(screen.getByRole('link')).not.toHaveClass('after:absolute');
   });

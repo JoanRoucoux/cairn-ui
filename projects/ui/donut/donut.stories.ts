@@ -22,27 +22,27 @@ const pct = (share: number): string =>
 const maskedEur = (): string => '••••\u00a0€';
 
 const byAssetClass: DonutSlice[] = [
-  { id: 'etf', label: 'ETF', value: 57671.28, sublabel: '6 lignes' },
-  { id: 'funds', label: 'Fonds', value: 46205.34, sublabel: '8 lignes' },
-  { id: 'stocks', label: 'Actions', value: 26609.1, sublabel: '4 lignes' },
-  { id: 'cash', label: 'Liquidités', value: 20048.34, sublabel: 'Soldes et livrets' },
-  { id: 'crypto', label: 'Crypto', value: 13760.22, sublabel: '5 lignes' },
+  { id: 'etf', label: 'ETF', value: 52318.4, sublabel: '6 lignes' },
+  { id: 'funds', label: 'Fonds', value: 41206.15, sublabel: '8 lignes' },
+  { id: 'stocks', label: 'Actions', value: 24870.55, sublabel: '4 lignes' },
+  { id: 'cash', label: 'Liquidités', value: 15880.25, sublabel: 'Soldes et livrets' },
+  { id: 'crypto', label: 'Crypto', value: 10264, sublabel: '5 lignes' },
 ];
 
 const byAccount: DonutSlice[] = [
-  { id: 'saxo', label: 'Saxo Investor', value: 61247.83, sublabel: 'PEA · Saxo' },
-  { id: 'esalia', label: 'Esalia', value: 38512.4, sublabel: 'PEE · Amundi ESR' },
-  { id: 'sharinbox', label: 'Sharinbox', value: 17914.06, sublabel: 'CTO · SGSS' },
-  { id: 'fortuneo', label: 'Fortuneo', value: 15402.18, sublabel: 'Épargne · Fortuneo' },
-  { id: 'binance', label: 'Binance', value: 13806.52, sublabel: 'Crypto · Binance' },
-  { id: 'fortuneo-vie', label: 'Fortuneo Vie', value: 9718.35, sublabel: 'Assurance-vie · Fortuneo' },
-  { id: 'sogeretraite', label: 'Sogeretraite', value: 7692.94, sublabel: 'PER · Société Générale' },
+  { id: 'northwind-pea', label: 'Northwind PEA', value: 48215.6, sublabel: 'PEA · Northwind Bank' },
+  { id: 'woodgrove-savings', label: 'Woodgrove Savings Plan', value: 31840.15, sublabel: 'PEE · Woodgrove Bank' },
+  { id: 'contoso', label: 'Contoso Trading', value: 22377.9, sublabel: 'CTO · Contoso Securities' },
+  { id: 'livret-a', label: 'Livret A', value: 16120.45, sublabel: 'Épargne · Woodgrove Bank' },
+  { id: 'tailspin', label: 'Tailspin Wallet', value: 11264.3, sublabel: 'Crypto · Tailspin Exchange' },
+  { id: 'fabrikam-life', label: 'Fabrikam Life', value: 8530.75, sublabel: 'Assurance-vie · Fabrikam Insurance' },
+  { id: 'woodgrove-retirement', label: 'Woodgrove Retirement', value: 6190.2, sublabel: 'PER · Woodgrove Bank' },
 ];
 
 const withATinySlice: DonutSlice[] = [
-  { id: 'saxo', label: 'Saxo Investor', value: 90000, sublabel: '12 lignes' },
-  { id: 'esalia', label: 'Esalia', value: 9900, sublabel: '4 lignes' },
-  { id: 'binance', label: 'Binance', value: 100, sublabel: '1 ligne' },
+  { id: 'northwind-pea', label: 'Northwind PEA', value: 90000, sublabel: '12 lignes' },
+  { id: 'woodgrove-savings', label: 'Woodgrove Savings Plan', value: 9900, sublabel: '4 lignes' },
+  { id: 'tailspin', label: 'Tailspin Wallet', value: 100, sublabel: '1 ligne' },
 ];
 
 const meta: Meta<DonutArgs> = {
@@ -126,12 +126,12 @@ export const TinySlice: Story = {
   args: { slices: withATinySlice, label: 'Par compte' },
   play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement);
-    const tinyRow = canvas.getByRole('button', { name: /Binance/ });
+    const tinyRow = canvas.getByRole('button', { name: /Tailspin Wallet/ });
 
     await userEvent.hover(tinyRow);
     await userEvent.click(tinyRow);
 
-    await expect(args.sliceSelect).toHaveBeenCalledWith('binance');
+    await expect(args.sliceSelect).toHaveBeenCalledWith('tailspin');
   },
 };
 

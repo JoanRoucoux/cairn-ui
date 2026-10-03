@@ -111,31 +111,31 @@ type Account = {
 
 const ACCOUNTS: Account[] = [
   {
-    name: 'Fortuneo',
+    name: 'Northwind PEA',
     meta: 'PEA',
-    total: '12 480,00 €',
+    total: '11 700,00 €',
     rows: [
-      { name: 'Amundi MSCI World', value: '9 120,00 €' },
-      { name: 'Air Liquide', value: '3 360,00 €' },
+      { name: 'Amundi MSCI World', value: '8 400,00 €' },
+      { name: 'Air Liquide', value: '3 300,00 €' },
     ],
   },
   {
-    name: 'Boursorama',
+    name: 'Contoso Trading',
     meta: 'CTO',
-    total: '8 940,00 €',
+    total: '9 150,00 €',
     rows: [
-      { name: 'TotalEnergies', value: '2 310,00 €' },
-      { name: 'Schneider Electric', value: '4 120,00 €' },
-      { name: 'Hermes', value: '2 510,00 €' },
+      { name: 'TotalEnergies', value: '2 250,00 €' },
+      { name: 'Schneider Electric', value: '4 300,00 €' },
+      { name: 'Hermes', value: '2 600,00 €' },
     ],
   },
   {
-    name: 'Linxea',
+    name: 'Fabrikam Life',
     meta: 'Assurance vie',
-    total: '21 300,00 €',
+    total: '19 800,00 €',
     rows: [
-      { name: 'Fonds euros', value: '15 000,00 €' },
-      { name: 'Comgest Monde', value: '6 300,00 €' },
+      { name: 'Fonds euros', value: '14 000,00 €' },
+      { name: 'Comgest Monde', value: '5 800,00 €' },
     ],
   },
 ];
@@ -181,7 +181,7 @@ export const AcrossGroups: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const hermes = canvas.getByTestId('Hermes');
-    const linxea = canvas.getByTestId('Linxea');
+    const fabrikam = canvas.getByTestId('Fabrikam Life');
     const fonds = canvas.getByTestId('Fonds euros');
     const height = hermes.getBoundingClientRect().height;
 
@@ -189,10 +189,10 @@ export const AcrossGroups: Story = {
     await waitFor(() => expect(canvas.queryByTestId('Schneider Electric')).toBeNull());
 
     await waitFor(() => expect(slideOf(hermes)).toBeCloseTo(height, 0));
-    await expect(slideOf(linxea)).toBeCloseTo(height, 0);
+    await expect(slideOf(fabrikam)).toBeCloseTo(height, 0);
     await expect(slideOf(fonds)).toBeCloseTo(height, 0);
     await expect(slideOf(canvas.getByTestId('TotalEnergies'))).toBeNull();
-    await expect(slideOf(canvas.getByTestId('Fortuneo'))).toBeNull();
+    await expect(slideOf(canvas.getByTestId('Northwind PEA'))).toBeNull();
   },
 };
 
@@ -234,14 +234,14 @@ export const AcrossCards: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const hermes = canvas.getByTestId('Hermes');
-    const linxea = canvas.getByTestId('Linxea');
+    const fabrikam = canvas.getByTestId('Fabrikam Life');
     const height = hermes.getBoundingClientRect().height;
 
     await userEvent.click(canvas.getByRole('button', { name: 'Remove Schneider Electric' }));
     await waitFor(() => expect(canvas.queryByTestId('Schneider Electric')).toBeNull());
 
     await waitFor(() => expect(slideOf(hermes)).toBeCloseTo(height, 0));
-    await expect(slideOf(linxea)).toBeCloseTo(height, 0);
+    await expect(slideOf(fabrikam)).toBeCloseTo(height, 0);
     await expect(slideOf(canvas.getByTestId('Fonds euros'))).toBeNull();
   },
 };

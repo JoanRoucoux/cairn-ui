@@ -3,9 +3,9 @@ import { fireEvent, render, screen } from '@testing-library/angular';
 import { type ChartPoint, UiLineChart } from './line-chart';
 
 const points: ChartPoint[] = [
-  { t: Date.UTC(2026, 7, 25), v: 161389.51 },
-  { t: Date.UTC(2026, 8, 10), v: 163000 },
-  { t: Date.UTC(2026, 8, 25), v: 164294.28 },
+  { t: Date.UTC(2026, 7, 25), v: 142120.75 },
+  { t: Date.UTC(2026, 8, 10), v: 143000 },
+  { t: Date.UTC(2026, 8, 25), v: 144539.35 },
 ];
 const fmt = (v: number): string => `${v.toFixed(2)} EUR`;
 const time = (t: number): string => new Date(t).toISOString().slice(0, 10);
@@ -32,7 +32,7 @@ describe('UiLineChart formats and screen-reader table', () => {
 
     fireEvent.pointerMove(fixture.nativeElement.querySelector('svg'), { clientX: 0, clientY: 0 });
 
-    expect(screen.getByTestId('chart-tooltip')).toHaveTextContent('161389.51 EUR');
+    expect(screen.getByTestId('chart-tooltip')).toHaveTextContent('142120.75 EUR');
     expect(screen.getByTestId('chart-tooltip')).not.toHaveTextContent('cours');
   });
 
@@ -44,8 +44,8 @@ describe('UiLineChart formats and screen-reader table', () => {
 
     fireEvent.pointerMove(fixture.nativeElement.querySelector('svg'), { clientX: 0, clientY: 0 });
 
-    expect(screen.getByTestId('chart-tooltip')).toHaveTextContent('161389.51 EUR · cours 2026-08-25');
-    expect(screen.getByText('Depart 161389.51 EUR')).toBeInTheDocument();
-    expect(screen.getAllByRole('cell', { name: '161389.51 EUR' })).toHaveLength(1);
+    expect(screen.getByTestId('chart-tooltip')).toHaveTextContent('142120.75 EUR · cours 2026-08-25');
+    expect(screen.getByText('Depart 142120.75 EUR')).toBeInTheDocument();
+    expect(screen.getAllByRole('cell', { name: '142120.75 EUR' })).toHaveLength(1);
   });
 });
