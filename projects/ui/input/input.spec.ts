@@ -1,9 +1,9 @@
 import { By } from '@angular/platform-browser';
 
+import { UI_CONTROL } from '@joanroucoux/cairn-ui/control';
 import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
-import { UI_CONTROL } from '../control/control';
 import { type ControlSize, type ControlSurface, UiInput, UiTextarea } from './input';
 
 describe('UiInput', () => {

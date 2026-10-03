@@ -13,7 +13,8 @@ import {
   viewChild,
 } from '@angular/core';
 
-import { injectReducedMotion } from '../motion/reduced-motion';
+import { injectReducedMotion } from '@joanroucoux/cairn-ui/motion';
+
 import { axisTicks, tickLabels } from './internal/chart-axis';
 import { navigateIndex, nearestPointIndex } from './internal/chart-interaction';
 import {

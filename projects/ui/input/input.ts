@@ -1,6 +1,6 @@
 import { Directive, computed, forwardRef, input } from '@angular/core';
 
-import { UI_CONTROL, type UiControl, type UiControlError } from '../control/control';
+import { UI_CONTROL, type UiControl, type UiControlError } from '@joanroucoux/cairn-ui/control';
 
 /** Available control sizes. `md` is the 44/40px touch target; `lg` and `xl` are the 48px sheet and sign-in fields. */
 export const CONTROL_SIZES = ['sm', 'md', 'lg', 'xl'] as const;
