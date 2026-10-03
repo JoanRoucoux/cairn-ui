@@ -60,10 +60,10 @@ with a click handler, so keyboard and assistive technology support come for free
       <a ui-row href="#" [selected]="selected" [busy]="busy" [unavailable]="unavailable" [size]="size" [padding]="padding" [gap]="gap" class="w-[340px]">
         <div class="flex min-w-0 flex-1 flex-col">
           <span class="text-body font-medium">Amundi MSCI World</span>
-          <span class="text-label text-(--muted-foreground)">500 × 28,64 €</span>
+          <span class="text-label text-(--muted-foreground)">300 × 28,64 €</span>
         </div>
         <div class="flex flex-col items-end whitespace-nowrap">
-          <span class="text-body font-medium">14 318,40 €</span>
+          <span class="text-body font-medium">8 592,00 €</span>
           <span class="text-label text-(--muted-foreground)">+0,90 %</span>
         </div>
       </a>
@@ -198,10 +198,10 @@ export const Card: Story = {
         <a ui-row href="#" [selected]="selected" [size]="size" [padding]="padding" class="-mx-2 w-auto">
           <div class="flex min-w-0 flex-1 flex-col">
             <span class="text-body font-medium">Amundi MSCI World</span>
-            <span class="text-label text-(--muted-foreground)">500 × 28,64 €</span>
+            <span class="text-label text-(--muted-foreground)">300 × 28,64 €</span>
           </div>
           <div class="flex flex-col items-end whitespace-nowrap">
-            <span class="text-body font-medium">14 318,40 €</span>
+            <span class="text-body font-medium">8 592,00 €</span>
             <span class="text-label text-(--muted-foreground)">+0,90 %</span>
           </div>
         </a>
@@ -222,7 +222,7 @@ export const NarrowGap: Story = {
           <span class="text-label text-(--muted-foreground)">ETF Actions</span>
         </div>
         <span class="flex flex-col items-end whitespace-nowrap">
-          <span class="text-body font-medium">14 318,40 €</span>
+          <span class="text-body font-medium">8 592,00 €</span>
           <span class="text-label text-(--muted-foreground)">+0,90 %</span>
         </span>
         <svg class="block size-4 flex-none fill-none stroke-(--subtle-foreground) stroke-[1.75]" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
@@ -241,15 +241,15 @@ export const WithTrailingAction: Story = {
         <div uiRowItem>
           <a ui-row href="#" [selected]="selected" [size]="size" [padding]="padding">
             <span class="flex min-w-0 flex-1 flex-col">
-              <span class="text-body truncate font-medium">Saxo Investor</span>
-              <span class="text-label truncate text-(--subtle-foreground)">PEA · Saxo</span>
+              <span class="text-body truncate font-medium">Northwind PEA</span>
+              <span class="text-label truncate text-(--subtle-foreground)">PEA · Northwind Bank</span>
             </span>
             <span class="flex flex-col items-end whitespace-nowrap">
-              <span class="text-body font-medium">61 247,83 €</span>
+              <span class="text-body font-medium">48 215,60 €</span>
               <span class="text-label text-(--muted-foreground)">8 lignes</span>
             </span>
           </a>
-          <button ui-button variant="quiet" size="icon-sm" aria-label="Actions sur Saxo Investor">
+          <button ui-button variant="quiet" size="icon-sm" aria-label="Actions sur Northwind PEA">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /><circle cx="5" cy="12" r="1" /></svg>
           </button>
         </div>
@@ -258,8 +258,8 @@ export const WithTrailingAction: Story = {
   }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const row = canvas.getByRole('link', { name: /Saxo Investor/ });
-    const action = canvas.getByRole('button', { name: 'Actions sur Saxo Investor' });
+    const row = canvas.getByRole('link', { name: /Northwind PEA/ });
+    const action = canvas.getByRole('button', { name: 'Actions sur Northwind PEA' });
 
     await expect(row.getBoundingClientRect().right + 4).toBeCloseTo(action.getBoundingClientRect().left, 0);
   },
@@ -291,12 +291,12 @@ export const RuledListRows: Story = {
           <span uiRowTile><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" /><circle cx="16.5" cy="7.5" r=".5" fill="currentColor" /></svg></span>
           <span class="flex min-w-0 flex-1 flex-col">
             <span class="flex items-center gap-2">
-              <span class="text-body truncate font-medium">iPhone de Joan</span>
+              <span class="text-body truncate font-medium">iPhone d'Alex</span>
               <span class="rounded-pill text-caption inline-flex h-[22px] flex-none items-center bg-(--muted) px-2 font-medium">Cet appareil</span>
             </span>
             <span class="text-caption text-(--subtle-foreground)">iCloud · Créée le 12/03/2025 · Utilisée aujourd'hui</span>
           </span>
-          <button ui-button variant="quiet-destructive" size="icon-sm" class="-mr-2" aria-label="Supprimer la clé iPhone de Joan"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg></button>
+          <button ui-button variant="quiet-destructive" size="icon-sm" class="-mr-2" aria-label="Supprimer la clé iPhone d'Alex"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg></button>
         </li>
         <li uiListRow>
           <span uiRowTile><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" /><circle cx="16.5" cy="7.5" r=".5" fill="currentColor" /></svg></span>

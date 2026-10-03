@@ -5,9 +5,9 @@ import { fireEvent, render, screen } from '@testing-library/angular';
 import { type ChartPoint, UiLineChart } from './line-chart';
 
 const points: ChartPoint[] = [
-  { t: Date.UTC(2026, 7, 25), v: 161389.51 },
-  { t: Date.UTC(2026, 8, 10), v: 163000 },
-  { t: Date.UTC(2026, 8, 25), v: 164294.28 },
+  { t: Date.UTC(2026, 7, 25), v: 142120.75 },
+  { t: Date.UTC(2026, 8, 10), v: 143000 },
+  { t: Date.UTC(2026, 8, 25), v: 144539.35 },
 ];
 
 const mediaQuery = (matches: boolean): Partial<MediaQueryList> => ({

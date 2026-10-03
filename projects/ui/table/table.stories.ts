@@ -24,28 +24,28 @@ function holding(line: string, tone: Tone): Holding {
 
 const GROUPS: { name: string; meta: string; total: string; rows: Holding[] }[] = [
   {
-    name: 'Saxo Investor',
-    meta: 'PEA · Saxo · 3 lignes',
-    total: '61 247,83 €',
+    name: 'Northwind PEA',
+    meta: 'PEA · Northwind Bank · 3 lignes',
+    total: '48 215,60 €',
     rows: [
-      holding('Ferrari|NL00150001Q9|Actions|10|388,10|421,26|4 212,60 €|+331,60 €|+8,54 %|+1,60 %', 'positive'),
+      holding('Ferrari|NL00150001Q9|Actions|8|388,10|421,26|3 370,08 €|+265,28 €|+8,54 %|+1,60 %', 'positive'),
       holding(
-        'Amundi MSCI World|LU1681043599|ETF|500|26,40|28,64|14 318,40 €|+1 118,40 €|+8,48 %|+0,90 %|selected',
+        'Amundi MSCI World|LU1681043599|ETF|300|26,40|28,64|8 592,00 €|+672,00 €|+8,48 %|+0,90 %|selected',
         'positive',
       ),
-      holding('Accor|FR0000120404|Actions|60|40,12|38,42|2 305,20 €|−102,00 €|−4,24 %|−0,42 %', 'negative'),
+      holding('Accor|FR0000120404|Actions|50|40,12|38,42|1 921,00 €|−85,00 €|−4,24 %|−0,42 %', 'negative'),
     ],
   },
   {
-    name: 'Esalia',
-    meta: 'PEE · Amundi ESR · 2 lignes',
-    total: '21 406,18 €',
+    name: 'Woodgrove Savings Plan',
+    meta: 'PEE · Woodgrove Bank · 2 lignes',
+    total: '18 049,20 €',
     rows: [
       holding(
-        'Amundi Opportunités ESR|QS0009119224|Fonds|142,318|118,62|150,41|21 406,18 €|+4 524,42 €|+26,80 %||stale',
+        'Carmignac Patrimoine|FR0010135103|Fonds|120,000|118,62|150,41|18 049,20 €|+3 814,80 €|+26,80 %||stale',
         'positive',
       ),
-      holding('Valmy Gestion Flexible Retraite|FR0013280799|Fonds|10,55|119,84||—||||noValue', 'none'),
+      holding('Comgest Monde|FR0000284689|Fonds|10,55|119,84||—||||noValue', 'none'),
     ],
   },
 ];
@@ -120,27 +120,27 @@ inherit. Amounts in a subtitle go through \`ui-amount\`.
           </thead>
           <tbody>
             <tr uiTr group>
-              <td ui-group-cell colspan="5" name="Saxo Investor">61 247,83 €</td>
+              <td ui-group-cell colspan="5" name="Northwind PEA">48 215,60 €</td>
             </tr>
             <tr uiTr>
               <td uiTd primary class="font-medium">Ferrari</td>
-              <td uiTd numeric>10</td>
+              <td uiTd numeric>8</td>
               <td uiTd numeric>421,26</td>
-              <td uiTd numeric class="font-medium">4 212,60 €</td>
+              <td uiTd numeric class="font-medium">3 370,08 €</td>
               <td uiTd numeric class="text-(--positive)">+1,60 %</td>
             </tr>
             <tr uiTr class="[&>td]:bg-(--glow)">
               <td uiTd primary class="font-medium">Amundi MSCI World</td>
-              <td uiTd numeric>500</td>
+              <td uiTd numeric>300</td>
               <td uiTd numeric>28,64</td>
-              <td uiTd numeric class="font-medium">14 318,40 €</td>
+              <td uiTd numeric class="font-medium">8 592,00 €</td>
               <td uiTd numeric class="text-(--positive)">+0,90 %</td>
             </tr>
             <tr uiTr>
               <td uiTd primary class="font-medium">Accor</td>
-              <td uiTd numeric>60</td>
+              <td uiTd numeric>50</td>
               <td uiTd numeric>38,42</td>
-              <td uiTd numeric class="font-medium">2 305,20 €</td>
+              <td uiTd numeric class="font-medium">1 921,00 €</td>
               <td uiTd numeric class="text-(--negative)">−0,42 %</td>
             </tr>
           </tbody>
@@ -286,17 +286,17 @@ export const Etroit: Story = {
 
     await expect(canvas.queryByRole('columnheader', { name: 'PRU' })).not.toBeInTheDocument();
     await expect(canvas.getByRole('columnheader', { name: 'Plus-value latente' })).toBeVisible();
-    await expect(canvas.getByText('10 × 421,26 € · PRU 388,10 €')).toBeVisible();
+    await expect(canvas.getByText('8 × 421,26 € · PRU 388,10 €')).toBeVisible();
     await expect(canvas.getByRole('button', { name: 'Saisir un cours' })).toBeVisible();
   },
 };
 
 const ACCOUNTS = [
-  { name: 'Saxo Investor', env: 'PEA', inst: 'Saxo', lines: '8 lignes', value: '61 247,83 €', share: '37,3 %' },
-  { name: 'Esalia', env: 'PEE', inst: 'Amundi ESR', lines: '3 lignes', value: '38 512,40 €', share: '23,4 %' },
-  { name: 'Fortuneo', env: 'Épargne', inst: 'Fortuneo', lines: '1 ligne', value: '15 402,18 €', share: '9,4 %' },
-  { name: 'Trade Republic', env: 'CTO', inst: 'Trade Republic', lines: 'Aucune ligne', value: '0,00 €', share: '—' },
-];
+  ['Northwind PEA', 'PEA', 'Northwind Bank', '8 lignes', '48 215,60 €', '33,4 %'],
+  ['Woodgrove Savings Plan', 'PEE', 'Woodgrove Bank', '3 lignes', '31 840,15 €', '22,0 %'],
+  ['Livret A', 'Épargne', 'Woodgrove Bank', '1 ligne', '16 120,45 €', '11,2 %'],
+  ['Northwind PEA-PME', 'PEA-PME', 'Northwind Bank', 'Aucune ligne', '0,00 €', '—'],
+].map(([name, env, inst, lines, value, share]) => ({ name, env, inst, lines, value, share }));
 
 const rowActions = (label: string): string =>
   `<button uiRowAction type="button" [attr.aria-label]="'Actions sur ' + ${label}" class="${ACTION}">${DOTS}</button>`;
@@ -339,8 +339,8 @@ export const Comptes: Story = {
     const canvas = within(canvasElement);
 
     await userEvent.tab();
-    await expect(canvas.getByRole('link', { name: 'Saxo Investor' })).toHaveFocus();
-    await expect(canvas.getByRole('button', { name: 'Actions sur Saxo Investor' })).toBeInTheDocument();
+    await expect(canvas.getByRole('link', { name: 'Northwind PEA' })).toHaveFocus();
+    await expect(canvas.getByRole('button', { name: 'Actions sur Northwind PEA' })).toBeInTheDocument();
   },
 };
 
@@ -353,10 +353,10 @@ const INSTRUMENTS = [
     ref: 'CW8.PA',
     lines: '1 ligne',
   },
-  { name: 'Bitcoin', isin: 'BTC', cls: 'Crypto', source: 'Binance', ref: 'BTCEUR', lines: '1 ligne' },
+  { name: 'Bitcoin', isin: 'BTC', cls: 'Crypto', source: 'Tailspin Exchange', ref: 'BTCEUR', lines: '1 ligne' },
   {
-    name: 'Valmy Gestion Flexible Retraite',
-    isin: 'FR0013280799',
+    name: 'Comgest Monde',
+    isin: 'FR0000284689',
     cls: 'Fonds',
     source: 'Saisie manuelle',
     ref: '',

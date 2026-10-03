@@ -58,8 +58,8 @@ three are optional; only the value is required.
   args: {
     label: 'Patrimoine',
     size: 'hero',
-    value: '164 294,28 €',
-    delta: '+412,56 € · +0,25 %',
+    value: '144 539,35 €',
+    delta: '+361,40 € · +0,25 %',
   },
   argTypes: {
     value: { control: 'text', description: 'The formatted figure, projected into the value slot.' },
@@ -79,7 +79,7 @@ type Story = StoryObj<StatArgs>;
 export const Hero: Story = {};
 
 export const Tile: Story = {
-  args: { size: 'tile', label: 'Plus-value latente', value: '+21 846,90 €', delta: '+15,34 %' },
+  args: { size: 'tile', label: 'Plus-value latente', value: '+18 912,35 €', delta: '+15,34 %' },
   render: (args) => ({
     props: args,
     template: `
@@ -127,7 +127,7 @@ export const AssociatesLabelAndValue: Story = {
     const dd = canvasElement.querySelector('dd');
 
     await expect(dt).toHaveTextContent('Patrimoine');
-    await expect(dd).toHaveTextContent('164 294,28 €');
+    await expect(dd).toHaveTextContent('144 539,35 €');
     await expect(canvas.getByText("aujourd'hui")).toBeInTheDocument();
   },
 };

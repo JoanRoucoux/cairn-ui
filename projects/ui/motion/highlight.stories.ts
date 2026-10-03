@@ -94,9 +94,9 @@ export const OnTableRowAndGroupHeading: Story = {
         <table uiTable>
           <thead><tr><th uiTh>Name</th><th uiTh numeric>Value</th></tr></thead>
           <tbody>
-            <tr uiTr group><td ui-group-cell colspan="2" name="Fortuneo" meta="PEA" [uiHighlight]="token">12 480,00 €</td></tr>
-            <tr uiTr data-testid="tr" [uiHighlight]="token"><td uiTd primary>Amundi MSCI World</td><td uiTd numeric>9 120,00 €</td></tr>
-            <tr uiTr><td uiTd primary>Air Liquide</td><td uiTd numeric>3 360,00 €</td></tr>
+            <tr uiTr group><td ui-group-cell colspan="2" name="Northwind PEA" meta="PEA" [uiHighlight]="token">11 700,00 €</td></tr>
+            <tr uiTr data-testid="tr" [uiHighlight]="token"><td uiTd primary>Amundi MSCI World</td><td uiTd numeric>8 400,00 €</td></tr>
+            <tr uiTr><td uiTd primary>Air Liquide</td><td uiTd numeric>3 300,00 €</td></tr>
           </tbody>
         </table>
         <h2 class="text-body m-0 font-semibold" data-testid="heading" [uiHighlight]="token">Plain heading</h2>

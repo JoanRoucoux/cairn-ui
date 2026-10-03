@@ -38,7 +38,7 @@ const buildMonthlySeries = (start: number, days: number): ChartPoint[] =>
 
     return {
       t: start + index * 24 * 60 * 60 * 1000,
-      v: 161389.51 + 2904.77 * progress + wobble,
+      v: 142120.75 + 2418.6 * progress + wobble,
     };
   });
 
@@ -46,7 +46,7 @@ const oneMonthPoints = buildMonthlySeries(Date.UTC(2026, 7, 25), 31);
 
 const oneDayPoints: ChartPoint[] = Array.from({ length: 24 }, (_, hour) => ({
   t: Date.UTC(2026, 8, 25, hour),
-  v: 163881.95 + Math.sin(hour / 2) * 320 + hour * 21,
+  v: 142864.2 + Math.sin(hour / 2) * 320 + hour * 21,
 }));
 
 const flatPoints: ChartPoint[] = [
@@ -54,7 +54,7 @@ const flatPoints: ChartPoint[] = [
   { t: Date.UTC(2026, 8, 25), v: 42000 },
 ];
 
-const singlePoint: ChartPoint[] = [{ t: Date.UTC(2026, 8, 25), v: 164294.28 }];
+const singlePoint: ChartPoint[] = [{ t: Date.UTC(2026, 8, 25), v: 144539.35 }];
 
 const crowdedRightEndPoints: ChartPoint[] = Array.from({ length: 60 }, (_, index) => ({
   t: Date.UTC(2026, 7, 1) + index * 12 * 60 * 60 * 1000,

@@ -10,13 +10,13 @@ const threeSlices: DonutSlice[] = [
 ];
 
 const sevenSlices: DonutSlice[] = [
-  { id: 'a', label: 'Saxo Investor', value: 61247.83 },
-  { id: 'b', label: 'Esalia', value: 38512.4 },
-  { id: 'c', label: 'Sharinbox', value: 17914.06 },
-  { id: 'd', label: 'Fortuneo', value: 15402.18 },
-  { id: 'e', label: 'Binance', value: 13806.52 },
-  { id: 'f', label: 'Fortuneo Vie', value: 9718.35 },
-  { id: 'g', label: 'Sogeretraite', value: 7692.94 },
+  { id: 'a', label: 'Northwind PEA', value: 48215.6 },
+  { id: 'b', label: 'Woodgrove Savings Plan', value: 31840.15 },
+  { id: 'c', label: 'Contoso Trading', value: 22377.9 },
+  { id: 'd', label: 'Livret A', value: 16120.45 },
+  { id: 'e', label: 'Tailspin Wallet', value: 11264.3 },
+  { id: 'f', label: 'Fabrikam Life', value: 8530.75 },
+  { id: 'g', label: 'Woodgrove Retirement', value: 6190.2 },
 ];
 
 const pct = (share: number): string => `${(share * 100).toFixed(1)}%`;
@@ -227,7 +227,7 @@ describe('UiDonut', () => {
     });
 
     expect(screen.getAllByRole('button')).toHaveLength(6);
-    expect(screen.getByRole('button', { name: /Autres/ })).toHaveTextContent('Fortuneo Vie, Sogeretraite');
+    expect(screen.getByRole('button', { name: /Autres/ })).toHaveTextContent('Fabrikam Life, Woodgrove Retirement');
   });
 
   it('gives every legend row the name, sub-label, share and value, and drops a zero-value slice', async () => {

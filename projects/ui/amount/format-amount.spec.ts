@@ -9,11 +9,11 @@ const groupSeparator = new Intl.NumberFormat('fr-FR').format(1000).charAt(1);
 
 describe('formatAmount', () => {
   it('formats euros the French way', () => {
-    expect(formatAmount(164294.28, EUR)).toBe(`164${groupSeparator}294,28${nbsp}${euro}`);
+    expect(formatAmount(144539.35, EUR)).toBe(`144${groupSeparator}539,35${nbsp}${euro}`);
   });
 
   it('signs a gain and a loss explicitly, with the typographic minus', () => {
-    expect(formatAmount(412.56, { ...EUR, signed: true })).toBe(`+412,56${nbsp}${euro}`);
+    expect(formatAmount(361.4, { ...EUR, signed: true })).toBe(`+361,40${nbsp}${euro}`);
     expect(formatAmount(-240.72, { ...EUR, signed: true })).toBe(`${minus}240,72${nbsp}${euro}`);
   });
 
@@ -36,7 +36,7 @@ describe('formatAmount', () => {
   });
 
   it('masks the figure and keeps the currency', () => {
-    expect(formatAmount(164294.28, EUR, true)).toBe(`${bullets}${nbsp}${euro}`);
+    expect(formatAmount(144539.35, EUR, true)).toBe(`${bullets}${nbsp}${euro}`);
     expect(formatAmount(1354, { locale: 'fr-FR' }, true)).toBe(bullets);
   });
 

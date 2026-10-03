@@ -4,9 +4,9 @@ import userEvent from '@testing-library/user-event';
 import { type ChartPoint, UiLineChart } from './line-chart';
 
 const points: ChartPoint[] = [
-  { t: Date.UTC(2026, 7, 25), v: 161389.51 },
-  { t: Date.UTC(2026, 8, 10), v: 163000 },
-  { t: Date.UTC(2026, 8, 25), v: 164294.28 },
+  { t: Date.UTC(2026, 7, 25), v: 142120.75 },
+  { t: Date.UTC(2026, 8, 10), v: 143000 },
+  { t: Date.UTC(2026, 8, 25), v: 144539.35 },
 ];
 const fmt = (v: number): string => `${v.toFixed(2)} EUR`;
 
@@ -118,7 +118,7 @@ describe('UiLineChart against the board', () => {
       await userEvent.keyboard('{Home}');
 
       expect(screen.getByTestId('chart-tooltip').querySelector('[data-chart-delta]')).toBeNull();
-      expect(screen.getByTestId('chart-tooltip')).toHaveTextContent('161389.51 EUR');
+      expect(screen.getByTestId('chart-tooltip')).toHaveTextContent('142120.75 EUR');
     });
 
     it('widens the band under the plot with axisGap, so the desktop Dashboard axis lands 16px under the plot', async () => {

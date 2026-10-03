@@ -216,8 +216,8 @@ describe('UiRow', () => {
 describe('UiRowItem', () => {
   const template = `
     <div uiRowItem data-testid="item">
-      <a ui-row size="xl" padding="sm" href="#">Saxo Investor</a>
-      <button type="button" aria-label="Actions sur Saxo Investor">...</button>
+      <a ui-row size="xl" padding="sm" href="#">Northwind PEA</a>
+      <button type="button" aria-label="Actions sur Northwind PEA">...</button>
     </div>`;
 
   it('lays the row and its trailing action side by side, 4 px apart, centred', async () => {

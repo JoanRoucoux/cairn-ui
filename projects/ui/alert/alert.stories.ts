@@ -84,7 +84,7 @@ export const Warning: Story = {
   args: {
     variant: 'warning',
     heading: '',
-    text: 'Vous vendez toute la quantité : la ligne sera supprimée de PEA Boursorama. Cette action est définitive.',
+    text: 'Vous vendez toute la quantité : la ligne sera supprimée de Northwind PEA. Cette action est définitive.',
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);

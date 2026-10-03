@@ -59,13 +59,13 @@ comparison when every bar starts at the same edge.
     `,
   }),
   args: {
-    value: 0.373,
+    value: 0.334,
     label: 'PEA',
-    valueText: '37,3 %, 61 247,83 €',
+    valueText: '33,4 %, 48 215,60 €',
     tone: 1,
     size: 'md',
-    amount: '61 247,83 €',
-    share: '37,3 %',
+    amount: '48 215,60 €',
+    share: '33,4 %',
   },
   argTypes: {
     amount: { control: 'text', description: 'Amount shown on the label line, formatted by the caller.' },
@@ -99,13 +99,13 @@ type Story = StoryObj<MeterArgs>;
 export const Default: Story = {};
 
 export const Smallest: Story = {
-  args: { value: 0.047, label: 'PER', valueText: '4,7 %, 7 692,94 €', amount: '7 692,94 €', share: '4,7 %' },
+  args: { value: 0.043, label: 'PER', valueText: '4,3 %, 6 190,20 €', amount: '6 190,20 €', share: '4,3 %' },
 };
 
 export const Empty: Story = {
   args: {
     value: 0,
-    label: 'Trade Republic',
+    label: 'Northwind PEA-PME',
     valueText: '0,0 %, 0,00 €',
     amount: '0,00 €',
     share: '0,0 %',
@@ -125,7 +125,7 @@ export const Thin: Story = {
   render: () => ({
     template: `
       <div data-frame class="flex w-[326px] flex-col gap-2 bg-(--card) p-2">
-        <ui-meter size="sm" [tone]="2" [value]="0.62" label="PEA" valueText="62 %, 61 247,83 €" />
+        <ui-meter size="sm" [tone]="2" [value]="0.62" label="PEA" valueText="62 %, 48 215,60 €" />
         <ui-meter size="sm" [tone]="2" [value]="0" label="Chargement" valueText="" aria-hidden="true" />
       </div>`,
   }),
