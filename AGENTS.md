@@ -32,7 +32,7 @@ Before considering a change done, run the same pipeline as CI: `format:check`, `
 - `projects/ui/styles/tokens.css` — the design tokens, shipped as a package asset (`dist/ui/styles/tokens.css`). It must stay a **pure token sheet**: no resets, no element styles. Preview-only chrome belongs in `.storybook/preview.css`.
 - `projects/ui/docs/` — Storybook "Foundations" MDX pages (overview, colors, motion, typography).
 - `projects/ui/README.md`: the README shown on the npm page. ng-packagr copies it into `dist/ui`, so it uses absolute URLs (npm does not resolve relative links) and must stay consistent with the root README's Setup section.
-- `docs/github/logo.svg`: the logo shown in the root README.
+- `docs/github/banner-light.png`, `banner-dark.png`: the README banner (from the Cairn design handoff, cairn-ui variant).
 - Module boundaries are enforced at lint time by Sheriff ([sheriff.config.ts](sheriff.config.ts)): **components never import each other**, shared building blocks get their own module. Each module's `index.ts` is its public surface and the ng-packagr entry (not an import shortcut inside the folder); private files go in an `internal/` subdirectory.
 - The palette is **monochrome**: `--primary` carries no hue, which leaves `--positive`,
   `--negative` and `--stale` as the only colors in the interface. Their light values are darker
