@@ -11,7 +11,7 @@
     "ui": {
       "projectType": "library",
       "root": "projects/ui",
-      "sourceRoot": "projects/ui/src",
+      "sourceRoot": "projects/ui",
       "prefix": "ui",
       "architect": {
         "build": {
@@ -31,7 +31,7 @@
           "options": {
             "tsConfig": "projects/ui/tsconfig.spec.json",
             "setupFiles": ["projects/ui/src/test-setup.ts"],
-            "coverageExclude": ["**/*.stories.ts"],
+            "coverageExclude": ["**/*.stories.ts", "**/*.spec-helper.ts"],
             "coverageReporters": ["text-summary", "html", "lcovonly"],
             "coverageThresholds": {
               "statements": 85,

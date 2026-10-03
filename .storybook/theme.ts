@@ -23,7 +23,7 @@ const PALETTE = {
     card: '#151717',
     elevated: '#101111',
     border: '#242726',
-    mutedForeground: '#8e9391',
+    mutedForeground: '#989d9b',
     primary: '#f2f4f3',
   },
 } as const;

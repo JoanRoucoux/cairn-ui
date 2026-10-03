@@ -3,13 +3,21 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "../../out-tsc/lib",
-    "rootDir": "src",
+    "rootDir": ".",
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
     "inlineSources": true,
     "types": []
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["src/test-setup.ts", "src/**/*.spec.ts", "src/**/*.stories.ts"]
+  "include": ["**/*.ts"],
+  "exclude": [
+    "docs",
+    "styles",
+    "src/test-setup.ts",
+    "**/*.spec.ts",
+    "**/*.spec-helper.ts",
+    "**/*.stories.ts",
+    "**/*-story-fixtures.ts"
+  ]
 }

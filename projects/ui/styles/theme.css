@@ -28,4 +28,10 @@
 
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-sheet: cubic-bezier(0.32, 0.72, 0, 1);
+
+  --default-transition-timing-function: var(--ease-out);
+  --default-transition-duration: var(--duration-fast);
+
+  --animate-cairn-spin: cairn-spin var(--duration-spin) linear infinite;
+  --animate-cairn-pulse: cairn-pulse var(--pulse-duration) var(--ease-out) infinite alternate;
 }

@@ -37,6 +37,12 @@ Import the token sheet from the application's global stylesheet:
 @import '@joanroucoux/cairn-ui/styles/tokens.css';
 ```
 
+Components are imported one subpath per folder, the package root exports nothing:
+
+```ts
+import { UiButton } from '@joanroucoux/cairn-ui/button';
+```
+
 Then register the package as a Tailwind source, since Tailwind does not scan `node_modules`:
 
 ```css
@@ -99,7 +105,8 @@ contrast at both ends.
 
 ## Contributing a component
 
-Components live one per folder in `projects/ui/src/lib/`, each with its implementation, its spec and
-its stories side by side, and each exported from `projects/ui/src/public-api.ts`. `badge`, `button`
+Components live one per folder in `projects/ui/`, each with its implementation, its spec and
+its stories side by side, and each one an entry point of its own (`ng-package.json` and `index.ts`),
+imported as `@joanroucoux/cairn-ui/<folder>`. `badge`, `button`
 and `input` are the reference implementations to copy the shape from: standalone, zoneless, signal
 `input()`s, and Tailwind utilities that read the tokens instead of hardcoding a color.

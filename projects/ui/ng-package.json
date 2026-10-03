@@ -4,6 +4,6 @@
   "lib": {
     "entryFile": "src/public-api.ts"
   },
-  "assets": ["./styles/**/*"],
+  "assets": ["./styles/**/*", "./CHANGELOG.md"],
   "allowedNonPeerDependencies": ["d3-scale", "d3-shape"]
 }
