@@ -78,6 +78,7 @@ render, so their fill, colour, thumb and switch track are simply there.
 
 #### When not to use
 
+* In a view whose change detector is detached: the hold ends after its first render, which never comes.
 * For an element that should animate as it appears: use \`animate.enter\` or \`@starting-style\`.
 
 #### Accessibility
