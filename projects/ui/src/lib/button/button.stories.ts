@@ -1,5 +1,5 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
-import { expect, fn, userEvent, within } from 'storybook/test';
+import { expect, fn, userEvent, waitFor, within } from 'storybook/test';
 
 import { BUTTON_SIZES, BUTTON_VARIANTS, type ButtonSize, type ButtonVariant, UiButton } from './button';
 
@@ -98,7 +98,7 @@ export const Primary: Story = {
   play: async ({ canvasElement }) => {
     const style = getComputedStyle(within(canvasElement).getByRole('button', { name: 'Button' }));
 
-    await expect(style.transitionProperty).toBe('scale, background-color');
+    await waitFor(() => expect(style.transitionProperty).toBe('scale, background-color'));
     await expect(style.transitionDuration).toBe('0.12s, 0.18s');
   },
 };

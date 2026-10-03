@@ -1,5 +1,7 @@
 import { Component, DestroyRef, ElementRef, booleanAttribute, computed, inject, input } from '@angular/core';
 
+import { holdTransitionsUntilRendered } from '../motion/settle-transitions';
+
 /** Available button variants. `ButtonVariant` is derived from this tuple. */
 export const BUTTON_VARIANTS = [
   'primary',
@@ -104,6 +106,7 @@ export class UiButton {
   );
 
   constructor() {
+    holdTransitionsUntilRendered();
     const host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
     const guard = (event: Event): void => {
       if (this.inactive()) {

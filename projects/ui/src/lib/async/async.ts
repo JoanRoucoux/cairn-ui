@@ -1,5 +1,6 @@
 import { Component, booleanAttribute, computed, input, output } from '@angular/core';
 
+import { holdTransitionsUntilRendered } from '../motion/settle-transitions';
 import { delayedState } from './delayed-state';
 
 /** Available async block states. `AsyncState` is derived from this tuple. */
@@ -197,4 +198,8 @@ export class UiAsync {
 
     return `${RETRY_BASE_CLASSES} ${spec.retry} ${RETRY_BLOCK_CLASSES} ${spec.retryMargin[this.align()]}`;
   });
+
+  constructor() {
+    holdTransitionsUntilRendered();
+  }
 }

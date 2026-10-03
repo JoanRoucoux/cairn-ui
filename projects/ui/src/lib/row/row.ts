@@ -1,5 +1,7 @@
 import { Component, DestroyRef, Directive, ElementRef, booleanAttribute, computed, inject, input } from '@angular/core';
 
+import { holdTransitionsUntilRendered } from '../motion/settle-transitions';
+
 export const ROW_SIZES = ['md', 'lg', 'xl', 'card', 'dense'] as const;
 export type RowSize = (typeof ROW_SIZES)[number];
 
@@ -71,6 +73,7 @@ export class UiRow {
   );
 
   constructor() {
+    holdTransitionsUntilRendered();
     const host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
     const guard = (event: Event): void => {
       if (this.busy() || this.unavailable()) {

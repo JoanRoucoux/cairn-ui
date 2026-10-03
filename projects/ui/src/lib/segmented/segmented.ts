@@ -1,5 +1,7 @@
 import { Component, ElementRef, booleanAttribute, computed, input, model, viewChildren } from '@angular/core';
 
+import { holdTransitionsUntilRendered } from '../motion/settle-transitions';
+
 const nextId = (() => {
   let count = 0;
 
@@ -93,6 +95,10 @@ export class UiSegmented {
 
     return index === -1 ? 0 : index + 1;
   });
+
+  constructor() {
+    holdTransitionsUntilRendered();
+  }
 
   protected optionClasses(optionValue: string): string {
     return `${OPTION_CLASSES} ${SIZE_CLASSES[this.size()]} ${optionValue === this.value() ? SELECTED_CLASSES : UNSELECTED_CLASSES}`;

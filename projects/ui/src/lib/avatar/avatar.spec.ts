@@ -80,6 +80,11 @@ describe('UiAvatarLink', () => {
       imports: [UiAvatar, UiAvatarLink],
     });
 
-    expect(screen.getByRole('link', { name: 'Profil' })).toHaveClass('aria-[current=page]:bg-(--soft)');
+    const current = screen.getByRole('link', { name: 'Profil' });
+    expect(current).toHaveClass(
+      'aria-[current=page]:bg-transparent',
+      'aria-[current=page]:bg-[image:linear-gradient(var(--soft),var(--soft))]',
+    );
+    expect(current).not.toHaveClass('aria-[current=page]:bg-(--soft)');
   });
 });

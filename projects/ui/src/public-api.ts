@@ -76,6 +76,7 @@ export { METER_SIZES, METER_TONES, UiMeter, type MeterSize, type MeterTone } fro
 export { UiFlipItem, UiFlipList } from './lib/motion/flip-list';
 export { UiHighlight } from './lib/motion/highlight';
 export { injectReducedMotion } from './lib/motion/reduced-motion';
+export { holdTransitionsUntilRendered } from './lib/motion/settle-transitions';
 export { UiNavItem } from './lib/nav-item/nav-item';
 export {
   ROW_GAPS,

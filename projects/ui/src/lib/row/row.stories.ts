@@ -1,5 +1,5 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
-import { expect, within } from 'storybook/test';
+import { expect, waitFor, within } from 'storybook/test';
 
 import { UiButton } from '../button/button';
 import {
@@ -115,7 +115,7 @@ export const Default: Story = {
   play: async ({ canvasElement }) => {
     const style = getComputedStyle(canvasElement.querySelector('a[ui-row]')!);
 
-    await expect(style.transitionProperty).toBe('scale, background-color');
+    await waitFor(() => expect(style.transitionProperty).toBe('scale, background-color'));
     await expect(style.transitionDuration).toBe('0.12s, 0.18s');
   },
 };
