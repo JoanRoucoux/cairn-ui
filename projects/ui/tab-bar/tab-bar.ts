@@ -13,9 +13,9 @@ const INACTIVE_TAB_CLASSES = 'font-medium text-(--muted-foreground)';
 const ACTIVE_TAB_CLASSES = 'font-semibold text-(--foreground)';
 
 /**
- * Bottom navigation bar for iPhone: 52px of tabs plus the home indicator's safe area. While it is on the
- * page it publishes that height as `--tab-bar-height` on the root element, which `ui-action-bar` and
- * `ui-toaster` sit above; use it rather than restating 52px for anything that must clear the bar.
+ * Bottom navigation bar for iPhone. While it is on the page it publishes its height as
+ * `--tab-bar-height` on the root element, which `ui-action-bar` and `ui-toaster` sit above: use it
+ * for anything else that must clear the bar.
  *
  * @example
  * <nav ui-tab-bar>

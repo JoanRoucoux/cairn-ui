@@ -1,18 +1,6 @@
-/*
- * Design tokens of the Cairn ui library - shipped with the package (dist/ui/styles/tokens.css).
- * This file must stay a pure token sheet: no resets, no element styles, so consumers
- * can import it without side effects.
- *
- * Monochrome direction: the brand carries no hue, so semantic color is the only color in the
- * interface. Every text token clears 4.5:1 against --background, --card, --elevated, --muted and --soft in both
- * schemes; the ratios are recorded in projects/ui/docs/colors.mdx. Do not edit a value without
- * recomputing them.
- */
-
 :root {
   color-scheme: light dark;
 
-  /* Surfaces */
   --background: light-dark(#f7f8f8, #0a0b0b);
   --foreground: light-dark(#111414, #edefee);
   --card: light-dark(#ffffff, #151717);
@@ -21,11 +9,9 @@
   --border: light-dark(#e2e5e4, #242726);
   --hairline: light-dark(#edefee, #1e2020);
 
-  /* Text */
   --muted-foreground: light-dark(#5c6462, #989d9b);
   --subtle-foreground: light-dark(#626a68, #8f9593);
 
-  /* Brand - no hue: --primary is a near-black on light, a near-white on dark */
   --primary: light-dark(#161918, #f2f4f3);
   --primary-to: light-dark(#333937, #c9cecc);
   --primary-foreground: light-dark(#fafbfa, #0a0b0b);
@@ -33,12 +19,10 @@
   --glow: light-dark(rgb(22 25 24 / 0.05), rgb(242 244 243 / 0.07));
   --ring: light-dark(#161918, #f2f4f3);
 
-  /* Semantics - these roles never change meaning, in any theme */
   --positive: light-dark(#047757, #3fbf8f);
   --negative: light-dark(#b5413a, #e96e63);
   --stale: light-dark(#86620d, #c4922a);
 
-  /* Neutral ramp - allocation bars, where a categorical palette would break the monochrome premise */
   --ramp-1: light-dark(#161918, #f2f4f3);
   --ramp-2: light-dark(#3d4341, #c9cecc);
   --ramp-3: light-dark(#646b69, #a2a9a6);
@@ -46,7 +30,6 @@
   --ramp-5: light-dark(#b0b6b4, #5a605e);
   --ramp-6: light-dark(#ced3d1, #3b403e);
 
-  /* Kept from the starter so its reference components still resolve */
   --secondary: light-dark(#f1f3f2, #1e2020);
   --secondary-foreground: light-dark(#111414, #edefee);
   --muted: light-dark(#f1f3f2, #1e2020);
@@ -55,58 +38,46 @@
   --destructive: light-dark(#b8443c, #a33a33);
   --destructive-foreground: light-dark(#fafbfa, #fafbfa);
 
-  /* Type - Rubik, one family for logotype and interface (self-hosted, 400/500/600/700).
-     Names follow Tailwind 4 namespaces: registered in @theme they yield text-body, rounded-control,
-     ease-out... Reset Tailwind's defaults (--text-*: initial) so only this scale exists.
-     Weights: 400 text, 500 labels and buttons, 600 titles and the dominant figure, 700 logotype only. */
   --font-sans: 'Rubik', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --numeric: tabular-nums; /* amounts that align: tables, lists, columns. The lone big figure stays proportional. */
+  --numeric: tabular-nums;
   --text-caption: 0.75rem;
-  --text-caption--line-height: 1.0625rem; /* 12/17 axes, badges, price dates */
+  --text-caption--line-height: 1.0625rem;
   --text-label: 0.875rem;
-  --text-label--line-height: 1.25rem; /* 14/20 labels, secondary text, cells */
+  --text-label--line-height: 1.25rem;
   --text-body: 1rem;
-  --text-body--line-height: 1.5rem; /* 16/24 rows, body, inputs (no iOS zoom) */
+  --text-body--line-height: 1.5rem;
   --text-title: 1.25rem;
-  --text-title--line-height: 1.75rem; /* 20/28 card and section titles */
+  --text-title--line-height: 1.75rem;
   --text-heading: 1.75rem;
-  --text-heading--line-height: 2.125rem; /* 28/34 page title in the header */
+  --text-heading--line-height: 2.125rem;
   --text-display: 2.5rem;
-  --text-display--line-height: 2.75rem; /* 40/44 the one dominant figure */
-  --tracking-display: -0.02em; /* heading, display */
-  --tracking-caption: 0.01em; /* caption */
+  --text-display--line-height: 2.75rem;
+  --tracking-display: -0.02em;
+  --tracking-caption: 0.01em;
 
-  /* Space - Tailwind's 4px step stays; these name the recurring gaps */
-  --gutter: 1rem; /* page side padding */
-  --inset-card: 1rem; /* card padding */
-  --stack-group: 1rem; /* between items of one group */
-  --stack-section: 1rem; /* between cards */
-  --row-min: 2.75rem; /* 44px touch target */
-  --header-height: 3.5rem; /* page header below the status bar / above the content */
+  --gutter: 1rem;
+  --inset-card: 1rem;
+  --stack-group: 1rem;
+  --stack-section: 1rem;
+  --row-min: 2.75rem;
+  --header-height: 3.5rem;
 
-  /* Radius - one rule: controls 8, containers 12, pills round.
-     A control nested in a control subtracts its inset: calc(var(--radius-control) - 2px). */
-  --radius-control: 0.5rem; /* button, input, select, segmented, nav item, row hover */
-  --radius-container: 0.75rem; /* card, dialog, sheet top corners, tooltip */
-  --radius-pill: 9999px; /* avatar, badge, delta pill */
+  --radius-control: 0.5rem;
+  --radius-container: 0.75rem;
+  --radius-pill: 9999px;
 
-  /* Motion - only transform and opacity animate. Never ease-in. Exits are faster than entries.
-     Nothing animates on page entry: the dashboard opens several times a day. */
-  --duration-press: 120ms; /* press feedback, on pointer down */
-  --duration-fast: 180ms; /* menus, segmented thumb */
-  --duration-base: 260ms; /* dialogs, sheets, list to detail, chart range change */
-  --duration-exit: 180ms; /* every exit */
-  --ease-out: cubic-bezier(0.23, 1, 0.32, 1); /* what appears or moves */
-  --ease-sheet: cubic-bezier(0.32, 0.72, 0, 1); /* sheets rising from the bottom, and back */
+  --duration-press: 120ms;
+  --duration-fast: 180ms;
+  --duration-base: 260ms;
+  --duration-exit: 180ms;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-sheet: cubic-bezier(0.32, 0.72, 0, 1);
   --press-scale: 0.97;
-  --enter-scale: 0.95; /* dialogs and menus start at scale(0.95) and opacity 0, never scale(0) */
-  --pulse-duration: 1600ms; /* skeleton opacity pulse */
-  --duration-spin: 800ms; /* button spinner, one turn */
-  --duration-highlight: 1200ms; /* a freshly edited row fading back to its background */
-  --toast-duration: 5000ms; /* how long a confirmation stays */
-
-  /* Browser theme color (meta theme-color, iOS status bar) follows the top of the page:
-     light #f7f8f8, dark #0a0b0b - the --background values. */
+  --enter-scale: 0.95;
+  --pulse-duration: 1600ms;
+  --duration-spin: 800ms;
+  --duration-highlight: 1200ms;
+  --toast-duration: 5000ms;
 }
 
 :root {
@@ -130,18 +101,18 @@
 
 @media (pointer: fine) {
   :root {
-    --row-min: 2.5rem; /* 40px with a mouse: denser tables */
+    --row-min: 2.5rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   :root {
     --press-scale: 1;
-    --enter-scale: 1; /* slides and scales become short fades */
+    --enter-scale: 1;
     --duration-base: 150ms;
     --pulse-duration: 0ms;
     --duration-highlight: 600ms;
-    --duration-spin: 1600ms; /* the spinner still says work is in progress, only slower */
+    --duration-spin: 1600ms;
   }
 }
 

@@ -3,8 +3,8 @@ import { DestroyRef, type Signal, inject, signal } from '@angular/core';
 const QUERY = '(prefers-reduced-motion: reduce)';
 
 /**
- * A signal that follows the user's `prefers-reduced-motion` preference live.
- * Call it in an injection context; the listener is removed with that context.
+ * A signal that follows the user's `prefers-reduced-motion` preference. Call it in an injection
+ * context.
  *
  * @example
  * protected readonly reduced = injectReducedMotion();

@@ -25,8 +25,8 @@ const RAMP_DOT_CLASSES: Record<Ramp, string> = {
 };
 
 /**
- * A ring chart with a legend: slices rank from largest to smallest on a grey ramp, and hovering,
- * focusing or activating a legend row highlights its slice and centres it in the ring.
+ * A ring chart with a legend: slices rank from largest to smallest, and hovering, focusing or
+ * activating a legend row highlights its slice.
  *
  * @example
  * <ui-donut [slices]="byAssetClass()" label="Par classe d'actif" othersLabel="Autres" [valueFormat]="formatEur" [shareFormat]="formatShare" (sliceSelect)="goToHoldings($event)" />

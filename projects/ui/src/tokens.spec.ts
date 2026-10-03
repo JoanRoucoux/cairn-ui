@@ -161,7 +161,7 @@ describe('design tokens', () => {
   });
 
   it('declares every color token with a light and a dark value', () => {
-    const colorBlock = tokens.slice(tokens.indexOf('/* Surfaces */'), tokens.indexOf('/* Type'));
+    const colorBlock = tokens.slice(tokens.indexOf('--background:'), tokens.indexOf('--font-sans:'));
     const declarations = colorBlock.match(/^\s+--[a-z0-9-]+:.*$/gm) ?? [];
 
     expect(declarations.length).toBeGreaterThan(20);

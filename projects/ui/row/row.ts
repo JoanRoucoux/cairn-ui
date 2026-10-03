@@ -88,8 +88,7 @@ export class UiRow {
 }
 
 /**
- * Lays out a `ui-row` with a trailing action beside it, such as a "more" icon button: the row takes
- * the room the action leaves and the action keeps its own size.
+ * Lays out a `ui-row` with a trailing action beside it, such as a "more" icon button.
  *
  * @example
  * <div uiRowItem>
@@ -108,8 +107,8 @@ export class UiRowItem {}
 
 /**
  * Non-interactive row of a list, separated from the next by a hairline: a passkey with its delete
- * button, a device, a setting. It is a 72px row (68px from 64rem) with a 12px gap; put it on an
- * `li` or a `div`. Use `ui-row` instead when the whole row is a link or an action.
+ * button, a device, a setting. Put it on an `li` or a `div`. Use `ui-row` instead when the whole
+ * row is a link or an action.
  *
  * @example
  * <ul>
@@ -134,8 +133,8 @@ export class UiListRow {
 }
 
 /**
- * The 36px filled tile that leads a row: an icon on a muted square with the control radius. Put it on
- * a `span` as the first child of a `ui-row` or a `uiListRow`.
+ * The filled tile that leads a row, holding an icon. Put it on a `span` as the first child of a
+ * `ui-row` or a `uiListRow`.
  *
  * @example
  * <a ui-row size="xl" padding="sm" href="/export">

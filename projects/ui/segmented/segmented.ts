@@ -29,8 +29,7 @@ const SELECTED_CLASSES = 'text-(--foreground)';
 const UNSELECTED_CLASSES = 'text-(--muted-foreground) hover:text-(--foreground)';
 
 /**
- * Exclusive choice within a small, known set: a time range, a unit, a mode. The selected option's
- * background is a single thumb that slides under it in `transform`, instead of being redrawn.
+ * Exclusive choice within a small, known set: a time range, a unit, a mode.
  *
  * @example
  * <ui-segmented [options]="ranges" label="Time range" [(value)]="range" />

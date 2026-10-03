@@ -18,22 +18,15 @@ function paintedElements(host: HTMLElement): HTMLElement[] {
 }
 
 /**
- * Draws the eye to an element that just changed: scrolls it into view when it is off screen, holds the
- * `--soft` fill for 200 ms, then fades back to the element's own background over `--duration-highlight`.
- * Each new non-null token plays once, so pass a fresh value per event (an object or a counter), not a
- * boolean. A non-null token already present at first render plays on arrival. On a `tr` it paints the
- * cells, on a `td[ui-group-cell]` the band, anywhere else the host. Under `prefers-reduced-motion` the
- * scroll is instant and the fade lasts 600 ms.
- *
- * It starts on the next frame and, when the element is still playing a finite animation of its own (an
- * `animate.enter` fade on a new row), once that animation has finished, waiting no longer than
- * `--duration-base`: the element fades in, then lights up. Both can sit on the same element.
+ * Draws the eye to an element that just changed: scrolls it into view when off screen, flashes the
+ * `--soft` fill, then fades back. Each new non-null token plays once, so pass a fresh value per
+ * event (an object or a counter), not a boolean. A non-null token present at first render plays on
+ * arrival. Can sit on the same element as `animate.enter`: it waits for that fade to finish.
  *
  * Give the element `scroll-margin-top` and `scroll-margin-bottom` equal to what is pinned above and
- * below it (header, tab bar, action bar): a row under them counts as off screen and is scrolled out.
- * For an arrival on a page opened at the element, scroll to it at once first (`scrollIntoView` in
- * `afterNextRender`) and set the token afterwards: a token present at first render scrolls smoothly
- * from where the page is.
+ * below it (header, tab bar, action bar), or a row under them counts as on screen. For an arrival
+ * on a page opened at the element, scroll to it first (`scrollIntoView` in `afterNextRender`) and
+ * set the token afterwards, otherwise it scrolls smoothly from where the page is.
  *
  * @example
  * <a ui-row [uiHighlight]="changed() === holding.id ? token() : null" routerLink="/holdings/1">...</a>

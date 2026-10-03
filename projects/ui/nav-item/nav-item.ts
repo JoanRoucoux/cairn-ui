@@ -10,8 +10,7 @@ const ACTIVE_CLASSES = 'bg-[image:linear-gradient(var(--soft),var(--soft))] text
 const IDLE_CLASSES = 'text-(--muted-foreground) active:bg-(--soft)';
 
 /**
- * One destination of the sidebar navigation (Portfolio, Holdings, Allocation, Accounts). The active
- * fill and text colour switch at once on navigation; only the hover fill fades.
+ * One destination of the sidebar navigation.
  *
  * @example
  * <a ui-nav-item [active]="url === '/'" routerLink="/">

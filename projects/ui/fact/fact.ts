@@ -1,6 +1,6 @@
 import { Component, Directive, booleanAttribute, computed, input } from '@angular/core';
 
-/** Available fact row sizes. `FactSize` is derived from this tuple. */
+/** Available fact row sizes. */
 export const FACT_SIZES = ['md', 'sm', 'auto', 'recap'] as const;
 export type FactSize = (typeof FACT_SIZES)[number];
 
@@ -45,8 +45,8 @@ export class UiFacts {
 }
 
 /**
- * One fact of a `dl[uiFacts]`: a label on the left, its value on the right, an optional sub-line
- * under the value, and a hairline above every row but the first at the `md` size (the `sm` desktop list is separated by space only). The projected content is the value.
+ * One fact of a `dl[uiFacts]`: a label, its value (the projected content) and an optional sub-line
+ * under the value.
  *
  * @example
  * <div ui-fact label="Price" sub="24/09 · Yahoo" subTone="stale">28,64 €</div>

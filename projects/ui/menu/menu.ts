@@ -69,9 +69,8 @@ export class UiMenuItem {
 
 /**
  * Secondary actions menu, opened from its trigger through the native Popover API. With `sheet`, below
- * 64rem it opens as a bottom action sheet above the tab bar instead of beside its trigger, and
- * `heading` names what the actions apply to. `width` fixes the outer popover width in pixels (the sheet
- * always spans the screen below 64rem); without it the menu fits its content.
+ * 64rem it opens as a bottom action sheet instead of beside its trigger, and `heading` names what
+ * the actions apply to. `width` fixes the popover width in pixels; without it the menu fits its content.
  *
  * @example
  * <button ui-button size="icon" aria-label="More" [uiMenuTrigger]="menu">...</button>
@@ -221,8 +220,7 @@ export class UiMenu {
 }
 
 /**
- * Opens a `ui-menu` from a trigger element and wires `aria-haspopup`, `aria-expanded` and
- * `aria-controls` on it.
+ * Opens a `ui-menu` from a trigger element and wires its ARIA attributes.
  *
  * @example
  * <button ui-button size="icon" aria-label="More" [uiMenuTrigger]="menu">...</button>

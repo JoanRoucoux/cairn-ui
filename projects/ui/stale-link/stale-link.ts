@@ -1,6 +1,6 @@
 import { Directive, booleanAttribute, computed, input } from '@angular/core';
 
-/** Available stale link sizes. `StaleLinkSize` is derived from this tuple. */
+/** Available stale link sizes. */
 export const STALE_LINK_SIZES = ['caption', 'label'] as const;
 export type StaleLinkSize = (typeof STALE_LINK_SIZES)[number];
 
@@ -17,9 +17,8 @@ const CHEVRON_CLASSES =
 
 /**
  * Link in the stale tone, for a caption about data that is late or left out of a total, such as
- * "1 ligne sans cours, non comptée". Weight 500, underlined on hover, with an optional trailing
- * chevron. `size` is `caption` (12/17, the default) or `label` (14/20, the dashboard total's
- * "1 cours en retard").
+ * "1 ligne sans cours, non comptée". `chevron` adds a trailing chevron, `size` is `caption` (the
+ * default) or `label`.
  *
  * @example
  * <a uiStaleLink chevron size="label" routerLink="/holdings">1 cours en retard</a>

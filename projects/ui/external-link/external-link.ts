@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
 
 /**
- * Link to another site: the label followed by an external-link icon. A 44px target on touch,
- * an underline on hover with a mouse.
+ * Link to another site: the label followed by an external-link icon.
  *
  * @example
  * <a ui-external-link href="https://example.com" target="_blank" rel="noopener">Page on example.com</a>

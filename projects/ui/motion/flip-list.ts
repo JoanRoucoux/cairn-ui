@@ -10,17 +10,13 @@ function translateY(element: Element): number {
 }
 
 /**
- * Slides the items of a list into place when one is removed or inserted (FLIP): it measures every item
- * before and after the change, from the top of the list itself, then animates the shift in `translateY`
- * over `--duration-base` `--ease-out`. Pair it with `animate.leave="ui-leave-fade"` on the item so it fades
- * out first. Nothing moves under `prefers-reduced-motion`: the list closes up at once.
+ * Slides the items of a list into place when one is removed or inserted (FLIP). Pair it with
+ * `animate.leave="ui-leave-fade"` on the item so it fades out first. Nothing moves under
+ * `prefers-reduced-motion`.
  *
- * By default the items are the direct children of the list. Mark them with `uiFlipItem` instead when they
- * sit deeper, for instance a page of several groups: put `uiFlipList` on the element around every group and
- * `uiFlipItem` on each group heading and row, so a removal also slides the groups below. An item may sit
- * inside another item (a row inside a card): it then moves by its own share and its card carries the rest.
- * Only an item added or removed starts a slide; a change inside an item does not. Positions leave out the
- * translate of any animation running inside the list (a slide in progress, an enter fade-up).
+ * The items are the direct children of the list. Mark them with `uiFlipItem` instead when they sit
+ * deeper, so a removal also slides the groups below. Only an item added or removed starts a slide;
+ * a change inside an item does not.
  *
  * @example
  * <ul uiFlipList>
@@ -164,8 +160,8 @@ export class UiFlipList {
 }
 
 /**
- * Marks an element as an item of the nearest `uiFlipList`, at any depth: a group heading, a row inside a
- * group, a card. Once one item is marked, the list follows its marked items only.
+ * Marks an element as an item of the nearest `uiFlipList`, at any depth. Once one item is marked,
+ * the list follows its marked items only.
  *
  * @example
  * <tr uiTr uiFlipItem animate.leave="ui-leave-fade">...</tr>
