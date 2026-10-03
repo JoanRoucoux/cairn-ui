@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.8.1
+
+### Added
+
+- The npm page now carries a README: what the package is, how to install it, the stylesheets and the `@source`
+  line to add, the `fonts.css` setup and the per-folder imports.
+- The Storybook is published at https://joanroucoux.github.io/cairn-ui/ on every push to `main`.
+- A GitHub Release is created for every `vX.Y.Z` tag, with the matching section of this changelog as its notes.
+
+### Changed
+
+- Stories and specs use fictional data. No component or style changes.
+
 ## 0.8.0
 
 ### Breaking
