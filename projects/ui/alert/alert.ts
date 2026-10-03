@@ -13,7 +13,7 @@ const VARIANT_CLASSES: Record<AlertVariant, string> = {
 /**
  * Inline message explaining a failure or a consequence: an icon, an optional heading and a text.
  * It fades in when it appears; set `[fadeIn]="false"` on an alert that is part of the page as it
- * opens (an error state after a load), which shows without motion.
+ * opens.
  *
  * @example
  * <ui-alert heading="Sign-in failed">Try again.</ui-alert>

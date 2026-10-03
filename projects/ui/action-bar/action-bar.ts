@@ -4,11 +4,9 @@ import { Component, DestroyRef, ElementRef, afterNextRender, inject } from '@ang
 const HEIGHT_PROPERTY = '--action-bar-height';
 
 /**
- * Bar of actions fixed above the tab bar on iPhone: the primary actions of a detail screen, within
- * thumb reach. It sits `--tab-bar-height` (52px plus the safe area) above the bottom edge, so it clears `ui-tab-bar`, and
- * it is hidden from `64rem`, where the same actions live in the page itself. Its children share the
- * width equally. While it is on the page it publishes its height as `--action-bar-height` on the
- * root element, which `ui-toaster` adds to its offset so a confirmation never covers the actions.
+ * Bar of actions fixed above the tab bar on iPhone, hidden from `64rem`, where the same actions
+ * live in the page itself. Its children share the width equally. While it is on the page it
+ * publishes its height as `--action-bar-height` on the root element, which `ui-toaster` clears.
  *
  * @example
  * <ui-action-bar>

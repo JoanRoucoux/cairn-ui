@@ -4,15 +4,15 @@ import { holdTransitionsUntilRendered } from '@joanroucoux/cairn-ui/motion';
 
 import { delayedState } from './delayed-state';
 
-/** Available async block states. `AsyncState` is derived from this tuple. */
+/** Available async block states. */
 export const ASYNC_STATES = ['loading', 'error', 'empty', 'ready'] as const;
 export type AsyncState = (typeof ASYNC_STATES)[number];
 
-/** Looks of the error block. `AsyncVariant` is derived from this tuple. */
+/** Looks of the error block. */
 export const ASYNC_VARIANTS = ['elevated', 'plain', 'emphasis', 'inline'] as const;
 export type AsyncVariant = (typeof ASYNC_VARIANTS)[number];
 
-/** Alignments of the error block; `auto` is centred from 64rem. `AsyncAlign` is derived from this tuple. */
+/** Alignments of the error block; `auto` is centred from 64rem. */
 export const ASYNC_ALIGNS = ['start', 'center', 'auto'] as const;
 export type AsyncAlign = (typeof ASYNC_ALIGNS)[number];
 

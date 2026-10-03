@@ -1,14 +1,14 @@
 import { Component, computed, input } from '@angular/core';
 
-/** Available delta emphases. `DeltaEmphasis` is derived from this tuple. */
+/** Available delta emphases. */
 export const DELTA_EMPHASES = ['text', 'pill'] as const;
 export type DeltaEmphasis = (typeof DELTA_EMPHASES)[number];
 
-/** Type sizes. `DeltaSize` is derived from this tuple. */
+/** Type sizes. */
 export const DELTA_SIZES = ['label', 'inherit'] as const;
 export type DeltaSize = (typeof DELTA_SIZES)[number];
 
-/** Font weights. `DeltaWeight` is derived from this tuple. */
+/** Font weights. */
 export const DELTA_WEIGHTS = ['medium', 'regular'] as const;
 export type DeltaWeight = (typeof DELTA_WEIGHTS)[number];
 
@@ -40,9 +40,8 @@ const PILL_BACKGROUND_CLASS = 'bg-(--soft)';
 /**
  * Signed amount whose sign carries meaning: a gain, a loss, or an unknown.
  *
- * A null value is not a zero: a holding with no cost basis exists, and showing 0 would falsely
- * claim a known gain of zero. Color never carries the sign on its own: the projected text must
- * already contain a + or a minus sign.
+ * A null value is not a zero: it renders the unknown state, not a gain of zero. Color never
+ * carries the sign on its own: the projected text must already contain a + or a minus sign.
  *
  * @example
  * <ui-delta [value]="holding.dayChangeEur" unknownLabel="Not available">

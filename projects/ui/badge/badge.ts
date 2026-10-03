@@ -1,6 +1,6 @@
 import { Component, computed, input } from '@angular/core';
 
-/** Available badge variants. `BadgeVariant` is derived from this tuple. */
+/** Available badge variants. */
 export const BADGE_VARIANTS = ['neutral', 'outline'] as const;
 export type BadgeVariant = (typeof BADGE_VARIANTS)[number];
 

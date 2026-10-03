@@ -1,6 +1,6 @@
 import { Component, Directive, computed, input } from '@angular/core';
 
-/** Available avatar sizes. `AvatarSize` is derived from this tuple. */
+/** Available avatar sizes. */
 export const AVATAR_SIZES = ['sm', 'md', 'lg', 'auto'] as const;
 export type AvatarSize = (typeof AVATAR_SIZES)[number];
 
@@ -14,7 +14,7 @@ const SIZE_CLASSES: Record<AvatarSize, string> = {
 };
 
 /**
- * Initials in a disc, standing in for a person. Single-user application: there is exactly one.
+ * Initials in a disc, standing in for a person.
  *
  * @example
  * <ui-avatar initials="JR" label="My account" />
@@ -37,10 +37,9 @@ export class UiAvatar {
 }
 
 /**
- * Round hit area around a `ui-avatar` that links somewhere: 44px on touch, 40px from 64rem, with a
- * glow on hover and the press scale. On the current page (`aria-current="page"`, which `routerLinkActive`
- * sets through `ariaCurrentWhenActive`) it holds a soft halo, drawn at once when the route changes. The avatar
- * itself keeps its own size.
+ * Round hit area around a `ui-avatar` that links somewhere. On the current page
+ * (`aria-current="page"`, set by `routerLinkActive` through `ariaCurrentWhenActive`) it holds a
+ * soft halo.
  *
  * @example
  * <a uiAvatarLink routerLink="/profile"><ui-avatar initials="JR" label="Profile" size="auto" /></a>

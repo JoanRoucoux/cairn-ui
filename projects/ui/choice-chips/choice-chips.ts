@@ -33,8 +33,8 @@ const nextId = (() => {
 })();
 
 /**
- * Exclusive choice among a handful of named options, shown as wrapping pills: an account envelope,
- * a category, a frequency. Binds to Signal Forms with `[formField]`.
+ * Exclusive choice among a handful of named options, shown as wrapping pills. Binds to Signal Forms
+ * with `[formField]`.
  *
  * @example
  * <ui-choice-chips label="Envelope" [options]="envelopes" [(value)]="envelope" />

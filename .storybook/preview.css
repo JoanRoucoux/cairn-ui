@@ -1,9 +1,3 @@
-/*
- * Preview-only stylesheet: Tailwind + the library tokens + minimal body chrome.
- * Anything a consumer app would define globally belongs here, NOT in tokens.css
- * (which must remain a pure, shippable token sheet).
- */
-
 @import 'tailwindcss';
 @import '../projects/ui/styles/tokens.css';
 @import '../projects/ui/styles/theme.css';

@@ -2,7 +2,7 @@ import { Component, DestroyRef, ElementRef, booleanAttribute, computed, inject, 
 
 import { holdTransitionsUntilRendered } from '@joanroucoux/cairn-ui/motion';
 
-/** Available button variants. `ButtonVariant` is derived from this tuple. */
+/** Available button variants. */
 export const BUTTON_VARIANTS = [
   'primary',
   'outline',

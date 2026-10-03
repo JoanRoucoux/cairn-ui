@@ -21,8 +21,6 @@ const config: StorybookConfig = {
       },
     }),
   staticDirs: ['../public'],
-  // The onboarding checklist ("Guide" tab, sidebar widget) is disabled: not useful once past a
-  // project's first run.
   features: {
     sidebarOnboardingChecklist: false,
     menuOnboardingChecklist: false,

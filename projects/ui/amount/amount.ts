@@ -18,11 +18,11 @@ export const UI_AMOUNT_MASKED = new InjectionToken<Signal<boolean>>('UI_AMOUNT_M
   factory: () => signal(false),
 });
 
-/** Available figure styles. `AmountNumeric` is derived from this tuple. */
+/** Available figure styles. */
 export const AMOUNT_NUMERICS = ['tabular', 'proportional'] as const;
 export type AmountNumeric = (typeof AMOUNT_NUMERICS)[number];
 
-/** Available masking behaviors. `AmountMasking` is derived from this tuple. */
+/** Available masking behaviors. */
 export const AMOUNT_MASKINGS = ['dots', 'hide'] as const;
 export type AmountMasking = (typeof AMOUNT_MASKINGS)[number];
 

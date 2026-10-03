@@ -1,12 +1,6 @@
 import { type ThemeVars, create } from 'storybook/theming';
 
-/*
- * Storybook's own chrome (sidebar, toolbar, docs pages) is styled by Storybook, not by the token
- * sheet: it never sees `light-dark()`. Restating the tokens here as a ThemeVars is what keeps the
- * chrome and the components it frames from looking like two different products.
- *
- * Values are copied from projects/ui/styles/tokens.css. Change one there, change it here.
- */
+// Copied from projects/ui/styles/tokens.css: no test catches a drift, edit both.
 const PALETTE = {
   light: {
     background: '#f7f8f8',
@@ -37,10 +31,7 @@ export const cairnStorybookTheme = (scheme: 'light' | 'dark'): ThemeVars => {
   return create({
     base: scheme,
 
-    // Monochrome: there is no accent hue to spend on chrome either.
     colorPrimary: palette.primary,
-    // Selected sidebar item, drawn as a filled pill: it takes the foreground as its ground, so
-    // its label resolves to the opposite end of the ramp.
     colorSecondary: palette.foreground,
 
     appBg: palette.background,
