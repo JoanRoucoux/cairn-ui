@@ -11,7 +11,7 @@
     "ui": {
       "projectType": "library",
       "root": "projects/ui",
-      "sourceRoot": "projects/ui/src",
+      "sourceRoot": "projects/ui",
       "prefix": "ui",
       "architect": {
         "build": {

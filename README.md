@@ -24,7 +24,7 @@ pnpm start      # Storybook on http://localhost:6006
 
 ## Next steps
 
-- Grow your components in `projects/ui/src/lib/`: one folder per component (`badge`, `button` and `input` are the reference implementations), each exported from `projects/ui/src/public-api.ts`.
+- Grow your components in `projects/ui/`: one folder per component (`badge`, `button` and `input` are the reference implementations), each one a secondary entry point with its own `ng-package.json` and `index.ts`, imported as `@joanroucoux/cairn-ui/<folder>`.
 - Make the design tokens yours in `projects/ui/styles/tokens.css` — components consume them through Tailwind arbitrary values and never hardcode colors.
 - The published package is named `@joanroucoux/cairn-ui` ([projects/ui/package.json](projects/ui/package.json)); the unscoped `cairn-ui` belongs to someone else on npm. Its version is managed in that file, independently of the root version.
 
@@ -39,6 +39,13 @@ order, and register the package as a Tailwind source (templates in `node_modules
 @import '@joanroucoux/cairn-ui/styles/theme.css';
 @import '@joanroucoux/cairn-ui/styles/motion.css';
 @source '../node_modules/@joanroucoux/cairn-ui';
+```
+
+Components are imported from one subpath per folder; the package root exports nothing, so a consumer's bundler
+splits each component into the chunk that uses it:
+
+```ts
+import { UiButton } from '@joanroucoux/cairn-ui/button';
 ```
 
 `tokens.css` declares the custom properties, and `theme.css` turns them into Tailwind utilities (`text-body`,

@@ -1,5 +1,64 @@
 # Changelog
 
+## 0.8.0
+
+### Breaking
+
+- The package root `@joanroucoux/cairn-ui` no longer exports anything. Each component folder is now its own
+  entry point, imported as `@joanroucoux/cairn-ui/<folder>`. A consumer's bundler splits chunks per module: a
+  single bundle, or a root barrel re-exporting the entries, put every component in the initial chunk. Moving to
+  subpaths lets each lazy route pull in only the components it uses.
+- Migration: replace `import { UiButton } from '@joanroucoux/cairn-ui'` with
+  `import { UiButton } from '@joanroucoux/cairn-ui/button'`. The stylesheets under `@joanroucoux/cairn-ui/styles/*`
+  are unchanged.
+
+### Added
+
+- `@joanroucoux/cairn-ui/control` (`UI_CONTROL`, `UiControl`, `UiControlError`) and, from
+  `@joanroucoux/cairn-ui/input`, `CONTROL_BASE_CLASSES`, `CONTROL_SIZE_CLASSES` and `CONTROL_SURFACE_CLASSES` are now
+  exported, because `select`, `choice-chips` and `field` import them across entry points. Only `UiControlError` was
+  public before.
+
+### Subpaths
+
+Every symbol that was exported from the root now lives under exactly one subpath:
+
+- `@joanroucoux/cairn-ui/action-bar`: `UiActionBar`
+- `@joanroucoux/cairn-ui/alert`: `ALERT_VARIANTS`, `UiAlert`, `AlertVariant`
+- `@joanroucoux/cairn-ui/amount`: `AMOUNT_MASKINGS`, `AMOUNT_NUMERICS`, `UI_AMOUNT_MASKED`, `UiAmount`, `AmountMasking`, `AmountNumeric`, `AmountFormatOptions`, `formatAmount`
+- `@joanroucoux/cairn-ui/async`: `ASYNC_ALIGNS`, `ASYNC_STATES`, `ASYNC_VARIANTS`, `UiAsync`, `AsyncAlign`, `AsyncState`, `AsyncVariant`, `delayedState`
+- `@joanroucoux/cairn-ui/avatar`: `AVATAR_SIZES`, `UiAvatar`, `UiAvatarLink`, `AvatarSize`
+- `@joanroucoux/cairn-ui/back-link`: `BACK_LINK_SIZES`, `UiBackLink`, `BackLinkSize`
+- `@joanroucoux/cairn-ui/badge`: `BADGE_SIZES`, `BADGE_VARIANTS`, `UiBadge`, `BadgeSize`, `BadgeVariant`
+- `@joanroucoux/cairn-ui/button`: `BUTTON_SIZES`, `BUTTON_VARIANTS`, `UiButton`, `ButtonSize`, `ButtonVariant`
+- `@joanroucoux/cairn-ui/card`: `CARD_PADDINGS`, `CARD_SURFACES`, `CARD_VARIANTS`, `UiCard`, `CardPadding`, `CardSurface`, `CardVariant`
+- `@joanroucoux/cairn-ui/choice-chips`: `ChoiceChipOption`, `UiChoiceChips`
+- `@joanroucoux/cairn-ui/control`: `UiControlError`, `UI_CONTROL`, `UiControl`
+- `@joanroucoux/cairn-ui/delta`: `DELTA_EMPHASES`, `DELTA_SIZES`, `DELTA_WEIGHTS`, `UiDelta`, `DeltaEmphasis`, `DeltaSize`, `DeltaWeight`
+- `@joanroucoux/cairn-ui/dialog`: `DIALOG_CLOSE_REASONS`, `DIALOG_LAYOUTS`, `DIALOG_WIDTHS`, `UiDialog`, `DialogCloseReason`, `DialogLayout`, `DialogWidth`
+- `@joanroucoux/cairn-ui/donut`: `DonutSlice`, `UiDonut`
+- `@joanroucoux/cairn-ui/empty`: `UiEmpty`
+- `@joanroucoux/cairn-ui/external-link`: `UiExternalLink`
+- `@joanroucoux/cairn-ui/fact`: `FACT_SIZES`, `FACT_SUB_TONES`, `UiFact`, `UiFacts`, `FactSize`, `FactSubTone`
+- `@joanroucoux/cairn-ui/field`: `UiField`, `UiFieldLeading`, `UiFieldTrailing`
+- `@joanroucoux/cairn-ui/filter-chips`: `FilterChipOption`, `UiFilterChips`
+- `@joanroucoux/cairn-ui/input`: `CONTROL_SIZES`, `CONTROL_SURFACES`, `UiInput`, `UiTextarea`, `ControlSize`, `ControlSurface`, `CONTROL_BASE_CLASSES`, `CONTROL_SIZE_CLASSES`, `CONTROL_SURFACE_CLASSES`
+- `@joanroucoux/cairn-ui/line-chart`: `AxisTicks`, `ChartPoint`, `TooltipSize`, `UiLineChart`
+- `@joanroucoux/cairn-ui/menu`: `UiMenu`, `UiMenuItem`, `UiMenuTrigger`
+- `@joanroucoux/cairn-ui/meter`: `METER_SIZES`, `METER_TONES`, `UiMeter`, `MeterSize`, `MeterTone`
+- `@joanroucoux/cairn-ui/motion`: `UiFlipItem`, `UiFlipList`, `UiHighlight`, `injectReducedMotion`, `holdTransitionsUntilRendered`
+- `@joanroucoux/cairn-ui/nav-item`: `UiNavItem`
+- `@joanroucoux/cairn-ui/row`: `ROW_GAPS`, `ROW_PADDINGS`, `ROW_SIZES`, `UiListRow`, `UiRow`, `UiRowItem`, `UiRowTile`, `RowGap`, `RowPadding`, `RowSize`
+- `@joanroucoux/cairn-ui/segmented`: `SEGMENTED_SIZES`, `UiSegmented`, `SegmentedOption`, `SegmentedSize`
+- `@joanroucoux/cairn-ui/select`: `UiSelect`
+- `@joanroucoux/cairn-ui/skeleton`: `SKELETON_SHAPES`, `UiSkeleton`, `SkeletonShape`
+- `@joanroucoux/cairn-ui/stale-link`: `STALE_LINK_SIZES`, `UiStaleLink`, `StaleLinkSize`
+- `@joanroucoux/cairn-ui/stat`: `STAT_SIZES`, `UiStat`, `StatSize`
+- `@joanroucoux/cairn-ui/switch`: `UiSwitch`
+- `@joanroucoux/cairn-ui/tab-bar`: `UiTab`, `UiTabBar`
+- `@joanroucoux/cairn-ui/table`: `CELL_BREAKPOINTS`, `GROUP_SIZES`, `SUB_TONES`, `TABLE_ROWS`, `UiCellSub`, `UiGroup`, `UiGroupCell`, `UiRowAction`, `UiRowLink`, `UiTable`, `UiTd`, `UiTh`, `UiTr`, `CellBreakpoint`, `GroupSize`, `SubTone`, `TableRow`
+- `@joanroucoux/cairn-ui/toast`: `UiToaster`, `UiToasts`, `Toast`
+
 ## 0.7.2
 
 ### Added

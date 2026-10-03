@@ -17,9 +17,10 @@ import type { SheriffConfig } from '@softarc/sheriff-core';
  * those grants technically widen the production import surface too, even
  * though nothing in production code currently uses them that way.
  *
- * Modules are barrel-less: files are importable directly (no index.ts needed);
- * put files a module wants to keep private in an `internal/` subdirectory.
- * `public-api.ts` is the ng-packagr entry point and belongs to the root scope.
+ * Each module has an index.ts that is its ng-packagr entry point (`@joanroucoux/cairn-ui/<component>`);
+ * files a module wants to keep private go in an `internal/` subdirectory.
+ * `projects/ui/src/public-api.ts` is the primary entry, exports nothing and belongs to the root scope.
+ * Cross-module imports use the package path, resolved through tsconfig `paths`.
  *
  * `component:control` holds the token and the error shape the three control modules and `field`
  * share; it is the "shared building block gets its own module" case this comment already
@@ -29,7 +30,7 @@ export const config: SheriffConfig = {
   entryFile: 'projects/ui/src/public-api.ts',
   enableBarrelLess: true,
   modules: {
-    'projects/ui/src/lib/<component>': 'component:<component>',
+    'projects/ui/<component>': 'component:<component>',
   },
   depRules: {
     root: ['component:*'],
