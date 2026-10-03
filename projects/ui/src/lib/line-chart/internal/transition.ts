@@ -149,11 +149,12 @@ export type ShapeView = {
   draw: (line: string, end: Vertex) => void;
 };
 
-export type ShapeMotionOptions = { reduced: boolean; duration: () => number };
+export type ShapeMotionOptions = { reduced: boolean; duration: () => number; rangeKey: string | null };
 
 export class ShapeMotion {
   readonly #view: ShapeView;
   #points: readonly ChartPoint[] | null = null;
+  #rangeKey: string | null = null;
   #target: ChartGeometry | null = null;
   #held: ChartGeometry | null = null;
   #drawn: readonly Vertex[] | null = null;
@@ -165,8 +166,12 @@ export class ShapeMotion {
 
   follow(points: readonly ChartPoint[], geometry: ChartGeometry | null, options: ShapeMotionOptions): void {
     const newSeries = !sameSeries(points, this.#points);
+    const newRange = options.rangeKey === null || options.rangeKey !== this.#rangeKey;
 
     this.#points = points;
+    if (newSeries) {
+      this.#rangeKey = options.rangeKey;
+    }
 
     if (this.#stop && !newSeries && !options.reduced && geometry?.line === this.#target?.line) {
       this.#target = geometry;
@@ -179,7 +184,15 @@ export class ShapeMotion {
     this.#target = geometry;
     this.stop();
 
-    if (!newSeries || !geometry || !from || from.length < 2 || geometry.points.length < 2 || options.reduced) {
+    if (
+      !newSeries ||
+      !newRange ||
+      !geometry ||
+      !from ||
+      from.length < 2 ||
+      geometry.points.length < 2 ||
+      options.reduced
+    ) {
       this.#settle(geometry);
       return;
     }
