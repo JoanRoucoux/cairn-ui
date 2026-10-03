@@ -4,7 +4,7 @@ Guidance for AI coding agents working in this repository. See the [README](READM
 
 ## Project
 
-Angular 22 design-system starter: a publishable component library (`projects/ui`, standalone components, zoneless, signals, prefix `ui`) developed and documented through Storybook. There is no application — Storybook is the only dev surface.
+Cairn UI, the Angular 22 design system published as `@joanroucoux/cairn-ui`: a component library (`projects/ui`, standalone components, zoneless, signals, prefix `ui`) developed and documented through Storybook, which is also deployed to GitHub Pages (https://joanroucoux.github.io/cairn-ui/). There is no application: Storybook is the only dev surface. It was scaffolded from `angular-starter-ui` (see `.starter-manifest.json`).
 
 Package manager: **pnpm** (version pinned in the `packageManager` field of package.json). Node 24 (`.nvmrc`).
 
@@ -19,6 +19,7 @@ Package manager: **pnpm** (version pinned in the `packageManager` field of packa
 | `pnpm run build-storybook`   | Static Storybook build (→ `storybook-static/`)                                                          |
 | `pnpm run test-storybook:ci` | Interaction tests against the built Storybook (needs Chromium: `pnpm exec playwright install chromium`) |
 | `pnpm run lint`              | ESLint (includes Sheriff module-boundary rules)                                                         |
+| `pnpm run format`            | Prettier write                                                                                          |
 | `pnpm run format:check`      | Prettier check                                                                                          |
 
 Before considering a change done, run the same pipeline as CI: `format:check`, `lint`, `test:coverage`, `build`, `build-storybook`, `test-storybook:ci`.
@@ -29,7 +30,9 @@ Before considering a change done, run the same pipeline as CI: `format:check`, `
 - **One folder, one ng-packagr entry point.** Each component folder holds an `ng-package.json` (`{ "lib": { "entryFile": "index.ts" } }`) and an `index.ts` exporting its public symbols. Consumers import `@joanroucoux/cairn-ui/<folder>`; a new component gets its own `ng-package.json` + `index.ts`. Cross-entry imports in production code, specs and stories go through the package path (`@joanroucoux/cairn-ui/motion`, resolved by `paths` in the root `tsconfig.json`), never a relative `../<folder>/...`. Imports inside a folder, `./internal/...` included, stay relative. A symbol another entry needs must be exported from `index.ts`, so it becomes public.
 - `projects/ui/src/public-api.ts` — the primary entry point, required by ng-packagr, which **exports nothing** on purpose: a root barrel (or a single fesm) forces every component into the consumer's initial chunk, defeating esbuild's per-module splitting. Never export an entry from it.
 - `projects/ui/styles/tokens.css` — the design tokens, shipped as a package asset (`dist/ui/styles/tokens.css`). It must stay a **pure token sheet**: no resets, no element styles. Preview-only chrome belongs in `.storybook/preview.css`.
-- `projects/ui/docs/` — Storybook "Foundations" MDX pages (colors, typography).
+- `projects/ui/docs/` — Storybook "Foundations" MDX pages (overview, colors, motion, typography).
+- `projects/ui/README.md`: the README shown on the npm page. ng-packagr copies it into `dist/ui`, so it uses absolute URLs (npm does not resolve relative links) and must stay consistent with the root README's Setup section.
+- `docs/github/logo.svg`: the logo shown in the root README.
 - Module boundaries are enforced at lint time by Sheriff ([sheriff.config.ts](sheriff.config.ts)): **components never import each other**, shared building blocks get their own module. Each module's `index.ts` is its public surface and the ng-packagr entry (not an import shortcut inside the folder); private files go in an `internal/` subdirectory.
 - The palette is **monochrome**: `--primary` carries no hue, which leaves `--positive`,
   `--negative` and `--stale` as the only colors in the interface. Their light values are darker
@@ -67,19 +70,7 @@ Before considering a change done, run the same pipeline as CI: `format:check`, `
 
 - Component tests use Angular Testing Library (`render`, `screen`, `userEvent`) with template-string rendering (`render('<button ui-button>…</button>', { imports: [UiButton] })`): query by role or label, not by CSS selectors. jest-dom matchers are set up in `projects/ui/src/test-setup.ts`.
 - Cover every variant/size branch of the class-record maps — that is what keeps coverage at 100%.
-- Lines and branches are at 100% and must stay there; statements and functions sit just under it, because Angular attributes some generated code — the `forwardRef` arrows in decorator metadata, the `contentChild` query factory — to source positions no test can reach. A drop in **lines** is a real gap; a drop in statements alone, with lines still at 100%, is not. The CI thresholds (85/80/70/85) are intentionally lower so downstream users of the starter are not blocked — do not raise them. `*.stories.ts` files are excluded from coverage (`coverageExclude` in angular.json).
-
-## Generator
-
-New design systems are scaffolded from this starter by [starter-generator](https://github.com/JoanRoucoux/starter-generator), a generic engine: everything starter-specific lives **here**, in [generator.config.json](generator.config.json) (files removed from generated projects, package renames, install commands — full spec in the generator's README) and `.generator/templates/` (currently only the generated README, rendered with `{{token}}` placeholders).
-
-Keep them in sync with the starter:
-
-- The demo components (`badge`, `button`, `input`) are **kept** in generated projects as reference implementations — do not add them to the manifest's `remove`.
-- The manifest patches both [package.json](package.json) and [projects/ui/package.json](projects/ui/package.json) (the published name); if the library layout moves, update the manifest paths.
-- Template-only content (community files, release tooling) must be listed in the manifest's `remove`.
-- `.generator/templates/` stays excluded in [.prettierignore](.prettierignore) and the ESLint `globalIgnores`.
-- The `generate` job in [ci.yml](.github/workflows/ci.yml) generates a project from the working tree and runs its quality gates — it fails when the manifest or templates drift.
+- Lines and branches are at 100% and must stay there; statements and functions sit just under it, because Angular attributes some generated code — the `forwardRef` arrows in decorator metadata, the `contentChild` query factory — to source positions no test can reach. A drop in **lines** is a real gap; a drop in statements alone, with lines still at 100%, is not. The thresholds enforced by `coverageThresholds` in angular.json (statements 85, branches 80, functions 70, lines 85) are intentionally lower than the actual figures: do not raise them. `*.stories.ts` files are excluded from coverage (`coverageExclude` in angular.json).
 
 ## Release
 
@@ -87,7 +78,10 @@ The library is published to npm by [release.yml](.github/workflows/release.yml) 
 
 1. In a PR, bump `version` in `projects/ui/package.json` and add the entry to `projects/ui/CHANGELOG.md`.
 2. Merge the PR into `main`.
-3. Push the tag `vX.Y.Z` on the merge commit. The workflow checks that the tag equals `v` + the library version and that the commit is on `main`, runs the CI checks, builds, then publishes `dist/ui`.
+3. Push the tag `vX.Y.Z` on the merge commit. The workflow checks that the tag equals `v` + the library version and that the commit is on `main`, runs the CI checks, builds, then publishes `dist/ui` with provenance.
+4. A second job of `release.yml` creates the GitHub Release for the tag, using the `## X.Y.Z` section of `projects/ui/CHANGELOG.md` as its notes (the heading must be exactly `## X.Y.Z`, or the job fails). It also fails if a release for the tag already exists.
+
+The Storybook is deployed to GitHub Pages by [storybook.yml](.github/workflows/storybook.yml) on every push to `main` (and on manual dispatch). It does not wait for CI: CI and the deploy run side by side on the same push.
 
 ## Gotchas
 
@@ -96,9 +90,9 @@ The library is published to npm by [release.yml](.github/workflows/release.yml) 
 - `fonts.css` must be loaded by the consumer's own build (a Vite import in `.storybook/preview.ts`, an `angular.json` `styles` entry in an app), never through Tailwind's `@import`, which does not rebase its `url()`s.
 - jsdom ships the Popover API's default stylesheet (`[popover]:not(:popover-open) { display: none }`) but neither its JS methods nor the `:popover-open` pseudo-class those rules key off; `test-setup.ts` shims `showPopover`/`hidePopover` by flipping an inline `display` instead, which wins over that UA rule regardless of the pseudo-class.
 - `UiMenu.close()` only calls `hidePopover()` when the menu was open: `hidePopover()` throws on a closed popover, and it fires the `toggle` event that calls `close()` again.
-- GitHub Actions in `.github/workflows/ci.yml` are pinned by commit SHA (Dependabot keeps them updated) — when adding one, pin it the same way.
-- npm consumers of the published library must add `@source '../node_modules/<pkg>'` to their Tailwind CSS — templates in `node_modules` are not scanned by default. Keep this documented in the README.
-- The root package version (release-please) is the starter's version; the library's own version lives in `projects/ui/package.json` and is bumped manually, with `projects/ui/CHANGELOG.md`, in the release PR (see Release).
+- GitHub Actions in `.github/workflows/` are pinned by commit SHA (Dependabot keeps them updated) — when adding one, pin it the same way.
+- npm consumers of the published library must add `@source '../node_modules/<pkg>'` to their Tailwind CSS — templates in `node_modules` are not scanned by default. Keep this documented in both READMEs (root and `projects/ui/README.md`).
+- The root `package.json` is private and its version is not used: the library's version lives in `projects/ui/package.json` and is bumped manually, with `projects/ui/CHANGELOG.md`, in the release PR (see Release). `projects/ui/CHANGELOG.md` is listed in `ng-package.json` assets and ignored by Prettier.
 - Angular's zoneless scheduler calls `requestAnimationFrame` itself during bootstrap: assert on the rendered output, never on a count of animation frames.
 - Text tokens clear 4.5:1 on `--background`, `--card`, `--elevated`, `--muted` and on `--soft` over `--background` or `--card`; `tokens.spec.ts` computes it, so a token edit that breaks it fails the test (ratios in `docs/colors.mdx`).
 - Nothing is committed or pushed without an explicit request from the maintainer.
