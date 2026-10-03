@@ -1,11 +1,11 @@
 import { Component, inject, input } from '@angular/core';
 
+import { UiActionBar } from '@joanroucoux/cairn-ui/action-bar';
+import { UiButton } from '@joanroucoux/cairn-ui/button';
+import { UiTab, UiTabBar } from '@joanroucoux/cairn-ui/tab-bar';
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
 
-import { UiActionBar } from '../action-bar/action-bar';
-import { UiButton } from '../button/button';
-import { UiTab, UiTabBar } from '../tab-bar/tab-bar';
 import { UiToaster } from './toast';
 import { UiToasts } from './toasts';
 
