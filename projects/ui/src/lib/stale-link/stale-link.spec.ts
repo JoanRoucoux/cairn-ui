@@ -8,10 +8,26 @@ describe('UiStaleLink', () => {
       imports: [UiStaleLink],
     });
 
-    expect(screen.getByRole('link', { name: '1 ligne sans cours, non comptée' })).toHaveClass(
-      'text-caption',
-      'font-medium',
-      'text-(--stale)',
+    const link = screen.getByRole('link', { name: '1 ligne sans cours, non comptée' });
+    expect(link).not.toHaveClass('text-label');
+    expect(link).toHaveClass('text-caption', 'font-medium', 'text-(--stale)');
+  });
+
+  it('sets the label size, 14/20 at weight 500, on request', async () => {
+    await render('<a uiStaleLink size="label" href="/holdings">1 cours en retard</a>', { imports: [UiStaleLink] });
+
+    const link = screen.getByRole('link', { name: '1 cours en retard' });
+    expect(link).toHaveClass('text-label', 'font-medium', 'text-(--stale)');
+    expect(link).not.toHaveClass('text-caption');
+  });
+
+  it('keeps the 44 px hit area, 40 px with a mouse, at the label size', async () => {
+    await render('<a uiStaleLink chevron size="label" href="#">Cours</a>', { imports: [UiStaleLink] });
+
+    expect(screen.getByRole('link', { name: 'Cours' })).toHaveClass(
+      'before:h-11',
+      'pointer-fine:before:h-10',
+      'after:size-4',
     );
   });
 
