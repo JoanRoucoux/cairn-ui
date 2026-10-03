@@ -76,6 +76,7 @@ export { METER_SIZES, METER_TONES, UiMeter, type MeterSize, type MeterTone } fro
 export { UiFlipItem, UiFlipList } from './lib/motion/flip-list';
 export { UiHighlight } from './lib/motion/highlight';
 export { injectReducedMotion } from './lib/motion/reduced-motion';
+export { holdTransitionsUntilRendered } from './lib/motion/settle-transitions';
 export { UiNavItem } from './lib/nav-item/nav-item';
 export {
   ROW_GAPS,
@@ -92,7 +93,7 @@ export {
 export { SEGMENTED_SIZES, UiSegmented, type SegmentedOption, type SegmentedSize } from './lib/segmented/segmented';
 export { UiSelect } from './lib/select/select';
 export { SKELETON_SHAPES, UiSkeleton, type SkeletonShape } from './lib/skeleton/skeleton';
-export { UiStaleLink } from './lib/stale-link/stale-link';
+export { STALE_LINK_SIZES, UiStaleLink, type StaleLinkSize } from './lib/stale-link/stale-link';
 export { STAT_SIZES, UiStat, type StatSize } from './lib/stat/stat';
 export { UiSwitch } from './lib/switch/switch';
 export { UiTab, UiTabBar } from './lib/tab-bar/tab-bar';

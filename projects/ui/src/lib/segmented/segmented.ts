@@ -1,5 +1,7 @@
 import { Component, ElementRef, booleanAttribute, computed, input, model, viewChildren } from '@angular/core';
 
+import { holdTransitionsUntilRendered } from '../motion/settle-transitions';
+
 const nextId = (() => {
   let count = 0;
 
@@ -12,7 +14,7 @@ export type SegmentedOption = {
 };
 
 const OPTION_CLASSES =
-  "relative z-10 flex-1 cursor-pointer px-3 text-label font-medium transition-[scale,color] duration-(--duration-press) ease-out after:absolute after:inset-x-0 after:top-1/2 after:h-(--row-min) after:-translate-y-1/2 after:content-[''] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring) active:scale-(--press-scale)";
+  "relative z-10 flex-1 cursor-pointer px-3 text-label font-medium transition-[scale] duration-(--duration-press) ease-out after:absolute after:inset-x-0 after:top-1/2 after:h-(--row-min) after:-translate-y-1/2 after:content-[''] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring) active:scale-(--press-scale)";
 
 export const SEGMENTED_SIZES = ['md', 'sm'] as const;
 export type SegmentedSize = (typeof SEGMENTED_SIZES)[number];
@@ -93,6 +95,10 @@ export class UiSegmented {
 
     return index === -1 ? 0 : index + 1;
   });
+
+  constructor() {
+    holdTransitionsUntilRendered();
+  }
 
   protected optionClasses(optionValue: string): string {
     return `${OPTION_CLASSES} ${SIZE_CLASSES[this.size()]} ${optionValue === this.value() ? SELECTED_CLASSES : UNSELECTED_CLASSES}`;

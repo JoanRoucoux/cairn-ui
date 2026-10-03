@@ -1,5 +1,7 @@
 import { Component, Directive, booleanAttribute, computed, input } from '@angular/core';
 
+import { holdTransitionsUntilRendered } from '../motion/settle-transitions';
+
 /** Breakpoints a secondary column can be held back until. */
 export const CELL_BREAKPOINTS = ['md', 'lg'] as const;
 export type CellBreakpoint = (typeof CELL_BREAKPOINTS)[number];
@@ -53,6 +55,10 @@ export class UiTable {
       this.spaced() ? '[--table-head-gap:0.25rem]' : '[--table-head-gap:0px]',
     ].join(' '),
   );
+
+  constructor() {
+    holdTransitionsUntilRendered();
+  }
 }
 
 /** Body of one group of rows: leaves a 4px tail after its last row. */

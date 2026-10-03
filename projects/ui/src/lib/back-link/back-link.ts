@@ -1,5 +1,7 @@
 import { Component, computed, input } from '@angular/core';
 
+import { holdTransitionsUntilRendered } from '../motion/settle-transitions';
+
 /** Available back link sizes. `BackLinkSize` is derived from this tuple. */
 export const BACK_LINK_SIZES = ['md', 'sm', 'header'] as const;
 export type BackLinkSize = (typeof BACK_LINK_SIZES)[number];
@@ -48,4 +50,8 @@ export class UiBackLink {
 
   protected readonly chevron = computed(() => CHEVRON[this.size()]);
   protected readonly classes = computed(() => `${BASE_CLASSES} ${SIZE_CLASSES[this.size()]}`);
+
+  constructor() {
+    holdTransitionsUntilRendered();
+  }
 }

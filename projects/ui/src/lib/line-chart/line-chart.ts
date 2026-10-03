@@ -53,6 +53,10 @@ type EndRef = ElementRef<SVGCircleElement>;
  * only the first, middle and last ticks count; with `auto` every tick counts from `sm` up and the
  * three core ticks below it. Tick positions are unchanged.
  *
+ * A new series interpolates from the drawn curve, fading the start label and the dashed line. With
+ * `rangeKey` bound, only a series that comes with a new key does so: a new series under the same key
+ * (a reload after a buy) is drawn at once, with no fade. The key may change before its series arrives.
+ *
  * @example
  * <ui-line-chart [points]="points" label="Net worth over one month" startLabel="Since" [valueFormat]="formatEur" />
  */
@@ -219,6 +223,7 @@ export class UiLineChart {
   readonly tooltipDelta = input(true, { transform: booleanAttribute });
   readonly axisGap = input<number | 'auto'>(12);
   readonly axisTicks = input<AxisTicks, AxisTicks | string>('auto', { transform: parseAxisTicks });
+  readonly rangeKey = input<string | null>(null);
 
   #destroyRef = inject(DestroyRef);
   #host = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -312,6 +317,7 @@ export class UiLineChart {
       untracked(() =>
         this.#motion.follow(points, geometry, {
           reduced,
+          rangeKey: this.rangeKey(),
           duration: () => durationFrom(getComputedStyle(this.#host.nativeElement).getPropertyValue('--duration-base')),
         }),
       );

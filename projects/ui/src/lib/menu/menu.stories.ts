@@ -194,3 +194,46 @@ export const FixedWidth: StoryObj<{ width: number }> = {
     await expect(menu.offsetWidth).toBe(218);
   },
 };
+
+const ICON_REFRESH = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" /><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /><path d="M8 16H3v5" /></svg>`;
+
+export const LongLabelOnIphone: Story = {
+  name: 'Long label beside the right edge at 390',
+  parameters: { layout: 'fullscreen', viewport: { width: 390, height: 844 } },
+  render: () => ({
+    template: `
+      <div class="flex items-start justify-end p-1">
+        <button ui-button size="icon-sm" variant="quiet" aria-label="Actions de la ligne" [uiMenuTrigger]="menu">⋯</button>
+        <ui-menu #menu label="Actions de la ligne">
+          <button uiMenuItem type="button">${ICON_REFRESH}Changer de cotation</button>
+          <button uiMenuItem type="button">${ICON_PEN}Modifier</button>
+          <button uiMenuItem type="button" destructive>${ICON_TRASH}Supprimer la ligne</button>
+        </ui-menu>
+      </div>
+    `,
+  }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Actions de la ligne' }));
+
+    const menu = canvas.getByRole('menu', { name: 'Actions de la ligne' });
+    await waitFor(() => expect(menu).toBeVisible());
+
+    const textBox = (name: string): DOMRect[] => {
+      const item = canvas.getByRole('menuitem', { name });
+      const range = document.createRange();
+      range.selectNodeContents(item.lastChild!);
+      return [...range.getClientRects()];
+    };
+    const long = textBox('Changer de cotation');
+    const short = textBox('Modifier');
+
+    await expect(long).toHaveLength(1);
+    await expect(long[0]!.left).toBe(short[0]!.left);
+
+    const rect = menu.getBoundingClientRect();
+    await expect(rect.left).toBeGreaterThanOrEqual(8);
+    await expect(rect.right).toBeLessThanOrEqual(window.innerWidth - 8);
+  },
+};

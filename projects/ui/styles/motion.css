@@ -69,6 +69,15 @@
   transition: none !important;
 }
 
+[data-ui-settling],
+[data-ui-settling]::before,
+[data-ui-settling]::after,
+[data-ui-settling] *,
+[data-ui-settling] *::before,
+[data-ui-settling] *::after {
+  transition: none !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ui-enter-fade-up,
   .ui-enter-panel {

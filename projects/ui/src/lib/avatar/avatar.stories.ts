@@ -1,5 +1,5 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
-import { expect, within } from 'storybook/test';
+import { expect, userEvent, within } from 'storybook/test';
 
 import { AVATAR_SIZES, type AvatarSize, UiAvatar, UiAvatarLink } from './avatar';
 
@@ -107,5 +107,35 @@ export const InProfileLinkCurrentPage: Story = {
     const canvas = within(canvasElement);
 
     await expect(canvas.getByRole('link', { name: 'Profil' })).toHaveAttribute('aria-current', 'page');
+  },
+};
+
+export const CurrentPageArrivesAtOnce: Story = {
+  name: 'In a link, becoming the current page draws the halo at once',
+  render: () => ({
+    props: { current: false },
+    template: `
+      <a uiAvatarLink href="#" [attr.aria-current]="current ? 'page' : null">
+        <ui-avatar initials="JO" label="Profil" size="auto" />
+      </a>
+      <button type="button" (click)="current = !current">Navigate</button>
+    `,
+  }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const link = canvas.getByRole('link', { name: 'Profil' });
+    const runs: string[] = [];
+    const record = (event: TransitionEvent): void => {
+      runs.push(event.propertyName);
+    };
+
+    link.addEventListener('transitionrun', record);
+    await userEvent.click(canvas.getByRole('button', { name: 'Navigate' }));
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    link.removeEventListener('transitionrun', record);
+
+    await expect(link).toHaveAttribute('aria-current', 'page');
+    await expect(runs).toEqual([]);
+    await expect(getComputedStyle(link).backgroundImage).not.toBe('none');
   },
 };

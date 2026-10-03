@@ -1,5 +1,6 @@
 import { Component, booleanAttribute, computed, input, output } from '@angular/core';
 
+import { holdTransitionsUntilRendered } from '../motion/settle-transitions';
 import { delayedState } from './delayed-state';
 
 /** Available async block states. `AsyncState` is derived from this tuple. */
@@ -15,7 +16,7 @@ export const ASYNC_ALIGNS = ['start', 'center', 'auto'] as const;
 export type AsyncAlign = (typeof ASYNC_ALIGNS)[number];
 
 const RETRY_BASE_CLASSES =
-  'relative inline-flex items-center justify-center rounded-control font-medium whitespace-nowrap cursor-pointer select-none touch-manipulation transition-[scale,background-color,opacity] [transition-duration:var(--duration-press),var(--duration-fast),var(--duration-fast)] ease-out active:scale-(--press-scale) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring) text-label';
+  'relative inline-flex items-center justify-center rounded-control font-medium whitespace-nowrap cursor-pointer select-none touch-manipulation transition-[scale,background-color] [transition-duration:var(--duration-press),var(--duration-fast)] ease-out active:scale-(--press-scale) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring) text-label';
 
 const RETRY_OUTLINE_CLASSES =
   'bg-(--card) text-(--foreground) shadow-[inset_0_0_0_1px_var(--border)] hover:bg-(--glow)';
@@ -197,4 +198,8 @@ export class UiAsync {
 
     return `${RETRY_BASE_CLASSES} ${spec.retry} ${RETRY_BLOCK_CLASSES} ${spec.retryMargin[this.align()]}`;
   });
+
+  constructor() {
+    holdTransitionsUntilRendered();
+  }
 }

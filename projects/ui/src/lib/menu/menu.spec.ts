@@ -211,7 +211,7 @@ describe('UiMenu', () => {
     const trigger = screen.getByRole('button', { name: 'More' });
     const menu = container.querySelector('ui-menu') as HTMLElement;
     vi.spyOn(trigger, 'getBoundingClientRect').mockReturnValue({ top: 580, bottom: 600, right: 300 } as DOMRect);
-    vi.spyOn(menu, 'getBoundingClientRect').mockReturnValue({ height: 100, width: 200 } as DOMRect);
+    vi.spyOn(menu, 'offsetHeight', 'get').mockReturnValue(100);
     vi.spyOn(window, 'innerHeight', 'get').mockReturnValue(600);
 
     await userEvent.click(trigger);

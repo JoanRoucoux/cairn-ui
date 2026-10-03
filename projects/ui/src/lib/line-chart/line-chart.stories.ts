@@ -83,6 +83,12 @@ when the range changes again, and moves the end dot along the curve. The "Dépar
 dashed line fade out when it starts and back in at their new place when it ends; the tooltip waits
 for the end. Under \`prefers-reduced-motion\` the new series shows at once.
 
+Bind \`rangeKey\` (the range's id, \`1M\`, \`1A\`) and only a series that comes with a new key
+interpolates: the same range reloaded after a buy, or a refresh of its prices, redraws at once with
+no fade, as MOUVEMENT.md animates the curve on a range change only. The key may change before its
+series arrives; the interpolation runs when the series does. Without \`rangeKey\`, every new series
+interpolates.
+
 Formatting and locale are the consumer's business: \`valueFormat\`, \`deltaFormat\`, \`timeFormat\` and
 \`axisFormat\` all arrive as inputs, so masking amounts is a matter of passing a formatter that
 returns bullets instead of digits — the curve's shape stays visible either way.
@@ -172,6 +178,11 @@ The host fills its parent's height (\`block h-full\`); size the chart by sizing 
       control: false,
       description:
         'Formats a whole point for the tooltip value line, when it reads more than the value (a position value and its unit price). Falls back to valueFormat.',
+    },
+    rangeKey: {
+      control: false,
+      description:
+        'Id of the range the series belongs to. When bound, a new series interpolates only if it comes with a new key; under the same key it redraws at once, with no fade. Null (default) interpolates every new series.',
     },
     deltaFormat: { control: false, description: 'Formats the signed change since the first point, for the tooltip.' },
     timeFormat: { control: false, description: "Formats a point's time for the tooltip and the table." },
@@ -305,6 +316,49 @@ export const RangeTransitionSettles: Story = {
     const target = buildGeometry(oneDayPoints, 640, plotHeight, { x: 0, top: padding, bottom: padding });
 
     await expect(canvasElement.querySelector('[data-chart-line]')).toHaveAttribute('d', target?.line);
+  },
+};
+
+export const SameRangeReloadDrawsAtOnce: Story = {
+  name: 'A reload of the same range draws at once, a new range interpolates',
+  render: () => {
+    const points = signal<ChartPoint[]>(oneMonthPoints);
+    const rangeKey = signal('1M');
+
+    return {
+      props: {
+        points,
+        rangeKey,
+        valueFormat: eur,
+        reload: () => points.set(oneMonthPoints.map((point) => ({ ...point, v: point.v + 4000 }))),
+        switchRange: () => {
+          rangeKey.set('1J');
+          points.set(oneDayPoints);
+        },
+      },
+      template: `
+        <div style="width: 640px; height: 240px;">
+          <ui-line-chart [points]="points()" [rangeKey]="rangeKey()" label="Net worth" startLabel="Départ" [valueFormat]="valueFormat" />
+        </div>
+        <button type="button" (click)="reload()">Reload</button>
+        <button type="button" (click)="switchRange()">Switch range</button>
+      `,
+    };
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const fading = (): Animation[] => canvasElement.querySelector('svg')!.getAnimations({ subtree: true });
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Reload' }));
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+    await expect(canvasElement.querySelector('[data-chart-start-label]')).not.toHaveClass('opacity-0');
+    await expect(fading()).toHaveLength(0);
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Switch range' }));
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+    await expect(canvasElement.querySelector('[data-chart-start-label]')).toHaveClass('opacity-0');
   },
 };
 
