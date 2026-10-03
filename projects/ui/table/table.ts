@@ -1,6 +1,6 @@
 import { Component, Directive, booleanAttribute, computed, input } from '@angular/core';
 
-import { holdTransitionsUntilRendered } from '../motion/settle-transitions';
+import { holdTransitionsUntilRendered } from '@joanroucoux/cairn-ui/motion';
 
 /** Breakpoints a secondary column can be held back until. */
 export const CELL_BREAKPOINTS = ['md', 'lg'] as const;

@@ -1,7 +1,7 @@
+import { UiDelta } from '@joanroucoux/cairn-ui/delta';
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
 import { expect, within } from 'storybook/test';
 
-import { UiDelta } from '../delta/delta';
 import { STAT_SIZES, type StatSize, UiStat } from './stat';
 
 type StatArgs = {
