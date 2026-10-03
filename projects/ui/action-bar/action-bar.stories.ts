@@ -1,8 +1,8 @@
+import { UiButton } from '@joanroucoux/cairn-ui/button';
+import { UiTab, UiTabBar } from '@joanroucoux/cairn-ui/tab-bar';
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
 import { expect, within } from 'storybook/test';
 
-import { UiButton } from '../button/button';
-import { UiTab, UiTabBar } from '../tab-bar/tab-bar';
 import { UiActionBar } from './action-bar';
 
 const meta: Meta = {
