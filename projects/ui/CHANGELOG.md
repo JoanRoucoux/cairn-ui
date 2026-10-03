@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.2
+
+### Changed
+
+- The npm README opens with the Cairn UI banner.
+
 ## 0.8.1
 
 ### Added

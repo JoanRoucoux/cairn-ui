@@ -1,3 +1,5 @@
+![Cairn UI: Components and tokens behind Cairn.](https://raw.githubusercontent.com/JoanRoucoux/cairn-ui/main/docs/github/banner-light.png)
+
 # @joanroucoux/cairn-ui
 
 A monochrome, accessible Angular design system, built for [Cairn](https://github.com/JoanRoucoux/cairn).
