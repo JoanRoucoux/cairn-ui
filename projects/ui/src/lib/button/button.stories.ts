@@ -98,8 +98,8 @@ export const Primary: Story = {
   play: async ({ canvasElement }) => {
     const style = getComputedStyle(within(canvasElement).getByRole('button', { name: 'Button' }));
 
-    await expect(style.transitionProperty).toBe('scale, background-color, opacity');
-    await expect(style.transitionDuration).toBe('0.12s, 0.18s, 0.18s');
+    await expect(style.transitionProperty).toBe('scale, background-color');
+    await expect(style.transitionDuration).toBe('0.12s, 0.18s');
   },
 };
 

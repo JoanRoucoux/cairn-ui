@@ -81,13 +81,15 @@ describe('UiButton', () => {
     expect(screen.getByRole('button', { name: 'Save' })).toHaveClass('active:scale-(--press-scale)');
   });
 
-  it('splits the press transform from the hover fill durations', async () => {
+  it('splits the press transform from the hover fill durations and never fades its opacity', async () => {
     await render('<button ui-button>Save</button>', { imports: [UiButton] });
 
-    expect(screen.getByRole('button', { name: 'Save' })).toHaveClass(
-      'transition-[scale,background-color,opacity]',
-      '[transition-duration:var(--duration-press),var(--duration-fast),var(--duration-fast)]',
+    const button = screen.getByRole('button', { name: 'Save' });
+    expect(button).toHaveClass(
+      'transition-[scale,background-color]',
+      '[transition-duration:var(--duration-press),var(--duration-fast)]',
     );
+    expect(button.className).not.toContain('opacity]');
   });
 
   it('announces a loading button as busy, dims it and swallows clicks', async () => {
