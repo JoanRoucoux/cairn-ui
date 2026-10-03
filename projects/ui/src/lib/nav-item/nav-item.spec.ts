@@ -20,7 +20,8 @@ describe('UiNavItem', () => {
 
     const item = screen.getByRole('link', { name: 'Portfolio' });
     expect(item).toHaveAttribute('aria-current', 'page');
-    expect(item).toHaveClass('bg-(--soft)', 'text-(--foreground)');
+    expect(item).toHaveClass('bg-[image:linear-gradient(var(--soft),var(--soft))]', 'text-(--foreground)');
+    expect(item).not.toHaveClass('bg-(--soft)');
     expect(item).not.toHaveClass('text-(--muted-foreground)');
   });
 
@@ -38,18 +39,20 @@ describe('UiNavItem', () => {
     expect(screen.getByRole('link', { name: 'Portfolio' })).toHaveAttribute('aria-current', 'page');
   });
 
-  it('presses with a eased scale and fades its hover fill at the fast duration', async () => {
+  it('presses with a eased scale, fades only its hover fill, and switches the active state at once', async () => {
     await render('<a ui-nav-item active href="/">Portfolio</a><a ui-nav-item href="/">Holdings</a>', {
       imports: [UiNavItem],
     });
 
     for (const name of ['Portfolio', 'Holdings']) {
       expect(screen.getByRole('link', { name })).toHaveClass(
-        'transition-[scale,background-color,color]',
-        '[transition-duration:var(--duration-press),var(--duration-fast),var(--duration-fast)]',
+        'transition-[scale,background-color]',
+        '[transition-duration:var(--duration-press),var(--duration-fast)]',
         'ease-out',
         'active:scale-(--press-scale)',
+        'hover:bg-(--glow)',
       );
+      expect(screen.getByRole('link', { name })).not.toHaveClass('transition-[scale,background-color,color]');
     }
   });
 

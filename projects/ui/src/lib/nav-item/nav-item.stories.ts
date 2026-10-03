@@ -1,4 +1,5 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
+import { expect, userEvent, within } from 'storybook/test';
 
 import { UiNavItem } from './nav-item';
 
@@ -52,7 +53,10 @@ and colors it (Lucide, stroke 1.75, following the active state's text color thro
     label: 'Portfolio',
   },
   argTypes: {
-    active: { control: 'boolean', description: 'Sets `aria-current="page"` and the soft background.' },
+    active: {
+      control: 'boolean',
+      description: 'Sets `aria-current="page"` and the soft background, at once (no fade).',
+    },
     label: { control: 'text', description: 'Projected label.' },
   },
 };
@@ -64,4 +68,47 @@ export const Rest: Story = {};
 
 export const Active: Story = {
   args: { active: true },
+};
+
+const transitionsDuring = async (element: Element, act: () => Promise<void>): Promise<string[]> => {
+  const runs: string[] = [];
+  const record = (event: Event): void => {
+    runs.push((event as TransitionEvent).propertyName);
+  };
+
+  element.addEventListener('transitionrun', record);
+  await act();
+  await new Promise((resolve) => setTimeout(resolve, 50));
+  element.removeEventListener('transitionrun', record);
+
+  return runs;
+};
+
+export const ActiveChangeIsImmediate: Story = {
+  name: 'Becoming active is immediate, the hover fill still fades',
+  render: () => ({
+    props: { current: 'portfolio' },
+    template: `
+      <nav class="flex w-56 flex-col gap-1">
+        <a ui-nav-item href="#" [active]="current === 'portfolio'">Portfolio</a>
+        <a ui-nav-item href="#" [active]="current === 'holdings'">Holdings</a>
+      </nav>
+      <button type="button" (click)="current = current === 'portfolio' ? 'holdings' : 'portfolio'">Navigate</button>
+    `,
+  }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const nav = canvasElement.querySelector('nav')!;
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    const onNavigate = await transitionsDuring(nav, () =>
+      userEvent.click(canvas.getByRole('button', { name: 'Navigate' })),
+    );
+    await expect(canvas.getByRole('link', { name: 'Holdings' })).toHaveAttribute('aria-current', 'page');
+    await expect(onNavigate).toEqual([]);
+
+    const style = getComputedStyle(canvas.getByRole('link', { name: 'Portfolio' }));
+    await expect(style.transitionProperty).toBe('scale, background-color');
+    await expect(style.transitionDuration).toBe('0.12s, 0.18s');
+  },
 };

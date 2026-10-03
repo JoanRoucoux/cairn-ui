@@ -1,4 +1,5 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
+import { expect, userEvent, within } from 'storybook/test';
 
 import { UiTab, UiTabBar } from './tab-bar';
 
@@ -65,3 +66,33 @@ export default meta;
 type Story = StoryObj;
 
 export const Default: Story = {};
+
+export const ActiveChangeIsImmediate: Story = {
+  name: 'Switching the active tab is immediate',
+  render: () => ({
+    props: { current: 'portfolio' },
+    template: `
+      <div class="w-[390px]"><nav ui-tab-bar>
+        <a ui-tab href="#" [active]="current === 'portfolio'">Portefeuille</a>
+        <a ui-tab href="#" [active]="current === 'holdings'">Lignes</a>
+      </nav></div>
+      <button type="button" (click)="current = current === 'portfolio' ? 'holdings' : 'portfolio'">Navigate</button>
+    `,
+  }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const nav = canvasElement.querySelector('nav')!;
+    const runs: string[] = [];
+    const record = (event: Event): void => {
+      runs.push((event as TransitionEvent).propertyName);
+    };
+
+    nav.addEventListener('transitionrun', record);
+    await userEvent.click(canvas.getByRole('button', { name: 'Navigate' }));
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    nav.removeEventListener('transitionrun', record);
+
+    await expect(canvas.getByRole('link', { name: 'Lignes' })).toHaveAttribute('aria-current', 'page');
+    await expect(runs).toEqual([]);
+  },
+};

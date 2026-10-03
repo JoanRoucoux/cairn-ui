@@ -22,6 +22,9 @@
   scale and the hover fill keep their transitions.
 - `uiAvatarLink` draws its current-page halo as a background image, so it appears at once when the route changes;
   the hover glow keeps its 180 ms fade.
+- `ui-nav-item` switches its active fill (now a background image) and its text colour at once on navigation, as
+  MOUVEMENT.md §4.1 asks of the sidebar; only the hover fill keeps its 180 ms fade, and the press scale stays.
+  `ui-tab` already switched at once (scale transition only); a story now checks it.
 
 ### Fixed
 
