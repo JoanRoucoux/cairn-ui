@@ -1,9 +1,9 @@
+import { UiButton } from '@joanroucoux/cairn-ui/button';
+import { UiRow } from '@joanroucoux/cairn-ui/row';
+import { UiGroupCell, UiTable, UiTd, UiTh, UiTr } from '@joanroucoux/cairn-ui/table';
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
 
-import { UiButton } from '../button/button';
-import { UiRow } from '../row/row';
-import { UiGroupCell, UiTable, UiTd, UiTh, UiTr } from '../table/table';
 import { UiHighlight } from './highlight';
 
 const meta: Meta = {

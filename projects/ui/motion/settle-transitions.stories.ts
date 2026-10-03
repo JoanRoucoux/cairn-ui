@@ -1,16 +1,15 @@
 import { Component, ViewContainerRef, viewChild } from '@angular/core';
 
+import { UiAsync } from '@joanroucoux/cairn-ui/async';
+import { UiBackLink } from '@joanroucoux/cairn-ui/back-link';
+import { UiButton } from '@joanroucoux/cairn-ui/button';
+import { UiNavItem } from '@joanroucoux/cairn-ui/nav-item';
+import { UiRow } from '@joanroucoux/cairn-ui/row';
+import { UiSegmented } from '@joanroucoux/cairn-ui/segmented';
+import { UiSwitch } from '@joanroucoux/cairn-ui/switch';
+import { UiTable, UiTd, UiTr } from '@joanroucoux/cairn-ui/table';
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { expect, userEvent, within } from 'storybook/test';
-
-import { UiAsync } from '../async/async';
-import { UiBackLink } from '../back-link/back-link';
-import { UiButton } from '../button/button';
-import { UiNavItem } from '../nav-item/nav-item';
-import { UiRow } from '../row/row';
-import { UiSegmented } from '../segmented/segmented';
-import { UiSwitch } from '../switch/switch';
-import { UiTable, UiTd, UiTr } from '../table/table';
 
 @Component({
   selector: 'ui-story-mounted-page',
