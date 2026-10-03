@@ -1,6 +1,6 @@
 import { Component, DestroyRef, ElementRef, booleanAttribute, computed, inject, input } from '@angular/core';
 
-import { holdTransitionsUntilRendered } from '../motion/settle-transitions';
+import { holdTransitionsUntilRendered } from '@joanroucoux/cairn-ui/motion';
 
 /** Available button variants. `ButtonVariant` is derived from this tuple. */
 export const BUTTON_VARIANTS = [

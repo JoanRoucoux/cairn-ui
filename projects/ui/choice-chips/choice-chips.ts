@@ -11,8 +11,8 @@ import {
   viewChildren,
 } from '@angular/core';
 
-import { UI_CONTROL, type UiControl, type UiControlError } from '../control/control';
-import { CONTROL_SURFACE_CLASSES, type ControlSurface } from '../input/input';
+import { UI_CONTROL, type UiControl, type UiControlError } from '@joanroucoux/cairn-ui/control';
+import { CONTROL_SURFACE_CLASSES, type ControlSurface } from '@joanroucoux/cairn-ui/input';
 
 export type ChoiceChipOption = {
   value: string;

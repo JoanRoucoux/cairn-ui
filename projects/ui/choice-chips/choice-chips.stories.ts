@@ -1,7 +1,7 @@
+import type { ControlSurface } from '@joanroucoux/cairn-ui/input';
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
 import { expect, userEvent, within } from 'storybook/test';
 
-import type { ControlSurface } from '../input/input';
 import { type ChoiceChipOption, UiChoiceChips } from './choice-chips';
 
 type ChoiceChipsArgs = {
