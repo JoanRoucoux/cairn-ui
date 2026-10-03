@@ -1,7 +1,7 @@
+import { CONTROL_SIZES, type ControlSize } from '@joanroucoux/cairn-ui/input';
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
 import { expect, userEvent, within } from 'storybook/test';
 
-import { CONTROL_SIZES, type ControlSize } from '../input/input';
 import { UiSelect } from './select';
 
 type SelectArgs = {

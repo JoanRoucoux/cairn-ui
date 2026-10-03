@@ -1,7 +1,7 @@
 import { Directive, computed, forwardRef, input } from '@angular/core';
 
-import { UI_CONTROL, type UiControl, type UiControlError } from '../control/control';
-import { CONTROL_BASE_CLASSES, CONTROL_SIZE_CLASSES, type ControlSize } from '../input/input';
+import { UI_CONTROL, type UiControl, type UiControlError } from '@joanroucoux/cairn-ui/control';
+import { CONTROL_BASE_CLASSES, CONTROL_SIZE_CLASSES, type ControlSize } from '@joanroucoux/cairn-ui/input';
 
 const SELECT_CLASSES =
   'cursor-pointer appearance-none pr-10 bg-(image:--chevron-down) bg-no-repeat bg-[position:right_0.75rem_center] bg-[size:1.125rem]';

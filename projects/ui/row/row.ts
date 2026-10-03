@@ -1,6 +1,6 @@
 import { Component, DestroyRef, Directive, ElementRef, booleanAttribute, computed, inject, input } from '@angular/core';
 
-import { holdTransitionsUntilRendered } from '../motion/settle-transitions';
+import { holdTransitionsUntilRendered } from '@joanroucoux/cairn-ui/motion';
 
 export const ROW_SIZES = ['md', 'lg', 'xl', 'card', 'dense'] as const;
 export type RowSize = (typeof ROW_SIZES)[number];

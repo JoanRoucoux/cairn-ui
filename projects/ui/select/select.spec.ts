@@ -1,10 +1,10 @@
 import { By } from '@angular/platform-browser';
 
+import { UI_CONTROL } from '@joanroucoux/cairn-ui/control';
+import { type ControlSize } from '@joanroucoux/cairn-ui/input';
 import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
-import { UI_CONTROL } from '../control/control';
-import { type ControlSize } from '../input/input';
 import { UiSelect } from './select';
 
 const OPTIONS = `

@@ -1,6 +1,6 @@
 import { Component, booleanAttribute, computed, input } from '@angular/core';
 
-import { holdTransitionsUntilRendered } from '../motion/settle-transitions';
+import { holdTransitionsUntilRendered } from '@joanroucoux/cairn-ui/motion';
 
 const BASE_CLASSES =
   'flex items-center gap-3 h-10 px-3 rounded-control text-label leading-normal font-medium transition-[scale,background-color] [transition-duration:var(--duration-press),var(--duration-fast)] ease-out active:scale-(--press-scale) hover:bg-(--glow) hover:text-(--foreground) focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring)';

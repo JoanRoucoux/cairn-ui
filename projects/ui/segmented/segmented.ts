@@ -1,6 +1,6 @@
 import { Component, ElementRef, booleanAttribute, computed, input, model, viewChildren } from '@angular/core';
 
-import { holdTransitionsUntilRendered } from '../motion/settle-transitions';
+import { holdTransitionsUntilRendered } from '@joanroucoux/cairn-ui/motion';
 
 const nextId = (() => {
   let count = 0;
