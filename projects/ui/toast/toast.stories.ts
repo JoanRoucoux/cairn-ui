@@ -5,7 +5,7 @@ import { UiButton } from '@joanroucoux/cairn-ui/button';
 import { UiDialog } from '@joanroucoux/cairn-ui/dialog';
 import { UiTab, UiTabBar } from '@joanroucoux/cairn-ui/tab-bar';
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
-import { expect, userEvent, waitFor, within } from 'storybook/test';
+import { expect, fn, userEvent, waitFor, within } from 'storybook/test';
 
 import { UiToaster } from './toast';
 import { UiToasts } from './toasts';
@@ -17,6 +17,9 @@ import { UiToasts } from './toasts';
     <div class="p-4">
       <button class="rounded-control border border-(--border) px-4 py-2" type="button" (click)="show()">
         Show a toast
+      </button>
+      <button class="rounded-control border border-(--border) px-4 py-2" type="button" (click)="dialog.set(true)">
+        Open a dialog
       </button>
     </div>
     <ui-toaster />
@@ -70,7 +73,9 @@ bottom right, 24px from the edges. It enters with opacity and an 8px rise over \
 leaves with opacity over \`--duration-exit\`. Under \`prefers-reduced-motion: reduce\` it only fades.
 
 The toaster is a \`popover="manual"\` shown in the top layer, and shown again every time a message arrives, so a message
-stays above an open \`ui-dialog\` and its backdrop.
+stays above an open \`ui-dialog\` and its backdrop. A dialog that opens while a message is visible raises it again.
+Elements behind a modal are inert, so the pointer does not reach the message there: the hover pause does not apply
+over an open modal.
 
 #### When to use
 
@@ -149,6 +154,29 @@ export const OverDialog: Story = {
     await userEvent.click(within(canvasElement).getByRole('button', { name: 'Show a toast over the dialog' }));
 
     await waitFor(() => expect(status).toHaveTextContent('Achat enregistré'));
+    await expect(status.matches(':popover-open')).toBe(true);
+  },
+};
+
+export const DialogOpensAfterToast: Story = {
+  name: 'Dialog opened while a toast shows',
+  parameters: { viewport: { width: 1440, height: 700 } },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const status = canvas.getByRole('status');
+    await userEvent.click(canvas.getByRole('button', { name: 'Show a toast' }));
+    await waitFor(() => expect(status).toHaveTextContent('Achat enregistré'));
+
+    const reopened = fn();
+    status.addEventListener('toggle', (event) => {
+      if ((event as ToggleEvent).newState === 'open') {
+        reopened();
+      }
+    });
+    await userEvent.click(canvas.getByRole('button', { name: 'Open a dialog' }));
+
+    await waitFor(() => expect(canvasElement.querySelector('dialog')).toHaveAttribute('open'));
+    await waitFor(() => expect(reopened).toHaveBeenCalled());
     await expect(status.matches(':popover-open')).toBe(true);
   },
 };

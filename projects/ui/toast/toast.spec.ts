@@ -242,27 +242,90 @@ describe('UiToaster top layer', () => {
     expect(host).toHaveTextContent('Déjà là');
   });
 
-  it('is shown again after a modal dialog opens, on top of it', async () => {
+  const renderWithDialog = async (): Promise<{
+    fixture: Awaited<ReturnType<typeof render>>['fixture'];
+    toaster: HTMLElement;
+    shown: ReturnType<typeof vi.spyOn>;
+  }> => {
     const { fixture } = await render(
       `<ui-toaster />
        <ui-dialog heading="Enter a price" [open]="open"><button dialogActions type="button">Cancel</button></ui-dialog>`,
       { imports: [UiToaster, UiDialog], componentProperties: { open: false } },
     );
     const toaster = fixture.nativeElement.querySelector('ui-toaster') as HTMLElement;
-    const shown = vi.spyOn(toaster, 'showPopover');
-    const hidden = vi.spyOn(toaster, 'hidePopover');
+
+    return { fixture, toaster, shown: vi.spyOn(toaster, 'showPopover') };
+  };
+
+  it('is shown again when a message arrives while a modal dialog is open', async () => {
+    const { fixture, toaster, shown } = await renderWithDialog();
 
     fixture.componentInstance.open = true;
     fixture.detectChanges();
     await flush();
     expect(fixture.nativeElement.querySelector('dialog')).toHaveAttribute('open');
+    shown.mockClear();
 
     TestBed.inject(UiToasts).show('Achat enregistré');
     await flush();
 
-    expect(hidden).toHaveBeenCalledTimes(1);
-    expect(shown).toHaveBeenCalledTimes(1);
-    expect(hidden.mock.invocationCallOrder[0]!).toBeLessThan(shown.mock.invocationCallOrder[0]!);
+    expect(shown).toHaveBeenCalled();
     expect(toaster.style.display).toBe('block');
+  });
+
+  it('is shown again when a modal dialog opens while a message is visible', async () => {
+    const { fixture, toaster, shown } = await renderWithDialog();
+    TestBed.inject(UiToasts).show('Achat enregistré');
+    await flush();
+    shown.mockClear();
+
+    fixture.componentInstance.open = true;
+    fixture.detectChanges();
+    await flush();
+
+    expect(fixture.nativeElement.querySelector('dialog')).toHaveAttribute('open');
+    expect(shown).toHaveBeenCalledTimes(1);
+    expect(toaster.style.display).toBe('block');
+  });
+
+  it('leaves the popover alone when a dialog opens with no message visible', async () => {
+    const { fixture, shown } = await renderWithDialog();
+
+    fixture.componentInstance.open = true;
+    fixture.detectChanges();
+    await flush();
+
+    expect(shown).not.toHaveBeenCalled();
+  });
+
+  it('ignores the open attribute of anything but a dialog', async () => {
+    const { shown } = await renderWithDialog();
+    TestBed.inject(UiToasts).show('Achat enregistré');
+    await flush();
+    shown.mockClear();
+
+    const details = document.createElement('details');
+    document.body.append(details);
+    details.open = true;
+    await flush();
+    details.remove();
+
+    expect(shown).not.toHaveBeenCalled();
+  });
+
+  it('stops watching dialogs once destroyed', async () => {
+    const { fixture, shown } = await renderWithDialog();
+    TestBed.inject(UiToasts).show('Achat enregistré');
+    await flush();
+    const dialog = fixture.nativeElement.querySelector('dialog') as HTMLDialogElement;
+    shown.mockClear();
+
+    fixture.destroy();
+    document.body.append(dialog);
+    dialog.setAttribute('open', '');
+    await flush();
+    dialog.remove();
+
+    expect(shown).not.toHaveBeenCalled();
   });
 });

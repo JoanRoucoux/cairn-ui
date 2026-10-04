@@ -43,7 +43,7 @@ const readDuration = (host: HTMLElement): number => {
     role: 'status',
     popover: 'manual',
     class:
-      'pointer-events-none fixed inset-x-0 top-auto z-50 m-0 flex h-auto w-auto justify-center overflow-visible border-0 bg-transparent p-0 bottom-[calc(var(--tab-bar-height,calc(52px+env(safe-area-inset-bottom)))+var(--action-bar-height,0px)+8px)] lg:inset-x-auto lg:right-6 lg:bottom-6',
+      'pointer-events-none fixed inset-x-0 top-auto m-0 flex h-auto w-auto justify-center overflow-visible border-0 bg-transparent p-0 bottom-[calc(var(--tab-bar-height,calc(52px+env(safe-area-inset-bottom)))+var(--action-bar-height,0px)+8px)] lg:inset-x-auto lg:right-6 lg:bottom-6',
   },
 })
 export class UiToaster {
@@ -53,6 +53,16 @@ export class UiToaster {
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   private readonly hovered = signal(false);
   private popoverShown = false;
+  private readonly observer = new MutationObserver((records) => {
+    const opened = records.some((record) => {
+      const target = record.target as HTMLElement;
+      return target instanceof HTMLDialogElement && target.open;
+    });
+
+    if (opened && this.toasts.toast()) {
+      this.raise();
+    }
+  });
   private lastId = 0;
   private remaining = DEFAULT_DURATION;
   private startedAt = 0;
@@ -84,9 +94,13 @@ export class UiToaster {
     afterNextRender(() => {
       this.host.showPopover();
       this.popoverShown = true;
+      this.observer.observe(this.host.ownerDocument, { attributes: true, attributeFilter: ['open'], subtree: true });
     });
 
-    inject(DestroyRef).onDestroy(() => this.stop());
+    inject(DestroyRef).onDestroy(() => {
+      this.observer.disconnect();
+      this.stop();
+    });
   }
 
   protected setHovered(value: boolean): void {

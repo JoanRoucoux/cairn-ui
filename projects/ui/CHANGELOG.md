@@ -7,7 +7,8 @@
 - `--toast-duration` is 4000ms (was 5000ms), and so is the fallback used when the token cannot be read.
 - `ui-toaster` pauses on hover only. Focus no longer pauses it: it carries no control a keyboard could reach.
 - `ui-toaster` is a `popover="manual"` shown in the top layer, and shown again each time a message arrives, so a
-  message appears above an open `ui-dialog`. Its placement does not change.
+  message appears above an open `ui-dialog`, also when the dialog opens while the message is visible. Its placement
+  does not change. Behind a modal the page is inert, so the hover pause does not apply over an open modal.
 
 ## 0.8.2
 
