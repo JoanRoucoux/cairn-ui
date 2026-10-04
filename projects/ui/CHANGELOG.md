@@ -35,10 +35,14 @@
 - `ModalClose` (`@joanroucoux/cairn-ui/dialog`): the close protocol `ui-dialog` and `ui-drawer` share (Escape,
   press-and-release on the veil, `busy`, `dismissed`, then `closed` once the exit transition has played). An
   optional `opening` callback runs just before `showModal()`.
-- `select[uiPillSelect]` (`@joanroucoux/cairn-ui/pill-select`): a compact pill-shaped native select, outlined at rest
-  and solid primary when `active`, 34px in a 44px target on touch and 32px with a fine pointer, with a 2px focus
-  outline outside the pill. Its chevron comes from the new `--chevron-pill` and `--chevron-pill-active` tokens (the
-  `--foreground` and `--primary-foreground` of each scheme).
+- `ui-select-pill` (`@joanroucoux/cairn-ui/select-pill`): a compact pill that opens a `ui-menu` of exclusive
+  choices, to head a row of filter chips. The projected text is its label and the projected `ui-menu` is what it
+  opens, as a sheet on a phone like the `…` menus. Outlined with a chevron at rest, solid primary when `active`,
+  where a separate 14px cross, named by the required `clearLabel`, replaces the chevron and emits `cleared`. 34px in
+  a 44px target on touch and 32px with a fine pointer, with a 2px focus outline outside the pill and a border of its
+  own in forced colors.
+- `button[uiMenuItem]` accepts `checked`: the item becomes a `menuitemradio` with `aria-checked` and a check mark
+  after its label, and the menu focuses the checked item when it opens.
 - `ui-filter-chips` projects an element marked `uiChipsLeading` first in its row, followed by a 1 x 20px `--border`
   rule that only shows when something is projected.
 - `td[ui-group-cell]` is collapsible: `collapsible`, `expanded` (a model), `toggleDisabled` and `controls`. The band
@@ -162,6 +166,7 @@ Every symbol that was exported from the root now lives under exactly one subpath
 - `@joanroucoux/cairn-ui/row`: `ROW_GAPS`, `ROW_PADDINGS`, `ROW_SIZES`, `UiListRow`, `UiRow`, `UiRowItem`, `UiRowTile`, `RowGap`, `RowPadding`, `RowSize`
 - `@joanroucoux/cairn-ui/segmented`: `SEGMENTED_SIZES`, `UiSegmented`, `SegmentedOption`, `SegmentedSize`
 - `@joanroucoux/cairn-ui/select`: `UiSelect`
+- `@joanroucoux/cairn-ui/select-pill`: `UiSelectPill`
 - `@joanroucoux/cairn-ui/skeleton`: `SKELETON_SHAPES`, `UiSkeleton`, `SkeletonShape`
 - `@joanroucoux/cairn-ui/stale-link`: `STALE_LINK_SIZES`, `UiStaleLink`, `StaleLinkSize`
 - `@joanroucoux/cairn-ui/stat`: `STAT_SIZES`, `UiStat`, `StatSize`

@@ -96,7 +96,7 @@ Light and dark follow the operating system through `light-dark()`; to force a sc
 | `button`       | `UiButton`                                     | Clickable element whose variant says how consequential it is |
 | `input`        | `UiInput`, `UiTextarea`                        | Styled native `<input>` and `<textarea>`                     |
 | `select`       | `UiSelect`                                     | Styled native `<select>`                                     |
-| `pill-select`  | `UiPillSelect`                                 | Pill-shaped native select heading a chip row                 |
+| `select-pill`  | `UiSelectPill`                                 | Pill opening a menu of exclusive choices, heading a chip row |
 | `field`        | `UiField`, `UiFieldLeading`, `UiFieldTrailing` | Label, hint and error around a projected control             |
 | `control`      | `UI_CONTROL`, `UiControl`, `UiControlError`    | Contract between a field and its control                     |
 | `switch`       | `UiSwitch`                                     | Native checkbox styled as a switch                           |

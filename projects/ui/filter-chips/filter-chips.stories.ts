@@ -1,6 +1,7 @@
-import { UiPillSelect } from '@joanroucoux/cairn-ui/pill-select';
+import { UiMenu, UiMenuItem } from '@joanroucoux/cairn-ui/menu';
+import { UiSelectPill } from '@joanroucoux/cairn-ui/select-pill';
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
 
 import { type FilterChipOption, UiFilterChips } from './filter-chips';
 
@@ -23,7 +24,7 @@ const WITHOUT_COUNTS: FilterChipOption[] = CLASSES.map(({ value, label }) => ({ 
 
 const meta: Meta<FilterChipsArgs> = {
   title: 'Inputs/Filter chips',
-  decorators: [moduleMetadata({ imports: [UiFilterChips, UiPillSelect] })],
+  decorators: [moduleMetadata({ imports: [UiFilterChips, UiSelectPill, UiMenu, UiMenuItem] })],
   parameters: {
     docs: {
       description: {
@@ -122,52 +123,98 @@ export const SelectsWithTheKeyboard: Story = {
 const ACCOUNT_ROW = `
   <div style="padding: 0 var(--gutter)">
     <ui-filter-chips ariaLabel="Filtrer par classe d'actif" [options]="options" [(value)]="value">
-      <select #pick uiChipsLeading uiPillSelect aria-label="Compte" [active]="account !== ''" (change)="account = pick.value">
-        <option value="" [selected]="account === ''">Tous les comptes</option>
-        <option value="pea" [selected]="account === 'pea'">Northwind PEA</option>
-        <option value="cto" [selected]="account === 'cto'">Contoso CTO</option>
-      </select>
+      <ui-select-pill uiChipsLeading [active]="account !== ''" clearLabel="Retirer le filtre de compte" (cleared)="account = ''">
+        {{ names[account] }}
+        <ui-menu label="Compte" sheet heading="Compte">
+          <button uiMenuItem type="button" [checked]="account === ''" (click)="account = ''">Tous les comptes</button>
+          <button uiMenuItem type="button" [checked]="account === 'pea'" (click)="account = 'pea'">Northwind PEA</button>
+          <button uiMenuItem type="button" [checked]="account === 'cto'" (click)="account = 'cto'">Contoso CTO</button>
+        </ui-menu>
+      </ui-select-pill>
     </ui-filter-chips>
   </div>
 `;
 
-const accountRow = (account: string): Story => ({
+const NAMES = { '': 'Tous les comptes', pea: 'Northwind PEA', cto: 'Contoso CTO' };
+
+const PHONE = { viewport: { width: 390, height: 640 } };
+const DESKTOP = { viewport: { width: 1440, height: 480 } };
+
+const accountRow = (parameters: Story['parameters'], play: Story['play']): Story => ({
   render: (args) => ({
-    props: { ...args, account },
+    props: { ...args, account: '', names: NAMES },
     template: ACCOUNT_ROW,
   }),
+  parameters,
+  play,
 });
 
-export const WithAccountPill: Story = {
-  ...accountRow(''),
-  name: 'With the account pill, at rest',
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const rule = canvasElement.querySelector('[data-chips-rule]')!;
+const atRest: Story['play'] = async ({ canvasElement }) => {
+  const canvas = within(canvasElement);
+  const rule = canvasElement.querySelector('[data-chips-rule]')!;
+  const trigger = canvas.getByRole('button', { name: 'Tous les comptes' });
 
-    await expect(canvas.getByRole('combobox', { name: 'Compte' })).toHaveValue('');
-    await expect(getComputedStyle(rule).display).toBe('block');
-    await expect(canvas.getByRole('group', { name: "Filtrer par classe d'actif" })).not.toContainElement(
-      canvas.getByRole('combobox', { name: 'Compte' }),
-    );
-  },
+  await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  await expect(canvas.queryByRole('button', { name: 'Retirer le filtre de compte' })).toBeNull();
+  await expect(getComputedStyle(rule).display).toBe('block');
+  await expect(canvas.getByRole('group', { name: "Filtrer par classe d'actif" })).not.toContainElement(trigger);
 };
 
-export const WithAccountPillActive: Story = {
-  ...accountRow('pea'),
-  name: 'With the account pill, active',
+const opened: Story['play'] = async ({ canvasElement }) => {
+  const canvas = within(canvasElement);
+
+  await userEvent.click(canvas.getByRole('button', { name: 'Tous les comptes' }));
+
+  await waitFor(() => expect(canvas.getByRole('menu', { name: 'Compte' })).toBeVisible());
+  await expect(canvas.getAllByRole('menuitemradio')).toHaveLength(3);
+  await expect(canvas.getByRole('menuitemradio', { name: 'Tous les comptes' })).toHaveAttribute('aria-checked', 'true');
+  await expect(canvas.getByRole('menuitemradio', { name: 'Tous les comptes' })).toHaveFocus();
 };
 
-export const WithAccountPillOnAPhone: Story = {
-  ...accountRow('pea'),
-  name: 'With the account pill, 390 (scrolls, pill first; needs touch emulation)',
-  parameters: { viewport: { width: 390, height: 200 } },
+const chosenThenCleared: Story['play'] = async ({ canvasElement }) => {
+  const canvas = within(canvasElement);
+
+  await userEvent.click(canvas.getByRole('button', { name: 'Tous les comptes' }));
+  await userEvent.click(await canvas.findByRole('menuitemradio', { name: 'Northwind PEA' }));
+
+  const cross = await canvas.findByRole('button', { name: 'Retirer le filtre de compte' });
+  await expect(canvas.getByRole('button', { name: 'Northwind PEA' })).toBeVisible();
+  await expect(cross).toBeVisible();
+
+  await userEvent.click(cross);
+
+  await expect(canvas.getByRole('button', { name: 'Tous les comptes' })).toBeVisible();
+  await expect(canvas.queryByRole('button', { name: 'Retirer le filtre de compte' })).toBeNull();
 };
 
-export const WithAccountPillOnDesktop: Story = {
-  ...accountRow(''),
-  name: 'With the account pill, 1440 (wraps)',
-  parameters: { viewport: { width: 1440, height: 200 } },
+export const AccountSelectorAtRest390: Story = {
+  ...accountRow(PHONE, atRest),
+  name: 'Account selector at rest, 390 (scrolls, selector first; needs touch emulation)',
+};
+
+export const AccountSelectorAtRest1440: Story = {
+  ...accountRow(DESKTOP, atRest),
+  name: 'Account selector at rest, 1440 (wraps)',
+};
+
+export const AccountSelectorOpen390: Story = {
+  ...accountRow(PHONE, opened),
+  name: 'Account selector, menu open, 390 (sheet)',
+};
+
+export const AccountSelectorOpen1440: Story = {
+  ...accountRow(DESKTOP, opened),
+  name: 'Account selector, menu open, 1440 (popover)',
+};
+
+export const AccountSelectorChosen390: Story = {
+  ...accountRow(PHONE, chosenThenCleared),
+  name: 'Account selector, an account chosen then cleared with the cross, 390',
+};
+
+export const AccountSelectorChosen1440: Story = {
+  ...accountRow(DESKTOP, chosenThenCleared),
+  name: 'Account selector, an account chosen then cleared with the cross, 1440',
 };
 
 export const NoRuleWithoutLeading: Story = {
