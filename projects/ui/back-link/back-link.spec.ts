@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 
 import { type BackLinkSize, UiBackLink } from './back-link';
 
@@ -40,6 +41,17 @@ describe('UiBackLink', () => {
     ['md', ['h-11', 'text-(--foreground)']],
     ['header', ['h-11', 'text-(--foreground)', 'focus-visible:-outline-offset-2']],
     ['sm', ['h-9', 'pr-2', 'pl-0.5', 'text-(--muted-foreground)', 'hover:bg-(--glow)', 'hover:text-(--foreground)']],
+    [
+      'inline',
+      [
+        'h-11',
+        'pointer-fine:h-9',
+        'text-label',
+        'font-medium',
+        'text-(--muted-foreground)',
+        'hover:text-(--foreground)',
+      ],
+    ],
   ])('applies the %s size', async (size, classes) => {
     await render('<a ui-back-link href="/" [size]="size">Retour</a>', {
       imports: [UiBackLink],
@@ -50,11 +62,43 @@ describe('UiBackLink', () => {
   });
 });
 
+describe('UiBackLink on a button', () => {
+  it('is a button that never submits a form, with the inline metrics', async () => {
+    const onSubmit = vi.fn((event: Event) => event.preventDefault());
+    await render(
+      '<form (submit)="onSubmit($event)"><button ui-back-link size="inline">Retour à la recherche</button></form>',
+      {
+        imports: [UiBackLink],
+        componentProperties: { onSubmit },
+      },
+    );
+
+    const back = screen.getByRole('button', { name: 'Retour à la recherche' });
+    await userEvent.click(back);
+
+    expect(back).toHaveAttribute('type', 'button');
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it('keeps an explicit type', async () => {
+    await render('<button ui-back-link type="submit">Retour</button>', { imports: [UiBackLink] });
+
+    expect(screen.getByRole('button', { name: 'Retour' })).toHaveAttribute('type', 'submit');
+  });
+
+  it('leaves a link without a type', async () => {
+    await render('<a ui-back-link href="/">Retour</a>', { imports: [UiBackLink] });
+
+    expect(screen.getByRole('link', { name: 'Retour' })).not.toHaveAttribute('type');
+  });
+});
+
 describe('UiBackLink chevron', () => {
   it.each<[BackLinkSize, string]>([
     ['md', '22'],
     ['sm', '22'],
     ['header', '24'],
+    ['inline', '18'],
   ])('draws the %s chevron %s px', async (size, expected) => {
     const { container } = await render('<a ui-back-link href="/" [size]="size">Lignes</a>', {
       imports: [UiBackLink],

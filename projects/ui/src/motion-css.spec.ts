@@ -17,16 +17,19 @@ describe('motion.css', () => {
   it.each([
     ['.ui-enter-fade', '--duration-fast'],
     ['.ui-enter-fade-up', '--duration-fast'],
-    ['.ui-enter-panel', '--duration-base'],
     ['.ui-leave-fade', '--duration-exit'],
   ])('ships %s on %s', (selector, duration) => {
     expect(rule(selector)).toContain(`var(${duration})`);
     expect(rule(selector)).toContain('var(--ease-out)');
   });
 
-  it('offsets the entries by the distances of the handoff', () => {
+  it('offsets the rise by the distance of the handoff', () => {
     expect(motion).toContain('translateY(4px)');
-    expect(motion).toContain('translateX(8px)');
+  });
+
+  it('no longer ships the panel entry, replaced by ui-drawer', () => {
+    expect(motion).not.toContain('ui-enter-panel');
+    expect(motion).not.toContain('cairn-panel-in');
   });
 
   it('keeps the leave class on its last frame so the element does not flash back', () => {
@@ -45,7 +48,7 @@ describe('motion.css', () => {
     expect(reduced).toMatch(
       /::view-transition-group\(\*\),\s*::view-transition-old\(root\),\s*::view-transition-new\(root\)\s*\{\s*animation: none;/,
     );
-    expect(reduced).toMatch(/\.ui-enter-fade-up,\s*\.ui-enter-panel\s*\{\s*animation-name: cairn-fade-in;/);
+    expect(reduced).toMatch(/\.ui-enter-fade-up\s*\{\s*animation-name: cairn-fade-in;/);
   });
 
   it('removes every transition while the theme switches', () => {

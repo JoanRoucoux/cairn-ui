@@ -57,6 +57,12 @@ describe('UiStaleLink', () => {
     );
   });
 
+  it('spaces the chevron 4 px on touch and 2 px with a mouse', async () => {
+    await render('<a uiStaleLink chevron href="#">Cours</a>', { imports: [UiStaleLink] });
+
+    expect(screen.getByRole('link', { name: 'Cours' })).toHaveClass('gap-1', 'pointer-fine:gap-0.5');
+  });
+
   it('has no chevron by default', async () => {
     await render('<a uiStaleLink href="#">Cours</a>', { imports: [UiStaleLink] });
 

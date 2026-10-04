@@ -14,6 +14,8 @@ export const config: SheriffConfig = {
     'component:input': ['component:control'],
     'component:choice-chips': ['component:input', 'component:control'],
     'component:select': ['component:input', 'component:control'],
+    'component:select-pill': ['component:menu'],
+    'component:filter-chips': ['component:menu', 'component:select-pill'],
     'component:field': ['component:input', 'component:select', 'component:control'],
     'component:action-bar': ['component:button', 'component:tab-bar'],
     'component:async': ['component:motion'],
@@ -26,6 +28,7 @@ export const config: SheriffConfig = {
     'component:empty': ['component:button'],
     'component:fact': ['component:card'],
     'component:dialog': ['component:button'],
+    'component:drawer': ['component:button', 'component:dialog'],
     'component:menu': ['component:button'],
     'component:motion': [
       'component:async',
@@ -39,7 +42,8 @@ export const config: SheriffConfig = {
     ],
     'component:row': ['component:button', 'component:motion'],
     'component:stat': ['component:delta'],
-    'component:toast': ['component:action-bar', 'component:button', 'component:tab-bar'],
+    'component:toast': ['component:action-bar', 'component:button', 'component:dialog', 'component:tab-bar'],
     'component:line-chart': ['component:motion'],
+    'component:result-group': ['component:async', 'component:card', 'component:row'],
   },
 };

@@ -23,6 +23,9 @@ const SHEET_ITEM_CLASSES =
 const ITEM_CLASSES =
   'flex w-full items-center gap-3 pointer-fine:gap-2.5 min-h-11 pointer-fine:min-h-9 px-3 pointer-fine:px-2.5 rounded-[calc(var(--radius-container)-4px)] text-body pointer-fine:text-label text-left whitespace-nowrap hover:bg-(--glow) focus-visible:bg-(--glow) active:bg-(--soft) transition-[background-color] duration-(--duration-fast) ease-out outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring) [:where(&>svg)]:size-[18px] [:where(&>svg)]:flex-none pointer-fine:[:where(&>svg)]:size-4';
 
+const CHECK_CLASSES =
+  "after:ms-auto after:block after:h-3 after:w-1.5 after:flex-none after:rotate-45 after:border-r-2 after:border-b-2 after:border-current after:content-['']";
+
 const nextId = (() => {
   let count = 0;
 
@@ -30,15 +33,18 @@ const nextId = (() => {
 })();
 
 /**
- * One action of a `ui-menu`; `destructive` paints it in `--negative`.
+ * One action of a `ui-menu`; `destructive` paints it in `--negative`. Giving it `checked` makes it a radio
+ * choice (`menuitemradio`): the current one carries a check mark and `aria-checked="true"`.
  *
  * @example
  * <button uiMenuItem destructive (click)="remove()">Delete the line</button>
+ * <button uiMenuItem [checked]="account() === 'pea'" (click)="account.set('pea')">Northwind PEA</button>
  */
 @Directive({
   selector: 'button[uiMenuItem]',
   host: {
-    role: 'menuitem',
+    '[attr.role]': 'role()',
+    '[attr.aria-checked]': 'checked() === undefined ? null : checked()',
     tabindex: '-1',
     '[class]': 'classes()',
     '(click)': 'onClick()',
@@ -46,12 +52,16 @@ const nextId = (() => {
 })
 export class UiMenuItem {
   readonly destructive = input(false, { transform: booleanAttribute });
+  readonly checked = input<boolean>();
 
   readonly #host = inject<ElementRef<HTMLButtonElement>>(ElementRef).nativeElement;
   readonly #menu = inject(UiMenu);
 
+  protected readonly role = computed(() => (this.checked() === undefined ? 'menuitem' : 'menuitemradio'));
+
   protected readonly classes = computed(
-    () => `${this.#menu.sheet() ? SHEET_ITEM_CLASSES : ITEM_CLASSES}${this.destructive() ? ' text-(--negative)' : ''}`,
+    () =>
+      `${this.#menu.sheet() ? SHEET_ITEM_CLASSES : ITEM_CLASSES}${this.destructive() ? ' text-(--negative)' : ''}${this.checked() ? ` ${CHECK_CLASSES}` : ''}`,
   );
 
   focus(): void {
@@ -135,7 +145,7 @@ export class UiMenu {
     } else {
       this.#position(trigger);
     }
-    this.items()[0]?.focus();
+    (this.items().find((item) => item.checked()) ?? this.items()[0])?.focus();
   }
 
   close(): void {

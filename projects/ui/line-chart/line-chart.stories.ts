@@ -16,6 +16,7 @@ type LineChartArgs = {
   valueFormat: (value: number) => string;
   tooltipFormat?: (point: ChartPoint) => string;
   deltaFormat: (delta: number) => string;
+  deltaSuffix?: string;
   timeFormat: (time: number) => string;
   axisFormat: (time: number) => string;
 };
@@ -114,14 +115,14 @@ The host fills its parent's height (\`block h-full\`); size the chart by sizing 
   point one at a time, Home/End jump to the first/last point, Escape clears it.
 * Every point is also available as a \`sr-only\` \`<table>\`, headed by \`timeColumnLabel\` and
   \`valueColumnLabel\`, so the data survives without the SVG.
-* \`touch-pan-y\` lets a vertical swipe scroll the page while a horizontal drag still moves the
-  tooltip.`,
+* \`touch-none\` on the plot: a tap shows the tooltip and a drag moves it, while the page still scrolls
+  everywhere else. Release or cancel hides it.`,
       },
     },
   },
   render: (args) => ({
     props: args,
-    template: `<div style="height: 240px;"><ui-line-chart [points]="points" [label]="label" [startLabel]="startLabel" [timeColumnLabel]="timeColumnLabel" [valueColumnLabel]="valueColumnLabel" [valueFormat]="valueFormat" [deltaFormat]="deltaFormat" [timeFormat]="timeFormat" [axisFormat]="axisFormat" /></div>`,
+    template: `<div style="height: 240px;"><ui-line-chart [points]="points" [label]="label" [startLabel]="startLabel" [timeColumnLabel]="timeColumnLabel" [valueColumnLabel]="valueColumnLabel" [valueFormat]="valueFormat" [deltaFormat]="deltaFormat" [deltaSuffix]="deltaSuffix" [timeFormat]="timeFormat" [axisFormat]="axisFormat" /></div>`,
   }),
   args: {
     points: oneMonthPoints,
@@ -149,6 +150,7 @@ The host fills its parent's height (\`block h-full\`); size the chart by sizing 
       description:
         '`compact` (default) sits 12px above the plot with label and caption sizes; `large` is the desktop Dashboard tooltip, at the top of the plot with body and label sizes; `auto` is compact below 64rem and large from 64rem up, with no breakpoint in the consumer.',
     },
+    deltaSuffix: { control: 'text', description: 'Text after the tooltip change, kept when masked.' },
     tooltipDelta: {
       control: 'boolean',
       description: 'Shows the change since the start in the tooltip. Defaults to true.',
@@ -271,6 +273,7 @@ export const MaskedAmounts: Story = {
   args: {
     valueFormat: () => '\u2022\u2022\u2022\u2022 \u20ac',
     deltaFormat: () => '\u2022\u2022\u2022\u2022 \u20ac',
+    deltaSuffix: 'depuis le début',
   },
 };
 

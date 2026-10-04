@@ -11,6 +11,9 @@ export type RowPadding = (typeof ROW_PADDINGS)[number];
 export const ROW_GAPS = ['default', 'sm'] as const;
 export type RowGap = (typeof ROW_GAPS)[number];
 
+export const ROW_TRAILINGS = ['none', 'chevron'] as const;
+export type RowTrailing = (typeof ROW_TRAILINGS)[number];
+
 const SIZE_CLASSES: Record<RowSize, string> = {
   md: 'min-h-14',
   lg: 'min-h-15',
@@ -29,12 +32,17 @@ const BASE_CLASSES =
 const INTERACTIVE_CLASSES =
   'transition-[scale,background-color] [transition-duration:var(--duration-press),var(--duration-fast)] ease-out hover:bg-(--glow) active:bg-(--soft) active:scale-(--press-scale)';
 
+const CHEVRON_CLASSES = 'min-h-(--row-min) gap-3 px-0 hover:text-(--muted-foreground)';
+
+const CHEVRON_INTERACTIVE_CLASSES = 'transition-colors [transition-duration:var(--duration-fast)] ease-out';
+
 const UNAVAILABLE_CLASSES = 'opacity-50 cursor-not-allowed';
 
 const SELECTED_CLASSES = 'bg-(--soft)';
 
 /**
- * Clickable row of a list: a holding, an account, a search result.
+ * Clickable row of a list: a holding, an account, a search result. With `trailing="chevron"` it is a
+ * flush link row: no side padding, a 16 px chevron at the end, the text dimming on hover.
  *
  * @example
  * <a ui-row [selected]="holding.id === openId()" [routerLink]="['/holdings', holding.id]">
@@ -45,6 +53,20 @@ const SELECTED_CLASSES = 'bg-(--soft)';
   selector: 'a[ui-row], button[ui-row]',
   template: `
     <ng-content />
+    @if (trailing() === 'chevron') {
+      <svg
+        aria-hidden="true"
+        class="block flex-none fill-none stroke-(--subtle-foreground)"
+        height="16"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="1.75"
+        viewBox="0 0 24 24"
+        width="16"
+      >
+        <path d="m9 18 6-6-6-6" />
+      </svg>
+    }
     @if (busy()) {
       <span
         aria-hidden="true"
@@ -66,11 +88,17 @@ export class UiRow {
   readonly size = input<RowSize>('md');
   readonly padding = input<RowPadding>('md');
   readonly gap = input<RowGap>('default');
+  readonly trailing = input<RowTrailing>('none');
 
-  protected readonly classes = computed(
-    () =>
-      `${BASE_CLASSES} ${SIZE_CLASSES[this.size()]} ${this.gap() === 'sm' ? 'gap-2' : SIZE_GAPS[this.size()]} ${PADDING_CLASSES[this.padding()]}${this.unavailable() ? ` ${UNAVAILABLE_CLASSES}` : ` ${INTERACTIVE_CLASSES}`}${this.selected() ? ` ${SELECTED_CLASSES}` : ''}${this.busy() ? ' pointer-events-none' : ''}`,
-  );
+  protected readonly classes = computed(() => {
+    const chevron = this.trailing() === 'chevron';
+    const layout = chevron
+      ? CHEVRON_CLASSES
+      : `${SIZE_CLASSES[this.size()]} ${this.gap() === 'sm' ? 'gap-2' : SIZE_GAPS[this.size()]} ${PADDING_CLASSES[this.padding()]}`;
+    const interactive = chevron ? CHEVRON_INTERACTIVE_CLASSES : INTERACTIVE_CLASSES;
+
+    return `${BASE_CLASSES} ${layout}${this.unavailable() ? ` ${UNAVAILABLE_CLASSES}` : ` ${interactive}`}${this.selected() ? ` ${SELECTED_CLASSES}` : ''}${this.busy() ? ' pointer-events-none' : ''}`;
+  });
 
   constructor() {
     holdTransitionsUntilRendered();

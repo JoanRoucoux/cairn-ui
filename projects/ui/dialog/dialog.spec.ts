@@ -132,100 +132,6 @@ describe('UiDialog', () => {
     );
   });
 
-  const renderLayout = (layout: string, closeLabel = 'Fermer'): Promise<RenderResult<unknown>> =>
-    render(`<ui-dialog heading="Titre" layout="${layout}" closeLabel="${closeLabel}" [open]="true"></ui-dialog>`, {
-      imports: [UiDialog],
-    });
-
-  it('uses the trade layout by default: start-aligned, hanging cross, no hairline, 8px under the sheet', async () => {
-    const { container } = await renderDialog();
-
-    expect(container.querySelector('[data-dialog-header]')).toHaveClass('items-start', 'lg:pt-6');
-    expect(container.querySelector('[data-dialog-footer]')).not.toHaveClass('shadow-[0_-1px_0_var(--hairline)]');
-    expect(container.querySelector('[data-dialog-footer]')).toHaveClass(
-      'max-lg:pb-[calc(8px+env(safe-area-inset-bottom))]',
-      'lg:pb-6',
-    );
-  });
-
-  it('hangs the cross of the trade layout out of the header with a 20px icon', async () => {
-    await renderLayout('trade');
-    const cross = screen.getByRole('button', { name: 'Fermer' });
-
-    expect(cross).toHaveClass('lg:-mt-1.5');
-    expect(cross.querySelector('svg')).toHaveClass('lg:size-5');
-  });
-
-  it('centres the header of the form layout and gives it 12px under the sheet', async () => {
-    const { container } = await renderLayout('form');
-    const cross = screen.getByRole('button', { name: 'Fermer' });
-
-    expect(container.querySelector('[data-dialog-header]')).toHaveClass('items-center', 'lg:pt-6');
-    expect(container.querySelector('[data-dialog-footer]')).toHaveClass(
-      'max-lg:pb-[calc(12px+env(safe-area-inset-bottom))]',
-      'lg:pb-5',
-    );
-    expect(cross).not.toHaveClass('lg:-mt-1.5');
-    expect(cross.querySelector('svg')).toHaveClass('lg:size-[22px]');
-  });
-
-  it('divides the footer of the list layout and fixes the height of its sheet', async () => {
-    const { container } = await renderLayout('list');
-
-    expect(container.querySelector('[data-dialog-header]')).toHaveClass('items-center', 'lg:pt-5');
-    expect(container.querySelector('[data-dialog-footer]')).toHaveClass('shadow-[0_-1px_0_var(--hairline)]', 'lg:pt-4');
-    expect(container.querySelector('dialog')).toHaveClass('max-lg:h-[calc(100dvh-58px)]');
-  });
-
-  it('anchors the list dialog 96px from the top and clamps it to the viewport', async () => {
-    const { container } = await renderLayout('list');
-
-    expect(container.querySelector('dialog')).toHaveClass(
-      'lg:mt-24',
-      'lg:mb-auto',
-      'lg:max-h-[min(760px,calc(100dvh-96px-32px))]',
-    );
-  });
-
-  it('keeps the other layouts centred', async () => {
-    const { container } = await renderLayout('form');
-
-    expect(container.querySelector('dialog')).not.toHaveClass('lg:mt-24');
-  });
-
-  it('keeps the other layouts at their natural height', async () => {
-    const { container } = await renderLayout('form');
-
-    expect(container.querySelector('dialog')).not.toHaveClass('max-lg:h-[calc(100dvh-58px)]');
-  });
-
-  it('turns the confirm layout into an alertdialog with the delete spacing', async () => {
-    const { container } = await render(
-      `<ui-dialog heading="Supprimer la clé" layout="confirm" [open]="true"></ui-dialog>`,
-      {
-        imports: [UiDialog],
-      },
-    );
-
-    expect(screen.getByRole('alertdialog', { name: 'Supprimer la clé' })).toBeInTheDocument();
-    expect(container.querySelector('[data-dialog-header]')).toHaveClass('pt-3', 'lg:pt-6');
-    expect(container.querySelector('[data-dialog-handle]')).toHaveClass('pt-[11.5px]');
-  });
-
-  it('is a plain dialog in every other layout', async () => {
-    const { container } = await renderLayout('trade');
-
-    expect(container.querySelector('dialog')).toHaveAttribute('role', 'dialog');
-  });
-
-  it('leaves no role on the host element, which would be a nameless alertdialog', async () => {
-    const { container } = await render(`<ui-dialog heading="Supprimer" layout="confirm" [open]="true"></ui-dialog>`, {
-      imports: [UiDialog],
-    });
-
-    expect(container.querySelector('ui-dialog')).not.toHaveAttribute('role');
-  });
-
   const press = (target: Element, type: string, x: number, y: number): void => {
     target.dispatchEvent(new MouseEvent(type, { bubbles: true, clientX: x, clientY: y }));
   };
@@ -370,7 +276,7 @@ describe('UiDialog', () => {
 
   it('describes a confirm dialog by its body when it has no description', async () => {
     const { container } = await render(
-      `<ui-dialog heading="Delete" layout="confirm" [open]="true"><p>This cannot be undone.</p></ui-dialog>`,
+      `<ui-dialog heading="Delete" variant="confirm" [open]="true"><p>This cannot be undone.</p></ui-dialog>`,
       { imports: [UiDialog] },
     );
     const dialog = container.querySelector('dialog') as HTMLElement;
@@ -382,7 +288,7 @@ describe('UiDialog', () => {
 
   it('prefers the description over the body for a confirm dialog', async () => {
     const { container } = await render(
-      `<ui-dialog heading="Delete" description="Ferrari" layout="confirm" [open]="true"><p>Body</p></ui-dialog>`,
+      `<ui-dialog heading="Delete" description="Ferrari" variant="confirm" [open]="true"><p>Body</p></ui-dialog>`,
       { imports: [UiDialog] },
     );
     const describedBy = container.querySelector('dialog')?.getAttribute('aria-describedby');

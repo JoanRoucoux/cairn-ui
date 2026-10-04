@@ -87,7 +87,7 @@ Light and dark follow the operating system through `light-dark()`; to force a sc
 
 ## Components
 
-35 entry points. The subpath of a folder is `@joanroucoux/cairn-ui/<folder>`. Beside the components, most folders also export their option tuples (`BUTTON_VARIANTS`...) and types.
+39 entry points. The subpath of a folder is `@joanroucoux/cairn-ui/<folder>`. Beside the components, most folders also export their option tuples (`BUTTON_VARIANTS`...) and types.
 
 ### Forms and inputs
 
@@ -96,6 +96,7 @@ Light and dark follow the operating system through `light-dark()`; to force a sc
 | `button`       | `UiButton`                                     | Clickable element whose variant says how consequential it is |
 | `input`        | `UiInput`, `UiTextarea`                        | Styled native `<input>` and `<textarea>`                     |
 | `select`       | `UiSelect`                                     | Styled native `<select>`                                     |
+| `select-pill`  | `UiSelectPill`                                 | Pill opening a menu of exclusive choices, heading a chip row |
 | `field`        | `UiField`, `UiFieldLeading`, `UiFieldTrailing` | Label, hint and error around a projected control             |
 | `control`      | `UI_CONTROL`, `UiControl`, `UiControlError`    | Contract between a field and its control                     |
 | `switch`       | `UiSwitch`                                     | Native checkbox styled as a switch                           |
@@ -105,18 +106,20 @@ Light and dark follow the operating system through `light-dark()`; to force a sc
 
 ### Data display
 
-| Folder   | Main exports                                                             | Purpose                                      |
-| -------- | ------------------------------------------------------------------------ | -------------------------------------------- |
-| `amount` | `UiAmount`, `formatAmount`, `UI_AMOUNT_MASKED`                           | Locale formatting of numbers and money       |
-| `delta`  | `UiDelta`                                                                | Signed amount whose sign carries meaning     |
-| `stat`   | `UiStat`                                                                 | Label, figure and named period of change     |
-| `fact`   | `UiFacts`, `UiFact`                                                      | Label and value pairs on a description list  |
-| `badge`  | `UiBadge`                                                                | Small descriptor next to the thing it labels |
-| `avatar` | `UiAvatar`, `UiAvatarLink`                                               | Initials in a disc, standing in for a person |
-| `table`  | `UiTable`, `UiTh`, `UiTr`, `UiTd`, `UiGroup`, `UiRowLink`, `UiRowAction` | Styled native `<table>` with grouped rows    |
-| `row`    | `UiRow`, `UiListRow`, `UiRowItem`, `UiRowTile`                           | Clickable list row                           |
-| `card`   | `UiCard`                                                                 | Surface that groups related content          |
-| `meter`  | `UiMeter`                                                                | Proportion of a whole, drawn as one bar      |
+| Folder         | Main exports                                                             | Purpose                                             |
+| -------------- | ------------------------------------------------------------------------ | --------------------------------------------------- |
+| `amount`       | `UiAmount`, `formatAmount`, `UI_AMOUNT_MASKED`                           | Locale formatting of numbers and money              |
+| `delta`        | `UiDelta`                                                                | Signed amount whose sign carries meaning            |
+| `stat`         | `UiStat`                                                                 | Label, figure and named period of change            |
+| `fact`         | `UiFacts`, `UiFact`                                                      | Label and value pairs on a description list         |
+| `badge`        | `UiBadge`                                                                | Small descriptor next to the thing it labels        |
+| `avatar`       | `UiAvatar`, `UiAvatarLink`                                               | Initials in a disc, standing in for a person        |
+| `table`        | `UiTable`, `UiTh`, `UiTr`, `UiTd`, `UiGroup`, `UiRowLink`, `UiRowAction` | Styled native `<table>` with grouped rows           |
+| `row`          | `UiRow`, `UiListRow`, `UiRowItem`, `UiRowTile`                           | Clickable list row                                  |
+| `card`         | `UiCard`                                                                 | Surface that groups related content                 |
+| `meter`        | `UiMeter`                                                                | Proportion of a whole, drawn as one bar             |
+| `group-header` | `UiGroupHeader`                                                          | Collapsible header of a grouped card on a phone     |
+| `result-group` | `UiResultGroup`                                                          | Results of one search source, with their own states |
 
 ### Charts
 
@@ -149,10 +152,11 @@ Light and dark follow the operating system through `light-dark()`; to force a sc
 
 ### Overlay and motion
 
-| Folder   | Main exports                                                                                     | Purpose                                           |
-| -------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------- |
-| `dialog` | `UiDialog`                                                                                       | Modal dialog on the native `<dialog>`             |
-| `motion` | `UiFlipList`, `UiFlipItem`, `UiHighlight`, `injectReducedMotion`, `holdTransitionsUntilRendered` | List reflow, highlight and reduced-motion helpers |
+| Folder   | Main exports                                                                                     | Purpose                                                             |
+| -------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------- |
+| `dialog` | `UiDialog`                                                                                       | Modal dialog on the native `<dialog>`                               |
+| `drawer` | `UiDrawer`                                                                                       | Modal side panel on the right edge, for a row's detail on a desktop |
+| `motion` | `UiFlipList`, `UiFlipItem`, `UiHighlight`, `injectReducedMotion`, `holdTransitionsUntilRendered` | List reflow, highlight and reduced-motion helpers                   |
 
 ## Design principles
 

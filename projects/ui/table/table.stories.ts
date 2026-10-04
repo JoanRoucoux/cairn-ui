@@ -69,7 +69,7 @@ const meta: Meta<TableArgs> = {
         component: `Styled native \`<table>\`. The rows and cells stay plain \`<tr>\` and \`<td>\`, with \`uiTable\`,
 \`uiTh\`, \`uiTd\` and \`uiTr\` applied as attributes. The header caption reads once, centred, in the subtle color.
 Table options: \`row\` (48, 52 or 60px body rows), \`[rule]="false"\` (no hairline under the header, as on Lignes)
-and \`spaced\` (4px between the header and the first row, as on Comptes and Instruments). A row glows on hover;
+and \`spaced\` (4px between the header and the first row, as on Comptes). A row glows on hover;
 \`selected\` takes the soft fill.
 
 \`numeric\` right aligns a column and lines its digits up, on the \`<th>\` and on every \`<td>\`. \`primary\` marks the
@@ -78,7 +78,7 @@ one column that absorbs the free width and truncates; give the others a \`width\
 group in \`<tbody uiGroup>\` for its 4px tail. Its total is a \`ui-amount\`. Its heading takes focus with no ring: \`h2[data-group-heading]\`.
 
 \`a[uiRowLink]\` or \`button[uiRowLink]\` in the first cell makes the whole row one target, with a row-wide ring
-(Lignes, Instruments). \`[stretch]="false"\` keeps the target on the name, underlined on hover with its own ring
+(Lignes). \`[stretch]="false"\` keeps the target on the name, underlined on hover with its own ring
 (Comptes). \`current\` sets \`aria-current\`. A control in another cell takes \`uiRowAction\`. A row
 that opens something is \`interactive\` (it presses to the soft fill); one with no action keeps a plain name,
 \`<td uiTd primary class="truncate font-medium">\`.
@@ -341,60 +341,5 @@ export const Comptes: Story = {
     await userEvent.tab();
     await expect(canvas.getByRole('link', { name: 'Northwind PEA' })).toHaveFocus();
     await expect(canvas.getByRole('button', { name: 'Actions sur Northwind PEA' })).toBeInTheDocument();
-  },
-};
-
-const INSTRUMENTS = [
-  {
-    name: 'Amundi MSCI World',
-    isin: 'LU1681043599',
-    cls: 'ETF',
-    source: 'Yahoo Finance',
-    ref: 'CW8.PA',
-    lines: '1 ligne',
-  },
-  { name: 'Bitcoin', isin: 'BTC', cls: 'Crypto', source: 'Tailspin Exchange', ref: 'BTCEUR', lines: '1 ligne' },
-  {
-    name: 'Comgest Monde',
-    isin: 'FR0000284689',
-    cls: 'Fonds',
-    source: 'Saisie manuelle',
-    ref: '',
-    lines: 'Aucune',
-  },
-];
-
-export const Instruments: Story = {
-  render: () => ({
-    props: { instruments: INSTRUMENTS },
-    template: catalogue(
-      `<th uiTh tall primary>Instrument</th>
-       <th uiTh tall width="166px">ISIN ou symbole</th>
-       <th uiTh tall width="126px">Classe</th>
-       <th uiTh tall width="236px">Source du cours</th>
-       <th uiTh tall numeric width="106px">Lignes</th>
-       <th uiTh tall width="56px"><span class="sr-only">Actions</span></th>`,
-      `@for (instrument of instruments; track instrument.name) {
-         <tr uiTr>
-           <td uiTd primary class="truncate font-medium">{{ instrument.name }}</td>
-           <td uiTd class="text-label text-(--muted-foreground) tabular-nums">{{ instrument.isin }}</td>
-           <td uiTd><span class="${PILL}">{{ instrument.cls }}</span></td>
-           <td uiTd>
-             <span class="block text-label" [class]="instrument.source === 'Saisie manuelle' ? 'text-(--muted-foreground)' : 'font-medium'">{{ instrument.source }}</span>
-             @if (instrument.ref) {
-               <span uiCellSub>{{ instrument.ref }}</span>
-             }
-           </td>
-           <td uiTd numeric class="text-label text-(--muted-foreground)">{{ instrument.lines }}</td>
-           <td uiTd class="text-right">${rowActions('instrument.name')}</td>
-         </tr>
-       }`,
-    ),
-  }),
-  parameters: { viewport: { width: 1280, height: 600 } },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await expect(canvas.getAllByRole('row')).toHaveLength(4);
   },
 };

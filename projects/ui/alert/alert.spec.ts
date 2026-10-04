@@ -64,3 +64,29 @@ describe('UiAlert', () => {
     expect(status.querySelector('path')).not.toBeNull();
   });
 });
+
+describe('UiAlert info', () => {
+  it('is a note on the muted surface, not a live region', async () => {
+    await render('<ui-alert variant="info">Cairn ne peut pas vérifier cet ISIN avant l\'ajout.</ui-alert>', {
+      imports: [UiAlert],
+    });
+
+    const note = screen.getByRole('note');
+    expect(note).toHaveClass('bg-(--muted)', 'rounded-control', 'p-3', 'text-(--foreground)', 'gap-2.5');
+    expect(note).not.toHaveClass('bg-(--card)');
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    expect(note).toHaveTextContent("Cairn ne peut pas vérifier cet ISIN avant l'ajout.");
+  });
+
+  it('draws the 18 px circle-info icon in the current colour, hidden from assistive technology', async () => {
+    await render('<ui-alert variant="info">Text</ui-alert>', { imports: [UiAlert] });
+
+    const icon = screen.getByRole('note').querySelector('svg');
+    expect(icon).toHaveAttribute('aria-hidden', 'true');
+    expect(icon).toHaveAttribute('width', '18');
+    expect(icon).toHaveAttribute('height', '18');
+    expect(icon).toHaveClass('stroke-current');
+    expect(icon?.querySelector('path[d="M12 8h.01"]')).not.toBeNull();
+  });
+});

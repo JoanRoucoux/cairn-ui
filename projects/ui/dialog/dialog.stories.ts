@@ -2,13 +2,15 @@ import { UiButton } from '@joanroucoux/cairn-ui/button';
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
 
-import { type DialogLayout, type DialogWidth, UiDialog } from './dialog';
+import { type DialogSheet, type DialogVariant, type DialogWidth, UiDialog } from './dialog';
 import {
   addLineTemplate,
   bodyReachable,
+  confirmTemplate,
   defaultTemplate,
-  desktopAnchored,
+  desktopCentred,
   dialogArgTypes,
+  emptyFooterUnpadded,
   field,
   keptMountedTemplate,
   keptMountedUntilClosed,
@@ -22,8 +24,9 @@ type DialogArgs = {
   heading: string;
   description?: string;
   closeLabel?: string;
-  width: DialogWidth | (string & {});
-  layout?: DialogLayout;
+  width?: DialogWidth | (string & {});
+  variant?: DialogVariant;
+  sheet?: DialogSheet;
   open: boolean;
   busy?: boolean;
 };
@@ -41,12 +44,16 @@ JavaScript.
 Under \`64rem\` it rises from the bottom as a sheet, with a drag handle, 16px padding and its footer
 clear of the home indicator; above that width it is centered with 24px padding. Its body scrolls on
 its own when the content is taller than the screen, so the header and the footer stay in place.
+Its veil is \`rgb(0 0 0 / 0.36)\`; opened while another modal is open (over a \`ui-drawer\`), it draws
+a lighter \`rgb(0 0 0 / 0.24)\` over that one's, with nothing to set.
 
 The header carries the title, an optional subtitle (\`description\`) and a close cross, which exists
 only when the consumer passes \`closeLabel\`. The width is set by the consumer: \`md\`, \`lg\` or any CSS
-length (Acheter 528px, Nouveau compte 528px, Ajouter une ligne 560px, Supprimer la clé 488px).
+length (Ajouter une ligne 560px, Acheter and Nouveau compte 480px, a confirmation 440px).
 
-The \`layout\` input picks the spacing of a screen family, so a consumer sets \`layout\` and \`width\` at most: \`trade\` (default, Acheter and Vendre: start-aligned header, the cross hangs beside the title and subtitle), \`form\` (Nouveau compte: centred header), \`list\` (Ajouter une ligne and the board: centred header, hairline above the footer, and a sheet of fixed height, \`100dvh - 58px\`, so the footer stays pinned while the results change; 760px at most on a desktop) and \`confirm\` (a confirmation such as deleting a passkey: announced as an alertdialog, with the delete spacing). \`truncateDescription\` keeps the subtitle on one ellipsised line instead of wrapping. A click that starts and ends on the backdrop closes the dialog, like Escape.
+Every dialog has the same three zones. The header (title, optional subtitle, cross) is padded 16px 16px 16px 24px, the body 20px 24px and is the only zone that scrolls, the footer 16px 24px. On a sheet they are 0 8px 12px 16px, 16px and 12px 16px plus the safe area, under a drag handle. A hairline runs under the header and above the footer, and both come with the cross: without \`closeLabel\` there is no cross and no hairlines. On a desktop the dialog is centred and never taller than \`100dvh - 96px\`.
+
+The \`variant\` input is \`default\` or \`confirm\`: a confirmation (deleting a passkey) is announced as an alertdialog, has no cross and no hairlines, one 24px padding and a 440px width unless \`width\` says otherwise. The \`sheet\` input is \`fit\` (the sheet is as tall as its content) or \`full\` (it fills the screen below 58px, so the footer stays pinned while the content changes, as in Ajouter une ligne). \`truncateDescription\` keeps the subtitle on one ellipsised line instead of wrapping. A click that starts and ends on the backdrop closes the dialog, like Escape.
 
 Content goes in two slots: the default one for the body, and \`[dialogActions]\` for the footer
 buttons. Put the dismissing action first. On a desktop the footer is right-aligned; on a sheet the
@@ -112,7 +119,6 @@ With \`prefers-reduced-motion: reduce\` the sheet fades instead of sliding.
     heading: 'Saisir un cours',
     description: 'Ferrari · PEA',
     closeLabel: 'Fermer',
-    layout: 'trade',
     width: '440px',
     open: false,
     busy: false,
@@ -182,14 +188,13 @@ export const BusyStaysOpen: Story = {
 
 export const Board: Story = {
   name: 'Board, dialog (380px)',
-  args: { heading: 'Vendre Ferrari', description: undefined, width: '380px', layout: 'list', open: true },
+  args: { heading: 'Vendre Ferrari', description: undefined, width: '380px', open: true },
   render: (args) => ({
     props: args,
     template: `
       <ui-dialog
         [heading]="heading"
         [closeLabel]="closeLabel"
-        [layout]="layout"
         [width]="width"
         [open]="open"
         (dismissed)="open = false"
@@ -205,11 +210,11 @@ export const Board: Story = {
 export const BoardSheet: Story = {
   name: 'Board, sheet (iPhone, no cross)',
   parameters: { viewport: { width: 390, height: 270 } },
-  args: { heading: 'Acheter Ferrari', description: undefined, closeLabel: undefined, layout: 'list', open: true },
+  args: { heading: 'Acheter Ferrari', description: undefined, closeLabel: undefined, sheet: 'full', open: true },
   render: (args) => ({
     props: args,
     template: `
-      <ui-dialog [heading]="heading" [layout]="layout" [open]="open" (dismissed)="open = false">
+      <ui-dialog [heading]="heading" [sheet]="sheet" [open]="open" (dismissed)="open = false">
         <button dialogActions ui-button (click)="open = false">Acheter 10 parts</button>
       </ui-dialog>
     `,
@@ -217,8 +222,8 @@ export const BoardSheet: Story = {
 };
 
 export const Trade: Story = {
-  name: 'Acheter, dialog (528px) and sheet',
-  args: { heading: 'Acheter', description: 'Ferrari · PEA', width: '528px', open: true },
+  name: 'Acheter, dialog (480px) and sheet',
+  args: { heading: 'Acheter', description: 'Ferrari · PEA', width: '480px', open: true },
   render: (args) => ({
     props: args,
     template: `
@@ -240,15 +245,14 @@ export const Trade: Story = {
 };
 
 export const NewAccount: Story = {
-  name: 'Nouveau compte, dialog (528px) and sheet',
-  args: { heading: 'Nouveau compte', description: undefined, width: '528px', layout: 'form', open: true },
+  name: 'Nouveau compte, dialog (480px) and sheet',
+  args: { heading: 'Nouveau compte', description: undefined, width: '480px', open: true },
   render: (args) => ({
     props: args,
     template: `
       <ui-dialog
         [heading]="heading"
         [closeLabel]="closeLabel"
-        [layout]="layout"
         [width]="width"
         [open]="open"
         (dismissed)="open = false"
@@ -262,7 +266,7 @@ export const NewAccount: Story = {
 };
 
 const addLine = (results: number): Story => ({
-  args: { heading: 'Ajouter une ligne', description: undefined, width: '560px', layout: 'list', open: true },
+  args: { heading: 'Ajouter une ligne', description: undefined, width: '560px', sheet: 'full', open: true },
   render: (args) => ({
     props: args,
     template: addLineTemplate(results),
@@ -275,14 +279,14 @@ export const AddLineDesktopFewResults: Story = {
   name: 'Ajouter une ligne, desktop 1440x900 with few results',
   parameters: { viewport: { width: 1440, height: 900 } },
   ...addLine(2),
-  play: desktopAnchored,
+  play: desktopCentred,
 };
 
 export const AddLineDesktopManyResultsShortScreen: Story = {
   name: 'Ajouter une ligne, desktop 1366x650 with many results',
   parameters: { viewport: { width: 1366, height: 650 } },
   ...addLine(30),
-  play: desktopAnchored,
+  play: desktopCentred,
 };
 
 export const AddLineSheetFewResults: Story = {
@@ -300,7 +304,7 @@ export const AddLineSheetManyResults: Story = {
 };
 
 export const DeletePasskey: Story = {
-  name: 'Supprimer la clé, alertdialog (488px) and sheet',
+  name: 'Supprimer la clé, alertdialog (440px) and sheet',
   play: async ({ canvasElement }) => {
     await expect(canvasElement.querySelector('dialog')?.getAttribute('aria-describedby')).toBeTruthy();
   },
@@ -308,32 +312,34 @@ export const DeletePasskey: Story = {
     heading: 'Supprimer la clé « MacBook Air » ?',
     description: undefined,
     closeLabel: undefined,
-    width: '488px',
-    layout: 'confirm',
+    variant: 'confirm',
     open: true,
   },
-  render: (args) => ({
-    props: args,
-    template: `
-      <ui-dialog [heading]="heading" [layout]="layout" [width]="width" [open]="open" (dismissed)="open = false">
-        <p class="text-body text-(--muted-foreground)" data-story-body>
-          Cet appareil ne pourra plus se connecter à Cairn avec cette clé. Les autres clés restent valables.
-        </p>
-        <button dialogActions ui-button variant="outline" (click)="open = false">Annuler</button>
-        <button dialogActions ui-button variant="destructive" (click)="open = false">Supprimer la clé</button>
-      </ui-dialog>
-    `,
-  }),
+  render: (args) => ({ props: args, template: confirmTemplate(true) }),
+};
+
+export const ConfirmWithoutActions: Story = {
+  name: 'Confirm without actions, desktop',
+  args: { ...DeletePasskey.args },
+  parameters: { viewport: { width: 1440, height: 900 } },
+  render: (args) => ({ props: args, template: confirmTemplate(false) }),
+  play: emptyFooterUnpadded,
+};
+
+export const ConfirmWithoutActionsSheet: Story = {
+  ...ConfirmWithoutActions,
+  name: 'Confirm without actions, sheet',
+  parameters: { viewport: { width: 390, height: 844 } },
 };
 
 export const TextOnlyScrollingBody: Story = {
   name: 'Text-only body that scrolls (keyboard reachable)',
   parameters: { viewport: { width: 390, height: 420 } },
-  args: { heading: 'Conditions', closeLabel: 'Fermer', layout: 'confirm', width: '488px', open: true },
+  args: { heading: 'Conditions', closeLabel: 'Fermer', variant: 'confirm', width: '488px', open: true },
   render: (args) => ({
     props: { ...args, paragraphs: Array.from({ length: 12 }, (_, index) => index + 1) },
     template: `
-      <ui-dialog [heading]="heading" [closeLabel]="closeLabel" [layout]="layout" [width]="width" [open]="open" (dismissed)="open = false">
+      <ui-dialog [heading]="heading" [closeLabel]="closeLabel" [variant]="variant" [width]="width" [open]="open" (dismissed)="open = false">
         @for (paragraph of paragraphs; track paragraph) {
           <p class="text-body text-(--muted-foreground)">
             Le cours saisi remplace la dernière valeur connue jusqu'à la prochaine actualisation de la source.

@@ -54,7 +54,7 @@ describe('UiFilterChips', () => {
 
   it('scrolls on one line on touch and wraps on a fine pointer', async () => {
     await render(template, { imports: [UiFilterChips], componentProperties: { options: classes, value: 'all' } });
-    const group = screen.getByRole('group');
+    const group = screen.getByRole('group').parentElement;
 
     expect(group).toHaveClass('overflow-x-auto', '[scrollbar-width:none]', 'pointer-fine:flex-wrap');
     expect(screen.getByRole('button', { name: /^ETF/ })).toHaveClass('flex-none');
@@ -133,6 +133,35 @@ describe('UiFilterChips', () => {
       'focus-visible:-outline-offset-2',
       'pointer-fine:focus-visible:outline-offset-2',
       'focus-visible:outline-(--ring)',
+    );
+  });
+});
+
+describe('UiFilterChips leading slot', () => {
+  const withLeading = `
+    <ui-filter-chips ariaLabel="Filtrer par classe d'actif" [options]="options" [(value)]="value">
+      <select uiChipsLeading aria-label="Compte"><option>Tous les comptes</option></select>
+    </ui-filter-chips>`;
+
+  it('projects the leading element first, followed by an aria-hidden rule', async () => {
+    const { container } = await render(withLeading, {
+      imports: [UiFilterChips],
+      componentProperties: { options: classes, value: 'all' },
+    });
+    const host = container.querySelector('ui-filter-chips')!;
+    const rule = host.querySelector('[data-chips-rule]')!;
+
+    expect(host.firstElementChild).toBe(screen.getByRole('combobox', { name: 'Compte' }));
+    expect(rule.previousElementSibling).toBe(host.firstElementChild);
+    expect(rule).toHaveAttribute('aria-hidden', 'true');
+    expect(rule).toHaveClass('hidden', 'h-5', 'w-px', 'bg-(--border)', '[[uiChipsLeading]+&]:block');
+  });
+
+  it('keeps the leading element outside the chips group', async () => {
+    await render(withLeading, { imports: [UiFilterChips], componentProperties: { options: classes, value: 'all' } });
+
+    expect(screen.getByRole('group', { name: "Filtrer par classe d'actif" })).not.toContainElement(
+      screen.getByRole('combobox', { name: 'Compte' }),
     );
   });
 });
