@@ -70,6 +70,10 @@ export const Active: Story = { args: { active: true } };
 export const Focus: Story = {
   play: async ({ canvasElement }) => {
     await userEvent.tab();
-    await expect(within(canvasElement).getByRole('combobox', { name: 'Compte' })).toHaveFocus();
+    const select = within(canvasElement).getByRole('combobox', { name: 'Compte' });
+
+    await expect(select).toHaveFocus();
+    await expect(getComputedStyle(select).outlineStyle).toBe('solid');
+    await expect(getComputedStyle(select).outlineWidth).toBe('2px');
   },
 };

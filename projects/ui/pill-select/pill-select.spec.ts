@@ -50,11 +50,25 @@ describe('UiPillSelect', () => {
 
     expect(select).toHaveClass(
       'h-11',
-      'border-y-[5px]',
+      'border-[5px]',
+      '-mx-[5px]',
       'pr-[30px]',
       'pl-3',
       'pointer-fine:h-8',
-      'pointer-fine:border-y-0',
+      'pointer-fine:mx-0',
+      'pointer-fine:border-0',
+    );
+  });
+
+  it('draws its focus ring as an outline 2 px outside the pill at every size', async () => {
+    await render(`<select uiPillSelect aria-label="Compte">${OPTIONS}</select>`, { imports: [UiPillSelect] });
+    const select = screen.getByRole('combobox', { name: 'Compte' });
+
+    expect(select).toHaveClass(
+      'focus-visible:outline-2',
+      'focus-visible:-outline-offset-5',
+      'focus-visible:outline-(--ring)',
+      'pointer-fine:focus-visible:outline-offset-0',
     );
   });
 });
