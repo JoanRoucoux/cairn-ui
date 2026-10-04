@@ -177,7 +177,7 @@ type EndRef = ElementRef<SVGCircleElement>;
           </p>
           @if (tooltipDelta()) {
             <p data-chart-delta [class]="deltaClasses(point)">
-              {{ deltaFormat()(deltaFor(point)) }}{{ deltaSuffix() && ' ' + deltaSuffix() }}
+              {{ deltaFormat()(deltaFor(point)) }}{{ spacedDeltaSuffix() }}
             </p>
           }
           <p class="text-caption text-(--subtle-foreground)" data-chart-date>{{ timeFormat()(point.t) }}</p>
@@ -251,6 +251,8 @@ export class UiLineChart {
   protected readonly activeIndex = signal<number | null>(null);
   protected readonly held = signal<ChartGeometry | null>(null);
   protected readonly measuredSize = signal<{ width: number; height: number } | null>(null);
+
+  protected readonly spacedDeltaSuffix = computed(() => (this.deltaSuffix() ? ` ${this.deltaSuffix()}` : ''));
 
   protected readonly effectiveWidth = computed(() => this.measuredSize()?.width ?? DEFAULT_WIDTH);
   protected readonly effectiveHeight = computed(() => this.measuredSize()?.height ?? DEFAULT_HEIGHT);

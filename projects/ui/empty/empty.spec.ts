@@ -4,14 +4,18 @@ import { UiEmpty } from './empty';
 
 describe('UiEmpty', () => {
   const template = `
-    <ui-empty heading="Aucune ligne" hint="La recherche porte sur le nom et l'ISIN.">
+    <ui-empty heading="Aucune ligne ne correspond à « zzz »" hint="La recherche porte sur le nom et l'ISIN.">
       <button type="button">Ajouter une ligne</button>
     </ui-empty>`;
 
   it('shows the title and the hint', async () => {
     await render(template, { imports: [UiEmpty] });
 
-    expect(screen.getByText('Aucune ligne')).toHaveClass('text-body', 'font-medium', 'text-pretty');
+    expect(screen.getByText('Aucune ligne ne correspond à « zzz »')).toHaveClass(
+      'text-body',
+      'font-medium',
+      'text-pretty',
+    );
     expect(screen.getByText("La recherche porte sur le nom et l'ISIN.")).toHaveClass(
       'text-label',
       'text-(--muted-foreground)',
