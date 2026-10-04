@@ -14,7 +14,6 @@ const meta: Meta = {
 
 * \`ui-enter-fade\`: opacity over \`--duration-fast\`, for a message that appears.
 * \`ui-enter-fade-up\`: opacity and a 4px rise over \`--duration-fast\`, for content that arrives in place.
-* \`ui-enter-panel\`: opacity and an 8px slide in over \`--duration-base\`, for a detail panel.
 * \`ui-leave-fade\`: opacity over \`--duration-exit\`, for every exit.
 
 #### When not to use
@@ -24,7 +23,7 @@ const meta: Meta = {
 
 #### Accessibility
 
-* Under \`prefers-reduced-motion: reduce\` the rise and the slide become a plain fade, and view transitions are off.`,
+* Under \`prefers-reduced-motion: reduce\` the rise becomes a plain fade, and view transitions are off.`,
       },
     },
   },
@@ -36,7 +35,6 @@ const meta: Meta = {
         @if (shown) {
           <div data-testid="fade" class="ui-enter-fade rounded-container border border-(--border) bg-(--card) p-4" animate.leave="ui-leave-fade">ui-enter-fade</div>
           <div data-testid="fade-up" class="ui-enter-fade-up rounded-container border border-(--border) bg-(--card) p-4" animate.leave="ui-leave-fade">ui-enter-fade-up</div>
-          <div data-testid="panel" class="ui-enter-panel rounded-container border border-(--border) bg-(--card) p-4" animate.leave="ui-leave-fade">ui-enter-panel</div>
         }
       </div>
     `,
@@ -54,7 +52,6 @@ export const EnterAndLeave: Story = {
 
     await expect(animationOf('fade')).toBe('cairn-fade-in');
     await expect(animationOf('fade-up')).toBe('cairn-fade-up-in');
-    await expect(animationOf('panel')).toBe('cairn-panel-in');
 
     await userEvent.click(canvas.getByRole('button', { name: 'Leave' }));
 
