@@ -5,6 +5,7 @@ export {
   ROW_TRAILINGS,
   UiListRow,
   UiRow,
+  UiRowGroup,
   UiRowItem,
   UiRowTile,
   type RowGap,

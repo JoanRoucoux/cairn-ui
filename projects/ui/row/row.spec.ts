@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
-import { UiListRow, UiRow, UiRowItem, UiRowTile } from './row';
+import { UiListRow, UiRow, UiRowGroup, UiRowItem, UiRowTile } from './row';
 
 describe('UiRow trailing chevron', () => {
   it('draws no chevron and keeps its padding and hover fill by default', async () => {
@@ -315,6 +315,22 @@ describe('UiRowTile', () => {
       'grid',
       'place-items-center',
       'flex-none',
+    );
+  });
+});
+
+describe('UiRowGroup', () => {
+  it('stacks its rows under a hairline with a 4 px lead', async () => {
+    await render(
+      '<div uiRowGroup data-testid="group"><button ui-row type="button" trailing="chevron">Saisir à la main</button></div>',
+      { imports: [UiRow, UiRowGroup] },
+    );
+
+    expect(screen.getByTestId('group')).toHaveClass(
+      'flex',
+      'flex-col',
+      'pt-1',
+      'shadow-[inset_0_1px_0_var(--hairline)]',
     );
   });
 });

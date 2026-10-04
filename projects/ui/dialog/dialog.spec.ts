@@ -22,6 +22,12 @@ describe('UiDialog', () => {
     expect(container.querySelector('dialog')).toHaveAttribute('open');
   });
 
+  it('never draws the browser outline on its own element', async () => {
+    const { container } = await renderDialog();
+
+    expect(container.querySelector('dialog')).toHaveClass('outline-none');
+  });
+
   it('stays closed until asked', async () => {
     const { container } = await renderDialog(false);
 

@@ -115,7 +115,7 @@ Light and dark follow the operating system through `light-dark()`; to force a sc
 | `badge`        | `UiBadge`                                                                | Small descriptor next to the thing it labels        |
 | `avatar`       | `UiAvatar`, `UiAvatarLink`                                               | Initials in a disc, standing in for a person        |
 | `table`        | `UiTable`, `UiTh`, `UiTr`, `UiTd`, `UiGroup`, `UiRowLink`, `UiRowAction` | Styled native `<table>` with grouped rows           |
-| `row`          | `UiRow`, `UiListRow`, `UiRowItem`, `UiRowTile`                           | Clickable list row                                  |
+| `row`          | `UiRow`, `UiListRow`, `UiRowGroup`, `UiRowItem`, `UiRowTile`             | Clickable list row                                  |
 | `card`         | `UiCard`                                                                 | Surface that groups related content                 |
 | `meter`        | `UiMeter`                                                                | Proportion of a whole, drawn as one bar             |
 | `group-header` | `UiGroupHeader`                                                          | Collapsible header of a grouped card on a phone     |

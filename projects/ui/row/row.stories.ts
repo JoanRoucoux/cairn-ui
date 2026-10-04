@@ -13,6 +13,7 @@ import {
   type RowTrailing,
   UiListRow,
   UiRow,
+  UiRowGroup,
   UiRowItem,
   UiRowTile,
 } from './row';
@@ -29,7 +30,7 @@ type RowArgs = {
 
 const meta: Meta<RowArgs> = {
   title: 'Data display/Row',
-  decorators: [moduleMetadata({ imports: [UiButton, UiListRow, UiRow, UiRowItem, UiRowTile] })],
+  decorators: [moduleMetadata({ imports: [UiButton, UiListRow, UiRow, UiRowGroup, UiRowItem, UiRowTile] })],
   parameters: {
     docs: {
       description: {
@@ -343,7 +344,7 @@ export const LinkRow: Story = {
   args: { trailing: 'chevron' },
   render: () => ({
     template: `
-      <div class="flex w-[360px] flex-col pt-1 shadow-[inset_0_1px_0_var(--hairline)]">
+      <div uiRowGroup class="w-[360px]">
         <button ui-row type="button" trailing="chevron">
           <span class="flex min-w-0 flex-1 flex-col">
             <span class="text-label font-medium">Produit structuré SG Sirius</span>
@@ -364,6 +365,7 @@ export const LinkRow: Story = {
     const row = canvas.getByRole('button', { name: /Saisir à la main/ });
 
     await expect(getComputedStyle(row).paddingLeft).toBe('0px');
+    await expect(getComputedStyle(row.parentElement as HTMLElement).boxShadow).toContain('inset');
     await expect(row.querySelector('svg')).toHaveAttribute('width', '16');
   },
 };

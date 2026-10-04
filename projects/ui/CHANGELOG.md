@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.9.1
+
+### Fixed
+
+- `ui-drawer`, `ui-dialog`: the `<dialog>` element no longer draws the browser's default focus outline when it
+  takes focus itself, as it does on a drawer that opens on page load with nothing focused before it. Keyboard focus
+  on the controls inside keeps the library ring.
+
+### Added
+
+- `uiRowGroup` (`@joanroucoux/cairn-ui/row`): groups link rows (`ui-row` with `trailing="chevron"`) under a
+  hairline, with a 4px lead, as the "Produit structuré" and "Saisir à la main" links under a search list.
+- `ui-select-pill`: a `disabled` input. The trigger is `disabled` and `aria-disabled`, nothing opens, the clear cross
+  is not drawn (the chevron stays, even when `active`), and the pill is dimmed to 40 % like a disabled button.
+
 ## 0.9.0
 
 ### Breaking

@@ -178,6 +178,9 @@ export const BusyStaysOpen: Story = {
     const dialog = await canvas.findByRole('dialog', { name: 'Saisir un cours' });
 
     await expect(dialog).toHaveAttribute('aria-busy', 'true');
+    dialog.focus();
+    await expect(dialog).toHaveFocus();
+    await expect(getComputedStyle(dialog).outlineStyle).toBe('none');
     await expect(canvas.getByRole('button', { name: 'Fermer' })).toBeDisabled();
     await userEvent.keyboard('{Escape}');
     await userEvent.pointer({ keys: '[MouseLeft]', target: dialog, coords: { clientX: 4, clientY: 4 } });
@@ -352,15 +355,11 @@ export const TextOnlyScrollingBody: Story = {
   play: bodyReachable,
 };
 
-export const Wide: Story = {
-  args: { width: 'lg', open: true },
-};
+export const Wide: Story = { args: { width: 'lg', open: true } };
 
 export const SheetOnAnIPhone: Story = {
   name: 'Sheet on a 390px viewport',
-  parameters: {
-    viewport: { width: 390, height: 844 },
-  },
+  parameters: { viewport: { width: 390, height: 844 } },
   render: (args) => ({
     props: { ...args, rows: Array.from({ length: 60 }, (_, index) => index + 1) },
     template: `
