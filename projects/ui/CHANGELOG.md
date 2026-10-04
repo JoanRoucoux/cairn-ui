@@ -27,6 +27,13 @@
   `--chevron-pill` and `--chevron-pill-active` tokens (the `--foreground` and `--primary-foreground` of each scheme).
 - `ui-filter-chips` projects an element marked `uiChipsLeading` first in its row, followed by a 1 x 20 px `--border` rule
   that only shows when something is projected.
+- `td[ui-group-cell]` is collapsible: `collapsible`, `expanded` (a model), `toggleDisabled` and `controls`. The band
+  becomes an `h2 > button[aria-expanded]` with an 18px chevron that turns to -90 degrees in `--duration-fast`, a
+  `--soft` hover and a focus ring. The page owns the fold memory.
+- `tbody[uiGroup]` takes `collapsed`: its rows (`tr[uiTr]`) get `hidden` and stay in the DOM, so a `uiFlipList`
+  around the table slides nothing when a group folds.
+- `ui-group-header` (`@joanroucoux/cairn-ui/group-header`): the header of a grouped card on a phone, with name, meta
+  and a projected total. Collapsible, with a 20px chevron and a press scale, or static.
 
 ### Changed
 

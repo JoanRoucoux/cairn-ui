@@ -1,4 +1,5 @@
-import { Component, Directive, booleanAttribute, computed, input } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
+import { Component, Directive, booleanAttribute, computed, inject, input, model } from '@angular/core';
 
 import { holdTransitionsUntilRendered } from '@joanroucoux/cairn-ui/motion';
 
@@ -60,12 +61,21 @@ export class UiTable {
   }
 }
 
-/** Body of one group of rows. */
+/**
+ * Body of one group of rows. `collapsed` hides every row but the group row with `hidden`: the rows
+ * stay in the DOM, so a `uiFlipList` around the table sees no item added or removed and slides
+ * nothing.
+ *
+ * @example
+ * <tbody uiGroup [collapsed]="!open()">
+ */
 @Directive({
   selector: 'tbody[uiGroup]',
   host: { class: 'after:table-row after:h-1 after:content-[""]' },
 })
-export class UiGroup {}
+export class UiGroup {
+  readonly collapsed = input(false, { transform: booleanAttribute });
+}
 
 /**
  * Body or group row. `selected` takes the soft fill, `interactive` (a row that opens something) also
@@ -80,9 +90,12 @@ export class UiGroup {}
   host: {
     '[class]': 'classes()',
     '[attr.aria-selected]': 'selected() ? "true" : null',
+    '[hidden]': '!group() && body?.collapsed()',
   },
 })
 export class UiTr {
+  protected readonly body = inject(UiGroup, { optional: true });
+
   readonly group = input(false, { transform: booleanAttribute });
   readonly selected = input(false, { transform: booleanAttribute });
   readonly interactive = input(false, { transform: booleanAttribute });
@@ -183,39 +196,98 @@ export type GroupSize = (typeof GROUP_SIZES)[number];
  * The band that opens a group of rows: name, meta beside it, the projected total on the right.
  * Spans the whole row through `colspan`.
  *
+ * With `collapsible` the band is a button inside the heading, with a chevron that turns when the
+ * group is folded. `expanded` is a model: the page keeps the fold memory and sets `collapsed` on the
+ * `tbody[uiGroup]`. `toggleDisabled` keeps the button focusable and announced, but a click changes
+ * nothing (a filter holds the group open). `controls` is the id of the group it folds.
+ *
  * @example
  * <tr uiTr group><td ui-group-cell colspan="4" name="Brokerage" meta="Savings plan">...total...</td></tr>
+ * <tr uiTr group><td ui-group-cell collapsible [(expanded)]="open" controls="brokerage" colspan="4" name="Brokerage">...</td></tr>
  */
 @Component({
   selector: 'td[ui-group-cell]',
+  imports: [NgTemplateOutlet],
   host: {
     '[class]': 'hostClasses()',
   },
   template: `
-    <div
-      class="rounded-control flex items-center justify-between gap-4 bg-(--muted) px-2"
-      [class]="size() === 'lg' ? 'min-h-12' : 'min-h-11'"
-    >
-      <div class="flex min-w-0 items-baseline gap-3">
-        <h2 class="text-body m-0 font-semibold whitespace-nowrap outline-none" data-group-heading tabindex="-1">
-          {{ name() }}
-        </h2>
-        @if (meta()) {
-          <span class="text-label truncate text-(--muted-foreground)">{{ meta() }}</span>
-        }
+    <ng-template #total><ng-content /></ng-template>
+    @if (collapsible()) {
+      <h2 class="m-0 font-normal">
+        <button
+          class="rounded-control flex w-full cursor-pointer items-center justify-between gap-4 bg-(--muted) px-2 text-left hover:bg-(--soft) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring)"
+          data-group-heading
+          type="button"
+          [attr.aria-controls]="controls() || null"
+          [attr.aria-disabled]="toggleDisabled() ? 'true' : null"
+          [attr.aria-expanded]="expanded()"
+          [class]="size() === 'lg' ? 'min-h-12' : 'min-h-11'"
+          (click)="toggle()"
+        >
+          <span class="flex min-w-0 items-center gap-2.5">
+            <svg
+              aria-hidden="true"
+              class="flex-none stroke-(--muted-foreground) transition-transform duration-(--duration-fast) ease-out"
+              fill="none"
+              height="18"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.75"
+              viewBox="0 0 24 24"
+              width="18"
+              [class.-rotate-90]="!expanded()"
+            >
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+            <span class="flex min-w-0 items-baseline gap-3">
+              <span class="text-body font-semibold whitespace-nowrap">{{ name() }}</span>
+              @if (meta()) {
+                <span class="text-label truncate text-(--muted-foreground)">{{ meta() }}</span>
+              }
+            </span>
+          </span>
+          <span class="text-body font-semibold whitespace-nowrap tabular-nums">
+            <ng-container [ngTemplateOutlet]="total" />
+          </span>
+        </button>
+      </h2>
+    } @else {
+      <div
+        class="rounded-control flex items-center justify-between gap-4 bg-(--muted) px-2"
+        [class]="size() === 'lg' ? 'min-h-12' : 'min-h-11'"
+      >
+        <div class="flex min-w-0 items-baseline gap-3">
+          <h2 class="text-body m-0 font-semibold whitespace-nowrap outline-none" data-group-heading tabindex="-1">
+            {{ name() }}
+          </h2>
+          @if (meta()) {
+            <span class="text-label truncate text-(--muted-foreground)">{{ meta() }}</span>
+          }
+        </div>
+        <span class="font-semibold whitespace-nowrap tabular-nums"><ng-container [ngTemplateOutlet]="total" /></span>
       </div>
-      <span class="font-semibold whitespace-nowrap tabular-nums"><ng-content /></span>
-    </div>
+    }
   `,
 })
 export class UiGroupCell {
   readonly name = input.required<string>();
   readonly meta = input<string>();
   readonly size = input<GroupSize>('md');
+  readonly collapsible = input(false, { transform: booleanAttribute });
+  readonly expanded = model(true);
+  readonly toggleDisabled = input(false, { transform: booleanAttribute });
+  readonly controls = input<string>();
 
   protected readonly hostClasses = computed(
     () => `px-0 ${this.size() === 'lg' ? 'pt-3' : 'pt-2.5'} pb-1 align-middle text-body`,
   );
+
+  protected toggle(): void {
+    if (!this.toggleDisabled()) {
+      this.expanded.update((expanded) => !expanded);
+    }
+  }
 }
 
 /**

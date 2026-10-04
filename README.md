@@ -106,18 +106,19 @@ Light and dark follow the operating system through `light-dark()`; to force a sc
 
 ### Data display
 
-| Folder   | Main exports                                                             | Purpose                                      |
-| -------- | ------------------------------------------------------------------------ | -------------------------------------------- |
-| `amount` | `UiAmount`, `formatAmount`, `UI_AMOUNT_MASKED`                           | Locale formatting of numbers and money       |
-| `delta`  | `UiDelta`                                                                | Signed amount whose sign carries meaning     |
-| `stat`   | `UiStat`                                                                 | Label, figure and named period of change     |
-| `fact`   | `UiFacts`, `UiFact`                                                      | Label and value pairs on a description list  |
-| `badge`  | `UiBadge`                                                                | Small descriptor next to the thing it labels |
-| `avatar` | `UiAvatar`, `UiAvatarLink`                                               | Initials in a disc, standing in for a person |
-| `table`  | `UiTable`, `UiTh`, `UiTr`, `UiTd`, `UiGroup`, `UiRowLink`, `UiRowAction` | Styled native `<table>` with grouped rows    |
-| `row`    | `UiRow`, `UiListRow`, `UiRowItem`, `UiRowTile`                           | Clickable list row                           |
-| `card`   | `UiCard`                                                                 | Surface that groups related content          |
-| `meter`  | `UiMeter`                                                                | Proportion of a whole, drawn as one bar      |
+| Folder         | Main exports                                                             | Purpose                                         |
+| -------------- | ------------------------------------------------------------------------ | ----------------------------------------------- |
+| `amount`       | `UiAmount`, `formatAmount`, `UI_AMOUNT_MASKED`                           | Locale formatting of numbers and money          |
+| `delta`        | `UiDelta`                                                                | Signed amount whose sign carries meaning        |
+| `stat`         | `UiStat`                                                                 | Label, figure and named period of change        |
+| `fact`         | `UiFacts`, `UiFact`                                                      | Label and value pairs on a description list     |
+| `badge`        | `UiBadge`                                                                | Small descriptor next to the thing it labels    |
+| `avatar`       | `UiAvatar`, `UiAvatarLink`                                               | Initials in a disc, standing in for a person    |
+| `table`        | `UiTable`, `UiTh`, `UiTr`, `UiTd`, `UiGroup`, `UiRowLink`, `UiRowAction` | Styled native `<table>` with grouped rows       |
+| `row`          | `UiRow`, `UiListRow`, `UiRowItem`, `UiRowTile`                           | Clickable list row                              |
+| `card`         | `UiCard`                                                                 | Surface that groups related content             |
+| `meter`        | `UiMeter`                                                                | Proportion of a whole, drawn as one bar         |
+| `group-header` | `UiGroupHeader`                                                          | Collapsible header of a grouped card on a phone |
 
 ### Charts
 
