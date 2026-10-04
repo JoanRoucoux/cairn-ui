@@ -46,7 +46,7 @@ emits \`cleared\`, so the list goes back to every value in one tap. It is 34 px 
   render: (args) => ({
     props: args,
     template: `
-      <ui-select-pill [active]="active" [clearLabel]="clearLabel" (cleared)="cleared()">
+      <ui-select-pill [active]="active" [clearLabel]="clearLabel" contextLabel="Compte" (cleared)="cleared()">
         {{ active ? 'Northwind PEA' : 'Tous les comptes' }}
         <ui-menu label="Compte" sheet heading="Compte">
           <button uiMenuItem type="button" [checked]="!active">Tous les comptes</button>

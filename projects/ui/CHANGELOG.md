@@ -38,7 +38,9 @@
 - `ui-select-pill` (`@joanroucoux/cairn-ui/select-pill`): a compact pill that opens a `ui-menu` of exclusive
   choices, to head a row of filter chips. The projected text is its label and the projected `ui-menu` is what it
   opens, as a sheet on a phone like the `…` menus. Outlined with a chevron at rest, solid primary when `active`,
-  where a separate 14px cross, named by the required `clearLabel`, replaces the chevron and emits `cleared`. 34px in
+  where a separate 14px cross (44px hit area on touch, 36px with a fine pointer), named by the required `clearLabel`,
+  replaces the chevron and emits `cleared`, and focus goes back to the trigger. `contextLabel` is read before the
+  label while active. 34px in
   a 44px target on touch and 32px with a fine pointer, with a 2px focus outline outside the pill and a border of its
   own in forced colors.
 - `button[uiMenuItem]` accepts `checked`: the item becomes a `menuitemradio` with `aria-checked` and a check mark

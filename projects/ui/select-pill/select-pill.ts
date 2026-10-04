@@ -1,4 +1,13 @@
-import { Component, booleanAttribute, computed, contentChild, input, output } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  booleanAttribute,
+  computed,
+  contentChild,
+  input,
+  output,
+  viewChild,
+} from '@angular/core';
 
 import { UiMenu, UiMenuTrigger } from '@joanroucoux/cairn-ui/menu';
 
@@ -15,13 +24,13 @@ const REST_PILL_CLASSES = 'bg-(--card) text-(--foreground) shadow-[inset_0_0_0_1
 const ACTIVE_PILL_CLASSES = 'bg-(--primary) text-(--primary-foreground)';
 
 const CLEAR_CLASSES =
-  'absolute right-0 flex size-[34px] cursor-pointer items-center justify-center rounded-pill border-0 bg-transparent p-0 text-(--primary-foreground) focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring) pointer-fine:size-8';
+  'absolute end-0 flex size-[34px] cursor-pointer items-center justify-center rounded-pill border-0 bg-transparent p-0 text-(--primary-foreground) focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring) pointer-fine:size-8 after:absolute after:-inset-[5px] pointer-fine:after:-inset-0.5';
 
 /**
  * A pill that opens a `ui-menu` of exclusive choices, to head a row of filter chips: outlined at rest with a
  * chevron, solid primary when `active`, where a separate 14 px cross replaces the chevron and emits `cleared`.
  * It is 34 px tall inside a 44 px target on touch and 32 px with a fine pointer; its focus ring is an outline
- * 2 px outside the pill. The projected text is the pill label and the projected `ui-menu` is what it opens.
+ * 2 px outside the pill; the cross has a 44 px hit area on touch (36 px with a fine pointer). `contextLabel`, when given, is read before the label while active so a screen reader hears what the account is. Clearing moves focus back to the trigger. The projected text is the pill label and the projected `ui-menu` is what it opens.
  *
  * @example
  * <ui-select-pill uiChipsLeading [active]="!!account()" clearLabel="Clear the account" (cleared)="account.set('')">
@@ -35,11 +44,16 @@ const CLEAR_CLASSES =
   selector: 'ui-select-pill',
   imports: [UiMenuTrigger],
   template: `
-    <button type="button" [class]="triggerClasses" [uiMenuTrigger]="menu()">
-      <span data-pill [class]="pillClasses()"><ng-content /></span>
+    <button #trigger type="button" [class]="triggerClasses" [uiMenuTrigger]="menu()">
+      <span data-pill [class]="pillClasses()">
+        @if (active() && contextLabel()) {
+          <span class="sr-only">{{ contextLabel() }} </span>
+        }
+        <ng-content
+      /></span>
     </button>
     @if (active()) {
-      <button data-clear type="button" [attr.aria-label]="clearLabel()" [class]="clearClasses" (click)="cleared.emit()">
+      <button data-clear type="button" [attr.aria-label]="clearLabel()" [class]="clearClasses" (click)="clear()">
         <svg
           aria-hidden="true"
           fill="none"
@@ -80,13 +94,20 @@ const CLEAR_CLASSES =
 export class UiSelectPill {
   readonly active = input(false, { transform: booleanAttribute });
   readonly clearLabel = input.required<string>();
+  readonly contextLabel = input<string>();
   readonly cleared = output();
 
   protected readonly menu = contentChild.required(UiMenu);
+  protected readonly trigger = viewChild.required<ElementRef<HTMLButtonElement>>('trigger');
 
   protected readonly hostClasses = HOST_CLASSES;
   protected readonly triggerClasses = TRIGGER_CLASSES;
   protected readonly clearClasses = CLEAR_CLASSES;
+  protected clear(): void {
+    this.cleared.emit();
+    this.trigger().nativeElement.focus();
+  }
+
   protected readonly pillClasses = computed(
     () => `${PILL_CLASSES} ${this.active() ? ACTIVE_PILL_CLASSES : REST_PILL_CLASSES}`,
   );

@@ -51,4 +51,17 @@ describe('UiMenuItem as a radio choice', () => {
 
     expect(screen.getByRole('menuitem', { name: 'Edit', hidden: true })).not.toHaveAttribute('aria-checked');
   });
+
+  it('draws the check mark on the current item of a sheet too', async () => {
+    await render(
+      `<ui-menu label="Account" sheet><button uiMenuItem [checked]="true">Northwind PEA</button></ui-menu>`,
+      { imports },
+    );
+
+    expect(screen.getByRole('menuitemradio', { name: 'Northwind PEA', hidden: true })).toHaveClass(
+      'min-h-12',
+      'after:ms-auto',
+      'after:rotate-45',
+    );
+  });
 });

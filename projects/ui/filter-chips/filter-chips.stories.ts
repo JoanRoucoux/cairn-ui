@@ -123,7 +123,7 @@ export const SelectsWithTheKeyboard: Story = {
 const ACCOUNT_ROW = `
   <div style="padding: 0 var(--gutter)">
     <ui-filter-chips ariaLabel="Filtrer par classe d'actif" [options]="options" [(value)]="value">
-      <ui-select-pill uiChipsLeading [active]="account !== ''" clearLabel="Retirer le filtre de compte" (cleared)="account = ''">
+      <ui-select-pill uiChipsLeading [active]="account !== ''" clearLabel="Retirer le filtre de compte" contextLabel="Compte" (cleared)="account = ''">
         {{ names[account] }}
         <ui-menu label="Compte" sheet heading="Compte">
           <button uiMenuItem type="button" [checked]="account === ''" (click)="account = ''">Tous les comptes</button>
@@ -178,12 +178,12 @@ const chosenThenCleared: Story['play'] = async ({ canvasElement }) => {
   await userEvent.click(await canvas.findByRole('menuitemradio', { name: 'Northwind PEA' }));
 
   const cross = await canvas.findByRole('button', { name: 'Retirer le filtre de compte' });
-  await expect(canvas.getByRole('button', { name: 'Northwind PEA' })).toBeVisible();
+  await expect(canvas.getByRole('button', { name: 'Compte Northwind PEA' })).toBeVisible();
   await expect(cross).toBeVisible();
 
   await userEvent.click(cross);
 
-  await expect(canvas.getByRole('button', { name: 'Tous les comptes' })).toBeVisible();
+  await expect(canvas.getByRole('button', { name: 'Tous les comptes' })).toHaveFocus();
   await expect(canvas.queryByRole('button', { name: 'Retirer le filtre de compte' })).toBeNull();
 };
 

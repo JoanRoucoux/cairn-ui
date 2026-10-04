@@ -6,7 +6,7 @@ import { type Mock } from 'vitest';
 import { UiSelectPill } from './select-pill';
 
 const template = (active: boolean): string => `
-  <ui-select-pill [active]="${active}" clearLabel="Retirer le filtre de compte" (cleared)="cleared()">
+  <ui-select-pill [active]="${active}" clearLabel="Retirer le filtre de compte" contextLabel="Compte" (cleared)="cleared()">
     {{ label }}
     <ui-menu label="Compte" sheet>
       <button uiMenuItem [checked]="!${active}">Tous les comptes</button>
@@ -58,7 +58,7 @@ describe('UiSelectPill', () => {
 
   it('turns solid primary and swaps the chevron for a separate cross when active', async () => {
     await setup(true).ready;
-    const pill = screen.getByRole('button', { name: 'Northwind PEA' }).querySelector('[data-pill]');
+    const pill = screen.getByRole('button', { name: 'Compte Northwind PEA' }).querySelector('[data-pill]');
 
     expect(pill).toHaveClass('bg-(--primary)', 'text-(--primary-foreground)');
     expect(pill).not.toHaveClass('bg-(--card)');
@@ -75,7 +75,7 @@ describe('UiSelectPill', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Retirer le filtre de compte' }));
 
     expect(cleared).toHaveBeenCalledTimes(1);
-    expect(screen.getByRole('button', { name: 'Northwind PEA' })).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.getByRole('button', { name: 'Compte Northwind PEA' })).toHaveAttribute('aria-expanded', 'false');
   });
 
   it('draws a 14 px cross', async () => {
@@ -111,5 +111,29 @@ describe('UiSelectPill', () => {
     expect(screen.getByRole('button', { name: 'Tous les comptes' }).querySelector('[data-pill]')).toHaveClass(
       'forced-colors:border',
     );
+  });
+
+  it('gives the cross a 44 px hit area on touch and 36 px with a fine pointer around its 14 px icon', async () => {
+    await setup(true).ready;
+
+    expect(screen.getByRole('button', { name: 'Retirer le filtre de compte' })).toHaveClass(
+      'after:absolute',
+      'after:-inset-[5px]',
+      'pointer-fine:after:-inset-0.5',
+    );
+  });
+
+  it('puts focus back on the trigger when the cross clears the filter', async () => {
+    await setup(true).ready;
+
+    await userEvent.click(screen.getByRole('button', { name: 'Retirer le filtre de compte' }));
+
+    expect(screen.getByRole('button', { name: 'Compte Northwind PEA' })).toHaveFocus();
+  });
+
+  it('keeps the context out of the name at rest', async () => {
+    await setup().ready;
+
+    expect(screen.getByRole('button', { name: 'Tous les comptes' })).toBeInTheDocument();
   });
 });
