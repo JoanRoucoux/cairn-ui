@@ -3,7 +3,7 @@ import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vit
 import { expect, userEvent, waitFor, within } from 'storybook/test';
 
 import { UiDrawer } from './drawer';
-import { DrawerSwapDemo, defaultTemplate, drawerArgTypes, facts, watchVeils } from './internal/drawer-story-fixtures';
+import { DrawerStackDemo, defaultTemplate, drawerArgTypes, facts } from './internal/drawer-story-fixtures';
 
 type DrawerArgs = {
   heading?: string;
@@ -17,7 +17,7 @@ type DrawerArgs = {
 
 const meta: Meta<DrawerArgs> = {
   title: 'Surfaces/Drawer',
-  decorators: [moduleMetadata({ imports: [UiButton, UiDrawer, DrawerSwapDemo] })],
+  decorators: [moduleMetadata({ imports: [UiButton, UiDrawer, DrawerStackDemo] })],
   parameters: {
     viewport: { width: 1440, height: 900 },
     docs: {
@@ -44,34 +44,23 @@ The panel enters with opacity and a 24px slide from the right over \`--duration-
 veil fades in; it leaves the reverse way over \`--duration-exit\`. Under \`prefers-reduced-motion: reduce\` it only
 fades.
 
-An action that opens a dialog replaces the drawer, never stacks on it, and the veil stays on screen through the
-swap: the owner closes the drawer and opens the dialog from the same handler, so the drawer's exit plays under the
-dialog's entry; on the way back it closes the dialog and reopens the drawer the same way, from the dialog's
-\`(dismissed)\` and from its own Annuler and submit buttons. Waiting for \`(closed)\` instead would let both veils
-fade out and the bare page show for a moment. Open the incoming one after the next render (\`afterNextRender\`),
-once the outgoing one has closed: a modal that opens while the other is still open takes it as its focus return
-target, and focus ends on \`body\`. Host the dialog outside the drawer, so closing the drawer does not take the
-dialog with it. Focus goes back to the row that opened the drawer at the end.
-
-\`\`\`ts
-swap(leaving: WritableSignal<boolean>, coming: WritableSignal<boolean>): void {
-  leaving.set(false);
-  afterNextRender(() => coming.set(true), { injector: this.injector });
-}
-\`\`\`
+A dialog opened from the drawer opens over it, and the drawer stays open underneath. \`ui-dialog\` sees the modal
+already open and draws its own lighter veil, \`rgb(0 0 0 / 0.24)\`, over the drawer's: there is nothing to set.
+Escape closes the dialog first, then the drawer. Closing or submitting the dialog leaves the drawer open, and focus
+goes back to the drawer button that opened the dialog: the owner only toggles the dialog's \`open\`.
 
 \`\`\`html
 <ui-drawer heading="Northwind Monde" closeLabel="Fermer le détail" [open]="detail()" (dismissed)="detail.set(false)">
   ...
-  <button ui-button (click)="swap(detail, buying)">Acheter</button>
+  <button ui-button (click)="buying.set(true)">Acheter</button>
 </ui-drawer>
-<ui-dialog heading="Acheter" [open]="buying()" (dismissed)="swap(buying, detail)">
+<ui-dialog heading="Acheter" [open]="buying()" (dismissed)="buying.set(false)">
   ...
-  <button dialogActions ui-button (click)="swap(buying, detail)">Acheter 10 parts</button>
+  <button dialogActions ui-button (click)="buy()">Acheter 10 parts</button>
 </ui-dialog>
 \`\`\`
 
-After a delete or a sale of everything, the line is gone: close the dialog alone and leave the drawer shut.
+After a delete or a sale of everything, the line is gone: set both \`open\` to \`false\`, then move focus to the list.
 
 #### When to use
 
@@ -118,8 +107,8 @@ const openDrawer = async (canvasElement: HTMLElement, name = 'Northwind Monde'):
   return drawer;
 };
 
-const platformEscape = (drawer: HTMLElement): void => {
-  drawer.dispatchEvent(new Event('cancel', { cancelable: true }));
+const platformEscape = (modal: HTMLElement): void => {
+  modal.dispatchEvent(new Event('cancel', { cancelable: true }));
 };
 
 export const Closed: Story = {};
@@ -256,50 +245,74 @@ export const ScrollsAlone: Story = {
   },
 };
 
-export const SwapWithDialog: Story = {
-  name: 'Replaced by a dialog, then back',
-  render: () => ({ template: `<ui-drawer-swap-demo />` }),
+const veil = (element: HTMLElement): string => getComputedStyle(element, '::backdrop').backgroundColor;
+
+const shown = (element: HTMLElement): Promise<void> =>
+  waitFor(() => expect(getComputedStyle(element).opacity).toBe('1'));
+
+const gone = (element: HTMLElement): Promise<void> =>
+  waitFor(() => expect(getComputedStyle(element).display).toBe('none'));
+
+export const DialogOverDrawer: Story = {
+  name: 'A dialog over the drawer, Escape twice',
+  render: () => ({ template: `<ui-drawer-stack-demo />` }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const opener = canvas.getByRole('button', { name: 'Northwind Monde' });
     const log = canvasElement.querySelector('[data-story-log]') as HTMLElement;
-
     const drawer = canvasElement.querySelector('ui-drawer dialog') as HTMLElement;
     const dialog = canvasElement.querySelector('ui-dialog dialog') as HTMLElement;
-    const swap = async (press: () => Promise<void>, coming: HTMLElement, leaving: HTMLElement): Promise<void> => {
-      const stop = watchVeils([drawer, dialog]);
-
-      await press();
-      await waitFor(() => expect(coming).toHaveAttribute('open'));
-      await waitFor(() => expect(getComputedStyle(coming).opacity).toBe('1'));
-      await waitFor(() => expect(getComputedStyle(leaving).display).toBe('none'));
-      const { faintest, frames } = stop();
-
-      await expect(frames).toBeGreaterThan(5);
-      await expect(faintest).toBeGreaterThan(0.5);
-    };
 
     await userEvent.click(opener);
-    await waitFor(() => expect(getComputedStyle(drawer).opacity).toBe('1'));
+    await shown(drawer);
+    const buy = within(drawer).getByRole('button', { name: 'Acheter' });
 
-    await swap(() => userEvent.click(within(drawer).getByRole('button', { name: 'Acheter' })), dialog, drawer);
-    await expect(drawer).not.toHaveAttribute('open');
-    await expect(canvas.getByRole('dialog', { name: 'Acheter' })).toBeVisible();
-    await expect(log).toHaveTextContent('dialogue ouvert · tiroir fermé (programmatic)');
+    await userEvent.click(buy);
+    await shown(dialog);
 
-    await swap(() => userEvent.click(within(dialog).getByRole('button', { name: 'Annuler' })), drawer, dialog);
-    await expect(log).toHaveTextContent('tiroir rouvert · dialogue fermé (programmatic)');
+    await expect(drawer).toHaveAttribute('open');
+    await expect(getComputedStyle(drawer).opacity).toBe('1');
+    await expect(veil(drawer)).toBe('oklab(0 0 0 / 0.36)');
+    await expect(veil(dialog)).toBe('oklab(0 0 0 / 0.24)');
+    await expect(dialog.getBoundingClientRect().width).toBe(480);
 
-    await swap(() => userEvent.click(within(drawer).getByRole('button', { name: 'Vendre' })), dialog, drawer);
-    await swap(() => userEvent.click(within(dialog).getByRole('button', { name: 'Fermer' })), drawer, dialog);
-    await expect(log).toHaveTextContent('tiroir rouvert · dialogue fermé (cross)');
-    await expect(canvas.getByRole('dialog', { name: 'Northwind Monde' })).toBeVisible();
+    platformEscape(dialog);
+    await gone(dialog);
+    await expect(drawer).toHaveAttribute('open');
+    await expect(buy).toHaveFocus();
+    await waitFor(() => expect(log).toHaveTextContent('dialogue fermé (escape)'));
 
-    await userEvent.click(within(drawer).getByRole('button', { name: 'Fermer le détail' }));
-
-    await waitFor(() => expect(canvas.queryByRole('dialog')).not.toBeInTheDocument());
+    platformEscape(drawer);
+    await gone(drawer);
     await expect(opener).toHaveFocus();
-    await waitFor(() => expect(log).toHaveTextContent('tiroir fermé (cross)'));
+    await waitFor(() => expect(log).toHaveTextContent('tiroir fermé (escape)'));
+
+    await userEvent.click(opener);
+    await shown(drawer);
+    const sell = within(drawer).getByRole('button', { name: 'Vendre' });
+
+    await userEvent.click(sell);
+    await shown(dialog);
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Vendre 10 parts' }));
+    await gone(dialog);
+
+    await expect(drawer).toHaveAttribute('open');
+    await expect(sell).toHaveFocus();
+    await expect(drawer.querySelector('[data-story-quantity]')).toHaveTextContent('30 parts');
+    await waitFor(() => expect(log).toHaveTextContent('dialogue fermé (programmatic)'));
+  },
+};
+
+export const DialogOverDrawerOpen: Story = {
+  name: 'A dialog over the drawer, both open',
+  render: () => ({ template: `<ui-drawer-stack-demo stacked />` }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const dialog = await canvas.findByRole('dialog', { name: 'Acheter' });
+
+    await shown(dialog);
+    await expect(canvas.getByRole('dialog', { name: 'Northwind Monde' })).toHaveAttribute('open');
+    await expect(veil(dialog)).toBe('oklab(0 0 0 / 0.24)');
   },
 };
 

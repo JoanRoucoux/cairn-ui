@@ -1,4 +1,4 @@
-import { Component, Injector, type WritableSignal, afterNextRender, inject, signal } from '@angular/core';
+import { Component, Injector, afterNextRender, booleanAttribute, inject, input, signal } from '@angular/core';
 
 import { UiButton } from '@joanroucoux/cairn-ui/button';
 import { UiDialog } from '@joanroucoux/cairn-ui/dialog';
@@ -36,37 +36,8 @@ export const defaultTemplate = `
 
 type Trade = 'Acheter' | 'Vendre';
 
-export type VeilReading = { faintest: number; darkest: number; frames: number };
-
-const VEIL_ALPHA = 0.36;
-
-export const watchVeils = (dialogs: HTMLElement[]): (() => VeilReading) => {
-  const reading: VeilReading = { faintest: Infinity, darkest: 0, frames: 0 };
-  let watching = true;
-  const veil = (dialog: HTMLElement): number =>
-    getComputedStyle(dialog).display === 'none' ? 0 : Number(getComputedStyle(dialog, '::backdrop').opacity);
-  const sample = (): void => {
-    const veils = dialogs.map(veil);
-    const coverage = 1 - veils.reduce((through, opacity) => through * (1 - VEIL_ALPHA * opacity), 1);
-
-    reading.faintest = Math.min(reading.faintest, coverage / VEIL_ALPHA);
-    reading.darkest = Math.max(reading.darkest, coverage / VEIL_ALPHA);
-    reading.frames += 1;
-    if (watching) {
-      requestAnimationFrame(sample);
-    }
-  };
-
-  sample();
-
-  return () => {
-    watching = false;
-    return reading;
-  };
-};
-
 @Component({
-  selector: 'ui-drawer-swap-demo',
+  selector: 'ui-drawer-stack-demo',
   imports: [UiButton, UiDialog, UiDrawer],
   template: `
     <div class="flex flex-col items-start gap-4 p-4">
@@ -82,10 +53,12 @@ export const watchVeils = (dialogs: HTMLElement[]): (() => VeilReading) => {
       (closed)="note('tiroir fermé (' + $event + ')')"
       (dismissed)="drawer.set(false)"
     >
-      <p class="text-label text-(--muted-foreground)">40 parts sur le Compte-titres Contoso.</p>
+      <p class="text-label text-(--muted-foreground)" data-story-quantity>
+        {{ quantity() }} parts sur le Compte-titres Contoso.
+      </p>
       <div class="grid grid-cols-2 gap-2">
-        <button type="button" ui-button variant="outline" (click)="replaceBy('Vendre')">Vendre</button>
-        <button type="button" ui-button (click)="replaceBy('Acheter')">Acheter</button>
+        <button type="button" ui-button (click)="openTrade('Acheter')">Acheter</button>
+        <button type="button" ui-button variant="outline" (click)="openTrade('Vendre')">Vendre</button>
       </div>
     </ui-drawer>
 
@@ -93,47 +66,49 @@ export const watchVeils = (dialogs: HTMLElement[]): (() => VeilReading) => {
       closeLabel="Fermer"
       description="Northwind Monde · Compte-titres Contoso"
       width="480px"
-      [heading]="trade() ?? 'Acheter'"
+      [heading]="trade()"
       [open]="dialog()"
       (closed)="note('dialogue fermé (' + $event + ')')"
-      (dismissed)="backToDrawer()"
+      (dismissed)="dialog.set(false)"
     >
-      <p class="text-label text-(--muted-foreground)">Le tiroir revient sur la même ligne à la fermeture.</p>
-      <button dialogActions type="button" ui-button variant="outline" (click)="backToDrawer()">Annuler</button>
-      <button dialogActions type="button" ui-button (click)="backToDrawer()">{{ trade() }} 10 parts</button>
+      <p class="text-label text-(--muted-foreground)">Le tiroir reste ouvert dessous.</p>
+      <button dialogActions type="button" ui-button variant="outline" (click)="dialog.set(false)">Annuler</button>
+      <button dialogActions type="button" ui-button (click)="submit()">{{ trade() }} 10 parts</button>
     </ui-dialog>
   `,
 })
-export class DrawerSwapDemo {
+export class DrawerStackDemo {
+  readonly stacked = input(false, { transform: booleanAttribute });
+
   protected readonly drawer = signal(false);
   protected readonly dialog = signal(false);
-  protected readonly trade = signal<Trade | null>(null);
+  protected readonly trade = signal<Trade>('Acheter');
+  protected readonly quantity = signal(40);
   protected readonly log = signal<string[]>([]);
 
   readonly #injector = inject(Injector);
 
-  protected replaceBy(trade: Trade): void {
-    this.trade.set(trade);
-    this.#swap(this.drawer, this.dialog, 'dialogue ouvert');
+  constructor() {
+    afterNextRender(() => {
+      if (this.stacked()) {
+        this.drawer.set(true);
+        afterNextRender(() => this.dialog.set(true), { injector: this.#injector });
+      }
+    });
   }
 
-  protected backToDrawer(): void {
-    this.#swap(this.dialog, this.drawer, 'tiroir rouvert');
+  protected openTrade(trade: Trade): void {
+    this.trade.set(trade);
+    this.dialog.set(true);
+  }
+
+  protected submit(): void {
+    this.quantity.update((quantity) => quantity + (this.trade() === 'Acheter' ? 10 : -10));
+    this.dialog.set(false);
   }
 
   protected note(entry: string): void {
     this.log.update((log) => [...log, entry]);
-  }
-
-  #swap(leaving: WritableSignal<boolean>, coming: WritableSignal<boolean>, entry: string): void {
-    leaving.set(false);
-    afterNextRender(
-      () => {
-        coming.set(true);
-        this.note(entry);
-      },
-      { injector: this.#injector },
-    );
   }
 }
 

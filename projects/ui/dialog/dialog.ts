@@ -184,6 +184,7 @@ export class UiDialog {
   protected readonly descriptionId = `${this.headingId}-description`;
   protected readonly bodyId = `${this.headingId}-body`;
   protected readonly scrollable = signal(false);
+  protected readonly stacked = signal(false);
 
   protected readonly describedBy = computed(() => {
     if (this.description()) {
@@ -218,7 +219,7 @@ export class UiDialog {
 
   protected readonly classes = computed(
     () =>
-      `open:flex w-full flex-col overflow-hidden m-auto mt-auto max-lg:max-h-[calc(100dvh-2rem)] lg:max-h-[calc(100dvh-96px)] max-lg:mb-0 max-lg:max-w-none max-lg:rounded-b-none lg:max-w-(--dialog-width) rounded-container bg-(--card) text-(--foreground) shadow-[0_0_0_1px_var(--border),0_24px_64px_rgb(0_0_0/0.24)] max-lg:shadow-[0_-1px_0_var(--border),0_-12px_32px_rgb(0_0_0/0.16)] backdrop:bg-black/[0.36] ${this.sheet() === 'full' ? 'max-lg:h-[calc(100dvh-58px)]' : ''}`,
+      `open:flex w-full flex-col overflow-hidden m-auto mt-auto max-lg:max-h-[calc(100dvh-2rem)] lg:max-h-[calc(100dvh-96px)] max-lg:mb-0 max-lg:max-w-none max-lg:rounded-b-none lg:max-w-(--dialog-width) rounded-container bg-(--card) text-(--foreground) shadow-[0_0_0_1px_var(--border),0_24px_64px_rgb(0_0_0/0.24)] max-lg:shadow-[0_-1px_0_var(--border),0_-12px_32px_rgb(0_0_0/0.16)] ${this.stacked() ? 'backdrop:bg-black/[0.24]' : 'backdrop:bg-black/[0.36]'} ${this.sheet() === 'full' ? 'max-lg:h-[calc(100dvh-58px)]' : ''}`,
   );
 
   readonly #host = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -263,6 +264,13 @@ export class UiDialog {
       dismissed: this.dismissed,
       closed: this.closed,
       reset: () => this.#drag?.reset(),
+      opening: () => this.stacked.set(this.#overAnotherModal()),
     });
+  }
+
+  #overAnotherModal(): boolean {
+    const open = this.#host.nativeElement.ownerDocument.querySelectorAll('dialog[open]');
+
+    return Array.from(open).some((dialog) => dialog.matches(':modal'));
   }
 }

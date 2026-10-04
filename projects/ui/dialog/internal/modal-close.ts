@@ -10,12 +10,14 @@ export type ModalCloseConfig<R extends string> = {
   readonly dismissed: OutputEmitterRef<void>;
   readonly closed: OutputEmitterRef<R | SharedReason>;
   readonly reset?: () => void;
+  readonly opening?: () => void;
 };
 
 /**
  * The close protocol of a modal on the native <dialog> under the host: `open` drives `showModal()` and `close()`,
  * Escape and a press-and-release on the veil close it unless `busy`, `dismissed` reports a close the user asked for
- * and `closed` its reason once the exit transition has played. Must be created in an injection context.
+ * and `closed` its reason once the exit transition has played. `opening` runs just before `showModal()`. Must be
+ * created in an injection context.
  */
 export class ModalClose<R extends string> {
   readonly #host = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -35,6 +37,7 @@ export class ModalClose<R extends string> {
       if (config.open() && !dialog.open) {
         this.#cancelExit();
         config.reset?.();
+        config.opening?.();
         dialog.showModal();
       } else if (!config.open() && dialog.open) {
         this.close('programmatic');

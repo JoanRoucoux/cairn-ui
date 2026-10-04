@@ -44,6 +44,8 @@ JavaScript.
 Under \`64rem\` it rises from the bottom as a sheet, with a drag handle, 16px padding and its footer
 clear of the home indicator; above that width it is centered with 24px padding. Its body scrolls on
 its own when the content is taller than the screen, so the header and the footer stay in place.
+Its veil is \`rgb(0 0 0 / 0.36)\`; opened while another modal is open (over a \`ui-drawer\`), it draws
+a lighter \`rgb(0 0 0 / 0.24)\` over that one's, with nothing to set.
 
 The header carries the title, an optional subtitle (\`description\`) and a close cross, which exists
 only when the consumer passes \`closeLabel\`. The width is set by the consumer: \`md\`, \`lg\` or any CSS

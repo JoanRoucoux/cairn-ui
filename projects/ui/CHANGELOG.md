@@ -30,9 +30,11 @@
   Escape, the veil and the optional 36px cross close it; `dismissed` and `closed` (`escape`, `backdrop`, `cross`,
   `programmatic`) follow the protocol of `ui-dialog`, and `busy` keeps it open. Without `heading` it draws no header
   and `label` names it; with neither it throws. It enters with opacity and a 24px slide over `--duration-base` on
-  `--ease-out` and leaves the reverse way over `--duration-exit`; under reduced motion it only fades.
+  `--ease-out` and leaves the reverse way over `--duration-exit`; under reduced motion it only fades. A `ui-dialog`
+  opened from it opens over it and the drawer stays underneath: Escape closes the dialog, then the drawer.
 - `ModalClose` (`@joanroucoux/cairn-ui/dialog`): the close protocol `ui-dialog` and `ui-drawer` share (Escape,
-  press-and-release on the veil, `busy`, `dismissed`, then `closed` once the exit transition has played).
+  press-and-release on the veil, `busy`, `dismissed`, then `closed` once the exit transition has played). An
+  optional `opening` callback runs just before `showModal()`.
 - `select[uiPillSelect]` (`@joanroucoux/cairn-ui/pill-select`): a compact pill-shaped native select, outlined at rest
   and solid primary when `active`, 34px in a 44px target on touch and 32px with a fine pointer, with a 2px focus
   outline outside the pill. Its chevron comes from the new `--chevron-pill` and `--chevron-pill-active` tokens (the
@@ -66,6 +68,8 @@
   above the footer when `closeLabel` draws the cross. The `confirm` variant has one 24px padding and no hairlines,
   and an empty confirm footer has no top padding.
 - `ui-dialog` is centred on a desktop and capped at `calc(100dvh - 96px)`; the cross icon is 22px in every dialog.
+- `ui-dialog` opened while another modal is open (over a `ui-drawer`) draws a lighter `rgb(0 0 0 / 0.24)` veil over
+  that one's; alone it keeps `rgb(0 0 0 / 0.36)`. It decides when it opens, with no input.
 - `ui-dialog` width: the default stays `lg` (560px) and `confirm` defaults to 440px; `width` still takes `md`, `lg`
   or any CSS length.
 - `ui-line-chart` shows its tooltip on a tap: `pointerdown` shows it, `pointermove` follows, `pointerleave` and
