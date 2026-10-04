@@ -1,7 +1,8 @@
-import { Component, inject, input } from '@angular/core';
+import { Component, inject, input, model } from '@angular/core';
 
 import { UiActionBar } from '@joanroucoux/cairn-ui/action-bar';
 import { UiButton } from '@joanroucoux/cairn-ui/button';
+import { UiDialog } from '@joanroucoux/cairn-ui/dialog';
 import { UiTab, UiTabBar } from '@joanroucoux/cairn-ui/tab-bar';
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
@@ -11,7 +12,7 @@ import { UiToasts } from './toasts';
 
 @Component({
   selector: 'ui-toast-demo',
-  imports: [UiActionBar, UiButton, UiToaster, UiTab, UiTabBar],
+  imports: [UiActionBar, UiButton, UiDialog, UiToaster, UiTab, UiTabBar],
   template: `
     <div class="p-4">
       <button class="rounded-control border border-(--border) px-4 py-2" type="button" (click)="show()">
@@ -19,6 +20,14 @@ import { UiToasts } from './toasts';
       </button>
     </div>
     <ui-toaster />
+    @if (dialog()) {
+      <ui-dialog heading="Saisir un cours" open (dismissed)="dialog.set(false)">
+        <button class="rounded-control border border-(--border) px-4 py-2" type="button" (click)="show()">
+          Show a toast over the dialog
+        </button>
+        <button dialogActions type="button" ui-button variant="outline" (click)="dialog.set(false)">Fermer</button>
+      </ui-dialog>
+    }
     @if (actionBar()) {
       <ui-action-bar>
         <button size="tall" type="button" ui-button variant="outline">Vendre</button>
@@ -35,6 +44,7 @@ import { UiToasts } from './toasts';
 })
 class ToastDemo {
   readonly actionBar = input(false);
+  readonly dialog = model(false);
 
   private readonly toasts = inject(UiToasts);
 
@@ -51,13 +61,16 @@ const meta: Meta = {
       description: {
         component: `A short confirmation after an action that changed data. \`UiToasts.show(message)\` puts a
 sentence in the single slot of the \`<ui-toaster />\` the app shell renders once. A new message
-replaces the current one in place; the message fades out after \`--toast-duration\` (5 s) and the timer
-stops while the pointer is over it or focus is within.
+replaces the current one in place; the message fades out after \`--toast-duration\` (4 s) and the timer
+stops while the pointer is over it.
 
 Below \`64rem\` it is centred 8px above \`ui-tab-bar\` (its \`--tab-bar-height\`, 52px plus the safe area), or 8px above
 \`ui-action-bar\` when one is on the page (the bar publishes its height as \`--action-bar-height\`); from \`64rem\` it sits
 bottom right, 24px from the edges. It enters with opacity and an 8px rise over \`--duration-base\`, and
 leaves with opacity over \`--duration-exit\`. Under \`prefers-reduced-motion: reduce\` it only fades.
+
+The toaster is a \`popover="manual"\` shown in the top layer, and shown again every time a message arrives, so a message
+stays above an open \`ui-dialog\` and its backdrop.
 
 #### When to use
 
@@ -123,4 +136,19 @@ export const PhoneWithActionBar: Story = {
 export const Desktop: Story = {
   parameters: { viewport: { width: 1440, height: 700 } },
   play,
+};
+
+export const OverDialog: Story = {
+  name: 'Over a modal dialog',
+  parameters: { viewport: { width: 1440, height: 700 } },
+  render: () => ({ template: '<ui-toast-demo [dialog]="true" />' }),
+  play: async ({ canvasElement }) => {
+    const status = within(canvasElement).getByRole('status');
+    await expect(status.matches(':popover-open')).toBe(true);
+
+    await userEvent.click(within(canvasElement).getByRole('button', { name: 'Show a toast over the dialog' }));
+
+    await waitFor(() => expect(status).toHaveTextContent('Achat enregistré'));
+    await expect(status.matches(':popover-open')).toBe(true);
+  },
 };

@@ -77,7 +77,7 @@
   --pulse-duration: 1600ms;
   --duration-spin: 800ms;
   --duration-highlight: 1200ms;
-  --toast-duration: 5000ms;
+  --toast-duration: 4000ms;
 }
 
 :root {

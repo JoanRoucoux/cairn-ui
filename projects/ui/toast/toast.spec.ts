@@ -1,5 +1,7 @@
+import { Component, inject } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
+import { UiDialog } from '@joanroucoux/cairn-ui/dialog';
 import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
@@ -74,12 +76,12 @@ describe('UiToaster', () => {
     expect(screen.getByText('Second')).toBe(first);
   });
 
-  it('dismisses after 5 s by default', async () => {
+  it('dismisses after 4 s by default', async () => {
     const { toasts } = await setup();
 
     toasts.show('Fait');
     await flush();
-    await vi.advanceTimersByTimeAsync(4999);
+    await vi.advanceTimersByTimeAsync(3999);
     expect(toasts.toast()).not.toBeNull();
     await vi.advanceTimersByTimeAsync(1);
 
@@ -107,10 +109,10 @@ describe('UiToaster', () => {
 
     toasts.show('Un');
     await flush();
-    await vi.advanceTimersByTimeAsync(4000);
+    await vi.advanceTimersByTimeAsync(3000);
     toasts.show('Deux');
     await flush();
-    await vi.advanceTimersByTimeAsync(4000);
+    await vi.advanceTimersByTimeAsync(3000);
 
     expect(toasts.toast()?.text).toBe('Deux');
     await vi.advanceTimersByTimeAsync(1000);
@@ -123,7 +125,7 @@ describe('UiToaster', () => {
 
     toasts.show('Fait');
     await flush();
-    await vi.advanceTimersByTimeAsync(3000);
+    await vi.advanceTimersByTimeAsync(2000);
     await user.hover(screen.getByText('Fait'));
     await vi.advanceTimersByTimeAsync(10000);
     expect(toasts.toast()).not.toBeNull();
@@ -135,35 +137,18 @@ describe('UiToaster', () => {
     expect(toasts.toast()).toBeNull();
   });
 
-  it('pauses while focus is within', async () => {
-    const { toasts } = await setup();
-
-    toasts.show('Fait');
-    await flush();
-    const message = screen.getByText('Fait');
-    message.dispatchEvent(new FocusEvent('focusin', { bubbles: true }));
-    await flush();
-    await vi.advanceTimersByTimeAsync(10000);
-    expect(toasts.toast()).not.toBeNull();
-
-    message.dispatchEvent(new FocusEvent('focusout', { bubbles: true }));
-    await flush();
-    await vi.advanceTimersByTimeAsync(5000);
-    expect(toasts.toast()).toBeNull();
-  });
-
   it('starts a fresh timer for a message shown while paused', async () => {
     const { toasts } = await setup();
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
 
     toasts.show('Un');
     await flush();
-    await vi.advanceTimersByTimeAsync(4000);
+    await vi.advanceTimersByTimeAsync(3000);
     await user.hover(screen.getByText('Un'));
     toasts.show('Deux');
     await flush();
     await user.unhover(screen.getByText('Deux'));
-    await vi.advanceTimersByTimeAsync(4999);
+    await vi.advanceTimersByTimeAsync(3999);
 
     expect(toasts.toast()?.text).toBe('Deux');
     await vi.advanceTimersByTimeAsync(1);
@@ -218,24 +203,66 @@ describe('UiToaster replacement and reset', () => {
     await flush();
     toasts.show('Deux');
     await flush();
-    await vi.advanceTimersByTimeAsync(5000);
+    await vi.advanceTimersByTimeAsync(4000);
 
     expect(toasts.toast()).toBeNull();
   });
+});
 
-  it('starts the next timer unpaused after a programmatic dismiss while focused', async () => {
-    const { toasts } = await setup();
+@Component({
+  imports: [UiToaster],
+  template: '<ui-toaster />',
+})
+class QueuedBeforeRender {
+  constructor() {
+    inject(UiToasts).show('Déjà là');
+  }
+}
 
-    toasts.show('Un');
-    await flush();
-    screen.getByText('Un').dispatchEvent(new FocusEvent('focusin', { bubbles: true }));
-    await flush();
-    toasts.dismiss();
-    await flush();
-    toasts.show('Deux');
-    await flush();
-    await vi.advanceTimersByTimeAsync(5000);
+describe('UiToaster top layer', () => {
+  beforeEach(() => vi.useFakeTimers({ shouldAdvanceTime: false }));
+  afterEach(() => vi.useRealTimers());
 
-    expect(toasts.toast()).toBeNull();
+  it('is a manual popover shown once rendered', async () => {
+    const { host } = await setup();
+
+    expect(host).toHaveAttribute('popover', 'manual');
+    expect(host.style.display).toBe('block');
+  });
+
+  it('shows a message queued before the first render without hiding a popover that is not open yet', async () => {
+    const hidden = vi.spyOn(HTMLElement.prototype, 'hidePopover');
+
+    const { fixture } = await render(QueuedBeforeRender);
+    await flush();
+    const host = fixture.nativeElement.querySelector('ui-toaster') as HTMLElement;
+
+    expect(hidden).not.toHaveBeenCalled();
+    expect(host.style.display).toBe('block');
+    expect(host).toHaveTextContent('Déjà là');
+  });
+
+  it('is shown again after a modal dialog opens, on top of it', async () => {
+    const { fixture } = await render(
+      `<ui-toaster />
+       <ui-dialog heading="Enter a price" [open]="open"><button dialogActions type="button">Cancel</button></ui-dialog>`,
+      { imports: [UiToaster, UiDialog], componentProperties: { open: false } },
+    );
+    const toaster = fixture.nativeElement.querySelector('ui-toaster') as HTMLElement;
+    const shown = vi.spyOn(toaster, 'showPopover');
+    const hidden = vi.spyOn(toaster, 'hidePopover');
+
+    fixture.componentInstance.open = true;
+    fixture.detectChanges();
+    await flush();
+    expect(fixture.nativeElement.querySelector('dialog')).toHaveAttribute('open');
+
+    TestBed.inject(UiToasts).show('Achat enregistré');
+    await flush();
+
+    expect(hidden).toHaveBeenCalledTimes(1);
+    expect(shown).toHaveBeenCalledTimes(1);
+    expect(hidden.mock.invocationCallOrder[0]!).toBeLessThan(shown.mock.invocationCallOrder[0]!);
+    expect(toaster.style.display).toBe('block');
   });
 });

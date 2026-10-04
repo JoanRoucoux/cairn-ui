@@ -1,8 +1,8 @@
-import { Component, DestroyRef, ElementRef, effect, inject, signal, untracked } from '@angular/core';
+import { Component, DestroyRef, ElementRef, afterNextRender, effect, inject, signal, untracked } from '@angular/core';
 
 import { UiToasts } from './toasts';
 
-const DEFAULT_DURATION = 5000;
+const DEFAULT_DURATION = 4000;
 
 const TOAST_CLASSES =
   'pointer-events-auto max-w-[min(28rem,calc(100vw-2rem))] rounded-container bg-(--elevated) px-4 py-3 text-label text-(--foreground) shadow-[0_8px_24px_rgb(0_0_0/0.16),inset_0_0_0_1px_var(--border)] transition-[opacity,translate] duration-(--duration-base) ease-out starting:opacity-0 starting:translate-y-2 motion-reduce:starting:translate-y-0';
@@ -32,8 +32,6 @@ const readDuration = (host: HTMLElement): number => {
       <div
         animate.leave="ui-leave-fade"
         [class]="toastClasses"
-        (focusin)="setFocused(true)"
-        (focusout)="setFocused(false)"
         (mouseenter)="setHovered(true)"
         (mouseleave)="setHovered(false)"
       >
@@ -43,8 +41,9 @@ const readDuration = (host: HTMLElement): number => {
   `,
   host: {
     role: 'status',
+    popover: 'manual',
     class:
-      'pointer-events-none fixed inset-x-0 z-50 flex justify-center bottom-[calc(var(--tab-bar-height,calc(52px+env(safe-area-inset-bottom)))+var(--action-bar-height,0px)+8px)] lg:inset-x-auto lg:right-6 lg:bottom-6',
+      'pointer-events-none fixed inset-x-0 top-auto z-50 m-0 flex h-auto w-auto justify-center overflow-visible border-0 bg-transparent p-0 bottom-[calc(var(--tab-bar-height,calc(52px+env(safe-area-inset-bottom)))+var(--action-bar-height,0px)+8px)] lg:inset-x-auto lg:right-6 lg:bottom-6',
   },
 })
 export class UiToaster {
@@ -53,7 +52,7 @@ export class UiToaster {
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   private readonly hovered = signal(false);
-  private readonly focused = signal(false);
+  private popoverShown = false;
   private lastId = 0;
   private remaining = DEFAULT_DURATION;
   private startedAt = 0;
@@ -62,16 +61,16 @@ export class UiToaster {
   constructor() {
     effect(() => {
       const toast = this.toasts.toast();
-      const paused = this.hovered() || this.focused();
+      const paused = this.hovered();
 
       untracked(() => {
         if (!toast) {
           this.stop();
           this.hovered.set(false);
-          this.focused.set(false);
           return;
         }
 
+        this.raise();
         this.host.querySelectorAll('.ui-leave-fade').forEach((leaving) => leaving.remove());
 
         if (paused) {
@@ -82,6 +81,11 @@ export class UiToaster {
       });
     });
 
+    afterNextRender(() => {
+      this.host.showPopover();
+      this.popoverShown = true;
+    });
+
     inject(DestroyRef).onDestroy(() => this.stop());
   }
 
@@ -89,8 +93,11 @@ export class UiToaster {
     this.hovered.set(value);
   }
 
-  protected setFocused(value: boolean): void {
-    this.focused.set(value);
+  private raise(): void {
+    if (this.popoverShown) {
+      this.host.hidePopover();
+      this.host.showPopover();
+    }
   }
 
   private resume(id: number): void {
