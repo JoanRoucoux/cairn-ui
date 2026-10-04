@@ -3,7 +3,6 @@ import {
   DestroyRef,
   ElementRef,
   afterNextRender,
-  afterRenderEffect,
   booleanAttribute,
   computed,
   inject,
@@ -12,8 +11,8 @@ import {
   signal,
 } from '@angular/core';
 
-import { afterExit } from './internal/dialog-exit';
 import { DIALOG_STYLES } from './internal/dialog-styles';
+import { ModalClose } from './internal/modal-close';
 import { SheetDrag } from './internal/sheet-drag';
 
 /** Named dialog widths; any other CSS length is accepted as is. */
@@ -86,9 +85,9 @@ const nextId = (() => {
 @Component({
   selector: 'ui-dialog',
   host: {
-    '(pointerdown)': 'onPointerDown($event)',
-    '(click)': 'onClick($event)',
-    '(keydown)': 'onKeydown($event)',
+    '(pointerdown)': 'modal.onPointerDown($event)',
+    '(click)': 'modal.onClick($event)',
+    '(keydown)': 'modal.onKeydown($event)',
   },
   template: `
     <dialog
@@ -99,8 +98,8 @@ const nextId = (() => {
       [attr.role]="variant() === 'confirm' ? 'alertdialog' : 'dialog'"
       [class]="classes()"
       [style.--dialog-width]="widthValue()"
-      (cancel)="onCancel($event)"
-      (close)="onNativeClose()"
+      (cancel)="modal.onCancel($event)"
+      (close)="modal.onNativeClose()"
     >
       <div
         aria-hidden="true"
@@ -132,7 +131,7 @@ const nextId = (() => {
             [attr.aria-label]="closeLabel()"
             [class]="crossClasses"
             [disabled]="busy()"
-            (click)="close('cross')"
+            (click)="modal.close('cross')"
           >
             <svg
               aria-hidden="true"
@@ -224,31 +223,33 @@ export class UiDialog {
 
   readonly #host = inject<ElementRef<HTMLElement>>(ElementRef);
 
+  #drag: SheetDrag | null = null;
+
+  protected readonly modal: ModalClose<DialogCloseReason>;
+
   constructor() {
     const destroyRef = inject(DestroyRef);
 
     afterNextRender(() => {
       const host = this.#host.nativeElement;
+      const dialog = host.querySelector('dialog') as HTMLDialogElement;
       const grips = ['[data-dialog-handle]', '[data-dialog-header]'].map(
         (grip) => host.querySelector(grip) as HTMLElement,
       );
 
       this.#drag = new SheetDrag(
-        this.#dialog,
+        dialog,
         grips,
-        () => this.close('drag'),
+        () => this.modal.close('drag'),
         () => !this.busy(),
       );
-      destroyRef.onDestroy(() => {
-        this.#drag?.destroy();
-        this.#cancelExit();
-      });
+      destroyRef.onDestroy(() => this.#drag?.destroy());
 
       if (typeof ResizeObserver === 'undefined') {
         return;
       }
 
-      const body = this.#host.nativeElement.querySelector('[data-dialog-body]') as HTMLElement;
+      const body = host.querySelector('[data-dialog-body]') as HTMLElement;
       const observer = new ResizeObserver(() => this.scrollable.set(body.scrollHeight > body.clientHeight));
 
       observer.observe(body);
@@ -256,94 +257,12 @@ export class UiDialog {
       destroyRef.onDestroy(() => observer.disconnect());
     });
 
-    afterRenderEffect(() => {
-      const dialog = this.#host.nativeElement.querySelector('dialog') as HTMLDialogElement;
-
-      if (this.open() && !dialog.open) {
-        this.#cancelExit();
-        this.#drag?.reset();
-        dialog.showModal();
-      } else if (!this.open() && dialog.open) {
-        this.close('programmatic');
-      }
-    });
-  }
-
-  #pressedOnBackdrop = false;
-  #drag: SheetDrag | null = null;
-  #reason: DialogCloseReason | null = null;
-  #cancelExit: () => void = () => undefined;
-
-  protected close(reason: DialogCloseReason): void {
-    if (this.#dialog.open) {
-      this.#reason = reason;
-      this.#dialog.close();
-    }
-  }
-
-  protected onCancel(event: Event): void {
-    if (event.target !== event.currentTarget) {
-      return;
-    }
-    event.preventDefault();
-    if (!this.busy()) {
-      this.close('escape');
-    }
-  }
-
-  protected onKeydown(event: KeyboardEvent): void {
-    if (event.key === 'Escape' && this.busy()) {
-      event.preventDefault();
-    }
-  }
-
-  protected onPointerDown(event: MouseEvent): void {
-    this.#pressedOnBackdrop = event.target === this.#dialog && this.#outside(event);
-  }
-
-  protected onClick(event: MouseEvent): void {
-    if (this.#pressedOnBackdrop && !this.busy() && event.target === this.#dialog && this.#outside(event)) {
-      this.close('backdrop');
-    }
-    this.#pressedOnBackdrop = false;
-  }
-
-  get #dialog(): HTMLDialogElement {
-    return this.#host.nativeElement.querySelector('dialog') as HTMLDialogElement;
-  }
-
-  #outside(event: MouseEvent): boolean {
-    const rect = this.#dialog.getBoundingClientRect();
-
-    return (
-      event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom
-    );
-  }
-
-  protected onNativeClose(): void {
-    const asked = this.#reason;
-
-    this.#reason = null;
-    if (this.#dialog.open) {
-      return;
-    }
-    if (asked === null && this.busy()) {
-      this.#dialog.showModal();
-      return;
-    }
-    const reason = asked ?? 'escape';
-    if (reason !== 'programmatic') {
-      this.dismissed.emit();
-    }
-    this.#awaitExit(reason);
-  }
-
-  #awaitExit(reason: DialogCloseReason): void {
-    this.#cancelExit();
-    this.#cancelExit = afterExit(this.#dialog, () => {
-      this.#cancelExit = () => undefined;
-      this.#drag?.reset();
-      this.closed.emit(reason);
+    this.modal = new ModalClose<DialogCloseReason>({
+      open: this.open,
+      busy: this.busy,
+      dismissed: this.dismissed,
+      closed: this.closed,
+      reset: () => this.#drag?.reset(),
     });
   }
 }

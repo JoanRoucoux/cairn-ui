@@ -20,8 +20,8 @@
   `programmatic`) follow the protocol of `ui-dialog`, and `busy` keeps it open. Without `heading` it draws no header
   and `label` names it; with neither it throws. It enters with opacity and a 24px slide over `--duration-base` on `--ease-out` and leaves
   the reverse way over `--duration-exit`; under reduced motion it only fades.
-- `afterExit` is exported from `@joanroucoux/cairn-ui/dialog`: it calls back once the exit transition of an element
-  has played, or at once when it has none.
+- `ModalClose` is exported from `@joanroucoux/cairn-ui/dialog`: the close protocol `ui-dialog` and `ui-drawer` share
+  (Escape, press-and-release on the veil, `busy`, `dismissed`, `closed` once the exit transition has played).
 - `select[uiPillSelect]` (`@joanroucoux/cairn-ui/pill-select`): a compact pill-shaped native select, outlined at rest and solid
   primary when `active`, 34 px in a 44 px target on touch and 32 px with a fine pointer. Its chevron comes from the new
   `--chevron-pill` and `--chevron-pill-active` tokens (the `--foreground` and `--primary-foreground` of each scheme).

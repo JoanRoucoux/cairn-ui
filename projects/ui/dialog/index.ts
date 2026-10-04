@@ -9,4 +9,4 @@ export {
   type DialogVariant,
   type DialogWidth,
 } from './dialog';
-export { afterExit } from './internal/dialog-exit';
+export { ModalClose, type ModalCloseConfig } from './internal/modal-close';

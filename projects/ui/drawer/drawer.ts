@@ -1,16 +1,6 @@
-import {
-  Component,
-  DestroyRef,
-  ElementRef,
-  afterRenderEffect,
-  booleanAttribute,
-  computed,
-  inject,
-  input,
-  output,
-} from '@angular/core';
+import { Component, booleanAttribute, computed, input, output } from '@angular/core';
 
-import { afterExit } from '@joanroucoux/cairn-ui/dialog';
+import { ModalClose } from '@joanroucoux/cairn-ui/dialog';
 
 import { DRAWER_STYLES } from './internal/drawer-styles';
 
@@ -37,9 +27,9 @@ const nextId = (() => {
 @Component({
   selector: 'ui-drawer',
   host: {
-    '(pointerdown)': 'onPointerDown($event)',
-    '(click)': 'onClick($event)',
-    '(keydown)': 'onKeydown($event)',
+    '(pointerdown)': 'modal.onPointerDown($event)',
+    '(click)': 'modal.onClick($event)',
+    '(keydown)': 'modal.onKeydown($event)',
   },
   template: `
     <dialog
@@ -49,8 +39,8 @@ const nextId = (() => {
       [attr.aria-label]="ariaLabel()"
       [attr.aria-labelledby]="heading() ? headingId : null"
       [style.--drawer-width]="width()"
-      (cancel)="onCancel($event)"
-      (close)="onNativeClose()"
+      (cancel)="modal.onCancel($event)"
+      (close)="modal.onNativeClose()"
     >
       @if (heading()) {
         <div class="flex items-start justify-between gap-3">
@@ -68,7 +58,7 @@ const nextId = (() => {
               type="button"
               [attr.aria-label]="closeLabel()"
               [disabled]="busy()"
-              (click)="close('cross')"
+              (click)="modal.close('cross')"
             >
               <svg
                 aria-hidden="true"
@@ -116,92 +106,10 @@ export class UiDrawer {
     return this.label();
   });
 
-  readonly #host = inject<ElementRef<HTMLElement>>(ElementRef);
-
-  #pressedOnBackdrop = false;
-  #reason: DrawerCloseReason | null = null;
-  #cancelExit: () => void = () => undefined;
-
-  constructor() {
-    inject(DestroyRef).onDestroy(() => this.#cancelExit());
-
-    afterRenderEffect(() => {
-      const drawer = this.#drawer;
-
-      if (this.open() && !drawer.open) {
-        this.#cancelExit();
-        drawer.showModal();
-      } else if (!this.open() && drawer.open) {
-        this.close('programmatic');
-      }
-    });
-  }
-
-  protected close(reason: DrawerCloseReason): void {
-    if (this.#drawer.open) {
-      this.#reason = reason;
-      this.#drawer.close();
-    }
-  }
-
-  protected onCancel(event: Event): void {
-    if (event.target !== event.currentTarget) {
-      return;
-    }
-    event.preventDefault();
-    if (!this.busy()) {
-      this.close('escape');
-    }
-  }
-
-  protected onKeydown(event: KeyboardEvent): void {
-    if (event.key === 'Escape' && this.busy()) {
-      event.preventDefault();
-    }
-  }
-
-  protected onPointerDown(event: MouseEvent): void {
-    this.#pressedOnBackdrop = event.target === this.#drawer && this.#outside(event);
-  }
-
-  protected onClick(event: MouseEvent): void {
-    if (this.#pressedOnBackdrop && !this.busy() && event.target === this.#drawer && this.#outside(event)) {
-      this.close('backdrop');
-    }
-    this.#pressedOnBackdrop = false;
-  }
-
-  protected onNativeClose(): void {
-    const asked = this.#reason;
-
-    this.#reason = null;
-    if (this.#drawer.open) {
-      return;
-    }
-    if (asked === null && this.busy()) {
-      this.#drawer.showModal();
-      return;
-    }
-    const reason = asked ?? 'escape';
-    if (reason !== 'programmatic') {
-      this.dismissed.emit();
-    }
-    this.#cancelExit();
-    this.#cancelExit = afterExit(this.#drawer, () => {
-      this.#cancelExit = () => undefined;
-      this.closed.emit(reason);
-    });
-  }
-
-  get #drawer(): HTMLDialogElement {
-    return this.#host.nativeElement.querySelector('dialog') as HTMLDialogElement;
-  }
-
-  #outside(event: MouseEvent): boolean {
-    const rect = this.#drawer.getBoundingClientRect();
-
-    return (
-      event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom
-    );
-  }
+  protected readonly modal = new ModalClose<DrawerCloseReason>({
+    open: this.open,
+    busy: this.busy,
+    dismissed: this.dismissed,
+    closed: this.closed,
+  });
 }
