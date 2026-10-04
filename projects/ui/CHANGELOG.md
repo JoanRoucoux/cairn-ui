@@ -2,8 +2,16 @@
 
 ## Unreleased
 
+### Breaking
+
+- `ui-dialog`: the `layout` input (`trade`, `form`, `list`, `confirm`) is replaced by `variant` (`default` | `confirm`) and `sheet` (`fit` | `full`). `DIALOG_LAYOUTS` and `DialogLayout` become `DIALOG_VARIANTS`, `DIALOG_SHEETS`, `DialogVariant` and `DialogSheet`.
+- Migration: `layout="trade"` and `layout="form"` become the default (remove the attribute); `layout="list"` becomes `sheet="full"`; `layout="confirm"` becomes `variant="confirm"`. A list dialog was anchored 96px from the top on a desktop: it is now centred like every dialog.
+
 ### Changed
 
+- `ui-dialog` has one three-zone structure: header `16 16 16 24`, body `20 24` (the only scroller), footer `16 24`; on a sheet `0 8 12 16`, `16` and `12 16` plus the safe area, under a handle. A hairline runs under the header and above the footer, and both come with `closeLabel` (no cross, no hairlines). The `confirm` variant has one 24px padding and no hairlines.
+- `ui-dialog` is centred on a desktop and capped at `calc(100dvh - 96px)`; the cross icon is 22px in every dialog.
+- `ui-dialog` width: the default stays `lg` (560px) and `confirm` defaults to 440px; `width` still takes `md`, `lg` or any CSS length.
 - `--toast-duration` is 4000ms (was 5000ms), and so is the fallback used when the token cannot be read.
 - `ui-toaster` pauses on hover only. Focus no longer pauses it: it carries no control a keyboard could reach.
 - `ui-toaster` is a `popover="manual"` shown in the top layer, and shown again each time a message arrives, so a

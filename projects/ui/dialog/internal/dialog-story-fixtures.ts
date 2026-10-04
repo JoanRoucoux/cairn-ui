@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
 
-import { DIALOG_LAYOUTS } from '../dialog';
+import { DIALOG_SHEETS, DIALOG_VARIANTS } from '../dialog';
 
 export const field = (label: string): string => `
   <label class="flex flex-col gap-1.5">
@@ -24,14 +24,16 @@ export const sheetStaysFixed: StoryObj['play'] = async ({ canvasElement }) => {
   await waitFor(() => expect(Math.round(footer.getBoundingClientRect().bottom)).toBe(window.innerHeight));
 };
 
-export const desktopAnchored: StoryObj['play'] = async ({ canvasElement }) => {
+export const desktopCentred: StoryObj['play'] = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
   const dialog = canvas.getByRole('dialog', { name: 'Ajouter une ligne' });
-  const footer = dialog.querySelector('[data-dialog-footer]') as HTMLElement;
 
-  await waitFor(() => expect(Math.round(dialog.getBoundingClientRect().top)).toBe(96));
-  await waitFor(() => expect(footer.getBoundingClientRect().bottom).toBeLessThanOrEqual(window.innerHeight - 32));
-  await expect(dialog.getBoundingClientRect().height).toBeLessThanOrEqual(760);
+  await waitFor(() => {
+    const rect = dialog.getBoundingClientRect();
+
+    expect(Math.round(rect.top + rect.bottom)).toBe(window.innerHeight);
+    expect(rect.height).toBeLessThanOrEqual(window.innerHeight - 96);
+  });
 };
 
 export const bodyReachable: StoryObj['play'] = async ({ canvasElement }) => {
@@ -117,7 +119,6 @@ export const defaultTemplate = `
         [heading]="heading"
         [description]="description"
         [closeLabel]="closeLabel"
-        [layout]="layout"
         [width]="width"
         [open]="open"
         [busy]="busy"
@@ -135,7 +136,7 @@ export const addLineTemplate = (results: number): string => `
       <ui-dialog
         [heading]="heading"
         [closeLabel]="closeLabel"
-        [layout]="layout"
+        [sheet]="sheet"
         [width]="width"
         [open]="open"
         (dismissed)="open = false"
@@ -171,13 +172,20 @@ export const dialogArgTypes: Meta['argTypes'] = {
   },
   width: {
     control: 'text',
-    description: 'Max width of the dialog on a desktop: `md`, `lg` or any CSS length such as `528px`.',
-  },
-  layout: {
-    control: 'inline-radio',
-    options: [...DIALOG_LAYOUTS],
     description:
-      'Spacing preset: `trade` (default), `form`, `list` (divided footer, fixed-height sheet) or `confirm` (alertdialog).',
+      'Max width of the dialog on a desktop: `md`, `lg` or any CSS length such as `480px`. Defaults to `lg` (560px), or 440px for `confirm`.',
+  },
+  variant: {
+    control: 'inline-radio',
+    options: [...DIALOG_VARIANTS],
+    description:
+      'Structure: `default` (three zones, hairlines with the cross) or `confirm` (alertdialog, no hairlines, 24px padding, 440px).',
+  },
+  sheet: {
+    control: 'inline-radio',
+    options: [...DIALOG_SHEETS],
+    description:
+      'Height of the sheet under `64rem`: `fit` to its content (default) or `full` below the 58px status area.',
   },
   busy: {
     control: 'boolean',

@@ -1,9 +1,11 @@
 export {
   DIALOG_CLOSE_REASONS,
-  DIALOG_LAYOUTS,
+  DIALOG_SHEETS,
+  DIALOG_VARIANTS,
   DIALOG_WIDTHS,
   UiDialog,
   type DialogCloseReason,
-  type DialogLayout,
+  type DialogSheet,
+  type DialogVariant,
   type DialogWidth,
 } from './dialog';

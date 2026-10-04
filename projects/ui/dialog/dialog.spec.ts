@@ -132,94 +132,93 @@ describe('UiDialog', () => {
     );
   });
 
-  const renderLayout = (layout: string, closeLabel = 'Fermer'): Promise<RenderResult<unknown>> =>
-    render(`<ui-dialog heading="Titre" layout="${layout}" closeLabel="${closeLabel}" [open]="true"></ui-dialog>`, {
-      imports: [UiDialog],
-    });
+  const renderWith = (attributes: string): Promise<RenderResult<unknown>> =>
+    render(`<ui-dialog heading="Titre" ${attributes} [open]="true"></ui-dialog>`, { imports: [UiDialog] });
 
-  it('uses the trade layout by default: start-aligned, hanging cross, no hairline, 8px under the sheet', async () => {
-    const { container } = await renderDialog();
+  it('draws the three zones of the default variant', async () => {
+    const { container } = await renderWith('closeLabel="Fermer"');
 
-    expect(container.querySelector('[data-dialog-header]')).toHaveClass('items-start', 'lg:pt-6');
-    expect(container.querySelector('[data-dialog-footer]')).not.toHaveClass('shadow-[0_-1px_0_var(--hairline)]');
+    expect(container.querySelector('[data-dialog-header]')).toHaveClass('items-start', 'pb-3', 'lg:py-4', 'lg:pl-6');
+    expect(container.querySelector('[data-dialog-body] > div')).toHaveClass('py-4', 'lg:py-5');
     expect(container.querySelector('[data-dialog-footer]')).toHaveClass(
-      'max-lg:pb-[calc(8px+env(safe-area-inset-bottom))]',
-      'lg:pb-6',
+      'pt-3',
+      'lg:py-4',
+      'pb-[calc(8px+env(safe-area-inset-bottom))]',
     );
+    expect(container.querySelector('[data-dialog-handle]')).toHaveClass('pt-[7.5px]');
   });
 
-  it('hangs the cross of the trade layout out of the header with a 20px icon', async () => {
-    await renderLayout('trade');
+  it('draws a hairline under the header and above the footer when there is a cross', async () => {
+    const { container } = await renderWith('closeLabel="Fermer"');
+
+    expect(container.querySelector('[data-dialog-header]')).toHaveClass('shadow-[inset_0_-1px_0_var(--hairline)]');
+    expect(container.querySelector('[data-dialog-footer]')).toHaveClass('shadow-[inset_0_1px_0_var(--hairline)]');
+  });
+
+  it('draws no hairline without a cross', async () => {
+    const { container } = await renderWith('');
+
+    expect(container.querySelector('[data-dialog-header]')).not.toHaveClass('shadow-[inset_0_-1px_0_var(--hairline)]');
+    expect(container.querySelector('[data-dialog-footer]')).not.toHaveClass('shadow-[inset_0_1px_0_var(--hairline)]');
+  });
+
+  it('gives the cross a 36px target on a desktop and 44px on a sheet', async () => {
+    await renderWith('closeLabel="Fermer"');
     const cross = screen.getByRole('button', { name: 'Fermer' });
 
-    expect(cross).toHaveClass('lg:-mt-1.5');
-    expect(cross.querySelector('svg')).toHaveClass('lg:size-5');
+    expect(cross).toHaveClass('size-11', 'lg:size-9');
+    expect(cross.querySelector('svg')).toHaveClass('size-[22px]');
   });
 
-  it('centres the header of the form layout and gives it 12px under the sheet', async () => {
-    const { container } = await renderLayout('form');
-    const cross = screen.getByRole('button', { name: 'Fermer' });
+  it('is centred and capped 96px short of the viewport height on a desktop', async () => {
+    const { container } = await renderWith('');
 
-    expect(container.querySelector('[data-dialog-header]')).toHaveClass('items-center', 'lg:pt-6');
-    expect(container.querySelector('[data-dialog-footer]')).toHaveClass(
-      'max-lg:pb-[calc(12px+env(safe-area-inset-bottom))]',
-      'lg:pb-5',
-    );
-    expect(cross).not.toHaveClass('lg:-mt-1.5');
-    expect(cross.querySelector('svg')).toHaveClass('lg:size-[22px]');
-  });
-
-  it('divides the footer of the list layout and fixes the height of its sheet', async () => {
-    const { container } = await renderLayout('list');
-
-    expect(container.querySelector('[data-dialog-header]')).toHaveClass('items-center', 'lg:pt-5');
-    expect(container.querySelector('[data-dialog-footer]')).toHaveClass('shadow-[0_-1px_0_var(--hairline)]', 'lg:pt-4');
-    expect(container.querySelector('dialog')).toHaveClass('max-lg:h-[calc(100dvh-58px)]');
-  });
-
-  it('anchors the list dialog 96px from the top and clamps it to the viewport', async () => {
-    const { container } = await renderLayout('list');
-
-    expect(container.querySelector('dialog')).toHaveClass(
-      'lg:mt-24',
-      'lg:mb-auto',
-      'lg:max-h-[min(760px,calc(100dvh-96px-32px))]',
-    );
-  });
-
-  it('keeps the other layouts centred', async () => {
-    const { container } = await renderLayout('form');
-
+    expect(container.querySelector('dialog')).toHaveClass('m-auto', 'lg:max-h-[calc(100dvh-96px)]');
     expect(container.querySelector('dialog')).not.toHaveClass('lg:mt-24');
   });
 
-  it('keeps the other layouts at their natural height', async () => {
-    const { container } = await renderLayout('form');
+  it('fits its content on a sheet by default', async () => {
+    const { container } = await renderWith('');
 
     expect(container.querySelector('dialog')).not.toHaveClass('max-lg:h-[calc(100dvh-58px)]');
   });
 
-  it('turns the confirm layout into an alertdialog with the delete spacing', async () => {
-    const { container } = await render(
-      `<ui-dialog heading="Supprimer la clé" layout="confirm" [open]="true"></ui-dialog>`,
-      {
-        imports: [UiDialog],
-      },
-    );
+  it('fills the screen below 58px on a full sheet', async () => {
+    const { container } = await renderWith('sheet="full"');
 
-    expect(screen.getByRole('alertdialog', { name: 'Supprimer la clé' })).toBeInTheDocument();
-    expect(container.querySelector('[data-dialog-header]')).toHaveClass('pt-3', 'lg:pt-6');
+    expect(container.querySelector('dialog')).toHaveClass('max-lg:h-[calc(100dvh-58px)]');
+  });
+
+  it('turns the confirm variant into an alertdialog with one 24px padding and no hairlines', async () => {
+    const { container } = await renderWith('variant="confirm" closeLabel="Fermer"');
+
+    expect(screen.getByRole('alertdialog', { name: 'Titre' })).toBeInTheDocument();
+    expect(container.querySelector('[data-dialog-header]')).toHaveClass('pt-3', 'lg:pt-6', 'lg:pl-6');
+    expect(container.querySelector('[data-dialog-header]')).not.toHaveClass('shadow-[inset_0_-1px_0_var(--hairline)]');
+    expect(container.querySelector('[data-dialog-footer]')).toHaveClass('pt-5', 'lg:pt-3', 'lg:pb-6');
+    expect(container.querySelector('[data-dialog-footer]')).not.toHaveClass('shadow-[inset_0_1px_0_var(--hairline)]');
     expect(container.querySelector('[data-dialog-handle]')).toHaveClass('pt-[11.5px]');
   });
 
-  it('is a plain dialog in every other layout', async () => {
-    const { container } = await renderLayout('trade');
+  it('is a plain dialog in the default variant', async () => {
+    const { container } = await renderWith('');
 
     expect(container.querySelector('dialog')).toHaveAttribute('role', 'dialog');
   });
 
+  it.each([
+    ['', '560px'],
+    ['variant="confirm"', '440px'],
+    ['width="md"', '28rem'],
+    ['variant="confirm" width="480px"', '480px'],
+  ])('resolves the width of <ui-dialog %s> to %s', async (attributes, expected) => {
+    const { container } = await renderWith(attributes);
+
+    expect(container.querySelector('dialog')?.style.getPropertyValue('--dialog-width')).toBe(expected);
+  });
+
   it('leaves no role on the host element, which would be a nameless alertdialog', async () => {
-    const { container } = await render(`<ui-dialog heading="Supprimer" layout="confirm" [open]="true"></ui-dialog>`, {
+    const { container } = await render(`<ui-dialog heading="Supprimer" variant="confirm" [open]="true"></ui-dialog>`, {
       imports: [UiDialog],
     });
 
@@ -370,7 +369,7 @@ describe('UiDialog', () => {
 
   it('describes a confirm dialog by its body when it has no description', async () => {
     const { container } = await render(
-      `<ui-dialog heading="Delete" layout="confirm" [open]="true"><p>This cannot be undone.</p></ui-dialog>`,
+      `<ui-dialog heading="Delete" variant="confirm" [open]="true"><p>This cannot be undone.</p></ui-dialog>`,
       { imports: [UiDialog] },
     );
     const dialog = container.querySelector('dialog') as HTMLElement;
@@ -382,7 +381,7 @@ describe('UiDialog', () => {
 
   it('prefers the description over the body for a confirm dialog', async () => {
     const { container } = await render(
-      `<ui-dialog heading="Delete" description="Ferrari" layout="confirm" [open]="true"><p>Body</p></ui-dialog>`,
+      `<ui-dialog heading="Delete" description="Ferrari" variant="confirm" [open]="true"><p>Body</p></ui-dialog>`,
       { imports: [UiDialog] },
     );
     const describedBy = container.querySelector('dialog')?.getAttribute('aria-describedby');
