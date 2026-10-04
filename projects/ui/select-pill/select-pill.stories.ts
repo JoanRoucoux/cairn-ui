@@ -6,6 +6,7 @@ import { UiSelectPill } from './select-pill';
 
 type SelectPillArgs = {
   active: boolean;
+  disabled: boolean;
   clearLabel: string;
   cleared: () => void;
 };
@@ -48,7 +49,7 @@ emits \`cleared\`, so the list goes back to every value in one tap. It is 34 px 
   render: (args) => ({
     props: args,
     template: `
-      <ui-select-pill [active]="active" [clearLabel]="clearLabel" contextLabel="Compte" (cleared)="cleared()">
+      <ui-select-pill [active]="active" [disabled]="disabled" [clearLabel]="clearLabel" contextLabel="Compte" (cleared)="cleared()">
         {{ active ? 'Northwind PEA' : 'Tous les comptes' }}
         <ui-menu label="Compte" sheet heading="Compte">
           <button uiMenuItem type="button" [checked]="!active">Tous les comptes</button>
@@ -63,6 +64,11 @@ emits \`cleared\`, so the list goes back to every value in one tap. It is 34 px 
     active: {
       control: 'boolean',
       description: 'Solid primary pill with a cross in place of the chevron, for a value other than "all".',
+    },
+    disabled: {
+      control: 'boolean',
+      description:
+        'Dims the pill like a disabled button and opens nothing; the cross is not drawn and the chevron stays, even when `active`. For a list still loading or that failed to load.',
     },
     clearLabel: {
       control: 'text',
@@ -93,6 +99,19 @@ export const Active: Story = {
     await userEvent.click(within(canvasElement).getByRole('button', { name: 'Retirer le filtre de compte' }));
 
     await expect(args.cleared).toHaveBeenCalledTimes(1);
+  },
+};
+
+export const Disabled: Story = {
+  args: { disabled: true },
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('button', { name: 'Tous les comptes' });
+
+    await expect(trigger).toBeDisabled();
+    await expect(trigger).toHaveAttribute('aria-disabled', 'true');
+    await expect(getComputedStyle(canvasElement.querySelector('ui-select-pill')!).opacity).toBe('0.4');
+    await expect(getComputedStyle(trigger).pointerEvents).toBe('none');
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false');
   },
 };
 

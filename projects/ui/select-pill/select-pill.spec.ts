@@ -152,4 +152,35 @@ describe('UiSelectPill', () => {
 
     expect(screen.getByRole('button', { name: 'Tous les comptes' })).toBeInTheDocument();
   });
+
+  it('dims, locks the trigger and drops the cross when disabled', async () => {
+    const cleared = vi.fn();
+    const { container } = await render(
+      `<ui-select-pill active disabled clearLabel="Retirer le filtre de compte" (cleared)="cleared()">
+         Northwind PEA
+         <ui-menu label="Compte"><button uiMenuItem>Northwind PEA</button></ui-menu>
+       </ui-select-pill>`,
+      { imports: [UiSelectPill, UiMenu, UiMenuItem], componentProperties: { cleared } },
+    );
+    const trigger = screen.getByRole('button', { name: 'Northwind PEA' });
+
+    expect(container.querySelector('ui-select-pill')).toHaveClass('opacity-40');
+    expect(trigger).toBeDisabled();
+    expect(trigger).toHaveAttribute('aria-disabled', 'true');
+    expect(trigger).toHaveClass('disabled:pointer-events-none');
+    expect(screen.queryByRole('button', { name: 'Retirer le filtre de compte' })).not.toBeInTheDocument();
+    expect(container.querySelector('[data-chevron]')).toHaveClass('text-(--primary-foreground)');
+
+    await userEvent.click(trigger);
+
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+  });
+
+  it('is not dimmed and not aria-disabled by default', async () => {
+    const { container } = await setup().ready;
+
+    expect(container.querySelector('ui-select-pill')).not.toHaveClass('opacity-40');
+    expect(screen.getByRole('button', { name: 'Tous les comptes' })).not.toHaveAttribute('aria-disabled');
+    expect(container.querySelector('[data-chevron]')).toHaveClass('text-(--foreground)');
+  });
 });
