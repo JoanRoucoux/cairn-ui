@@ -1,61 +1,85 @@
 # Changelog
 
-## Unreleased
+## 0.9.0
 
 ### Breaking
 
-- `ui-dialog`: the `layout` input (`trade`, `form`, `list`, `confirm`) is replaced by `variant` (`default` | `confirm`) and `sheet` (`fit` | `full`). `DIALOG_LAYOUTS` and `DialogLayout` become `DIALOG_VARIANTS`, `DIALOG_SHEETS`, `DialogVariant` and `DialogSheet`.
-- Migration: `layout="trade"` and `layout="form"` become the default (remove the attribute); `layout="list"` becomes `sheet="full"`; `layout="confirm"` becomes `variant="confirm"`. A list dialog was anchored 96px from the top on a desktop: it is now centred like every dialog.
-- `styles/motion.css` no longer ships `ui-enter-panel` nor its `cairn-panel-in` keyframes (an 8px slide for a
-  detail panel beside a list). The detail now opens in `ui-drawer`, which plays its own motion.
+- `ui-dialog`: the `layout` input (`trade`, `form`, `list`, `confirm`) is replaced by `variant` (`default` |
+  `confirm`) and `sheet` (`fit` | `full`). `DIALOG_LAYOUTS` and `DialogLayout` become `DIALOG_VARIANTS`,
+  `DIALOG_SHEETS`, `DialogVariant` and `DialogSheet`.
+- Migration: `layout="trade"` and `layout="form"` become the default (remove the attribute); `layout="list"` becomes
+  `sheet="full"`; `layout="confirm"` becomes `variant="confirm"`. A list dialog was anchored 96px from the top on a
+  desktop: it is now centred like every dialog.
+- `ui-filter-chips`: `role="group"` and `aria-label` move from the host to an inner wrapper around the chips, so a
+  leading element sits outside the group.
+- Migration: a selector or a test query on `ui-filter-chips[role=group]` targets the inner `div[role=group]` instead;
+  `getByRole('group', { name })` keeps working.
+- `styles/motion.css` no longer ships `ui-enter-panel` nor its `cairn-panel-in` keyframes (an 8px slide for a detail
+  panel beside a list). The detail now opens in `ui-drawer`, which plays its own motion.
 - Migration: replace the side panel animated with `animate.enter="ui-enter-panel"` by a `ui-drawer`; for any other
   element, use `ui-enter-fade-up` or `ui-enter-fade`.
 
 ### Added
 
-- `ui-drawer` (`@joanroucoux/cairn-ui/drawer`): a modal side panel on the native `<dialog>`, against the right edge
-  at full height, 440px wide by default, on `--card` with a shadow on its left edge, 24px of padding and a
+- `ui-drawer` (`@joanroucoux/cairn-ui/drawer`): a modal side panel on the native `<dialog>`, against the right edge at
+  full height, 440px wide by default, on `--card` with a shadow on its left edge, 24px of padding and a
   `rgb(0 0 0 / 0.36)` veil. It scrolls on its own with `overscroll-behavior: contain`, without locking the page.
   Escape, the veil and the optional 36px cross close it; `dismissed` and `closed` (`escape`, `backdrop`, `cross`,
   `programmatic`) follow the protocol of `ui-dialog`, and `busy` keeps it open. Without `heading` it draws no header
-  and `label` names it; with neither it throws. It enters with opacity and a 24px slide over `--duration-base` on `--ease-out` and leaves
-  the reverse way over `--duration-exit`; under reduced motion it only fades.
-- `ModalClose` is exported from `@joanroucoux/cairn-ui/dialog`: the close protocol `ui-dialog` and `ui-drawer` share
-  (Escape, press-and-release on the veil, `busy`, `dismissed`, `closed` once the exit transition has played).
-- `select[uiPillSelect]` (`@joanroucoux/cairn-ui/pill-select`): a compact pill-shaped native select, outlined at rest and solid
-  primary when `active`, 34 px in a 44 px target on touch and 32 px with a fine pointer. Its chevron comes from the new
-  `--chevron-pill` and `--chevron-pill-active` tokens (the `--foreground` and `--primary-foreground` of each scheme).
-- `ui-filter-chips` projects an element marked `uiChipsLeading` first in its row, followed by a 1 x 20 px `--border` rule
-  that only shows when something is projected.
+  and `label` names it; with neither it throws. It enters with opacity and a 24px slide over `--duration-base` on
+  `--ease-out` and leaves the reverse way over `--duration-exit`; under reduced motion it only fades.
+- `ModalClose` (`@joanroucoux/cairn-ui/dialog`): the close protocol `ui-dialog` and `ui-drawer` share (Escape,
+  press-and-release on the veil, `busy`, `dismissed`, then `closed` once the exit transition has played).
+- `select[uiPillSelect]` (`@joanroucoux/cairn-ui/pill-select`): a compact pill-shaped native select, outlined at rest
+  and solid primary when `active`, 34px in a 44px target on touch and 32px with a fine pointer, with a 2px focus
+  outline outside the pill. Its chevron comes from the new `--chevron-pill` and `--chevron-pill-active` tokens (the
+  `--foreground` and `--primary-foreground` of each scheme).
+- `ui-filter-chips` projects an element marked `uiChipsLeading` first in its row, followed by a 1 x 20px `--border`
+  rule that only shows when something is projected.
 - `td[ui-group-cell]` is collapsible: `collapsible`, `expanded` (a model), `toggleDisabled` and `controls`. The band
   becomes an `h2 > button[aria-expanded]` with an 18px chevron that turns to -90 degrees in `--duration-fast`, a
-  `--soft` hover and a focus ring. The page owns the fold memory.
+  `--soft` hover and a focus ring. With `toggleDisabled` it keeps neither the pointer cursor nor the hover. The page
+  owns the fold memory.
 - `tbody[uiGroup]` takes `collapsed`: its rows (`tr[uiTr]`) get `hidden` and stay in the DOM, so a `uiFlipList`
-  around the table slides nothing when a group folds.
+  around the table slides nothing when a group folds. A plain `tr` is not hidden.
 - `ui-group-header` (`@joanroucoux/cairn-ui/group-header`): the header of a grouped card on a phone, with name, meta
-  and a projected total. Collapsible, with a 20px chevron and a press scale, or static.
-- `ui-result-group`: one source of a search, a two-tone heading over its rows, with a two-row skeleton, a message slot (`resultGroupMessage`) and an inline error whose retry has no icon.
-- `ui-alert` `variant="info"`: a `--muted` box with an 18 px info icon, `role="note"`.
-- `ui-row` `trailing="chevron"`: a flush link row with a 16 px `--subtle-foreground` chevron and a dimming hover. Rows without it are unchanged.
-- `ui-back-link` `size="inline"` and the `button[ui-back-link]` selector: 14 px 500 muted back step, 18 px chevron, 44 px high (36 px with a mouse). A button host gets `type="button"`.
-- `ui-async` `retryIcon` input (default true): `false` draws a text-only retry.
-- `ui-line-chart` takes `deltaSuffix`, a text shown after the change in the tooltip (for example "depuis le début"). It stays when the amount is masked.
+  and a projected total. Collapsible, with a 20px chevron and a press scale (neither the scale nor the pointer cursor
+  with `toggleDisabled`), or static.
+- `ui-result-group` (`@joanroucoux/cairn-ui/result-group`): one source of a search, a two-tone heading over its rows,
+  with a two-row skeleton, a message slot (`resultGroupMessage`) and an inline error whose retry has no icon.
+- `ui-alert` `variant="info"`: a `--muted` box with an 18px info icon, `role="note"`.
+- `ui-row` `trailing="chevron"`: a flush link row with a 16px `--subtle-foreground` chevron and a dimming hover. Rows
+  without it are unchanged.
+- `ui-back-link` `size="inline"` and the `button[ui-back-link]` selector: a 14px 500 muted back step, 18px chevron,
+  44px high (36px with a mouse). A button host gets `type="button"` unless it sets its own.
+- `ui-async` `retryIcon` input (default true): `false` draws a text-only retry in the `inline` variant.
+- `ui-line-chart` `deltaSuffix`: a text shown after the change in the tooltip (for example "depuis le début"). It
+  stays when the amount is masked.
 
 ### Changed
 
-- `ui-dialog` has one three-zone structure: header `16 16 16 24`, body `20 24` (the only scroller), footer `16 24`; on a sheet `0 8 12 16`, `16` and `12 16` plus the safe area, under a handle. A hairline runs under the header and above the footer, and both come with `closeLabel` (no cross, no hairlines). The `confirm` variant has one 24px padding and no hairlines.
+- `ui-dialog` has one three-zone structure: header `16 16 16 24`, body `20 24` (the only scroller), footer `16 24`;
+  on a sheet `0 8 12 16`, `16` and `12 16` plus the safe area, under a handle. A hairline runs under the header and
+  above the footer when `closeLabel` draws the cross. The `confirm` variant has one 24px padding and no hairlines,
+  and an empty confirm footer has no top padding.
 - `ui-dialog` is centred on a desktop and capped at `calc(100dvh - 96px)`; the cross icon is 22px in every dialog.
-- `ui-dialog` width: the default stays `lg` (560px) and `confirm` defaults to 440px; `width` still takes `md`, `lg` or any CSS length.
-- `ui-filter-chips`: `role="group"` and `aria-label` move from the host to an inner wrapper around the chips, so a
-  leading element sits outside the group. Selectors on `ui-filter-chips[role=group]` must target the inner `div` instead.
-- `ui-line-chart` shows its tooltip on a tap: `pointerdown` shows it, `pointermove` follows, `pointerleave` and `pointercancel` hide it. The plot is `touch-none` (was `touch-pan-y`), so a vertical swipe on the plot no longer scrolls the page; the page still scrolls everywhere else.
+- `ui-dialog` width: the default stays `lg` (560px) and `confirm` defaults to 440px; `width` still takes `md`, `lg`
+  or any CSS length.
+- `ui-line-chart` shows its tooltip on a tap: `pointerdown` shows it, `pointermove` follows, `pointerleave` and
+  `pointercancel` hide it. The plot is `touch-none` (was `touch-pan-y`), so a vertical swipe on the plot no longer
+  scrolls the page; the page still scrolls everywhere else.
 - `uiStaleLink` with `chevron`: the gap before the chevron is 4px on touch and 2px with a mouse (was 2px everywhere).
-- Stories and docs no longer use the Instruments samples: the `ui-table` `Instruments` story is removed, the `ui-empty` sample reads "Aucune ligne ne correspond à ...", the `ui-back-link` small story reads "Comptes". The Storybook favicon is the Cairn tile.
 - `--toast-duration` is 4000ms (was 5000ms), and so is the fallback used when the token cannot be read.
 - `ui-toaster` pauses on hover only. Focus no longer pauses it: it carries no control a keyboard could reach.
-- `ui-toaster` is a `popover="manual"` shown in the top layer, and shown again each time a message arrives, so a
-  message appears above an open `ui-dialog`, also when the dialog opens while the message is visible. Its placement
-  does not change. Behind a modal the page is inert, so the hover pause does not apply over an open modal.
+- Stories and docs no longer use the Instruments samples: the `ui-table` `Instruments` story is removed, the
+  `ui-empty` sample reads "Aucune ligne ne correspond à ...", the `ui-back-link` small story reads "Comptes". The
+  Storybook favicon is the Cairn tile.
+
+### Fixed
+
+- `ui-toaster` shows above an open `ui-dialog` or `ui-drawer`: it is a `popover="manual"` in the top layer, shown
+  again each time a message arrives and when a modal opens while a message is visible. Its placement does not change.
+  Behind a modal the page is inert, so the hover pause does not apply over an open modal.
 
 ## 0.8.2
 
