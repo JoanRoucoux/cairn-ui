@@ -6,9 +6,11 @@ import { type DialogSheet, type DialogVariant, type DialogWidth, UiDialog } from
 import {
   addLineTemplate,
   bodyReachable,
+  confirmTemplate,
   defaultTemplate,
   desktopCentred,
   dialogArgTypes,
+  emptyFooterUnpadded,
   field,
   keptMountedTemplate,
   keptMountedUntilClosed,
@@ -311,18 +313,21 @@ export const DeletePasskey: Story = {
     variant: 'confirm',
     open: true,
   },
-  render: (args) => ({
-    props: args,
-    template: `
-      <ui-dialog [heading]="heading" [variant]="variant" [open]="open" (dismissed)="open = false">
-        <p class="text-body text-(--muted-foreground)" data-story-body>
-          Cet appareil ne pourra plus se connecter à Cairn avec cette clé. Les autres clés restent valables.
-        </p>
-        <button dialogActions ui-button variant="outline" (click)="open = false">Annuler</button>
-        <button dialogActions ui-button variant="destructive" (click)="open = false">Supprimer la clé</button>
-      </ui-dialog>
-    `,
-  }),
+  render: (args) => ({ props: args, template: confirmTemplate(true) }),
+};
+
+export const ConfirmWithoutActions: Story = {
+  name: 'Confirm without actions, desktop',
+  args: { ...DeletePasskey.args },
+  parameters: { viewport: { width: 1440, height: 900 } },
+  render: (args) => ({ props: args, template: confirmTemplate(false) }),
+  play: emptyFooterUnpadded,
+};
+
+export const ConfirmWithoutActionsSheet: Story = {
+  ...ConfirmWithoutActions,
+  name: 'Confirm without actions, sheet',
+  parameters: { viewport: { width: 390, height: 844 } },
 };
 
 export const TextOnlyScrollingBody: Story = {

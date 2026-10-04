@@ -113,6 +113,28 @@ export const sheetHasGrips: StoryObj['play'] = async ({ canvasElement }) => {
   await expect(getComputedStyle(header).touchAction).toBe('none');
 };
 
+const confirmActions = `
+        <button dialogActions ui-button variant="outline" (click)="open = false">Annuler</button>
+        <button dialogActions ui-button variant="destructive" (click)="open = false">Supprimer la clé</button>`;
+
+export const confirmTemplate = (actions: boolean): string => `
+      <ui-dialog [heading]="heading" [variant]="variant" [open]="open" (dismissed)="open = false">
+        <p class="text-body text-(--muted-foreground)" data-story-body>
+          Cet appareil ne pourra plus se connecter à Cairn avec cette clé. Les autres clés restent valables.
+        </p>
+        ${actions ? confirmActions : ''}
+      </ui-dialog>
+`;
+
+export const emptyFooterUnpadded: StoryObj['play'] = async ({ canvasElement }) => {
+  const dialog = within(canvasElement).getByRole('alertdialog');
+  const footer = dialog.querySelector('[data-dialog-footer]') as HTMLElement;
+
+  await waitFor(() => expect(dialog).toBeVisible());
+  await expect(footer).toBeEmptyDOMElement();
+  await expect(getComputedStyle(footer).paddingTop).toBe('0px');
+};
+
 export const defaultTemplate = `
       <button ui-button (click)="open = true">Ouvrir</button>
       <ui-dialog

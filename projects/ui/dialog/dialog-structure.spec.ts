@@ -66,7 +66,11 @@ describe('UiDialog structure', () => {
     expect(screen.getByRole('alertdialog', { name: 'Titre' })).toBeInTheDocument();
     expect(container.querySelector('[data-dialog-header]')).toHaveClass('pt-3', 'lg:pt-6', 'lg:pl-6');
     expect(container.querySelector('[data-dialog-header]')).not.toHaveClass('shadow-[inset_0_-1px_0_var(--hairline)]');
-    expect(container.querySelector('[data-dialog-footer]')).toHaveClass('pt-5', 'lg:pt-6', 'lg:pb-6', 'empty:pt-0');
+    expect(container.querySelector('[data-dialog-footer]')).toHaveClass(
+      'not-empty:pt-5',
+      'lg:not-empty:pt-6',
+      'lg:pb-6',
+    );
     expect(container.querySelector('[data-dialog-footer]')).not.toHaveClass('shadow-[inset_0_1px_0_var(--hairline)]');
     expect(container.querySelector('[data-dialog-handle]')).toHaveClass('pt-[11.5px]');
   });

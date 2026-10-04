@@ -50,7 +50,7 @@ const VARIANTS: Record<DialogVariant, VariantClasses> = {
     handle: 'pt-[11.5px]',
     header: 'pt-3 lg:pt-6 lg:pl-6',
     body: 'pt-3',
-    footer: 'pt-5 lg:pt-6 lg:pb-6 empty:pt-0',
+    footer: 'not-empty:pt-5 lg:pb-6 lg:not-empty:pt-6',
   },
 };
 
