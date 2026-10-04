@@ -38,7 +38,7 @@ const meta: Meta<EmptyArgs> = {
     `,
   }),
   args: {
-    heading: 'Aucun instrument ne correspond à « zzz »',
+    heading: 'Aucune ligne ne correspond à « zzz »',
     hint: "La recherche porte sur le nom et l'ISIN.",
   },
   argTypes: {
@@ -54,7 +54,7 @@ export const Default: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(canvas.getByText('Aucun instrument ne correspond à « zzz »')).toBeVisible();
+    await expect(canvas.getByText('Aucune ligne ne correspond à « zzz »')).toBeVisible();
     await expect(canvas.getByRole('button', { name: 'Ajouter une ligne' })).toBeVisible();
   },
 };
@@ -72,7 +72,7 @@ export const HeadingOnly: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const empty = canvas.getByTestId('empty');
-    const heading = canvas.getByText('Aucun instrument ne correspond à « zzz »');
+    const heading = canvas.getByText('Aucune ligne ne correspond à « zzz »');
 
     await expect(heading).toBeVisible();
     await expect(empty.lastElementChild).not.toBe(heading);

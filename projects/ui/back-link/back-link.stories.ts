@@ -64,7 +64,7 @@ export const Default: Story = {
 };
 
 export const Small: Story = {
-  args: { size: 'sm', label: 'Instruments' },
+  args: { size: 'sm', label: 'Comptes' },
 };
 
 export const Header: Story = {

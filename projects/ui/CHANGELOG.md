@@ -39,6 +39,7 @@
 - `ui-row` `trailing="chevron"`: a flush link row with a 16 px `--subtle-foreground` chevron and a dimming hover. Rows without it are unchanged.
 - `ui-back-link` `size="inline"` and the `button[ui-back-link]` selector: 14 px 500 muted back step, 18 px chevron, 44 px high (36 px with a mouse). A button host gets `type="button"`.
 - `ui-async` `retryIcon` input (default true): `false` draws a text-only retry.
+- `ui-line-chart` takes `deltaSuffix`, a text shown after the change in the tooltip (for example "depuis le début"). It stays when the amount is masked.
 
 ### Changed
 
@@ -47,6 +48,9 @@
 - `ui-dialog` width: the default stays `lg` (560px) and `confirm` defaults to 440px; `width` still takes `md`, `lg` or any CSS length.
 - `ui-filter-chips`: `role="group"` and `aria-label` move from the host to an inner wrapper around the chips, so a
   leading element sits outside the group. Selectors on `ui-filter-chips[role=group]` must target the inner `div` instead.
+- `ui-line-chart` shows its tooltip on a tap: `pointerdown` shows it, `pointermove` follows, `pointerleave` and `pointercancel` hide it. The plot is `touch-none` (was `touch-pan-y`), so a vertical swipe on the plot no longer scrolls the page; the page still scrolls everywhere else.
+- `uiStaleLink` with `chevron`: the gap before the chevron is 4px on touch and 2px with a mouse (was 2px everywhere).
+- Stories and docs no longer use the Instruments samples: the `ui-table` `Instruments` story is removed, the `ui-empty` sample reads "Aucune ligne ne correspond à ...", the `ui-back-link` small story reads "Comptes". The Storybook favicon is the Cairn tile.
 - `--toast-duration` is 4000ms (was 5000ms), and so is the fallback used when the token cannot be read.
 - `ui-toaster` pauses on hover only. Focus no longer pauses it: it carries no control a keyboard could reach.
 - `ui-toaster` is a `popover="manual"` shown in the top layer, and shown again each time a message arrives, so a

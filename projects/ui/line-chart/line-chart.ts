@@ -65,7 +65,7 @@ type EndRef = ElementRef<SVGCircleElement>;
     <div class="relative h-full">
       <svg
         #svgRef
-        class="block h-full w-full touch-pan-y overflow-visible"
+        class="block h-full w-full touch-none overflow-visible"
         role="img"
         [attr.aria-label]="label()"
         [attr.height]="effectiveHeight()"
@@ -73,6 +73,8 @@ type EndRef = ElementRef<SVGCircleElement>;
         [attr.viewBox]="'0 0 ' + effectiveWidth() + ' ' + effectiveHeight()"
         [attr.width]="effectiveWidth()"
         (keydown)="onKeydown($event)"
+        (pointercancel)="onPointerLeave()"
+        (pointerdown)="onPointerMove($event)"
         (pointerleave)="onPointerLeave()"
         (pointermove)="onPointerMove($event)"
       >
@@ -174,7 +176,9 @@ type EndRef = ElementRef<SVGCircleElement>;
             {{ tooltipFormat()?.(point) ?? valueFormat()(point.v) }}
           </p>
           @if (tooltipDelta()) {
-            <p data-chart-delta [class]="deltaClasses(point)">{{ deltaFormat()(deltaFor(point)) }}</p>
+            <p data-chart-delta [class]="deltaClasses(point)">
+              {{ deltaFormat()(deltaFor(point)) }}{{ deltaSuffix() && ' ' + deltaSuffix() }}
+            </p>
           }
           <p class="text-caption text-(--subtle-foreground)" data-chart-date>{{ timeFormat()(point.t) }}</p>
         </div>
@@ -212,6 +216,7 @@ export class UiLineChart {
   readonly valueFormat = input<(value: number) => string>(identityValue);
   readonly tooltipFormat = input<(point: ChartPoint) => string>();
   readonly deltaFormat = input<(delta: number) => string>(identityDelta);
+  readonly deltaSuffix = input('');
   readonly timeFormat = input<(time: number) => string>(identityTime);
   readonly axisFormat = input<(time: number) => string>(identityTime);
   readonly startLabel = input('');

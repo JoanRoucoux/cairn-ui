@@ -5,7 +5,7 @@ export const STALE_LINK_SIZES = ['caption', 'label'] as const;
 export type StaleLinkSize = (typeof STALE_LINK_SIZES)[number];
 
 const BASE_CLASSES =
-  "relative inline-flex items-center gap-0.5 rounded-[4px] font-medium text-(--stale) hover:underline underline-offset-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring) before:absolute before:inset-x-0 before:top-1/2 before:h-11 pointer-fine:before:h-10 before:-translate-y-1/2 before:content-['']";
+  "relative inline-flex items-center gap-1 pointer-fine:gap-0.5 rounded-[4px] font-medium text-(--stale) hover:underline underline-offset-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring) before:absolute before:inset-x-0 before:top-1/2 before:h-11 pointer-fine:before:h-10 before:-translate-y-1/2 before:content-['']";
 
 const SIZE_CLASSES: Record<StaleLinkSize, string> = {
   caption: 'text-caption',

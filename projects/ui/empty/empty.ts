@@ -4,7 +4,7 @@ import { Component, input } from '@angular/core';
  * Centred empty state: a title, a hint and an action slot, such as a search that matches nothing.
  *
  * @example
- * <ui-empty heading="Aucun instrument ne correspond à « zzz »" hint="La recherche porte sur le nom et l'ISIN.">
+ * <ui-empty heading="Aucune ligne ne correspond à « zzz »" hint="La recherche porte sur le nom et l'ISIN.">
  *   <button ui-button variant="outline" size="md" type="button">Ajouter une ligne</button>
  * </ui-empty>
  */

@@ -54,13 +54,13 @@ describe('UiLineChart', () => {
     expect(tooltip).toHaveTextContent('2026-09-25');
   });
 
-  it('lets vertical scrolling through and captures horizontal drags', async () => {
+  it('captures touch gestures on the plot so a tap or a drag shows the tooltip', async () => {
     const { fixture } = await render(`<ui-line-chart label="x" [points]="points" />`, {
       imports: [UiLineChart],
       componentProperties: { points },
     });
 
-    expect(fixture.nativeElement.querySelector('svg')).toHaveClass('touch-pan-y');
+    expect(fixture.nativeElement.querySelector('svg')).toHaveClass('touch-none');
   });
 
   it('keeps a screen-reader table of every point', async () => {
