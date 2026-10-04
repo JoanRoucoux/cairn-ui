@@ -25,8 +25,8 @@
 ### Added
 
 - `UiToasts.showError(message, closeLabel = 'Fermer')`: an error toast with the same surface, an alert icon, no timer
-  and a 28px cross; it closes only with the cross. One message at a time: an error replaces a confirmation and the
-  other way round. `Toast` becomes a union on `kind`: `'success'`, or `'error'` with its `closeLabel`.
+  and a 28px cross (a 44px hit area on touch, 36px with a fine pointer); it closes only with the cross. One message
+  at a time: an error replaces a confirmation and the other way round. `Toast` becomes a union on `kind`: `'success'`, or `'error'` with its `closeLabel`.
 - `ui-drawer` (`@joanroucoux/cairn-ui/drawer`): a modal side panel on the native `<dialog>`, against the right edge at
   full height, 440px wide by default, on `--card` with a shadow on its left edge, 24px of padding and a
   `rgb(0 0 0 / 0.36)` veil. It scrolls on its own with `overscroll-behavior: contain`, without locking the page.
@@ -44,7 +44,7 @@
   where a separate 14px cross (44px hit area on touch, 36px with a fine pointer), named by the required `clearLabel`,
   replaces the chevron and emits `cleared`, and focus goes back to the trigger. `contextLabel` is read before the
   label while active. 34px in a 44px target on touch and 32px with a fine pointer, with a 2px focus outline outside
-  the pill and a border of its own in forced colors.
+  the pill at every size, a cross ring in the pill's text colour, and a border of its own in forced colors.
 - `button[uiMenuItem]` accepts `checked`: the item becomes a `menuitemradio` with `aria-checked` and a check mark
   after its label, and the menu focuses the checked item when it opens.
 - `ui-filter-chips` projects an element marked `uiChipsLeading` first in its row, followed by a 1 x 20px `--border`
@@ -88,8 +88,6 @@
   height, 280 to 400px wide within the viewport minus 32px) with a 16px check icon, and it is centred at the bottom of
   the content area: from `64rem`, 24px from the bottom and centred between `--sidebar-width` (0 when the app does not
   set it) and the right edge; below, centred 8px above the tab bar as before. It was `--elevated`, bottom right.
-- `--toast-duration` is 5000ms, and so is the fallback used when the token cannot be read. The timer pauses on hover
-  and while focus is inside the message.
 - Stories and docs no longer use the Instruments samples: the `ui-table` `Instruments` story is removed, the
   `ui-empty` sample reads "Aucune ligne ne correspond à ...", the `ui-back-link` small story reads "Comptes". The
   Storybook favicon is the Cairn tile.

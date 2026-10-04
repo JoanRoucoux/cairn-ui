@@ -39,7 +39,9 @@ emits \`cleared\`, so the list goes back to every value in one tap. It is 34 px 
   menu. Give the menu its own \`label\`; its choices are \`menuitemradio\` items, the current one \`aria-checked\`.
 * The cross is a real button named by \`clearLabel\`, which the app passes in its own language, and it is a
   tab stop of its own, outside the trigger.
-* The focus ring of both is an outline, so it shows in forced colors; the pill keeps a border there.`,
+* The trigger's focus ring sits 2 px outside the pill; the cross's is a 24 px circle around its icon, in the pill's
+  text colour so it shows on the solid pill. Both are outlines, so they show in forced colors; the pill keeps a
+  border there.`,
       },
     },
   },
@@ -102,5 +104,24 @@ export const Focus: Story = {
     await expect(trigger).toHaveFocus();
     await expect(getComputedStyle(trigger).outlineStyle).toBe('solid');
     await expect(getComputedStyle(trigger).outlineWidth).toBe('2px');
+  },
+};
+
+export const ActiveFocus: Story = {
+  name: 'Active, focus on the cross',
+  args: { active: true },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const cross = canvas.getByRole('button', { name: 'Retirer le filtre de compte' });
+    const pill = canvasElement.querySelector('[data-pill]')!;
+
+    await userEvent.tab();
+    await userEvent.tab();
+
+    await expect(cross).toHaveFocus();
+    await expect(getComputedStyle(cross).outlineStyle).toBe('solid');
+    await expect(getComputedStyle(cross).outlineWidth).toBe('2px');
+    await expect(getComputedStyle(cross).outlineColor).toBe(getComputedStyle(pill).color);
+    await expect(getComputedStyle(cross).outlineColor).not.toBe(getComputedStyle(pill).backgroundColor);
   },
 };

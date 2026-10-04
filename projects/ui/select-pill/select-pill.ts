@@ -14,7 +14,7 @@ import { UiMenu, UiMenuTrigger } from '@joanroucoux/cairn-ui/menu';
 const HOST_CLASSES = 'relative flex-none inline-flex h-11 items-center pointer-fine:h-8';
 
 const TRIGGER_CLASSES =
-  'flex h-11 cursor-pointer items-center rounded-pill border-0 bg-transparent p-0 font-[inherit] focus-visible:outline-2 focus-visible:-outline-offset-5 focus-visible:outline-(--ring) pointer-fine:h-8 pointer-fine:focus-visible:outline-offset-0';
+  '-mx-[5px] flex h-11 cursor-pointer items-center rounded-pill border-x-[5px] border-y-0 border-transparent bg-transparent p-0 font-[inherit] focus-visible:outline-2 focus-visible:-outline-offset-5 focus-visible:outline-(--ring) pointer-fine:mx-0 pointer-fine:h-8 pointer-fine:border-x-0 pointer-fine:focus-visible:outline-offset-0';
 
 const PILL_CLASSES =
   'flex h-[34px] items-center rounded-pill pr-[30px] pl-3 text-label font-medium whitespace-nowrap forced-colors:border pointer-fine:h-8';
@@ -24,7 +24,7 @@ const REST_PILL_CLASSES = 'bg-(--card) text-(--foreground) shadow-[inset_0_0_0_1
 const ACTIVE_PILL_CLASSES = 'bg-(--primary) text-(--primary-foreground)';
 
 const CLEAR_CLASSES =
-  'absolute end-0 flex size-[34px] cursor-pointer items-center justify-center rounded-pill border-0 bg-transparent p-0 text-(--primary-foreground) focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring) pointer-fine:size-8 after:absolute after:-inset-[5px] pointer-fine:after:-inset-0.5';
+  'absolute end-0 flex size-[34px] cursor-pointer items-center justify-center rounded-pill border-0 bg-transparent p-0 text-(--primary-foreground) focus-visible:outline-2 focus-visible:-outline-offset-7 focus-visible:outline-(--primary-foreground) pointer-fine:size-8 pointer-fine:focus-visible:-outline-offset-6 after:absolute after:-inset-[5px] pointer-fine:after:-inset-0.5';
 
 /**
  * A pill that opens a `ui-menu` of exclusive choices, to head a row of filter chips: outlined at rest with a

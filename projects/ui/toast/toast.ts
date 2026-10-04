@@ -8,7 +8,7 @@ const TOAST_CLASSES =
   'pointer-events-auto flex min-h-11 min-w-[min(280px,calc(100vw-2rem))] max-w-[min(400px,calc(100vw-2rem))] items-center gap-2.5 rounded-container bg-(--primary) px-4 py-3 text-label font-medium text-(--primary-foreground) shadow-[0_8px_24px_rgb(0_0_0/0.16)] transition-[opacity,translate] duration-(--duration-base) ease-out starting:opacity-0 starting:translate-y-2 motion-reduce:starting:translate-y-0';
 
 const CLOSE_CLASSES =
-  'grid size-7 flex-none cursor-pointer place-items-center -my-1 -mr-2 rounded-[calc(var(--radius-control)-2px)] text-(--primary-foreground) outline-none hover:bg-[rgb(127_127_127/0.2)] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-(--primary-foreground)';
+  'relative grid size-7 flex-none cursor-pointer place-items-center -my-1 -mr-2 rounded-[calc(var(--radius-control)-2px)] text-(--primary-foreground) outline-none hover:bg-[rgb(127_127_127/0.2)] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-(--primary-foreground) after:absolute after:-inset-2 pointer-fine:after:-inset-1';
 
 const readDuration = (host: HTMLElement): number => {
   const raw = getComputedStyle(host).getPropertyValue('--toast-duration').trim();
@@ -92,6 +92,7 @@ export class UiToaster {
   private popoverShown = false;
   private readonly focused = signal(false);
   private lastId = 0;
+  private raisedId = 0;
   private remaining = DEFAULT_DURATION;
   private startedAt = 0;
   private timer: ReturnType<typeof setTimeout> | undefined;
@@ -109,7 +110,10 @@ export class UiToaster {
           return;
         }
 
-        this.raise();
+        if (toast.id !== this.raisedId) {
+          this.raisedId = toast.id;
+          this.raise();
+        }
         this.host.querySelectorAll('.ui-leave-fade').forEach((leaving) => leaving.remove());
 
         if (toast.kind === 'error') {

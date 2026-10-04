@@ -98,10 +98,26 @@ describe('UiSelectPill', () => {
     await setup().ready;
 
     expect(screen.getByRole('button', { name: 'Tous les comptes' })).toHaveClass(
+      '-mx-[5px]',
+      'border-x-[5px]',
+      'border-transparent',
       'focus-visible:outline-2',
       'focus-visible:-outline-offset-5',
       'focus-visible:outline-(--ring)',
+      'pointer-fine:mx-0',
+      'pointer-fine:border-x-0',
       'pointer-fine:focus-visible:outline-offset-0',
+    );
+  });
+
+  it('rings the cross in the pill text colour, a 24 px circle around its icon at every size', async () => {
+    await setup(true).ready;
+
+    expect(screen.getByRole('button', { name: 'Retirer le filtre de compte' })).toHaveClass(
+      'focus-visible:outline-2',
+      'focus-visible:outline-(--primary-foreground)',
+      'focus-visible:-outline-offset-7',
+      'pointer-fine:focus-visible:-outline-offset-6',
     );
   });
 
