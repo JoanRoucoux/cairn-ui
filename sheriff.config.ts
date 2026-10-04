@@ -26,6 +26,7 @@ export const config: SheriffConfig = {
     'component:empty': ['component:button'],
     'component:fact': ['component:card'],
     'component:dialog': ['component:button'],
+    'component:drawer': ['component:button', 'component:dialog'],
     'component:menu': ['component:button'],
     'component:motion': [
       'component:async',

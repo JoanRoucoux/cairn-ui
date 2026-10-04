@@ -149,10 +149,11 @@ Light and dark follow the operating system through `light-dark()`; to force a sc
 
 ### Overlay and motion
 
-| Folder   | Main exports                                                                                     | Purpose                                           |
-| -------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------- |
-| `dialog` | `UiDialog`                                                                                       | Modal dialog on the native `<dialog>`             |
-| `motion` | `UiFlipList`, `UiFlipItem`, `UiHighlight`, `injectReducedMotion`, `holdTransitionsUntilRendered` | List reflow, highlight and reduced-motion helpers |
+| Folder   | Main exports                                                                                     | Purpose                                                             |
+| -------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------- |
+| `dialog` | `UiDialog`                                                                                       | Modal dialog on the native `<dialog>`                               |
+| `drawer` | `UiDrawer`                                                                                       | Modal side panel on the right edge, for a row's detail on a desktop |
+| `motion` | `UiFlipList`, `UiFlipItem`, `UiHighlight`, `injectReducedMotion`, `holdTransitionsUntilRendered` | List reflow, highlight and reduced-motion helpers                   |
 
 ## Design principles
 

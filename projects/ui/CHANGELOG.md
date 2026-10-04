@@ -6,6 +6,22 @@
 
 - `ui-dialog`: the `layout` input (`trade`, `form`, `list`, `confirm`) is replaced by `variant` (`default` | `confirm`) and `sheet` (`fit` | `full`). `DIALOG_LAYOUTS` and `DialogLayout` become `DIALOG_VARIANTS`, `DIALOG_SHEETS`, `DialogVariant` and `DialogSheet`.
 - Migration: `layout="trade"` and `layout="form"` become the default (remove the attribute); `layout="list"` becomes `sheet="full"`; `layout="confirm"` becomes `variant="confirm"`. A list dialog was anchored 96px from the top on a desktop: it is now centred like every dialog.
+- `styles/motion.css` no longer ships `ui-enter-panel` nor its `cairn-panel-in` keyframes (an 8px slide for a
+  detail panel beside a list). The detail now opens in `ui-drawer`, which plays its own motion.
+- Migration: replace the side panel animated with `animate.enter="ui-enter-panel"` by a `ui-drawer`; for any other
+  element, use `ui-enter-fade-up` or `ui-enter-fade`.
+
+### Added
+
+- `ui-drawer` (`@joanroucoux/cairn-ui/drawer`): a modal side panel on the native `<dialog>`, against the right edge
+  at full height, 440px wide by default, on `--card` with a shadow on its left edge, 24px of padding and a
+  `rgb(0 0 0 / 0.36)` veil. It scrolls on its own with `overscroll-behavior: contain`, without locking the page.
+  Escape, the veil and the optional 36px cross close it; `dismissed` and `closed` (`escape`, `backdrop`, `cross`,
+  `programmatic`) follow the protocol of `ui-dialog`, and `busy` keeps it open. Without `heading` it draws no header
+  and `label` names it. It enters with opacity and a 24px slide over `--duration-base` on `--ease-out` and leaves
+  the reverse way over `--duration-exit`; under reduced motion it only fades.
+- `afterExit` is exported from `@joanroucoux/cairn-ui/dialog`: it calls back once the exit transition of an element
+  has played, or at once when it has none.
 
 ### Changed
 
