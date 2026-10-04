@@ -63,7 +63,7 @@ export class ModalClose<R extends string> {
   }
 
   onKeydown(event: KeyboardEvent): void {
-    if (event.key === 'Escape' && this.#config.busy()) {
+    if (event.key === 'Escape' && this.#config.busy() && (event.target as Element).closest('dialog') === this.#dialog) {
       event.preventDefault();
     }
   }

@@ -1,3 +1,4 @@
+import { UiDialog } from '@joanroucoux/cairn-ui/dialog';
 import { type RenderResult, render, screen } from '@testing-library/angular';
 
 import { type DrawerCloseReason, UiDrawer } from './drawer';
@@ -251,6 +252,29 @@ describe('UiDrawer close protocol', () => {
       set({ busy: false });
 
       expect(escapeKey(drawer).defaultPrevented).toBe(false);
+    });
+
+    it('lets Escape reach a dialog hosted inside it: the dialog closes, the drawer stays', async () => {
+      const onDialogDismissed = vi.fn<() => void>();
+      const { container } = await render(
+        `<ui-drawer heading="Northwind Monde" [open]="true" [busy]="true">
+           <ui-dialog heading="Acheter" [open]="true" (dismissed)="onDialogDismissed()">
+             <input aria-label="Quantité" />
+           </ui-dialog>
+         </ui-drawer>`,
+        { imports: [UiDrawer, UiDialog], componentProperties: { onDialogDismissed } },
+      );
+      const drawer = container.querySelector('ui-drawer > dialog') as HTMLDialogElement;
+      const dialog = container.querySelector('ui-dialog > dialog') as HTMLDialogElement;
+
+      expect(escapeKey(screen.getByLabelText('Quantité')).defaultPrevented).toBe(false);
+
+      cancel(dialog);
+
+      expect(dialog).not.toHaveAttribute('open');
+      expect(onDialogDismissed).toHaveBeenCalledOnce();
+      expect(drawer).toHaveAttribute('open');
+      expect(escapeKey(drawer).defaultPrevented).toBe(true);
     });
 
     it('stays open on cancel, then closes on the next one once the action is over', async () => {
