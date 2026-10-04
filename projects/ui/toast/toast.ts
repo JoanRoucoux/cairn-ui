@@ -2,10 +2,13 @@ import { Component, DestroyRef, ElementRef, afterNextRender, effect, inject, sig
 
 import { UiToasts } from './toasts';
 
-const DEFAULT_DURATION = 4000;
+const DEFAULT_DURATION = 5000;
 
 const TOAST_CLASSES =
-  'pointer-events-auto max-w-[min(28rem,calc(100vw-2rem))] rounded-container bg-(--elevated) px-4 py-3 text-label text-(--foreground) shadow-[0_8px_24px_rgb(0_0_0/0.16),inset_0_0_0_1px_var(--border)] transition-[opacity,translate] duration-(--duration-base) ease-out starting:opacity-0 starting:translate-y-2 motion-reduce:starting:translate-y-0';
+  'pointer-events-auto flex min-h-11 min-w-[min(280px,calc(100vw-2rem))] max-w-[min(400px,calc(100vw-2rem))] items-center gap-2.5 rounded-container bg-(--primary) px-4 py-3 text-label font-medium text-(--primary-foreground) shadow-[0_8px_24px_rgb(0_0_0/0.16)] transition-[opacity,translate] duration-(--duration-base) ease-out starting:opacity-0 starting:translate-y-2 motion-reduce:starting:translate-y-0';
+
+const CLOSE_CLASSES =
+  'grid size-7 flex-none cursor-pointer place-items-center -my-1 -mr-2 rounded-[calc(var(--radius-control)-2px)] text-(--primary-foreground) outline-none hover:bg-[rgb(127_127_127/0.2)] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-(--primary-foreground)';
 
 const readDuration = (host: HTMLElement): number => {
   const raw = getComputedStyle(host).getPropertyValue('--toast-duration').trim();
@@ -19,7 +22,9 @@ const readDuration = (host: HTMLElement): number => {
 };
 
 /**
- * Confirmation message shown by `UiToasts.show`: one at a time, no action, gone after `--toast-duration`.
+ * Message shown by `UiToasts`: one at a time, no action. A confirmation (`show`) is gone after `--toast-duration`;
+ * an error (`showError`) stays until its cross is clicked. Centred at the bottom of the content area: from `64rem`
+ * between `--sidebar-width` (0 when unset) and the right edge.
  * Place it once in the app shell.
  *
  * @example
@@ -32,10 +37,41 @@ const readDuration = (host: HTMLElement): number => {
       <div
         animate.leave="ui-leave-fade"
         [class]="toastClasses"
+        (focusin)="setFocused(true)"
+        (focusout)="setFocused(false)"
         (mouseenter)="setHovered(true)"
         (mouseleave)="setHovered(false)"
       >
-        {{ toast.text }}
+        <svg
+          aria-hidden="true"
+          class="block size-4 flex-none fill-none stroke-current stroke-2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          viewBox="0 0 24 24"
+        >
+          @if (toast.kind === 'error') {
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 8v4" />
+            <path d="M12 16h.01" />
+          } @else {
+            <path d="M20 6 9 17l-5-5" />
+          }
+        </svg>
+        <span class="min-w-0 flex-1 text-pretty">{{ toast.text }}</span>
+        @if (toast.kind === 'error') {
+          <button type="button" [attr.aria-label]="toast.closeLabel" [class]="closeClasses" (click)="toasts.dismiss()">
+            <svg
+              aria-hidden="true"
+              class="block size-4 flex-none fill-none stroke-current stroke-2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              viewBox="0 0 24 24"
+            >
+              <path d="M18 6 6 18" />
+              <path d="m6 6 12 12" />
+            </svg>
+          </button>
+        }
       </div>
     }
   `,
@@ -43,26 +79,18 @@ const readDuration = (host: HTMLElement): number => {
     role: 'status',
     popover: 'manual',
     class:
-      'pointer-events-none fixed inset-x-0 top-auto m-0 flex h-auto w-auto justify-center overflow-visible border-0 bg-transparent p-0 bottom-[calc(var(--tab-bar-height,calc(52px+env(safe-area-inset-bottom)))+var(--action-bar-height,0px)+8px)] lg:inset-x-auto lg:right-6 lg:bottom-6',
+      'pointer-events-none fixed inset-x-0 top-auto m-0 flex h-auto w-auto justify-center overflow-visible border-0 bg-transparent p-0 bottom-[calc(var(--tab-bar-height,calc(52px+env(safe-area-inset-bottom)))+var(--action-bar-height,0px)+8px)] lg:left-[var(--sidebar-width,0px)] lg:bottom-6',
   },
 })
 export class UiToaster {
   protected readonly toasts = inject(UiToasts);
   protected readonly toastClasses = TOAST_CLASSES;
+  protected readonly closeClasses = CLOSE_CLASSES;
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   private readonly hovered = signal(false);
   private popoverShown = false;
-  private readonly observer = new MutationObserver((records) => {
-    const opened = records.some((record) => {
-      const target = record.target as HTMLElement;
-      return target instanceof HTMLDialogElement && target.open;
-    });
-
-    if (opened && this.toasts.toast()) {
-      this.raise();
-    }
-  });
+  private readonly focused = signal(false);
   private lastId = 0;
   private remaining = DEFAULT_DURATION;
   private startedAt = 0;
@@ -71,19 +99,22 @@ export class UiToaster {
   constructor() {
     effect(() => {
       const toast = this.toasts.toast();
-      const paused = this.hovered();
+      const paused = this.hovered() || this.focused();
 
       untracked(() => {
         if (!toast) {
           this.stop();
           this.hovered.set(false);
+          this.focused.set(false);
           return;
         }
 
         this.raise();
         this.host.querySelectorAll('.ui-leave-fade').forEach((leaving) => leaving.remove());
 
-        if (paused) {
+        if (toast.kind === 'error') {
+          this.stop();
+        } else if (paused) {
           this.pause();
         } else {
           this.resume(toast.id);
@@ -94,17 +125,19 @@ export class UiToaster {
     afterNextRender(() => {
       this.host.showPopover();
       this.popoverShown = true;
-      this.observer.observe(this.host.ownerDocument, { attributes: true, attributeFilter: ['open'], subtree: true });
     });
 
     inject(DestroyRef).onDestroy(() => {
-      this.observer.disconnect();
       this.stop();
     });
   }
 
   protected setHovered(value: boolean): void {
     this.hovered.set(value);
+  }
+
+  protected setFocused(value: boolean): void {
+    this.focused.set(value);
   }
 
   private raise(): void {

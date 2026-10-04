@@ -21,6 +21,9 @@
 
 ### Added
 
+- `UiToasts.showError(message, closeLabel = 'Fermer')`: an error toast with the same surface, an alert icon, no timer
+  and a 28px cross; it closes only with the cross. One message at a time: an error replaces a confirmation and the
+  other way round. `Toast` gains `kind` and `closeLabel`.
 - `ui-drawer` (`@joanroucoux/cairn-ui/drawer`): a modal side panel on the native `<dialog>`, against the right edge at
   full height, 440px wide by default, on `--card` with a shadow on its left edge, 24px of padding and a
   `rgb(0 0 0 / 0.36)` veil. It scrolls on its own with `overscroll-behavior: contain`, without locking the page.
@@ -69,8 +72,12 @@
   `pointercancel` hide it. The plot is `touch-none` (was `touch-pan-y`), so a vertical swipe on the plot no longer
   scrolls the page; the page still scrolls everywhere else.
 - `uiStaleLink` with `chevron`: the gap before the chevron is 4px on touch and 2px with a mouse (was 2px everywhere).
-- `--toast-duration` is 4000ms (was 5000ms), and so is the fallback used when the token cannot be read.
-- `ui-toaster` pauses on hover only. Focus no longer pauses it: it carries no control a keyboard could reach.
+- `ui-toaster` is an inverted surface (`--primary` on `--primary-foreground`, no contour, menu shadow, 44px minimum
+  height, 280 to 400px wide within the viewport minus 32px) with a 16px check icon, and it is centred at the bottom of
+  the content area: from `64rem`, 24px from the bottom and centred between `--sidebar-width` (0 when the app does not
+  set it) and the right edge; below, centred 8px above the tab bar as before. It was `--elevated`, bottom right.
+- `--toast-duration` is 5000ms, and so is the fallback used when the token cannot be read. The timer pauses on hover
+  and while focus is inside the message.
 - Stories and docs no longer use the Instruments samples: the `ui-table` `Instruments` story is removed, the
   `ui-empty` sample reads "Aucune ligne ne correspond à ...", the `ui-back-link` small story reads "Comptes". The
   Storybook favicon is the Cairn tile.
@@ -78,8 +85,8 @@
 ### Fixed
 
 - `ui-toaster` shows above an open `ui-dialog` or `ui-drawer`: it is a `popover="manual"` in the top layer, shown
-  again each time a message arrives and when a modal opens while a message is visible. Its placement does not change.
-  Behind a modal the page is inert, so the hover pause does not apply over an open modal.
+  again each time a message arrives. A modal that opens afterwards does not raise it again: the toast never covers a
+  dialog's button. Behind a modal the page is inert, so the pause and the error cross do not work over an open modal.
 
 ## 0.8.2
 

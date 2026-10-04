@@ -190,7 +190,7 @@ describe('design tokens', () => {
 
     expect(values.get('--duration-spin')).toBe('800ms');
     expect(values.get('--duration-highlight')).toBe('1200ms');
-    expect(values.get('--toast-duration')).toBe('4000ms');
+    expect(values.get('--toast-duration')).toBe('5000ms');
   });
 
   it('defaults every Tailwind transition to the Cairn curve and duration', () => {
