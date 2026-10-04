@@ -161,6 +161,21 @@ export class UiListRow {
 }
 
 /**
+ * Groups link rows under a hairline, as the "other ways" links under a search list. Put it on a `div`
+ * around `ui-row` with `trailing="chevron"`.
+ *
+ * @example
+ * <div uiRowGroup>
+ *   <button ui-row type="button" trailing="chevron">Saisir à la main</button>
+ * </div>
+ */
+@Directive({
+  selector: '[uiRowGroup]',
+  host: { class: 'flex flex-col pt-1 shadow-[inset_0_1px_0_var(--hairline)]' },
+})
+export class UiRowGroup {}
+
+/**
  * The filled tile that leads a row, holding an icon. Put it on a `span` as the first child of a
  * `ui-row` or a `uiListRow`.
  *

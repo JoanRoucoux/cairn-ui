@@ -38,6 +38,12 @@ describe('UiDrawer', () => {
     expect(drawer).not.toHaveAttribute('aria-busy');
   });
 
+  it('never draws the browser outline on its own element', async () => {
+    await render(`<ui-drawer heading="Northwind Monde" open><p>Corps</p></ui-drawer>`, { imports: [UiDrawer] });
+
+    expect(screen.getByRole('dialog')).toHaveClass('outline-none');
+  });
+
   it('draws the 36px cross beside the title only when closeLabel is set', async () => {
     const { rerender } = await render(
       `<ui-drawer heading="Northwind Monde" [closeLabel]="closeLabel" open><p>Corps</p></ui-drawer>`,

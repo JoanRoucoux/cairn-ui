@@ -176,8 +176,8 @@ export const BusyStaysOpen: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const dialog = await canvas.findByRole('dialog', { name: 'Saisir un cours' });
-
     await expect(dialog).toHaveAttribute('aria-busy', 'true');
+    await expect(getComputedStyle(dialog).outlineStyle).toBe('none');
     await expect(canvas.getByRole('button', { name: 'Fermer' })).toBeDisabled();
     await userEvent.keyboard('{Escape}');
     await userEvent.pointer({ keys: '[MouseLeft]', target: dialog, coords: { clientX: 4, clientY: 4 } });

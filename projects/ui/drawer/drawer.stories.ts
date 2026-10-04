@@ -132,6 +132,18 @@ export const Opens: Story = {
   },
 };
 
+export const OpenOnLoad: Story = {
+  name: 'Open on load, no outline on the panel',
+  args: { open: true, closeLabel: undefined },
+  play: async ({ canvasElement }) => {
+    const drawer = await within(canvasElement).findByRole('dialog', { name: 'Northwind Monde' });
+
+    drawer.focus();
+    await expect(drawer).toHaveFocus();
+    await expect(getComputedStyle(drawer).outlineStyle).toBe('none');
+  },
+};
+
 export const EscapeCloses: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
