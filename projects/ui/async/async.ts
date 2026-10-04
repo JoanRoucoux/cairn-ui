@@ -26,7 +26,11 @@ const RETRY_PRIMARY_CLASSES = 'bg-(--primary) text-(--primary-foreground) hover:
 
 const RETRY_BLOCK_CLASSES = 'min-h-(--row-min) gap-2 pl-3 pr-4';
 
-const RETRY_INLINE_CLASSES = 'h-11 pointer-fine:h-8 flex-none gap-1.5 pl-2.5 pr-3';
+const RETRY_INLINE_CLASSES = 'h-11 pointer-fine:h-8 flex-none';
+
+const RETRY_INLINE_ICON_CLASSES = 'gap-1.5 pl-2.5 pr-3';
+
+const RETRY_INLINE_TEXT_CLASSES = 'px-3';
 
 const ELEVATED_SURFACE_CLASSES = 'rounded-control bg-(--elevated)';
 
@@ -119,19 +123,21 @@ const INLINE_BOX_CLASSES = 'flex-row items-center justify-between gap-3 pt-1.5 p
             <span class="text-(--muted-foreground)" [class]="messageClasses()">{{ errorMessage() }}</span>
           }
           <button type="button" [class]="retryButtonClasses()" (click)="retry.emit()">
-            <svg
-              aria-hidden="true"
-              class="block flex-none fill-none stroke-current"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="1.75"
-              viewBox="0 0 24 24"
-              [attr.height]="iconSize()"
-              [attr.width]="iconSize()"
-            >
-              <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
-              <path d="M21 3v5h-5" />
-            </svg>
+            @if (retryIcon()) {
+              <svg
+                aria-hidden="true"
+                class="block flex-none fill-none stroke-current"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.75"
+                viewBox="0 0 24 24"
+                [attr.height]="iconSize()"
+                [attr.width]="iconSize()"
+              >
+                <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
+                <path d="M21 3v5h-5" />
+              </svg>
+            }
             {{ retryLabel() }}
           </button>
         </div>
@@ -155,6 +161,7 @@ export class UiAsync {
   readonly errorTitle = input<string>();
   readonly errorMessage = input<string>();
   readonly retryLabel = input<string>();
+  readonly retryIcon = input(true, { transform: booleanAttribute });
   readonly variant = input<AsyncVariant>('elevated');
   readonly align = input<AsyncAlign>('start');
   readonly card = input(false, { transform: booleanAttribute });
@@ -194,7 +201,9 @@ export class UiAsync {
     const spec = this.#spec();
 
     if (spec === null) {
-      return `${RETRY_BASE_CLASSES} ${RETRY_OUTLINE_CLASSES} ${RETRY_INLINE_CLASSES}`;
+      const spacing = this.retryIcon() ? RETRY_INLINE_ICON_CLASSES : RETRY_INLINE_TEXT_CLASSES;
+
+      return `${RETRY_BASE_CLASSES} ${RETRY_OUTLINE_CLASSES} ${RETRY_INLINE_CLASSES} ${spacing}`;
     }
 
     return `${RETRY_BASE_CLASSES} ${spec.retry} ${RETRY_BLOCK_CLASSES} ${spec.retryMargin[this.align()]}`;

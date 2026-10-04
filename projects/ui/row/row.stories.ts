@@ -6,9 +6,11 @@ import {
   ROW_GAPS,
   ROW_PADDINGS,
   ROW_SIZES,
+  ROW_TRAILINGS,
   type RowGap,
   type RowPadding,
   type RowSize,
+  type RowTrailing,
   UiListRow,
   UiRow,
   UiRowItem,
@@ -22,6 +24,7 @@ type RowArgs = {
   size: RowSize;
   padding: RowPadding;
   gap: RowGap;
+  trailing: RowTrailing;
 };
 
 const meta: Meta<RowArgs> = {
@@ -57,7 +60,7 @@ with a click handler, so keyboard and assistive technology support come for free
   render: (args) => ({
     props: args,
     template: `
-      <a ui-row href="#" [selected]="selected" [busy]="busy" [unavailable]="unavailable" [size]="size" [padding]="padding" [gap]="gap" class="w-[340px]">
+      <a ui-row href="#" [selected]="selected" [busy]="busy" [unavailable]="unavailable" [size]="size" [padding]="padding" [gap]="gap" [trailing]="trailing" class="w-[340px]">
         <div class="flex min-w-0 flex-1 flex-col">
           <span class="text-body font-medium">Amundi MSCI World</span>
           <span class="text-label text-(--muted-foreground)">300 × 28,64 €</span>
@@ -76,6 +79,7 @@ with a click handler, so keyboard and assistive technology support come for free
     size: 'md',
     padding: 'md',
     gap: 'default',
+    trailing: 'none',
   },
   argTypes: {
     selected: { control: 'boolean', description: 'Sets `aria-current="true"` and the soft background.' },
@@ -99,6 +103,12 @@ with a click handler, so keyboard and assistive technology support come for free
       control: 'select',
       options: [...ROW_GAPS],
       description: 'Space between the row children: the size default, or `sm` for 8 px on any size.',
+    },
+    trailing: {
+      control: 'inline-radio',
+      options: [...ROW_TRAILINGS],
+      description:
+        '`chevron` makes a flush link row: a 16 px chevron in `--subtle-foreground` at the end, no side padding, a minimum height of `--row-min`, and the text turns `--muted-foreground` on hover instead of the glow. `size`, `padding` and `gap` are ignored.',
     },
     padding: {
       control: 'select',
@@ -325,5 +335,35 @@ export const RuledListRows: Story = {
     const canvas = within(canvasElement);
 
     await expect(canvas.getAllByRole('listitem')).toHaveLength(3);
+  },
+};
+
+export const LinkRow: Story = {
+  name: 'Link row (Ajouter une ligne)',
+  args: { trailing: 'chevron' },
+  render: () => ({
+    template: `
+      <div class="flex w-[360px] flex-col pt-1 shadow-[inset_0_1px_0_var(--hairline)]">
+        <button ui-row type="button" trailing="chevron">
+          <span class="flex min-w-0 flex-1 flex-col">
+            <span class="text-label font-medium">Produit structuré SG Sirius</span>
+            <span class="text-caption text-(--subtle-foreground)">Pas de recherche : saisir l'ISIN</span>
+          </span>
+        </button>
+        <button ui-row type="button" trailing="chevron">
+          <span class="flex min-w-0 flex-1 flex-col">
+            <span class="text-label font-medium">Saisir à la main</span>
+            <span class="text-caption text-(--subtle-foreground)">Pour un titre sans source, cours saisi par vous</span>
+          </span>
+        </button>
+      </div>
+    `,
+  }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const row = canvas.getByRole('button', { name: /Saisir à la main/ });
+
+    await expect(getComputedStyle(row).paddingLeft).toBe('0px');
+    await expect(row.querySelector('svg')).toHaveAttribute('width', '16');
   },
 };

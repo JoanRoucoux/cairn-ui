@@ -17,6 +17,7 @@ type AsyncArgs = {
   errorTitle: string;
   errorMessage: string;
   retryLabel: string;
+  retryIcon: boolean;
   variant: AsyncVariant;
   align: AsyncAlign;
   card: boolean;
@@ -69,7 +70,7 @@ inside a form. \`align\` centres the block (\`auto\`: from 64rem), \`card\` draw
     template: `
       <div class="rounded-container box-content flex w-[300px] flex-col gap-2.5 bg-(--card) p-4 shadow-[inset_0_0_0_1px_var(--border)]">
         <span class="text-title font-semibold">{{ title }}</span>
-        <ui-async [state]="state" [errorTitle]="errorTitle" [errorMessage]="errorMessage" [retryLabel]="retryLabel" [variant]="variant" [align]="align" [card]="card" [fill]="fill" (retry)="retry()">
+        <ui-async [state]="state" [errorTitle]="errorTitle" [errorMessage]="errorMessage" [retryLabel]="retryLabel" [retryIcon]="retryIcon" [variant]="variant" [align]="align" [card]="card" [fill]="fill" (retry)="retry()">
           <div asyncLoading class="flex flex-col gap-2.5">
             <div class="flex justify-between py-1.5"><span class="rounded-control block h-4 bg-(--muted) w-30"></span><span class="rounded-control block h-4 bg-(--muted) w-[90px]"></span></div>
             <div class="flex justify-between py-1.5"><span class="rounded-control block h-4 bg-(--muted) w-[90px]"></span><span class="rounded-control block h-4 bg-(--muted) w-[90px]"></span></div>
@@ -90,6 +91,7 @@ inside a form. \`align\` centres the block (\`auto\`: from 64rem), \`card\` draw
     errorTitle: "Les enveloppes n'ont pas pu être chargées",
     errorMessage: "Le serveur n'a pas répondu.",
     retryLabel: 'Réessayer',
+    retryIcon: true,
     variant: 'elevated',
     align: 'start',
     card: false,
@@ -102,6 +104,11 @@ inside a form. \`align\` centres the block (\`auto\`: from 64rem), \`card\` draw
     errorTitle: { control: 'text', description: 'Error state title, next to the block name.' },
     errorMessage: { control: 'text', description: 'Error state detail sentence.' },
     retryLabel: { control: 'text', description: 'Label of the retry button.' },
+    retryIcon: {
+      control: 'boolean',
+      description:
+        'Draws the rotate icon in the retry button (default). Turn it off for a text-only retry, as in a per-source search error.',
+    },
     variant: {
       control: 'inline-radio',
       options: [...ASYNC_VARIANTS],
@@ -271,3 +278,18 @@ export const InlineSearch: Story = screen('Ajouter une ligne, search (inline)', 
   width: 350,
   attrs: 'variant="inline"',
 });
+
+export const InlineSearchNoIcon: Story = {
+  ...screen('Ajouter une ligne, per-source retry (inline, no icon)', {
+    title: '',
+    message: "Yahoo Finance n'a pas répondu.",
+    width: 350,
+    attrs: 'variant="inline" [retryIcon]="false"',
+  }),
+  play: async ({ canvasElement }) => {
+    const retry = within(canvasElement).getByRole('button', { name: 'Réessayer' });
+
+    await expect(retry.querySelector('svg')).toBeNull();
+    await expect(getComputedStyle(retry).paddingLeft).toBe('12px');
+  },
+};

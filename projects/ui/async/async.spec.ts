@@ -141,6 +141,21 @@ describe('UiAsync', () => {
       expect(retry.querySelector('svg')).toHaveAttribute('width', '16');
     });
 
+    it('draws the inline retry as text only with retryIcon off', async () => {
+      const { retry } = await draw('variant="inline" [retryIcon]="false"');
+
+      expect(retry.querySelector('svg')).toBeNull();
+      expect(retry).toHaveClass('h-11', 'pointer-fine:h-8', 'px-3');
+      expect(retry).not.toHaveClass('gap-1.5', 'pl-2.5', 'pr-3');
+      expect(retry).toHaveTextContent('Retry');
+    });
+
+    it('drops the icon of a block retry too', async () => {
+      const { retry } = await draw('[retryIcon]="false"');
+
+      expect(retry.querySelector('svg')).toBeNull();
+    });
+
     it.each([
       ['elevated', ['px-4', 'py-10']],
       ['plain', ['px-4', 'py-12']],

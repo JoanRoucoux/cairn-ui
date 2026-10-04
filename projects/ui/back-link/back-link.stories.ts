@@ -46,7 +46,7 @@ const meta: Meta<BackLinkArgs> = {
       control: 'inline-radio',
       options: [...BACK_LINK_SIZES],
       description:
-        '`md` is 44 px high in the foreground colour (screen header on iPhone); `sm` is 36 px, muted, with a hover glow (desktop header); `header` has the `md` metrics with a 24 px chevron and a focus ring drawn inside (a screen header).',
+        '`md` is 44 px high in the foreground colour (screen header on iPhone); `sm` is 36 px, muted, with a hover glow (desktop header); `header` has the `md` metrics with a 24 px chevron and a focus ring drawn inside (a screen header); `inline` is the 14 px 500 muted back step of a form, 44 px high (36 px with a mouse), 18 px chevron, hover to the foreground colour, on a `button`.',
     },
     label: { control: 'text', description: 'Projected text: the name of the destination.' },
   },
@@ -70,4 +70,21 @@ export const Small: Story = {
 export const Header: Story = {
   name: 'Header (Lignes detail)',
   args: { size: 'header', label: 'Lignes' },
+};
+
+export const InlineButton: Story = {
+  name: 'Inline button (Ajouter une ligne)',
+  args: { size: 'inline', label: 'Retour à la recherche' },
+  render: (args) => ({
+    props: args,
+    template: `<button ui-back-link [size]="size">{{ label }}</button>`,
+  }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button', { name: 'Retour à la recherche' });
+
+    await expect(button).toHaveAttribute('type', 'button');
+    await expect(getComputedStyle(button).fontSize).toBe('14px');
+    await expect(getComputedStyle(button).fontWeight).toBe('500');
+  },
 };

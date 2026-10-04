@@ -22,6 +22,7 @@ Lucide icon in the \`--negative\` color, an optional heading and a text.
 #### When to use
 
 * To report a failed submission next to the form that caused it, such as a sign-in error.
+* To explain a step with static help, such as what a manual entry cannot verify (\`info\` variant).
 * To warn, right above a confirmation, about an irreversible consequence (\`warning\` variant).
 
 #### When not to use
@@ -33,6 +34,7 @@ Lucide icon in the \`--negative\` color, an optional heading and a text.
 
 * The \`error\` variant is \`role="alert"\`, announced as soon as it appears. The \`warning\` variant is
   \`role="status"\`, announced politely.
+* The \`info\` variant is \`role="note"\`: read in place, never announced.
 * The icon is decorative and hidden from assistive technology: the text carries the message.`,
       },
     },
@@ -52,7 +54,7 @@ Lucide icon in the \`--negative\` color, an optional heading and a text.
       control: 'select',
       options: [...ALERT_VARIANTS],
       description:
-        '`error` is a bordered card with the circle icon. `warning` is a bare inline notice with the triangle icon.',
+        '`error` is a bordered card with the circle icon. `warning` is a bare inline notice with the triangle icon. `info` is a `--muted` box with the circle-i icon in the text colour, a static note.',
     },
     heading: { control: 'text', description: 'Optional heading. The text below it turns muted.' },
     text: { control: 'text', description: 'Projected text content.' },
@@ -90,6 +92,21 @@ export const Warning: Story = {
     const canvas = within(canvasElement);
 
     await waitFor(() => expect(canvas.getByRole('status')).toBeVisible());
+  },
+};
+
+export const Info: Story = {
+  args: {
+    variant: 'info',
+    heading: '',
+    text: "Cairn ne peut pas vérifier cet ISIN avant l'ajout. Le cours arrivera au prochain relevé SG Sirius ; si l'ISIN est faux, la ligne restera sans cours.",
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const note = await canvas.findByRole('note');
+
+    await waitFor(() => expect(note).toBeVisible());
+    await expect(getComputedStyle(note).padding).toBe('12px');
   },
 };
 

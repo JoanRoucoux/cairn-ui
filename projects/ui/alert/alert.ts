@@ -1,6 +1,6 @@
 import { Component, booleanAttribute, computed, input } from '@angular/core';
 
-export const ALERT_VARIANTS = ['error', 'warning'] as const;
+export const ALERT_VARIANTS = ['error', 'warning', 'info'] as const;
 export type AlertVariant = (typeof ALERT_VARIANTS)[number];
 
 const BASE_CLASSES = 'flex items-start gap-2.5 text-left text-label';
@@ -8,10 +8,13 @@ const BASE_CLASSES = 'flex items-start gap-2.5 text-left text-label';
 const VARIANT_CLASSES: Record<AlertVariant, string> = {
   error: 'rounded-control bg-(--card) px-3.5 py-3 shadow-[inset_0_0_0_1px_var(--border)]',
   warning: 'text-(--foreground)',
+  info: 'rounded-control bg-(--muted) p-3 text-(--foreground)',
 };
 
+const ROLES: Record<AlertVariant, string> = { error: 'alert', warning: 'status', info: 'note' };
+
 /**
- * Inline message explaining a failure or a consequence: an icon, an optional heading and a text.
+ * Inline message explaining a failure or a consequence, or static help with `info`: an icon, an optional heading and a text.
  * It fades in when it appears; set `[fadeIn]="false"` on an alert that is part of the page as it
  * opens.
  *
@@ -21,7 +24,23 @@ const VARIANT_CLASSES: Record<AlertVariant, string> = {
 @Component({
   selector: 'ui-alert',
   template: `
-    @if (variant() === 'warning') {
+    @if (variant() === 'info') {
+      <svg
+        aria-hidden="true"
+        class="mt-px block flex-none stroke-current"
+        fill="none"
+        height="18"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="1.75"
+        viewBox="0 0 24 24"
+        width="18"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <path d="M12 16v-4" />
+        <path d="M12 8h.01" />
+      </svg>
+    } @else if (variant() === 'warning') {
       <svg
         aria-hidden="true"
         class="mt-px block flex-none stroke-(--negative)"
@@ -65,13 +84,15 @@ const VARIANT_CLASSES: Record<AlertVariant, string> = {
   host: {
     'animate.leave': 'ui-leave-fade',
     '[class]': 'classes()',
-    '[attr.role]': "variant() === 'warning' ? 'status' : 'alert'",
+    '[attr.role]': 'role()',
   },
 })
 export class UiAlert {
   readonly variant = input<AlertVariant>('error');
   readonly heading = input<string>();
   readonly fadeIn = input(true, { transform: booleanAttribute });
+
+  protected readonly role = computed(() => ROLES[this.variant()]);
 
   protected readonly classes = computed(
     () => `${BASE_CLASSES} ${VARIANT_CLASSES[this.variant()]}${this.fadeIn() ? ' ui-enter-fade' : ''}`,

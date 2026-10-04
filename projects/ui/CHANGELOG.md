@@ -34,6 +34,11 @@
   around the table slides nothing when a group folds.
 - `ui-group-header` (`@joanroucoux/cairn-ui/group-header`): the header of a grouped card on a phone, with name, meta
   and a projected total. Collapsible, with a 20px chevron and a press scale, or static.
+- `ui-result-group`: one source of a search, a two-tone heading over its rows, with a two-row skeleton, a message slot (`resultGroupMessage`) and an inline error whose retry has no icon.
+- `ui-alert` `variant="info"`: a `--muted` box with an 18 px info icon, `role="note"`.
+- `ui-row` `trailing="chevron"`: a flush link row with a 16 px `--subtle-foreground` chevron and a dimming hover. Rows without it are unchanged.
+- `ui-back-link` `size="inline"` and the `button[ui-back-link]` selector: 14 px 500 muted back step, 18 px chevron, 44 px high (36 px with a mouse). A button host gets `type="button"`.
+- `ui-async` `retryIcon` input (default true): `false` draws a text-only retry.
 
 ### Changed
 

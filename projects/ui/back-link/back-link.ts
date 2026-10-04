@@ -1,30 +1,33 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, ElementRef, computed, inject, input } from '@angular/core';
 
 import { holdTransitionsUntilRendered } from '@joanroucoux/cairn-ui/motion';
 
 /** Available back link sizes. */
-export const BACK_LINK_SIZES = ['md', 'sm', 'header'] as const;
+export const BACK_LINK_SIZES = ['md', 'sm', 'header', 'inline'] as const;
 export type BackLinkSize = (typeof BACK_LINK_SIZES)[number];
 
 const BASE_CLASSES =
-  'inline-flex items-center gap-0.5 rounded-control text-body font-medium whitespace-nowrap cursor-pointer select-none touch-manipulation transition-[scale,background-color,color] [transition-duration:var(--duration-press),var(--duration-fast),var(--duration-fast)] ease-out active:scale-(--press-scale) focus-visible:outline-2 focus-visible:outline-(--ring)';
+  'inline-flex items-center gap-0.5 rounded-control font-medium whitespace-nowrap cursor-pointer select-none touch-manipulation transition-[scale,background-color,color] [transition-duration:var(--duration-press),var(--duration-fast),var(--duration-fast)] ease-out active:scale-(--press-scale) focus-visible:outline-2 focus-visible:outline-(--ring)';
 
 const SIZE_CLASSES: Record<BackLinkSize, string> = {
-  md: 'h-11 pr-3 pl-1 text-(--foreground) focus-visible:outline-offset-2',
-  sm: 'h-9 pr-2 pl-0.5 text-(--muted-foreground) hover:bg-(--glow) hover:text-(--foreground) focus-visible:outline-offset-2',
-  header: 'h-11 pr-3 pl-1 text-(--foreground) focus-visible:-outline-offset-2',
+  md: 'h-11 pr-3 pl-1 text-body text-(--foreground) focus-visible:outline-offset-2',
+  sm: 'h-9 pr-2 pl-0.5 text-body text-(--muted-foreground) hover:bg-(--glow) hover:text-(--foreground) focus-visible:outline-offset-2',
+  header: 'h-11 pr-3 pl-1 text-body text-(--foreground) focus-visible:-outline-offset-2',
+  inline:
+    'h-11 pointer-fine:h-9 pr-2 pl-0.5 text-label text-(--muted-foreground) hover:text-(--foreground) focus-visible:outline-offset-2',
 };
 
-const CHEVRON: Record<BackLinkSize, number> = { md: 22, sm: 22, header: 24 };
+const CHEVRON: Record<BackLinkSize, number> = { md: 22, sm: 22, header: 24, inline: 18 };
 
 /**
- * Link back to the parent screen: a chevron and the name of the destination.
+ * Link back to the parent screen: a chevron and the name of the destination. On a `button`, it
+ * goes back inside the current view, such as from a form to the search that led to it.
  *
  * @example
  * <a ui-back-link routerLink="/accounts">Accounts</a>
  */
 @Component({
-  selector: 'a[ui-back-link]',
+  selector: 'a[ui-back-link], button[ui-back-link]',
   template: `
     <svg
       aria-hidden="true"
@@ -43,11 +46,13 @@ const CHEVRON: Record<BackLinkSize, number> = { md: 22, sm: 22, header: 24 };
   `,
   host: {
     '[class]': 'classes()',
+    '[attr.type]': "button ? 'button' : null",
   },
 })
 export class UiBackLink {
   readonly size = input<BackLinkSize>('md');
 
+  protected readonly button = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement.tagName === 'BUTTON';
   protected readonly chevron = computed(() => CHEVRON[this.size()]);
   protected readonly classes = computed(() => `${BASE_CLASSES} ${SIZE_CLASSES[this.size()]}`);
 
