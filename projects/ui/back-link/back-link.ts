@@ -1,4 +1,4 @@
-import { Component, ElementRef, computed, inject, input } from '@angular/core';
+import { Component, ElementRef, HostAttributeToken, computed, inject, input } from '@angular/core';
 
 import { holdTransitionsUntilRendered } from '@joanroucoux/cairn-ui/motion';
 
@@ -46,13 +46,15 @@ const CHEVRON: Record<BackLinkSize, number> = { md: 22, sm: 22, header: 24, inli
   `,
   host: {
     '[class]': 'classes()',
-    '[attr.type]': "button ? 'button' : null",
+    '[attr.type]': 'type',
   },
 })
 export class UiBackLink {
   readonly size = input<BackLinkSize>('md');
 
-  protected readonly button = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement.tagName === 'BUTTON';
+  protected readonly type =
+    inject(new HostAttributeToken('type'), { optional: true }) ??
+    (inject<ElementRef<HTMLElement>>(ElementRef).nativeElement.tagName === 'BUTTON' ? 'button' : null);
   protected readonly chevron = computed(() => CHEVRON[this.size()]);
   protected readonly classes = computed(() => `${BASE_CLASSES} ${SIZE_CLASSES[this.size()]}`);
 

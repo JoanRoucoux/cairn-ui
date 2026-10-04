@@ -123,7 +123,7 @@ const INLINE_BOX_CLASSES = 'flex-row items-center justify-between gap-3 pt-1.5 p
             <span class="text-(--muted-foreground)" [class]="messageClasses()">{{ errorMessage() }}</span>
           }
           <button type="button" [class]="retryButtonClasses()" (click)="retry.emit()">
-            @if (retryIcon()) {
+            @if (retryIcon() || variant() !== 'inline') {
               <svg
                 aria-hidden="true"
                 class="block flex-none fill-none stroke-current"
@@ -161,6 +161,7 @@ export class UiAsync {
   readonly errorTitle = input<string>();
   readonly errorMessage = input<string>();
   readonly retryLabel = input<string>();
+  /** Draws the rotate icon in the retry button. Only the `inline` variant honours `false`. */
   readonly retryIcon = input(true, { transform: booleanAttribute });
   readonly variant = input<AsyncVariant>('elevated');
   readonly align = input<AsyncAlign>('start');

@@ -107,7 +107,7 @@ inside a form. \`align\` centres the block (\`auto\`: from 64rem), \`card\` draw
     retryIcon: {
       control: 'boolean',
       description:
-        'Draws the rotate icon in the retry button (default). Turn it off for a text-only retry, as in a per-source search error.',
+        'Draws the rotate icon in the retry button (default). Turn it off for a text-only retry, as in a per-source search error. Only the `inline` variant honours it.',
     },
     variant: {
       control: 'inline-radio',

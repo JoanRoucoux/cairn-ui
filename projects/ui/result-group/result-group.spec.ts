@@ -26,7 +26,7 @@ describe('UiResultGroup', () => {
   it('is a group named by its two-tone heading', async () => {
     await draw('ready');
 
-    const group = screen.getByRole('group', { name: 'Northwind Markets' });
+    const group = screen.getByRole('group', { name: 'Northwind Markets, cours en continu' });
     expect(screen.getByText('Northwind Markets')).toHaveClass('font-semibold', 'text-(--foreground)');
     expect(screen.getByText('cours en continu')).toHaveClass('text-(--subtle-foreground)');
     expect(screen.getByText('Northwind Markets').parentElement).toHaveClass(
@@ -45,13 +45,6 @@ describe('UiResultGroup', () => {
 
     expect(screen.getByRole('group', { name: 'Déjà suivi' })).toBeInTheDocument();
     expect(screen.getByText('Déjà suivi').parentElement?.children).toHaveLength(1);
-  });
-
-  it('gives each group its own heading id', async () => {
-    await render('<ui-result-group label="A" /><ui-result-group label="B" />', { imports: [UiResultGroup] });
-
-    const [a, b] = screen.getAllByRole('group') as [HTMLElement, HTMLElement];
-    expect(a.getAttribute('aria-labelledby')).not.toBe(b.getAttribute('aria-labelledby'));
   });
 
   it('shows the rows when ready, without the message', async () => {
@@ -81,6 +74,7 @@ describe('UiResultGroup', () => {
       'pt-1',
       'pb-2.5',
       'px-2.5',
+      'empty:hidden',
     );
     expect(screen.queryByRole('button', { name: 'Contoso Global Equity' })).not.toBeInTheDocument();
   });

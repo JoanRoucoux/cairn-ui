@@ -150,10 +150,11 @@ describe('UiAsync', () => {
       expect(retry).toHaveTextContent('Retry');
     });
 
-    it('drops the icon of a block retry too', async () => {
+    it('keeps the icon of a block retry whatever retryIcon says', async () => {
       const { retry } = await draw('[retryIcon]="false"');
 
-      expect(retry.querySelector('svg')).toBeNull();
+      expect(retry.querySelector('svg')).not.toBeNull();
+      expect(retry).toHaveClass('pl-3', 'pr-4');
     });
 
     it.each([

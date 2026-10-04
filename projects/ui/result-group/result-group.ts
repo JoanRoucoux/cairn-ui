@@ -1,8 +1,6 @@
-import { Component, input, output } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 
 import { type AsyncState, UiAsync } from '@joanroucoux/cairn-ui/async';
-
-let nextId = 0;
 
 const PULSE_ANIMATION = 'cairn-pulse var(--pulse-duration) var(--ease-out) infinite alternate';
 
@@ -24,7 +22,7 @@ const BAR_CLASSES = 'block h-4 rounded-control bg-(--muted)';
   imports: [UiAsync],
   template: `
     <div class="text-caption flex items-baseline gap-1.5 pt-3 pr-2.5 pb-1 pl-2.5 tracking-(--tracking-caption)">
-      <span class="font-semibold text-(--foreground)" [id]="headingId">{{ label() }}</span>
+      <span class="font-semibold text-(--foreground)">{{ label() }}</span>
       @if (hint()) {
         <span class="text-(--subtle-foreground)">{{ hint() }}</span>
       }
@@ -47,7 +45,7 @@ const BAR_CLASSES = 'block h-4 rounded-control bg-(--muted)';
           <span class="${BAR_CLASSES} w-16" [style.animation]="animation"></span>
         </span>
       </div>
-      <div asyncEmpty class="text-label px-2.5 pt-1 pb-2.5 text-pretty text-(--muted-foreground)">
+      <div asyncEmpty class="text-label px-2.5 pt-1 pb-2.5 text-pretty text-(--muted-foreground) empty:hidden">
         <ng-content select="[resultGroupMessage]" />
       </div>
       <ng-content />
@@ -56,7 +54,7 @@ const BAR_CLASSES = 'block h-4 rounded-control bg-(--muted)';
   host: {
     class: 'block',
     role: 'group',
-    '[attr.aria-labelledby]': 'headingId',
+    '[attr.aria-label]': 'name()',
   },
 })
 export class UiResultGroup {
@@ -67,6 +65,6 @@ export class UiResultGroup {
   readonly retryLabel = input<string>();
   readonly retry = output<void>();
 
-  protected readonly headingId = `ui-result-group-${nextId++}`;
+  protected readonly name = computed(() => (this.hint() ? `${this.label()}, ${this.hint()}` : this.label()));
   protected readonly animation = PULSE_ANIMATION;
 }

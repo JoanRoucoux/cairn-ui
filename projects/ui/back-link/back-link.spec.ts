@@ -80,6 +80,12 @@ describe('UiBackLink on a button', () => {
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
+  it('keeps an explicit type', async () => {
+    await render('<button ui-back-link type="submit">Retour</button>', { imports: [UiBackLink] });
+
+    expect(screen.getByRole('button', { name: 'Retour' })).toHaveAttribute('type', 'submit');
+  });
+
   it('leaves a link without a type', async () => {
     await render('<a ui-back-link href="/">Retour</a>', { imports: [UiBackLink] });
 

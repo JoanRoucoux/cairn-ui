@@ -103,7 +103,7 @@ export const Results: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(canvas.getByRole('group', { name: 'Northwind Markets' })).toBeVisible();
+    await expect(canvas.getByRole('group', { name: 'Northwind Markets, cours en continu' })).toBeVisible();
     await expect(canvas.getByRole('button', { name: /Woodgrove Holdings/ })).toHaveAttribute('aria-disabled', 'true');
   },
 };
@@ -123,7 +123,7 @@ export const Empty: Story = {
   },
 };
 
-export const Error: Story = {
+export const SourceError: Story = {
   args: { state: 'error' },
   play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement);
