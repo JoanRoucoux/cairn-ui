@@ -30,7 +30,9 @@ const CLEAR_CLASSES =
  * A pill that opens a `ui-menu` of exclusive choices, to head a row of filter chips: outlined at rest with a
  * chevron, solid primary when `active`, where a separate 14 px cross replaces the chevron and emits `cleared`.
  * It is 34 px tall inside a 44 px target on touch and 32 px with a fine pointer; its focus ring is an outline
- * 2 px outside the pill; the cross has a 44 px hit area on touch (36 px with a fine pointer). `contextLabel`, when given, is read before the label while active so a screen reader hears what the account is. Clearing moves focus back to the trigger. The projected text is the pill label and the projected `ui-menu` is what it opens.
+ * 2 px outside the pill; the cross has a 44 px hit area on touch (36 px with a fine pointer). `contextLabel`, when
+ * given, is read before the label while active so a screen reader hears what the account is. Clearing moves focus
+ * back to the trigger. The projected text is the pill label and the projected `ui-menu` is what it opens.
  *
  * @example
  * <ui-select-pill uiChipsLeading [active]="!!account()" clearLabel="Clear the account" (cleared)="account.set('')">
