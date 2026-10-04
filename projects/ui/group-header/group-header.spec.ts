@@ -47,7 +47,8 @@ describe('UiGroupHeader', () => {
         'min-h-11',
         'px-1',
         'pt-3',
-        'active:scale-(--press-scale)',
+        'not-aria-disabled:cursor-pointer',
+        'not-aria-disabled:active:scale-(--press-scale)',
         'focus-visible:outline-offset-2',
         'focus-visible:outline-(--ring)',
       );

@@ -109,6 +109,7 @@ export const OuvertParUnFiltre: Story = {
 
     await expect(button).toHaveAttribute('aria-disabled', 'true');
     await expect(button).toHaveAttribute('aria-expanded', 'true');
+    await expect(getComputedStyle(button).cursor).not.toBe('pointer');
   },
 };
 

@@ -62,9 +62,9 @@ export class UiTable {
 }
 
 /**
- * Body of one group of rows. `collapsed` hides every row but the group row with `hidden`: the rows
+ * Body of one group of rows. `collapsed` hides every `tr[uiTr]` but the group row with `hidden`: the rows
  * stay in the DOM, so a `uiFlipList` around the table sees no item added or removed and slides
- * nothing.
+ * nothing. A plain `tr` without `uiTr` is not hidden.
  *
  * @example
  * <tbody uiGroup [collapsed]="!open()">
@@ -216,7 +216,7 @@ export type GroupSize = (typeof GROUP_SIZES)[number];
     @if (collapsible()) {
       <h2 class="m-0 font-normal">
         <button
-          class="rounded-control flex w-full cursor-pointer items-center justify-between gap-4 bg-(--muted) px-2 text-left hover:bg-(--soft) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring)"
+          class="rounded-control flex w-full items-center justify-between gap-4 bg-(--muted) px-2 text-left not-aria-disabled:cursor-pointer not-aria-disabled:hover:bg-(--soft) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring)"
           data-group-heading
           type="button"
           [attr.aria-controls]="controls() || null"

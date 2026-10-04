@@ -23,7 +23,7 @@ import { Component, booleanAttribute, input, model } from '@angular/core';
     @if (collapsible()) {
       <h2 class="m-0 font-normal">
         <button
-          class="rounded-control flex min-h-11 w-full cursor-pointer items-end justify-between gap-3 px-1 pt-3 text-left transition-transform [transition-duration:var(--duration-press)] ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring) active:scale-(--press-scale)"
+          class="rounded-control flex min-h-11 w-full items-end justify-between gap-3 px-1 pt-3 text-left transition-transform [transition-duration:var(--duration-press)] ease-out not-aria-disabled:cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring) not-aria-disabled:active:scale-(--press-scale)"
           type="button"
           [attr.aria-controls]="controls() || null"
           [attr.aria-disabled]="toggleDisabled() ? 'true' : null"

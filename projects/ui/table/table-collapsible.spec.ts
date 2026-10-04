@@ -131,7 +131,8 @@ describe('collapsible group band', () => {
 
     expect(button).toHaveClass(
       'bg-(--muted)',
-      'hover:bg-(--soft)',
+      'not-aria-disabled:cursor-pointer',
+      'not-aria-disabled:hover:bg-(--soft)',
       'focus-visible:outline-offset-2',
       'focus-visible:outline-(--ring)',
       'min-h-11',

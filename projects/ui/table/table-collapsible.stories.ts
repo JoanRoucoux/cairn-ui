@@ -3,7 +3,7 @@ import { expect, userEvent, within } from 'storybook/test';
 
 import { UiGroup, UiGroupCell, UiTable, UiTd, UiTh, UiTr } from './table';
 
-type CollapsibleArgs = Record<string, never>;
+type CollapsibleArgs = { locked: boolean };
 
 const GROUPS = [
   {
@@ -26,6 +26,13 @@ const GROUPS = [
 const meta: Meta<CollapsibleArgs> = {
   title: 'Data display/Table groups',
   decorators: [moduleMetadata({ imports: [UiTable, UiTh, UiTd, UiTr, UiGroup, UiGroupCell] })],
+  args: { locked: false },
+  argTypes: {
+    locked: {
+      control: 'boolean',
+      description: 'Sets `toggleDisabled` on every band, as a filter holding the groups open does.',
+    },
+  },
   parameters: {
     viewport: { width: 1280, height: 600 },
     docs: {
@@ -52,8 +59,8 @@ of the group it folds.
       },
     },
   },
-  render: () => ({
-    props: { groups: GROUPS, folded: { 'Northwind PEA': false, 'Woodgrove Savings Plan': true } },
+  render: (args) => ({
+    props: { ...args, groups: GROUPS, folded: { 'Northwind PEA': false, 'Woodgrove Savings Plan': !args.locked } },
     template: `
       <div class="w-[1120px] rounded-container bg-(--card) px-4 pt-2 pb-3 text-(--foreground) shadow-[inset_0_0_0_1px_var(--border)]">
         <table uiTable row="60" [rule]="false">
@@ -68,7 +75,7 @@ of the group it folds.
             <tbody uiGroup [id]="'group-' + $index" [collapsed]="folded[group.name]">
               <tr uiTr group>
                 <td ui-group-cell size="lg" collapsible colspan="3" [name]="group.name" [meta]="group.meta"
-                    [controls]="'group-' + $index" [expanded]="!folded[group.name]"
+                    [controls]="'group-' + $index" [expanded]="!folded[group.name]" [toggleDisabled]="locked"
                     (expandedChange)="folded[group.name] = !$event">{{ group.total }}</td>
               </tr>
               @for (row of group.rows; track row.name) {
@@ -107,5 +114,24 @@ export const Default: Story = {
 
     await userEvent.click(woodgrove);
     await expect(canvas.getByText('Carmignac Patrimoine')).toBeVisible();
+  },
+};
+
+export const HeldOpen: Story = {
+  name: 'Tenu ouvert par un filtre',
+  args: { locked: true },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const northwind = canvas.getByRole('button', { name: /Northwind PEA/ });
+    const rest = getComputedStyle(northwind).backgroundColor;
+
+    await userEvent.hover(northwind);
+    await expect(getComputedStyle(northwind).backgroundColor).toBe(rest);
+    await expect(getComputedStyle(northwind).cursor).not.toBe('pointer');
+
+    await userEvent.click(northwind);
+    await expect(northwind).toHaveAttribute('aria-disabled', 'true');
+    await expect(northwind).toHaveAttribute('aria-expanded', 'true');
+    await expect(canvas.getByText('Ferrari')).toBeVisible();
   },
 };
