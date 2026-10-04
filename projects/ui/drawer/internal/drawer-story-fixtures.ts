@@ -1,10 +1,10 @@
-import { Component, signal } from '@angular/core';
+import { Component, Injector, type WritableSignal, afterNextRender, inject, signal } from '@angular/core';
 
 import { UiButton } from '@joanroucoux/cairn-ui/button';
 import { UiDialog } from '@joanroucoux/cairn-ui/dialog';
 import type { Meta } from '@storybook/angular-vite';
 
-import { type DrawerCloseReason, UiDrawer } from '../drawer';
+import { UiDrawer } from '../drawer';
 
 const fact = (term: string, value: string, last = false): string =>
   `<div class="flex justify-between py-2 ${last ? '' : 'shadow-[inset_0_-1px_0_var(--hairline)]'}"><dt class="text-label text-(--muted-foreground)">${term}</dt><dd>${value}</dd></div>`;
@@ -36,6 +36,35 @@ export const defaultTemplate = `
 
 type Trade = 'Acheter' | 'Vendre';
 
+export type VeilReading = { faintest: number; darkest: number; frames: number };
+
+const VEIL_ALPHA = 0.36;
+
+export const watchVeils = (dialogs: HTMLElement[]): (() => VeilReading) => {
+  const reading: VeilReading = { faintest: Infinity, darkest: 0, frames: 0 };
+  let watching = true;
+  const veil = (dialog: HTMLElement): number =>
+    getComputedStyle(dialog).display === 'none' ? 0 : Number(getComputedStyle(dialog, '::backdrop').opacity);
+  const sample = (): void => {
+    const veils = dialogs.map(veil);
+    const coverage = 1 - veils.reduce((through, opacity) => through * (1 - VEIL_ALPHA * opacity), 1);
+
+    reading.faintest = Math.min(reading.faintest, coverage / VEIL_ALPHA);
+    reading.darkest = Math.max(reading.darkest, coverage / VEIL_ALPHA);
+    reading.frames += 1;
+    if (watching) {
+      requestAnimationFrame(sample);
+    }
+  };
+
+  sample();
+
+  return () => {
+    watching = false;
+    return reading;
+  };
+};
+
 @Component({
   selector: 'ui-drawer-swap-demo',
   imports: [UiButton, UiDialog, UiDrawer],
@@ -50,7 +79,7 @@ type Trade = 'Acheter' | 'Vendre';
       description="ETF · Compte-titres Contoso"
       heading="Northwind Monde"
       [open]="drawer()"
-      (closed)="onDrawerClosed($event)"
+      (closed)="note('tiroir fermé (' + $event + ')')"
       (dismissed)="drawer.set(false)"
     >
       <p class="text-label text-(--muted-foreground)">40 parts sur le Compte-titres Contoso.</p>
@@ -66,12 +95,12 @@ type Trade = 'Acheter' | 'Vendre';
       width="480px"
       [heading]="trade() ?? 'Acheter'"
       [open]="dialog()"
-      (closed)="onDialogClosed()"
-      (dismissed)="dialog.set(false)"
+      (closed)="note('dialogue fermé (' + $event + ')')"
+      (dismissed)="backToDrawer()"
     >
       <p class="text-label text-(--muted-foreground)">Le tiroir revient sur la même ligne à la fermeture.</p>
-      <button dialogActions type="button" ui-button variant="outline" (click)="dialog.set(false)">Annuler</button>
-      <button dialogActions type="button" ui-button (click)="dialog.set(false)">{{ trade() }} 10 parts</button>
+      <button dialogActions type="button" ui-button variant="outline" (click)="backToDrawer()">Annuler</button>
+      <button dialogActions type="button" ui-button (click)="backToDrawer()">{{ trade() }} 10 parts</button>
     </ui-dialog>
   `,
 })
@@ -81,23 +110,30 @@ export class DrawerSwapDemo {
   protected readonly trade = signal<Trade | null>(null);
   protected readonly log = signal<string[]>([]);
 
+  readonly #injector = inject(Injector);
+
   protected replaceBy(trade: Trade): void {
     this.trade.set(trade);
-    this.drawer.set(false);
+    this.#swap(this.drawer, this.dialog, 'dialogue ouvert');
   }
 
-  protected onDrawerClosed(reason: DrawerCloseReason): void {
-    this.log.update((log) => [...log, `tiroir fermé (${reason})`]);
-    if (this.trade()) {
-      this.dialog.set(true);
-      this.log.update((log) => [...log, 'dialogue ouvert']);
-    }
+  protected backToDrawer(): void {
+    this.#swap(this.dialog, this.drawer, 'tiroir rouvert');
   }
 
-  protected onDialogClosed(): void {
-    this.trade.set(null);
-    this.drawer.set(true);
-    this.log.update((log) => [...log, 'dialogue fermé', 'tiroir rouvert']);
+  protected note(entry: string): void {
+    this.log.update((log) => [...log, entry]);
+  }
+
+  #swap(leaving: WritableSignal<boolean>, coming: WritableSignal<boolean>, entry: string): void {
+    leaving.set(false);
+    afterNextRender(
+      () => {
+        coming.set(true);
+        this.note(entry);
+      },
+      { injector: this.#injector },
+    );
   }
 }
 

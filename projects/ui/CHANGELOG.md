@@ -18,7 +18,7 @@
   `rgb(0 0 0 / 0.36)` veil. It scrolls on its own with `overscroll-behavior: contain`, without locking the page.
   Escape, the veil and the optional 36px cross close it; `dismissed` and `closed` (`escape`, `backdrop`, `cross`,
   `programmatic`) follow the protocol of `ui-dialog`, and `busy` keeps it open. Without `heading` it draws no header
-  and `label` names it. It enters with opacity and a 24px slide over `--duration-base` on `--ease-out` and leaves
+  and `label` names it; with neither it throws. It enters with opacity and a 24px slide over `--duration-base` on `--ease-out` and leaves
   the reverse way over `--duration-exit`; under reduced motion it only fades.
 - `afterExit` is exported from `@joanroucoux/cairn-ui/dialog`: it calls back once the exit transition of an element
   has played, or at once when it has none.

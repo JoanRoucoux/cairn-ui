@@ -69,13 +69,10 @@ describe('UiDrawer', () => {
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
 
-  it('leaves the name to the content when it has neither heading nor label', async () => {
-    await render(`<ui-drawer open><p>Corps</p></ui-drawer>`, { imports: [UiDrawer] });
-
-    const drawer = screen.getByRole('dialog');
-
-    expect(drawer).not.toHaveAttribute('aria-label');
-    expect(drawer).not.toHaveAttribute('aria-labelledby');
+  it('refuses to render without a heading or a label, which would leave it without a name', async () => {
+    await expect(render(`<ui-drawer open><p>Corps</p></ui-drawer>`, { imports: [UiDrawer] })).rejects.toThrow(
+      'ui-drawer needs a heading or a label',
+    );
   });
 
   it('gives each drawer its own heading id', async () => {

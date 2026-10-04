@@ -3,7 +3,7 @@ import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vit
 import { expect, userEvent, waitFor, within } from 'storybook/test';
 
 import { UiDrawer } from './drawer';
-import { DrawerSwapDemo, defaultTemplate, drawerArgTypes, facts } from './internal/drawer-story-fixtures';
+import { DrawerSwapDemo, defaultTemplate, drawerArgTypes, facts, watchVeils } from './internal/drawer-story-fixtures';
 
 type DrawerArgs = {
   heading?: string;
@@ -44,19 +44,34 @@ The panel enters with opacity and a 24px slide from the right over \`--duration-
 veil fades in; it leaves the reverse way over \`--duration-exit\`. Under \`prefers-reduced-motion: reduce\` it only
 fades.
 
-An action that opens a dialog replaces the drawer, never stacks on it: the owner closes the drawer, opens the
-dialog in \`(closed)\`, and reopens the drawer in the dialog's \`(closed)\`. Host the dialog outside the drawer, so
-closing the drawer does not take the dialog with it.
+An action that opens a dialog replaces the drawer, never stacks on it, and the veil stays on screen through the
+swap: the owner closes the drawer and opens the dialog from the same handler, so the drawer's exit plays under the
+dialog's entry; on the way back it closes the dialog and reopens the drawer the same way, from the dialog's
+\`(dismissed)\` and from its own Annuler and submit buttons. Waiting for \`(closed)\` instead would let both veils
+fade out and the bare page show for a moment. Open the incoming one after the next render (\`afterNextRender\`),
+once the outgoing one has closed: a modal that opens while the other is still open takes it as its focus return
+target, and focus ends on \`body\`. Host the dialog outside the drawer, so closing the drawer does not take the
+dialog with it. Focus goes back to the row that opened the drawer at the end.
+
+\`\`\`ts
+swap(leaving: WritableSignal<boolean>, coming: WritableSignal<boolean>): void {
+  leaving.set(false);
+  afterNextRender(() => coming.set(true), { injector: this.injector });
+}
+\`\`\`
 
 \`\`\`html
-<ui-drawer heading="Northwind Monde" closeLabel="Fermer le détail" [open]="detail()"
-           (dismissed)="detail.set(false)" (closed)="trade() && buying.set(true)">
+<ui-drawer heading="Northwind Monde" closeLabel="Fermer le détail" [open]="detail()" (dismissed)="detail.set(false)">
   ...
-  <button ui-button (click)="trade.set('buy'); detail.set(false)">Acheter</button>
+  <button ui-button (click)="swap(detail, buying)">Acheter</button>
 </ui-drawer>
-<ui-dialog heading="Acheter" [open]="buying()" (dismissed)="buying.set(false)"
-           (closed)="trade.set(null); detail.set(true)">...</ui-dialog>
+<ui-dialog heading="Acheter" [open]="buying()" (dismissed)="swap(buying, detail)">
+  ...
+  <button dialogActions ui-button (click)="swap(buying, detail)">Acheter 10 parts</button>
+</ui-dialog>
 \`\`\`
+
+After a delete or a sale of everything, the line is gone: close the dialog alone and leave the drawer shut.
 
 #### When to use
 
@@ -249,29 +264,42 @@ export const SwapWithDialog: Story = {
     const opener = canvas.getByRole('button', { name: 'Northwind Monde' });
     const log = canvasElement.querySelector('[data-story-log]') as HTMLElement;
 
+    const drawer = canvasElement.querySelector('ui-drawer dialog') as HTMLElement;
+    const dialog = canvasElement.querySelector('ui-dialog dialog') as HTMLElement;
+    const swap = async (press: () => Promise<void>, coming: HTMLElement, leaving: HTMLElement): Promise<void> => {
+      const stop = watchVeils([drawer, dialog]);
+
+      await press();
+      await waitFor(() => expect(coming).toHaveAttribute('open'));
+      await waitFor(() => expect(getComputedStyle(coming).opacity).toBe('1'));
+      await waitFor(() => expect(getComputedStyle(leaving).display).toBe('none'));
+      const { faintest, frames } = stop();
+
+      await expect(frames).toBeGreaterThan(5);
+      await expect(faintest).toBeGreaterThan(0.5);
+    };
+
     await userEvent.click(opener);
-    const drawer = await canvas.findByRole('dialog', { name: 'Northwind Monde' });
-
-    await userEvent.click(within(drawer).getByRole('button', { name: 'Acheter' }));
-    const dialog = await canvas.findByRole('dialog', { name: 'Acheter' });
-
-    await expect(drawer).not.toHaveAttribute('open');
-    await expect(log).toHaveTextContent('tiroir fermé (programmatic) · dialogue ouvert');
-
-    await waitFor(() => expect(getComputedStyle(dialog).opacity).toBe('1'));
-    await userEvent.click(within(dialog).getByRole('button', { name: 'Annuler' }));
-
-    await waitFor(() => expect(drawer).toHaveAttribute('open'));
-    await expect(dialog).not.toHaveAttribute('open');
-    await expect(log).toHaveTextContent('dialogue fermé · tiroir rouvert');
     await waitFor(() => expect(getComputedStyle(drawer).opacity).toBe('1'));
+
+    await swap(() => userEvent.click(within(drawer).getByRole('button', { name: 'Acheter' })), dialog, drawer);
+    await expect(drawer).not.toHaveAttribute('open');
+    await expect(canvas.getByRole('dialog', { name: 'Acheter' })).toBeVisible();
+    await expect(log).toHaveTextContent('dialogue ouvert · tiroir fermé (programmatic)');
+
+    await swap(() => userEvent.click(within(dialog).getByRole('button', { name: 'Annuler' })), drawer, dialog);
+    await expect(log).toHaveTextContent('tiroir rouvert · dialogue fermé (programmatic)');
+
+    await swap(() => userEvent.click(within(drawer).getByRole('button', { name: 'Vendre' })), dialog, drawer);
+    await swap(() => userEvent.click(within(dialog).getByRole('button', { name: 'Fermer' })), drawer, dialog);
+    await expect(log).toHaveTextContent('tiroir rouvert · dialogue fermé (cross)');
     await expect(canvas.getByRole('dialog', { name: 'Northwind Monde' })).toBeVisible();
 
     await userEvent.click(within(drawer).getByRole('button', { name: 'Fermer le détail' }));
 
     await waitFor(() => expect(canvas.queryByRole('dialog')).not.toBeInTheDocument());
     await expect(opener).toHaveFocus();
-    await waitFor(() => expect(log).toHaveTextContent('tiroir rouvert · tiroir fermé (cross)'));
+    await waitFor(() => expect(log).toHaveTextContent('tiroir fermé (cross)'));
   },
 };
 

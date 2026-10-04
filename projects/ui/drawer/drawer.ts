@@ -46,7 +46,7 @@ const nextId = (() => {
       class="fixed inset-y-0 right-0 left-auto m-0 h-dvh max-h-none w-(--drawer-width) max-w-full [scrollbar-width:none] flex-col gap-6 overflow-y-auto overscroll-contain bg-(--card) p-6 text-(--foreground) shadow-[-1px_0_0_var(--border),-24px_0_48px_rgb(0_0_0/0.12)] backdrop:bg-black/[0.36] open:flex"
       [attr.aria-busy]="busy() || null"
       [attr.aria-describedby]="describedBy()"
-      [attr.aria-label]="heading() ? null : label() || null"
+      [attr.aria-label]="ariaLabel()"
       [attr.aria-labelledby]="heading() ? headingId : null"
       [style.--drawer-width]="width()"
       (cancel)="onCancel($event)"
@@ -105,6 +105,16 @@ export class UiDrawer {
   protected readonly descriptionId = `${this.headingId}-description`;
 
   protected readonly describedBy = computed(() => (this.heading() && this.description() ? this.descriptionId : null));
+
+  protected readonly ariaLabel = computed(() => {
+    if (this.heading()) {
+      return null;
+    }
+    if (!this.label()) {
+      throw new Error('ui-drawer needs a heading or a label: without either it has no accessible name.');
+    }
+    return this.label();
+  });
 
   readonly #host = inject<ElementRef<HTMLElement>>(ElementRef);
 
