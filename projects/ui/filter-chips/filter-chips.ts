@@ -18,7 +18,8 @@ const UNSELECTED_PILL_CLASSES = 'bg-(--card) text-(--foreground) shadow-[inset_0
 
 /**
  * A row of single-choice filter pills, each with an optional count, that narrows a list in place.
- * On touch it scrolls on one line; with a fine pointer it wraps.
+ * On touch it scrolls on one line; with a fine pointer it wraps. An element marked `uiChipsLeading` is
+ * projected first, outside the chips' group, followed by a vertical rule.
  *
  * @example
  * <ui-filter-chips ariaLabel="Filter by class" [options]="classes()" [(value)]="selectedClass" />
@@ -26,30 +27,39 @@ const UNSELECTED_PILL_CLASSES = 'bg-(--card) text-(--foreground) shadow-[inset_0
 @Component({
   selector: 'ui-filter-chips',
   template: `
-    @for (option of options(); track option.value) {
-      <button
-        class="group/chip"
-        type="button"
-        [attr.aria-pressed]="option.value === value()"
-        [class]="chipClasses"
-        (click)="value.set(option.value)"
-      >
-        <span data-chip [class]="pillClasses(option.value)"
-          >{{ option.label }}
-          @if (option.count !== undefined && option.count !== null) {
-            &ngsp;<span class="[font-variant-numeric:var(--numeric)]" data-count [class]="countClasses(option.value)">{{
-              option.count
-            }}</span>
-          }
-        </span>
-      </button>
-    }
+    <ng-content select="[uiChipsLeading]" />
+    <span
+      aria-hidden="true"
+      class="hidden h-5 w-px flex-none self-center bg-(--border) [[uiChipsLeading]+&]:block"
+      data-chips-rule
+    ></span>
+    <div class="contents" role="group" [attr.aria-label]="ariaLabel()">
+      @for (option of options(); track option.value) {
+        <button
+          class="group/chip"
+          type="button"
+          [attr.aria-pressed]="option.value === value()"
+          [class]="chipClasses"
+          (click)="value.set(option.value)"
+        >
+          <span data-chip [class]="pillClasses(option.value)"
+            >{{ option.label }}
+            @if (option.count !== undefined && option.count !== null) {
+              &ngsp;<span
+                class="[font-variant-numeric:var(--numeric)]"
+                data-count
+                [class]="countClasses(option.value)"
+                >{{ option.count }}</span
+              >
+            }
+          </span>
+        </button>
+      }
+    </div>
   `,
   host: {
-    role: 'group',
     class:
       'flex gap-2 overflow-x-auto [scrollbar-width:none] -mt-1 -mx-(--gutter) px-(--gutter) pointer-fine:m-0 pointer-fine:flex-wrap pointer-fine:overflow-visible pointer-fine:p-0',
-    '[attr.aria-label]': 'ariaLabel()',
   },
 })
 export class UiFilterChips {

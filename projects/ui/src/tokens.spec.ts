@@ -156,6 +156,8 @@ describe('design tokens', () => {
     '--duration-highlight',
     '--toast-duration',
     '--chevron-down',
+    '--chevron-pill',
+    '--chevron-pill-active',
   ])('declares %s', (token) => {
     expect(tokens).toContain(`${token}:`);
   });
@@ -212,6 +214,24 @@ describe('design tokens', () => {
     const chevrons = [...tokens.matchAll(/--chevron-down:\s*url\("[^"]*stroke='%23([0-9a-f]{6})'/g)].map(
       ([, color]) => color,
     );
+
+    expect(chevrons).toEqual([light, dark, light, dark]);
+  });
+
+  it.each([
+    [
+      '--chevron-pill',
+      /--foreground:\s*light-dark\(#([0-9a-f]{6}),\s*#([0-9a-f]{6})\)/,
+      /--chevron-pill:\s*url\("[^"]*stroke='%23([0-9a-f]{6})'/g,
+    ],
+    [
+      '--chevron-pill-active',
+      /--primary-foreground:\s*light-dark\(#([0-9a-f]{6}),\s*#([0-9a-f]{6})\)/,
+      /--chevron-pill-active:\s*url\("[^"]*stroke='%23([0-9a-f]{6})'/g,
+    ],
+  ])('draws %s in the text color of each scheme', (_token, source, chevron) => {
+    const [light, dark] = source.exec(tokens)!.slice(1);
+    const chevrons = [...tokens.matchAll(chevron)].map(([, color]) => color);
 
     expect(chevrons).toEqual([light, dark, light, dark]);
   });

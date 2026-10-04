@@ -1,3 +1,4 @@
+import { UiPillSelect } from '@joanroucoux/cairn-ui/pill-select';
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
 import { expect, userEvent, within } from 'storybook/test';
 
@@ -22,7 +23,7 @@ const WITHOUT_COUNTS: FilterChipOption[] = CLASSES.map(({ value, label }) => ({ 
 
 const meta: Meta<FilterChipsArgs> = {
   title: 'Inputs/Filter chips',
-  decorators: [moduleMetadata({ imports: [UiFilterChips] })],
+  decorators: [moduleMetadata({ imports: [UiFilterChips, UiPillSelect] })],
   parameters: {
     docs: {
       description: {
@@ -115,5 +116,63 @@ export const SelectsWithTheKeyboard: Story = {
     await userEvent.keyboard('{Enter}');
 
     await expect(canvas.getByRole('button', { name: 'ETF 6' })).toHaveAttribute('aria-pressed', 'true');
+  },
+};
+
+const ACCOUNT_ROW = `
+  <div style="padding: 0 var(--gutter)">
+    <ui-filter-chips ariaLabel="Filtrer par classe d'actif" [options]="options" [(value)]="value">
+      <select #pick uiChipsLeading uiPillSelect aria-label="Compte" [active]="account !== ''" (change)="account = pick.value">
+        <option value="" [selected]="account === ''">Tous les comptes</option>
+        <option value="pea" [selected]="account === 'pea'">Northwind PEA</option>
+        <option value="cto" [selected]="account === 'cto'">Contoso CTO</option>
+      </select>
+    </ui-filter-chips>
+  </div>
+`;
+
+const accountRow = (account: string): Story => ({
+  render: (args) => ({
+    props: { ...args, account },
+    template: ACCOUNT_ROW,
+  }),
+});
+
+export const WithAccountPill: Story = {
+  ...accountRow(''),
+  name: 'With the account pill, at rest',
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const rule = canvasElement.querySelector('[data-chips-rule]')!;
+
+    await expect(canvas.getByRole('combobox', { name: 'Compte' })).toHaveValue('');
+    await expect(getComputedStyle(rule).display).toBe('block');
+    await expect(canvas.getByRole('group', { name: "Filtrer par classe d'actif" })).not.toContainElement(
+      canvas.getByRole('combobox', { name: 'Compte' }),
+    );
+  },
+};
+
+export const WithAccountPillActive: Story = {
+  ...accountRow('pea'),
+  name: 'With the account pill, active',
+};
+
+export const WithAccountPillOnAPhone: Story = {
+  ...accountRow('pea'),
+  name: 'With the account pill, 390 (scrolls, pill first; needs touch emulation)',
+  parameters: { viewport: { width: 390, height: 200 } },
+};
+
+export const WithAccountPillOnDesktop: Story = {
+  ...accountRow(''),
+  name: 'With the account pill, 1440 (wraps)',
+  parameters: { viewport: { width: 1440, height: 200 } },
+};
+
+export const NoRuleWithoutLeading: Story = {
+  name: 'No rule without a leading element',
+  play: async ({ canvasElement }) => {
+    await expect(getComputedStyle(canvasElement.querySelector('[data-chips-rule]')!).display).toBe('none');
   },
 };

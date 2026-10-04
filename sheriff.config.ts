@@ -14,6 +14,7 @@ export const config: SheriffConfig = {
     'component:input': ['component:control'],
     'component:choice-chips': ['component:input', 'component:control'],
     'component:select': ['component:input', 'component:control'],
+    'component:filter-chips': ['component:pill-select'],
     'component:field': ['component:input', 'component:select', 'component:control'],
     'component:action-bar': ['component:button', 'component:tab-bar'],
     'component:async': ['component:motion'],
