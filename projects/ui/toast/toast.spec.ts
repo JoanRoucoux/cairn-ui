@@ -240,6 +240,25 @@ describe('UiToaster error', () => {
     expect(screen.queryByText("Échec de l'import")).toBeNull();
   });
 
+  it('never times out, even once a hover and a focus inside it have paused and resumed', async () => {
+    const { toasts } = await setup();
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+
+    toasts.showError("Échec de l'import");
+    await flush();
+    await user.hover(screen.getByText("Échec de l'import"));
+    await user.unhover(screen.getByText("Échec de l'import"));
+    const cross = screen.getByRole('button', { name: 'Fermer' });
+    cross.focus();
+    await flush();
+    cross.blur();
+    await flush();
+    await vi.advanceTimersByTimeAsync(60000);
+
+    expect(toasts.toast()).not.toBeNull();
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
   it('replaces a confirmation and is replaced by one, in the same slot', async () => {
     const { toasts } = await setup();
 

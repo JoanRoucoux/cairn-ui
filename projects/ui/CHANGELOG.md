@@ -18,12 +18,15 @@
   panel beside a list). The detail now opens in `ui-drawer`, which plays its own motion.
 - Migration: replace the side panel animated with `animate.enter="ui-enter-panel"` by a `ui-drawer`; for any other
   element, use `ui-enter-fade-up` or `ui-enter-fade`.
+- `ui-toaster`: the message text sits in its own `<span>`, beside the icon, inside the surface.
+- Migration: `getByText(message)` now returns that `<span>`, not the surface; a test that checked the surface through
+  it (its classes, its position) reads `getByText(message).parentElement` instead.
 
 ### Added
 
 - `UiToasts.showError(message, closeLabel = 'Fermer')`: an error toast with the same surface, an alert icon, no timer
   and a 28px cross; it closes only with the cross. One message at a time: an error replaces a confirmation and the
-  other way round. `Toast` gains `kind` and `closeLabel`.
+  other way round. `Toast` becomes a union on `kind`: `'success'`, or `'error'` with its `closeLabel`.
 - `ui-drawer` (`@joanroucoux/cairn-ui/drawer`): a modal side panel on the native `<dialog>`, against the right edge at
   full height, 440px wide by default, on `--card` with a shadow on its left edge, 24px of padding and a
   `rgb(0 0 0 / 0.36)` veil. It scrolls on its own with `overscroll-behavior: contain`, without locking the page.
@@ -40,9 +43,8 @@
   opens, as a sheet on a phone like the `…` menus. Outlined with a chevron at rest, solid primary when `active`,
   where a separate 14px cross (44px hit area on touch, 36px with a fine pointer), named by the required `clearLabel`,
   replaces the chevron and emits `cleared`, and focus goes back to the trigger. `contextLabel` is read before the
-  label while active. 34px in
-  a 44px target on touch and 32px with a fine pointer, with a 2px focus outline outside the pill and a border of its
-  own in forced colors.
+  label while active. 34px in a 44px target on touch and 32px with a fine pointer, with a 2px focus outline outside
+  the pill and a border of its own in forced colors.
 - `button[uiMenuItem]` accepts `checked`: the item becomes a `menuitemradio` with `aria-checked` and a check mark
   after its label, and the menu focuses the checked item when it opens.
 - `ui-filter-chips` projects an element marked `uiChipsLeading` first in its row, followed by a 1 x 20px `--border`
@@ -82,7 +84,7 @@
   `pointercancel` hide it. The plot is `touch-none` (was `touch-pan-y`), so a vertical swipe on the plot no longer
   scrolls the page; the page still scrolls everywhere else.
 - `uiStaleLink` with `chevron`: the gap before the chevron is 4px on touch and 2px with a mouse (was 2px everywhere).
-- `ui-toaster` is an inverted surface (`--primary` on `--primary-foreground`, no contour, menu shadow, 44px minimum
+- `ui-toaster` is an inverted surface (`--primary-foreground` on `--primary`, no contour, menu shadow, 44px minimum
   height, 280 to 400px wide within the viewport minus 32px) with a 16px check icon, and it is centred at the bottom of
   the content area: from `64rem`, 24px from the bottom and centred between `--sidebar-width` (0 when the app does not
   set it) and the right edge; below, centred 8px above the tab bar as before. It was `--elevated`, bottom right.

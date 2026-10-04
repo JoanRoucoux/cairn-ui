@@ -71,8 +71,8 @@ const meta: Meta = {
       description: {
         component: `A short message after an action. \`UiToasts.show(message)\` puts a confirmation sentence in the single
 slot of the \`<ui-toaster />\` the app shell renders once; \`UiToasts.showError(message)\` puts an error there. A new
-message replaces the current one in place, whichever kind. It is an inverted surface (\`--primary\` on
-\`--primary-foreground\`, no contour) with a check icon. A confirmation fades out after \`--toast-duration\` (5 s) and the
+message replaces the current one in place, whichever kind. It is an inverted surface (\`--primary-foreground\` on
+\`--primary\`, no contour) with a check icon. A confirmation fades out after \`--toast-duration\` (5 s) and the
 timer stops while the pointer is over it or focus is inside it. An error has an alert icon, no timer, and stays until
 its cross (labelled by the second argument, "Fermer" by default) is clicked.
 
