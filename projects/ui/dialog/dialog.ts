@@ -45,13 +45,13 @@ const VARIANTS: Record<DialogVariant, VariantClasses> = {
     handle: 'pt-[7.5px]',
     header: 'pb-3 lg:py-4 lg:pl-6',
     body: 'py-4 lg:py-5',
-    footer: 'pt-3 lg:py-4',
+    footer: 'pt-3 empty:hidden lg:py-4',
   },
   confirm: {
     handle: 'pt-[11.5px]',
     header: 'pt-3 lg:pt-6 lg:pl-6',
     body: 'pt-3',
-    footer: 'pt-5 lg:pt-3 lg:pb-6',
+    footer: 'pt-5 lg:pt-6 lg:pb-6 empty:pt-0',
   },
 };
 
@@ -112,7 +112,7 @@ const nextId = (() => {
       </div>
 
       <div data-dialog-header [class]="headerClasses()">
-        <div class="flex min-w-0 flex-1 flex-col">
+        <div class="flex min-w-0 flex-1 flex-col" [class.max-lg:pt-1]="description()">
           <h2 class="text-title font-semibold" [id]="headingId">{{ heading() }}</h2>
 
           @if (description()) {
@@ -214,7 +214,7 @@ export class UiDialog {
 
   protected readonly footerClasses = computed(
     () =>
-      `max-lg:[&>[ui-button]]:text-body flex justify-end gap-2 px-4 pb-[calc(8px+env(safe-area-inset-bottom))] empty:hidden max-lg:flex-col-reverse max-lg:[&>[ui-button]]:h-[50px] max-lg:[&>[ui-button]]:w-full lg:px-6 ${this.spec().footer} ${this.hairlines() ? 'shadow-[inset_0_1px_0_var(--hairline)]' : ''}`,
+      `max-lg:[&>[ui-button]]:text-body flex justify-end gap-2 px-4 pb-[calc(8px+env(safe-area-inset-bottom))] max-lg:flex-col-reverse max-lg:[&>[ui-button]]:h-[50px] max-lg:[&>[ui-button]]:w-full lg:px-6 ${this.spec().footer} ${this.hairlines() ? 'shadow-[inset_0_1px_0_var(--hairline)]' : ''}`,
   );
 
   protected readonly classes = computed(
