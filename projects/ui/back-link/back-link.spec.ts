@@ -60,6 +60,26 @@ describe('UiBackLink', () => {
 
     expect(screen.getByRole('link', { name: 'Retour' })).toHaveClass(...classes);
   });
+
+  it('carries the inline outset of the frame: -8px top, -4px bottom, -6px left, at the start of its column', async () => {
+    await render('<button ui-back-link size="inline">Retour à la recherche</button>', { imports: [UiBackLink] });
+
+    expect(screen.getByRole('button', { name: 'Retour à la recherche' })).toHaveClass(
+      '-mt-2',
+      '-mb-1',
+      '-ml-1.5',
+      'self-start',
+    );
+  });
+
+  it.each<BackLinkSize>(['md', 'sm', 'header'])('adds no margin at the %s size', async (size) => {
+    await render('<a ui-back-link href="/" [size]="size">Retour</a>', {
+      imports: [UiBackLink],
+      componentProperties: { size },
+    });
+
+    expect(screen.getByRole('link', { name: 'Retour' }).className).not.toMatch(/(^|\s)-?m[tblrxy]?-/);
+  });
 });
 
 describe('UiBackLink on a button', () => {
