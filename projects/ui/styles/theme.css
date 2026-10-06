@@ -11,6 +11,7 @@
   --text-caption--letter-spacing: 0.01em;
   --text-label: 0.875rem;
   --text-label--line-height: 1.25rem;
+  --text-label--letter-spacing: normal;
   --text-body: 1rem;
   --text-body--line-height: 1.5rem;
   --text-title: 1.25rem;

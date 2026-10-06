@@ -54,6 +54,7 @@
   --text-display--line-height: 2.75rem;
   --tracking-display: -0.02em;
   --tracking-caption: 0.01em;
+  --tracking-label: normal;
 
   --gutter: 1rem;
   --inset-card: 1rem;
