@@ -195,7 +195,7 @@ export const FixedWidth: StoryObj<{ width: number }> = {
   },
 };
 
-const ICON_REFRESH = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" /><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /><path d="M8 16H3v5" /></svg>`;
+const ICON_DOWNLOAD = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3" /><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="m7 10 5 5 5-5" /></svg>`;
 
 export const LongLabelOnIphone: Story = {
   name: 'Long label beside the right edge at 390',
@@ -205,7 +205,7 @@ export const LongLabelOnIphone: Story = {
       <div class="flex items-start justify-end p-1">
         <button ui-button size="icon-sm" variant="quiet" aria-label="Actions de la ligne" [uiMenuTrigger]="menu">⋯</button>
         <ui-menu #menu label="Actions de la ligne">
-          <button uiMenuItem type="button">${ICON_REFRESH}Changer de cotation</button>
+          <button uiMenuItem type="button">${ICON_DOWNLOAD}Exporter les mouvements</button>
           <button uiMenuItem type="button">${ICON_PEN}Modifier</button>
           <button uiMenuItem type="button" destructive>${ICON_TRASH}Supprimer la ligne</button>
         </ui-menu>
@@ -226,7 +226,7 @@ export const LongLabelOnIphone: Story = {
       range.selectNodeContents(item.lastChild!);
       return [...range.getClientRects()];
     };
-    const long = textBox('Changer de cotation');
+    const long = textBox('Exporter les mouvements');
     const short = textBox('Modifier');
 
     await expect(long).toHaveLength(1);
