@@ -206,7 +206,7 @@ export class UiDialog {
 
   protected readonly headerClasses = computed(
     () =>
-      `flex items-start gap-2 pl-4 max-lg:touch-none lg:gap-3 ${this.spec().header} ${this.closeLabel() ? 'pr-2 lg:pr-4' : 'pr-4 lg:pr-6'} ${this.hairlines() ? 'shadow-[inset_0_-1px_0_var(--hairline)]' : ''}`,
+      `flex ${this.description() ? 'items-start' : 'items-center'} gap-2 pl-4 max-lg:touch-none lg:gap-3 ${this.spec().header} ${this.closeLabel() ? 'pr-2 lg:pr-4' : 'pr-4 lg:pr-6'} ${this.hairlines() ? 'shadow-[inset_0_-1px_0_var(--hairline)]' : ''}`,
   );
 
   protected readonly crossClasses =

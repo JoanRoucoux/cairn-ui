@@ -11,13 +11,16 @@ import {
   desktopCentred,
   dialogArgTypes,
   emptyFooterUnpadded,
-  field,
+  headerCentred,
+  headerTopped,
   keptMountedTemplate,
   keptMountedUntilClosed,
+  newAccountTemplate,
   pressCross,
   sheetFitsTheScreen,
   sheetHasGrips,
   sheetStaysFixed,
+  tradeTemplate,
 } from './internal/dialog-story-fixtures';
 
 type DialogArgs = {
@@ -51,7 +54,7 @@ The header carries the title, an optional subtitle (\`description\`) and a close
 only when the consumer passes \`closeLabel\`. The width is set by the consumer: \`md\`, \`lg\` or any CSS
 length (Ajouter une ligne 560px, Acheter and Nouveau compte 480px, a confirmation 440px).
 
-Every dialog has the same three zones. The header (title, optional subtitle, cross) is padded 16px 16px 16px 24px, the body 20px 24px and is the only zone that scrolls, the footer 16px 24px. On a sheet they are 0 8px 12px 16px, 16px and 12px 16px plus the safe area, under a drag handle. A hairline runs under the header and above the footer, and both come with the cross: without \`closeLabel\` there is no cross and no hairlines. On a desktop the dialog is centred and never taller than \`100dvh - 96px\`.
+Every dialog has the same three zones. The header (title, optional subtitle, cross) is padded 16px 16px 16px 24px, with the title and the cross centred on each other, or lined up at the top under a subtitle; the body 20px 24px and is the only zone that scrolls, the footer 16px 24px. On a sheet they are 0 8px 12px 16px, 16px and 12px 16px plus the safe area, under a drag handle. A hairline runs under the header and above the footer, and both come with the cross: without \`closeLabel\` there is no cross and no hairlines. On a desktop the dialog is centred and never taller than \`100dvh - 96px\`.
 
 The \`variant\` input is \`default\` or \`confirm\`: a confirmation (deleting a passkey) is announced as an alertdialog, has no cross and no hairlines, one 24px padding and a 440px width unless \`width\` says otherwise. The \`sheet\` input is \`fit\` (the sheet is as tall as its content) or \`full\` (it fills the screen below 58px, so the footer stays pinned while the content changes, as in Ajouter une ligne). \`truncateDescription\` keeps the subtitle on one ellipsised line instead of wrapping. A click that starts and ends on the backdrop closes the dialog, like Escape.
 
@@ -224,48 +227,39 @@ export const BoardSheet: Story = {
   }),
 };
 
-export const Trade: Story = {
-  name: 'Acheter, dialog (480px) and sheet',
+const trade: Story = {
   args: { heading: 'Acheter', description: 'Ferrari · PEA', width: '480px', open: true },
-  render: (args) => ({
-    props: args,
-    template: `
-      <ui-dialog
-        truncateDescription
-        [heading]="heading"
-        [description]="description"
-        [closeLabel]="closeLabel"
-        [width]="width"
-        [open]="open"
-        (dismissed)="open = false"
-      >
-        <div class="flex flex-col gap-4" data-story-body>${field('Quantité')}${field('Prix unitaire')}</div>
-        <button dialogActions ui-button variant="outline" class="max-lg:hidden" (click)="open = false">Annuler</button>
-        <button dialogActions ui-button (click)="open = false">Acheter 40 parts</button>
-      </ui-dialog>
-    `,
-  }),
+  render: (args) => ({ props: args, template: tradeTemplate }),
 };
 
-export const NewAccount: Story = {
-  name: 'Nouveau compte, dialog (480px) and sheet',
+const newAccount: Story = {
   args: { heading: 'Nouveau compte', description: undefined, width: '480px', open: true },
-  render: (args) => ({
-    props: args,
-    template: `
-      <ui-dialog
-        [heading]="heading"
-        [closeLabel]="closeLabel"
-        [width]="width"
-        [open]="open"
-        (dismissed)="open = false"
-      >
-        <div class="flex flex-col gap-4" data-story-body>${field('Nom du compte')}${field('Enveloppe')}${field('Établissement (facultatif)')}</div>
-        <button dialogActions ui-button variant="outline" class="max-lg:hidden" (click)="open = false">Annuler</button>
-        <button dialogActions ui-button (click)="open = false">Créer le compte</button>
-      </ui-dialog>
-    `,
-  }),
+  render: (args) => ({ props: args, template: newAccountTemplate }),
+};
+
+export const Trade: Story = { name: 'Acheter, dialog (480px) and sheet', ...trade };
+
+export const TradeDesktopHeader: Story = {
+  name: 'Acheter at 1440, title, subtitle and cross from the top',
+  parameters: { viewport: { width: 1440, height: 900 } },
+  ...trade,
+  play: headerTopped,
+};
+
+export const NewAccount: Story = { name: 'Nouveau compte, dialog (480px) and sheet', ...newAccount };
+
+export const NewAccountDesktopHeader: Story = {
+  name: 'Nouveau compte at 1440, title and cross centred',
+  parameters: { viewport: { width: 1440, height: 900 } },
+  ...newAccount,
+  play: headerCentred,
+};
+
+export const NewAccountSheetHeader: Story = {
+  name: 'Nouveau compte at 390, title and cross centred',
+  parameters: { viewport: { width: 390, height: 844 } },
+  ...newAccount,
+  play: headerCentred,
 };
 
 const addLine = (results: number): Story => ({

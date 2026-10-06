@@ -9,7 +9,7 @@ describe('UiDialog structure', () => {
   it('draws the three zones of the default variant', async () => {
     const { container } = await renderWith('closeLabel="Fermer"');
 
-    expect(container.querySelector('[data-dialog-header]')).toHaveClass('items-start', 'pb-3', 'lg:py-4', 'lg:pl-6');
+    expect(container.querySelector('[data-dialog-header]')).toHaveClass('pb-3', 'lg:py-4', 'lg:pl-6');
     expect(container.querySelector('[data-dialog-body] > div')).toHaveClass('py-4', 'lg:py-5');
     expect(container.querySelector('[data-dialog-footer]')).toHaveClass(
       'pt-3',
@@ -17,6 +17,22 @@ describe('UiDialog structure', () => {
       'pb-[calc(8px+env(safe-area-inset-bottom))]',
     );
     expect(container.querySelector('[data-dialog-handle]')).toHaveClass('pt-[7.5px]');
+  });
+
+  it('centres the title and the cross without a description', async () => {
+    const { container } = await renderWith('closeLabel="Fermer"');
+    const header = container.querySelector('[data-dialog-header]');
+
+    expect(header).toHaveClass('items-center');
+    expect(header).not.toHaveClass('items-start');
+  });
+
+  it('tops the title, its description and the cross with a description', async () => {
+    const { container } = await renderWith('closeLabel="Fermer" description="Ferrari · PEA"');
+    const header = container.querySelector('[data-dialog-header]');
+
+    expect(header).toHaveClass('items-start');
+    expect(header).not.toHaveClass('items-center');
   });
 
   it('draws a hairline under the header and above the footer when there is a cross', async () => {
