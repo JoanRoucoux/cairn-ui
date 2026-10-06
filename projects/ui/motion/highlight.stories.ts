@@ -27,6 +27,8 @@ off screen, holds the \`--soft\` fill for 200 ms, then fades back to the element
   token: a token present at first render scrolls smoothly from where the page is.
 * On a new row with \`animate.enter\`, on the same element: the highlight starts once the enter animation has
   finished, so the row fades in, then lights up.
+* To follow the highlight with a toast, listen to \`(highlighted)\`: it fires once the flash starts, after the scroll
+  and the enter animation, and never for a highlight a newer token replaced before it started.
 
 #### When not to use
 
@@ -188,6 +190,56 @@ export const ScrollThenHighlight: Story = {
     await userEvent.click(canvas.getByRole('button', { name: 'Highlight line 38' }));
 
     await waitFor(() => expect(target.getAnimations().length).toBeGreaterThan(0), { timeout: 3000 });
+    await expect(target.getBoundingClientRect().bottom).toBeLessThanOrEqual(window.innerHeight);
+  },
+};
+
+export const AnnounceWhenItStarts: Story = {
+  name: 'Announce once the flash starts',
+  parameters: { layout: 'fullscreen' },
+  render: () => ({
+    props: {
+      rows: Array.from({ length: 40 }, (_, index) => `Line ${index + 1}`),
+      token: null as unknown,
+      message: '',
+      fire(this: { token: unknown }) {
+        this.token = {};
+      },
+      announce(this: { message: string }) {
+        this.message = 'Line 38 highlighted';
+      },
+    },
+    template: `
+      <div class="flex w-[340px] flex-col gap-1 p-4">
+        <button ui-button type="button" class="sticky top-2 z-10" (click)="fire()">Highlight line 38</button>
+        <p class="text-label sticky top-14 z-10 bg-(--background)" role="status">{{ message }}</p>
+        @for (row of rows; track row) {
+          <a
+            ui-row
+            href="#"
+            class="scroll-mt-24"
+            [uiHighlight]="row === 'Line 38' ? token : null"
+            [attr.data-testid]="row"
+            (highlighted)="announce()"
+          >{{ row }}</a>
+        }
+      </div>
+    `,
+  }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const target = canvas.getByTestId('Line 38');
+    const status = canvas.getByRole('status');
+    const flashing = (): boolean =>
+      target
+        .getAnimations()
+        .some((animation) => (animation.effect as KeyframeEffect).getKeyframes()[0]?.['backgroundColor'] !== undefined);
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Highlight line 38' }));
+    await expect(status.textContent?.trim()).toBe('');
+
+    await waitFor(() => expect(status).toHaveTextContent('Line 38 highlighted'), { timeout: 3000 });
+    await expect(flashing()).toBe(true);
     await expect(target.getBoundingClientRect().bottom).toBeLessThanOrEqual(window.innerHeight);
   },
 };

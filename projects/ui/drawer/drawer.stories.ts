@@ -33,7 +33,8 @@ columns and its scroll position.
 
 With \`heading\` it draws a header: the title, an optional \`description\` under it, and a 36px close cross when
 \`closeLabel\` is set. Without \`heading\` it draws nothing of its own: the content brings its title row and its
-close button, and \`label\` gives the panel its accessible name. The content is laid out in a column with a 24px gap.
+close button, and \`label\` gives the panel its accessible name. With both, \`label\` names the panel and the heading
+stays its visible title. The content is laid out in a column with a 24px gap.
 
 Every way out goes through one close: Escape, a click that starts and ends on the veil, the cross and the owner
 setting \`open\` back to \`false\`. \`dismissed\` fires at once for a close the reader started, never for one the owner
@@ -73,8 +74,9 @@ After a delete or a sale of everything, the line is gone: set both \`open\` to \
 
 #### Accessibility
 
-* Named by its heading through \`aria-labelledby\` (and described by \`description\`), or by \`label\` without a
-  heading. Never set them by hand.
+* Named by \`label\` when it is set, otherwise by its heading through \`aria-labelledby\`; described by
+  \`description\`. Set \`label\` when the panel's role reads better than the row's name (« Détail de la ligne »): the
+  heading stays its visible title. Never set the ARIA attributes by hand.
 * Follows the [W3C dialog pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/) through the native
   element: focus moves into the panel on open and goes back to the opener on close.
 * The cross is named by \`closeLabel\`, which the consumer translates.`,
@@ -218,6 +220,18 @@ export const WithoutHeader: Story = {
 
     await expect(drawer).not.toHaveAttribute('aria-labelledby');
     await expect(within(drawer).getAllByRole('heading')).toHaveLength(1);
+  },
+};
+
+export const LabelOverHeading: Story = {
+  name: 'Named by label, the heading stays visible',
+  args: { label: 'Détail de la ligne' },
+  play: async ({ canvasElement }) => {
+    const drawer = await openDrawer(canvasElement, 'Détail de la ligne');
+
+    await expect(drawer).not.toHaveAttribute('aria-labelledby');
+    await expect(drawer).toHaveAccessibleDescription('ETF · Compte-titres Contoso');
+    await expect(within(drawer).getByRole('heading', { level: 2, name: 'Northwind Monde' })).toBeVisible();
   },
 };
 

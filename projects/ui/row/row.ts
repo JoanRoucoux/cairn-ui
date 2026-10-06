@@ -19,7 +19,7 @@ const SIZE_CLASSES: Record<RowSize, string> = {
   lg: 'min-h-15',
   xl: 'min-h-18 pointer-fine:min-h-17',
   card: 'min-h-17',
-  dense: 'min-h-14 lg:min-h-12',
+  dense: 'min-h-14',
 };
 
 const SIZE_GAPS: Record<RowSize, string> = { md: 'gap-2.5', lg: 'gap-2.5', xl: 'gap-3', card: 'gap-2', dense: 'gap-3' };

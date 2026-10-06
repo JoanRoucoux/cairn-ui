@@ -8,6 +8,7 @@ const theme = readFileSync(join(stylesDir, 'theme.css'), 'utf8');
 
 const THEME_TO_TOKEN_ALIASES: Record<string, string> = {
   '--text-caption--letter-spacing': '--tracking-caption',
+  '--text-label--letter-spacing': '--tracking-label',
   '--text-heading--letter-spacing': '--tracking-display',
   '--text-display--letter-spacing': '--tracking-display',
 };
@@ -134,6 +135,7 @@ describe('design tokens', () => {
     '--text-display',
     '--tracking-display',
     '--tracking-caption',
+    '--tracking-label',
     '--gutter',
     '--inset-card',
     '--stack-group',
@@ -196,6 +198,10 @@ describe('design tokens', () => {
 
     expect(values.get('--default-transition-timing-function')).toBe('var(--ease-out)');
     expect(values.get('--default-transition-duration')).toBe('var(--duration-fast)');
+  });
+
+  it('gives text-label a normal tracking, so it resets a caption tracking it replaces at a breakpoint', () => {
+    expect(parseDeclarations(theme).get('--text-label--letter-spacing')).toBe('normal');
   });
 
   it('registers the spinner and pulse animations on the Cairn tokens', () => {

@@ -1,5 +1,39 @@
 # Changelog
 
+## 0.9.2
+
+### Breaking
+
+- `ui-drawer`: `label` names the drawer whenever it is set, even with a `heading`, which stays the visible title.
+  Before, a `label` beside a `heading` was ignored and the heading named the drawer.
+- Migration: a drawer that passes both and should keep the heading as its name drops `label`; a test that found it
+  with `getByRole('dialog', { name: heading })` looks it up by the label instead.
+- `ui-back-link size="inline"` carries the outset it is drawn with at the top of a form column: -8px above, -4px
+  below, -6px on the left, and `align-self: flex-start`. The other sizes still add no margin.
+- Migration: drop the placement classes put on the link (`-mt-2 -mb-1 -ml-1.5 self-start`); an inline back link
+  placed anywhere but the top of a flex column overrides them.
+
+### Changed
+
+- `ui-row size="dense"` is 56px at every width, like the result rows it is drawn for; it was 48px from 64rem.
+- `ui-dialog`: without a `description`, the title and the cross are centred on each other in the header; with one,
+  they still line up at the top.
+- `text-label` sets a normal letter spacing (`--text-label--letter-spacing` in `theme.css`, `--tracking-label` in
+  `tokens.css`), so `text-caption lg:text-label` drops the caption tracking with no `tracking-normal`. A `text-label`
+  element no longer inherits the letter spacing of its parent.
+
+### Fixed
+
+- `td[ui-group-cell] collapsible`: the band fades its hover fill in over `--duration-fast` on `--ease-out`, like the
+  rows under it, instead of switching at once.
+- Stories and specs no longer use « Changer de cotation », an action Cairn removed, as a sample menu item.
+
+### Added
+
+- `UiHighlight`: a `highlighted` output, emitted when the flash starts (after the scroll into view and any enter
+  animation), so a toast can follow the highlight without watching the element's animations. A highlight replaced by
+  a newer token before it started never emits.
+
 ## 0.9.1
 
 ### Fixed

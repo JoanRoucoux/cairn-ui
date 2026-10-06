@@ -8,7 +8,7 @@ describe('UiMenu layout', () => {
   const template = `
     <button type="button" [uiMenuTrigger]="menu">More</button>
     <ui-menu #menu label="Line actions" [sheet]="sheet">
-      <button uiMenuItem>Changer de cotation</button>
+      <button uiMenuItem>Renommer</button>
       <button uiMenuItem destructive>Supprimer la ligne</button>
     </ui-menu>`;
 
@@ -20,7 +20,7 @@ describe('UiMenu layout', () => {
   it('keeps each item on one line, left aligned', async () => {
     await render(template, { imports, componentProperties: { sheet: false } });
 
-    expect(screen.getByRole('menuitem', { name: 'Changer de cotation', hidden: true })).toHaveClass(
+    expect(screen.getByRole('menuitem', { name: 'Renommer', hidden: true })).toHaveClass(
       'whitespace-nowrap',
       'text-left',
     );
@@ -29,7 +29,7 @@ describe('UiMenu layout', () => {
   it('keeps each sheet item on one line, left aligned', async () => {
     await render(template, { imports, componentProperties: { sheet: true } });
 
-    expect(screen.getByRole('menuitem', { name: 'Changer de cotation', hidden: true })).toHaveClass(
+    expect(screen.getByRole('menuitem', { name: 'Renommer', hidden: true })).toHaveClass(
       'whitespace-nowrap',
       'text-left',
     );

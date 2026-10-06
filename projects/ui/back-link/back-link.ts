@@ -14,7 +14,7 @@ const SIZE_CLASSES: Record<BackLinkSize, string> = {
   sm: 'h-9 pr-2 pl-0.5 text-body text-(--muted-foreground) hover:bg-(--glow) hover:text-(--foreground) focus-visible:outline-offset-2',
   header: 'h-11 pr-3 pl-1 text-body text-(--foreground) focus-visible:-outline-offset-2',
   inline:
-    'h-11 pointer-fine:h-9 pr-2 pl-0.5 text-label text-(--muted-foreground) hover:text-(--foreground) focus-visible:outline-offset-2',
+    'h-11 pointer-fine:h-9 pr-2 pl-0.5 -mt-2 -mb-1 -ml-1.5 self-start text-label text-(--muted-foreground) hover:text-(--foreground) focus-visible:outline-offset-2',
 };
 
 const CHEVRON: Record<BackLinkSize, number> = { md: 22, sm: 22, header: 24, inline: 18 };

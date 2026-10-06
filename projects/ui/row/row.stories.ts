@@ -98,7 +98,7 @@ with a click handler, so keyboard and assistive technology support come for free
       control: 'select',
       options: [...ROW_SIZES],
       description:
-        'Minimum height and gap: `md` 56 px, `lg` 60 px (10 px gap), `xl` 72 px on touch and 68 px with a mouse (12 px gap), `card` 68 px (8 px gap, the rows of a card), `dense` 56 px then 48 px from 64rem (12 px gap, result lists).',
+        'Minimum height and gap: `md` 56 px, `lg` 60 px (10 px gap), `xl` 72 px on touch and 68 px with a mouse (12 px gap), `card` 68 px (8 px gap, the rows of a card), `dense` 56 px at every width (12 px gap, result lists).',
     },
     gap: {
       control: 'select',
@@ -291,6 +291,17 @@ export const Dense: Story = {
       </button>
     `,
   }),
+};
+
+export const DenseOnDesktop: Story = {
+  ...Dense,
+  name: 'Dense result row at 1440, still 56 px',
+  parameters: { viewport: { width: 1440, height: 900 } },
+  play: async ({ canvasElement }) => {
+    const row = within(canvasElement).getByRole('button', { name: /Amundi MSCI World/ });
+
+    await expect(row.getBoundingClientRect().height).toBe(56);
+  },
 };
 
 export const RuledListRows: Story = {

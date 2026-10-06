@@ -167,10 +167,12 @@ describe('UiRow', () => {
     expect(row).not.toHaveClass('gap-3');
   });
 
-  it('offers a dense result row, 56 px then 48 px from 64rem, with a 12 px gap', async () => {
+  it('offers a dense result row, 56 px at every width, with a 12 px gap', async () => {
     await render('<button ui-row size="dense" type="button">Row</button>', { imports: [UiRow] });
 
-    expect(screen.getByRole('button', { name: 'Row' })).toHaveClass('min-h-14', 'lg:min-h-12', 'gap-3');
+    const row = screen.getByRole('button', { name: 'Row' });
+    expect(row).toHaveClass('min-h-14', 'gap-3');
+    expect(row).not.toHaveClass('lg:min-h-12');
   });
 
   it('narrows the gap to 8 px on any size without keeping the size gap', async () => {

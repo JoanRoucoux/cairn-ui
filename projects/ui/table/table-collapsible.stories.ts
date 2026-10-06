@@ -1,5 +1,5 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
 
 import { UiGroup, UiGroupCell, UiTable, UiTd, UiTh, UiTr } from './table';
 
@@ -96,8 +96,34 @@ of the group it folds.
 export default meta;
 type Story = StoryObj<CollapsibleArgs>;
 
+const hoverFills = (element: Element): string[] => {
+  const found: string[] = [];
+  const walk = (rules: CSSRuleList): void => {
+    for (const rule of Array.from(rules)) {
+      if (rule instanceof CSSStyleRule && rule.style.backgroundColor) {
+        const selectors = rule.selectorText.split(/,(?![^()]*\))/).map((selector) => selector.trim());
+
+        found.push(
+          ...selectors.filter(
+            (selector) => selector.endsWith(':hover') && element.matches(selector.slice(0, -':hover'.length)),
+          ),
+        );
+      }
+      if ('cssRules' in rule) {
+        walk((rule as CSSGroupingRule).cssRules);
+      }
+    }
+  };
+
+  for (const sheet of Array.from(document.styleSheets)) {
+    walk(sheet.cssRules);
+  }
+
+  return found;
+};
+
 export const Default: Story = {
-  name: 'Un groupe ouvert, un replié',
+  name: 'One group open, one folded',
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const northwind = canvas.getByRole('button', { name: /Northwind PEA/ });
@@ -117,16 +143,31 @@ export const Default: Story = {
   },
 };
 
+export const BandHover: Story = {
+  name: 'Band hover fill, faded like the rows',
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const band = getComputedStyle(canvas.getByRole('button', { name: /Northwind PEA/ }));
+    const cell = getComputedStyle(canvas.getByText('Ferrari').closest('td') as HTMLElement);
+
+    await waitFor(() => expect(band.transitionProperty).toBe('background-color'));
+    await expect(band.transitionDuration).toBe('0.18s');
+    await expect(band.transitionTimingFunction).toBe('cubic-bezier(0.23, 1, 0.32, 1)');
+    await expect(cell.transitionDuration.split(', ')[0]).toBe(band.transitionDuration);
+    await expect(cell.transitionTimingFunction.split(/, (?=[a-z])/)[0]).toBe(band.transitionTimingFunction);
+    await expect(hoverFills(canvas.getByRole('button', { name: /Northwind PEA/ }))).not.toHaveLength(0);
+  },
+};
+
 export const HeldOpen: Story = {
-  name: 'Tenu ouvert par un filtre',
+  name: 'Held open by a filter',
   args: { locked: true },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const northwind = canvas.getByRole('button', { name: /Northwind PEA/ });
-    const rest = getComputedStyle(northwind).backgroundColor;
 
-    await userEvent.hover(northwind);
-    await expect(getComputedStyle(northwind).backgroundColor).toBe(rest);
+    await expect(hoverFills(northwind)).toEqual([]);
+    await expect(hoverFills(canvas.getByRole('button', { name: /Woodgrove Savings Plan/ }))).toEqual([]);
     await expect(getComputedStyle(northwind).cursor).not.toBe('pointer');
 
     await userEvent.click(northwind);

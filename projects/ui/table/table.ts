@@ -216,7 +216,7 @@ export type GroupSize = (typeof GROUP_SIZES)[number];
     @if (collapsible()) {
       <h2 class="m-0 font-normal">
         <button
-          class="rounded-control flex w-full items-center justify-between gap-4 bg-(--muted) px-2 text-left not-aria-disabled:cursor-pointer not-aria-disabled:hover:bg-(--soft) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring)"
+          class="rounded-control flex w-full items-center justify-between gap-4 bg-(--muted) px-2 text-left transition-[background-color] duration-(--duration-fast) ease-out not-aria-disabled:cursor-pointer not-aria-disabled:hover:bg-(--soft) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring)"
           data-group-heading
           type="button"
           [attr.aria-controls]="controls() || null"

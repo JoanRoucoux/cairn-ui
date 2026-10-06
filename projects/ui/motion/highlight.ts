@@ -1,4 +1,4 @@
-import { DestroyRef, Directive, ElementRef, effect, inject, input, untracked } from '@angular/core';
+import { DestroyRef, Directive, ElementRef, effect, inject, input, output, untracked } from '@angular/core';
 
 import { readDuration, readEasing } from './internal/tokens';
 import { injectReducedMotion } from './reduced-motion';
@@ -22,6 +22,7 @@ function paintedElements(host: HTMLElement): HTMLElement[] {
  * `--soft` fill, then fades back. Each new non-null token plays once, so pass a fresh value per
  * event (an object or a counter), not a boolean. A non-null token present at first render plays on
  * arrival. Can sit on the same element as `animate.enter`: it waits for that fade to finish.
+ * `highlighted` fires when the flash starts, after any scroll and enter fade, so a toast can follow it.
  *
  * Give the element `scroll-margin-top` and `scroll-margin-bottom` equal to what is pinned above and
  * below it (header, tab bar, action bar), or a row under them counts as on screen. For an arrival
@@ -36,6 +37,7 @@ function paintedElements(host: HTMLElement): HTMLElement[] {
 })
 export class UiHighlight {
   readonly uiHighlight = input<unknown>(null);
+  readonly highlighted = output<void>();
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   private readonly reduced = injectReducedMotion();
@@ -130,6 +132,7 @@ export class UiHighlight {
           { duration: total },
         ),
       );
+      this.highlighted.emit();
     };
 
     const frame = requestAnimationFrame(() => {

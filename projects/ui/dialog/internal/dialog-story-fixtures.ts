@@ -36,6 +36,31 @@ export const desktopCentred: StoryObj['play'] = async ({ canvasElement }) => {
   });
 };
 
+const headerBoxes = (canvasElement: HTMLElement): { title: DOMRect; cross: DOMRect } => {
+  const header = canvasElement.querySelector('[data-dialog-header]') as HTMLElement;
+
+  return {
+    title: within(header).getByRole('heading', { level: 2 }).getBoundingClientRect(),
+    cross: within(header).getByRole('button').getBoundingClientRect(),
+  };
+};
+
+export const headerCentred: StoryObj['play'] = async ({ canvasElement }) => {
+  await waitFor(() => {
+    const { title, cross } = headerBoxes(canvasElement);
+
+    expect(title.top + title.height / 2).toBeCloseTo(cross.top + cross.height / 2, 0);
+  });
+};
+
+export const headerTopped: StoryObj['play'] = async ({ canvasElement }) => {
+  await waitFor(() => {
+    const { title, cross } = headerBoxes(canvasElement);
+
+    expect(title.top).toBeCloseTo(cross.top, 0);
+  });
+};
+
 export const bodyReachable: StoryObj['play'] = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
   const dialog = canvas.getByRole('alertdialog', { name: 'Conditions' });
@@ -220,3 +245,33 @@ export const dialogArgTypes: Meta['argTypes'] = {
       'Controls `showModal()`/`close()` on the native `<dialog>`. Setting it to `false` plays the exit, then emits `closed` with `programmatic`.',
   },
 };
+
+export const tradeTemplate = `
+      <ui-dialog
+        truncateDescription
+        [heading]="heading"
+        [description]="description"
+        [closeLabel]="closeLabel"
+        [width]="width"
+        [open]="open"
+        (dismissed)="open = false"
+      >
+        <div class="flex flex-col gap-4" data-story-body>${field('Quantité')}${field('Prix unitaire')}</div>
+        <button dialogActions ui-button variant="outline" class="max-lg:hidden" (click)="open = false">Annuler</button>
+        <button dialogActions ui-button (click)="open = false">Acheter 40 parts</button>
+      </ui-dialog>
+    `;
+
+export const newAccountTemplate = `
+      <ui-dialog
+        [heading]="heading"
+        [closeLabel]="closeLabel"
+        [width]="width"
+        [open]="open"
+        (dismissed)="open = false"
+      >
+        <div class="flex flex-col gap-4" data-story-body>${field('Nom du compte')}${field('Enveloppe')}${field('Établissement (facultatif)')}</div>
+        <button dialogActions ui-button variant="outline" class="max-lg:hidden" (click)="open = false">Annuler</button>
+        <button dialogActions ui-button (click)="open = false">Créer le compte</button>
+      </ui-dialog>
+    `;

@@ -75,6 +75,21 @@ describe('UiDrawer', () => {
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
 
+  it('takes its name from label over the heading when both are set, and keeps the heading visible', async () => {
+    await render(
+      `<ui-drawer heading="Northwind Monde" description="ETF · Compte-titres Contoso" label="Détail de la ligne" open>
+         <p>Corps</p>
+       </ui-drawer>`,
+      { imports: [UiDrawer] },
+    );
+
+    const drawer = screen.getByRole('dialog', { name: 'Détail de la ligne' });
+
+    expect(drawer).not.toHaveAttribute('aria-labelledby');
+    expect(drawer).toHaveAccessibleDescription('ETF · Compte-titres Contoso');
+    expect(screen.getByRole('heading', { level: 2, name: 'Northwind Monde' })).toBeVisible();
+  });
+
   it('refuses to render without a heading or a label, which would leave it without a name', async () => {
     await expect(render(`<ui-drawer open><p>Corps</p></ui-drawer>`, { imports: [UiDrawer] })).rejects.toThrow(
       'ui-drawer needs a heading or a label',
