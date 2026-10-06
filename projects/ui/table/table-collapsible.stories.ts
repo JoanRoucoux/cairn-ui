@@ -1,5 +1,5 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
 
 import { UiGroup, UiGroupCell, UiTable, UiTd, UiTh, UiTr } from './table';
 
@@ -114,6 +114,21 @@ export const Default: Story = {
 
     await userEvent.click(woodgrove);
     await expect(canvas.getByText('Carmignac Patrimoine')).toBeVisible();
+  },
+};
+
+export const BandHover: Story = {
+  name: 'Survol du bandeau, en fondu comme les lignes',
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const band = getComputedStyle(canvas.getByRole('button', { name: /Northwind PEA/ }));
+    const cell = getComputedStyle(canvas.getByText('Ferrari').closest('td') as HTMLElement);
+
+    await waitFor(() => expect(band.transitionProperty).toBe('background-color'));
+    await expect(band.transitionDuration).toBe('0.18s');
+    await expect(band.transitionTimingFunction).toBe('cubic-bezier(0.23, 1, 0.32, 1)');
+    await expect(cell.transitionDuration.split(', ')[0]).toBe(band.transitionDuration);
+    await expect(cell.transitionTimingFunction.split(/, (?=[a-z])/)[0]).toBe(band.transitionTimingFunction);
   },
 };
 

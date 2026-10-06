@@ -139,6 +139,13 @@ describe('collapsible group band', () => {
     );
   });
 
+  it('fades its hover fill in --duration-fast on --ease-out, like the rows, without fading the focus ring', async () => {
+    const { button } = await setup();
+
+    expect(button).toHaveClass('transition-[background-color]', 'duration-(--duration-fast)', 'ease-out');
+    expect(button).not.toHaveClass('transition-colors');
+  });
+
   it('takes the 48px band at size lg, without aria-controls or aria-disabled unless asked', async () => {
     await render(
       `<table uiTable><tbody><tr uiTr group><td ui-group-cell collapsible size="lg" name="A">1</td></tr></tbody></table>`,
