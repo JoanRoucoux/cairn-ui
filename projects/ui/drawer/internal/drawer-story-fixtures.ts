@@ -127,7 +127,8 @@ export const drawerArgTypes: Meta['argTypes'] = {
   },
   label: {
     control: 'text',
-    description: 'Accessible name of the panel when it has no heading, such as « Détail de la ligne ».',
+    description:
+      'Accessible name of the panel, such as « Détail de la ligne ». Required without a heading; with one, it names the panel in place of the heading.',
   },
   width: {
     control: 'text',

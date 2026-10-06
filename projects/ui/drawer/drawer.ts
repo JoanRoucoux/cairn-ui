@@ -18,6 +18,7 @@ const nextId = (() => {
  * Modal side panel on the native <dialog>, against the right edge at full height, for a detail opened from a list.
  *
  * Without `heading` it draws no header: the content brings its own title and close button, and `label` names it.
+ * With both, `label` names the panel and the heading stays its visible title.
  *
  * @example
  * <ui-drawer heading="Northwind Monde" closeLabel="Fermer le détail" [open]="open()" (dismissed)="open.set(false)">
@@ -37,7 +38,7 @@ const nextId = (() => {
       [attr.aria-busy]="busy() || null"
       [attr.aria-describedby]="describedBy()"
       [attr.aria-label]="ariaLabel()"
-      [attr.aria-labelledby]="heading() ? headingId : null"
+      [attr.aria-labelledby]="labelledBy()"
       [style.--drawer-width]="width()"
       (cancel)="modal.onCancel($event)"
       (close)="modal.onNativeClose()"
@@ -97,14 +98,16 @@ export class UiDrawer {
   protected readonly describedBy = computed(() => (this.heading() && this.description() ? this.descriptionId : null));
 
   protected readonly ariaLabel = computed(() => {
-    if (this.heading()) {
-      return null;
+    if (this.label()) {
+      return this.label();
     }
-    if (!this.label()) {
+    if (!this.heading()) {
       throw new Error('ui-drawer needs a heading or a label: without either it has no accessible name.');
     }
-    return this.label();
+    return null;
   });
+
+  protected readonly labelledBy = computed(() => (this.heading() && !this.label() ? this.headingId : null));
 
   protected readonly modal = new ModalClose<DrawerCloseReason>({
     open: this.open,
