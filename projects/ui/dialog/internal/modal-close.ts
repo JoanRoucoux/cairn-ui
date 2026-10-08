@@ -4,6 +4,7 @@ import { afterExit } from './dialog-exit';
 
 type SharedReason = 'escape' | 'backdrop' | 'cross' | 'programmatic';
 
+/** @internal */
 export type ModalCloseConfig<R extends string> = {
   readonly open: Signal<boolean>;
   readonly busy: Signal<boolean>;
@@ -18,6 +19,8 @@ export type ModalCloseConfig<R extends string> = {
  * Escape and a press-and-release on the veil close it unless `busy`, `dismissed` reports a close the user asked for
  * and `closed` its reason once the exit transition has played. `opening` runs just before `showModal()`. Must be
  * created in an injection context.
+ *
+ * @internal Shared by `ui-dialog` and `ui-drawer`, not meant for applications.
  */
 export class ModalClose<R extends string> {
   readonly #host = inject<ElementRef<HTMLElement>>(ElementRef);
