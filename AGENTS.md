@@ -6,6 +6,8 @@ Guidance for AI coding agents working in this repository. See the [README](READM
 
 Cairn UI, the Angular 22 design system published as `@joanroucoux/cairn-ui`: a component library (`projects/ui`, standalone components, zoneless, signals, prefix `ui`) developed and documented through Storybook, which is also deployed to GitHub Pages (https://joanroucoux.github.io/cairn-ui/). There is no application: Storybook is the only dev surface. It was scaffolded from `angular-starter-ui` (see `.starter-manifest.json`).
 
+`projects/mcp` holds the MCP server that describes the library to coding agents, to be published separately as `@joanroucoux/cairn-ui-mcp`. Today it holds the generator of `mcp-manifest.json`, the machine-readable description of the library that the server will answer from.
+
 Package manager: **pnpm** (version pinned in the `packageManager` field of package.json). Node 24 (`.nvmrc`).
 
 ## Commands
@@ -15,14 +17,16 @@ Package manager: **pnpm** (version pinned in the `packageManager` field of packa
 | `pnpm install`               | Install deps                                                                                            |
 | `pnpm start`                 | Storybook dev server (http://localhost:6006)                                                            |
 | `pnpm run test:coverage`     | Unit tests with coverage                                                                                |
-| `pnpm run build`             | Library build (ng-packagr → `dist/ui`)                                                                  |
+| `pnpm run build`             | Library build (ng-packagr → `dist/ui`), then `generate:manifest`                                        |
+| `pnpm run generate:manifest` | Writes `dist/ui/mcp-manifest.json`, or lists what keeps it from being complete and fails                |
+| `pnpm run test:mcp`          | Typecheck and unit tests of `projects/mcp`, with coverage                                               |
 | `pnpm run build-storybook`   | Static Storybook build (→ `storybook-static/`)                                                          |
 | `pnpm run test-storybook:ci` | Interaction tests against the built Storybook (needs Chromium: `pnpm exec playwright install chromium`) |
 | `pnpm run lint`              | ESLint (includes Sheriff module-boundary rules)                                                         |
 | `pnpm run format`            | Prettier write                                                                                          |
 | `pnpm run format:check`      | Prettier check                                                                                          |
 
-Before considering a change done, run the same pipeline as CI: `format:check`, `lint`, `test:coverage`, `build`, `build-storybook`, `test-storybook:ci`.
+Before considering a change done, run the same pipeline as CI: `format:check`, `lint`, `test:coverage`, `test:mcp`, `build`, `build-storybook`, `test-storybook:ci`.
 
 ## Architecture
 
@@ -39,6 +43,16 @@ Before considering a change done, run the same pipeline as CI: `format:check`, `
   than their dark values on purpose - a green that reads at 7.76:1 on near-black only reaches
   4.07:1 on white. The role is fixed across schemes, never the hex. Measured ratios live in
   `projects/ui/docs/colors.mdx`; `projects/ui/src/tokens.spec.ts` guards the token names.
+
+## MCP manifest
+
+`projects/mcp/generator/` reads `projects/ui` statically, with the TypeScript compiler API, and writes `mcp-manifest.json` (shape and `MANIFEST_SCHEMA_VERSION` in `projects/mcp/src/manifest.ts`). `pnpm run build` runs it after ng-packagr, so the file ships inside the UI package (`@joanroucoux/cairn-ui/mcp-manifest.json`) and always describes the version it was published with. It is never committed.
+
+- **Sources.** Per entry point: the exports of `index.ts`; for each component or directive its selector, `exportAs`, `input()`/`model()`/`output()` signals (type, default, alias), `<ng-content>` slots, JSDoc description and `@example`s; the services and their public members; the functions, constants and types. Per stories file: the title, the description split into summary, **When to use**, **When not to use** and **Accessibility**, and the `argTypes` descriptions. Plus the tokens of `styles/tokens.css` (values, media overrides, the utility `theme.css` derives), their roles from the `tokens` array of `docs/colors.mdx`, the Foundations MDX pages as Markdown, and the Setup section of `projects/ui/README.md`.
+- **It is also a documentation lint.** The build fails on an exported component, directive or service without a JSDoc description and an `@example`, a function without a description, an entry with a component and no stories, a description missing one of its sections, an `argType` without a static description, or a role in `colors.mdx` for a token `tokens.css` does not declare.
+- **Everything it reads must be static**: string literals and template literals without `${}` in story metas, string selectors, `as const` arrays for variant lists.
+- A symbol exported only so a sibling entry can use it (`ModalClose`, the `CONTROL_*_CLASSES`) carries `@internal` in its JSDoc, which keeps it out of the manifest.
+- `projects/mcp` is plain Node, not Angular: ES modules run by Node's type stripping (`erasableSyntaxOnly`, relative imports end in `.ts`), Vitest instead of the Angular test builder, 100% coverage enforced on all four metrics. Sheriff keeps it from importing `projects/ui`: it reads the library's files, never its code.
 
 ## Conventions
 
@@ -93,6 +107,7 @@ The Storybook is deployed to GitHub Pages by [storybook.yml](.github/workflows/s
 - `UiMenu.close()` only calls `hidePopover()` when the menu was open: `hidePopover()` throws on a closed popover, and it fires the `toggle` event that calls `close()` again.
 - GitHub Actions in `.github/workflows/` are pinned by commit SHA (Dependabot keeps them updated) — when adding one, pin it the same way.
 - npm consumers of the published library must add `@source '../node_modules/<pkg>'` to their Tailwind CSS — templates in `node_modules` are not scanned by default. Keep this documented in both READMEs (root and `projects/ui/README.md`).
+- Nothing in `projects/mcp` may write to stdout but the protocol once the server exists, and `console` is forbidden anyway: report through `process.stderr.write`.
 - The root `package.json` is private and its version is not used: the library's version lives in `projects/ui/package.json` and is bumped manually, with `projects/ui/CHANGELOG.md`, in the release PR (see Release). `projects/ui/CHANGELOG.md` is listed in `ng-package.json` assets and ignored by Prettier.
 - Angular's zoneless scheduler calls `requestAnimationFrame` itself during bootstrap: assert on the rendered output, never on a count of animation frames.
 - Text tokens clear 4.5:1 on `--background`, `--card`, `--elevated`, `--muted` and on `--soft` over `--background` or `--card`; `tokens.spec.ts` computes it, so a token edit that breaks it fails the test (ratios in `docs/colors.mdx`).

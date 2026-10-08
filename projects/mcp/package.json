@@ -1,0 +1,11 @@
+{
+  "name": "@joanroucoux/cairn-ui-mcp",
+  "version": "0.0.0",
+  "private": true,
+  "description": "MCP server for Cairn UI, the monochrome, accessible Angular design system.",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": "^22.22.3 || ^24.15.0 || >=26.0.0"
+  }
+}

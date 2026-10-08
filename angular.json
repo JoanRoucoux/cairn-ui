@@ -44,7 +44,12 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": ["projects/ui/**/*.ts", "projects/ui/**/*.html", ".storybook/**/*.ts"]
+            "lintFilePatterns": [
+              "projects/ui/**/*.ts",
+              "projects/ui/**/*.html",
+              "projects/mcp/**/*.ts",
+              ".storybook/**/*.ts"
+            ]
           }
         }
       }

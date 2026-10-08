@@ -40,6 +40,9 @@
   "exports": {
     "./styles/*": {
       "default": "./styles/*"
+    },
+    "./mcp-manifest.json": {
+      "default": "./mcp-manifest.json"
     }
   }
 }
