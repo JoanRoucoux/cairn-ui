@@ -10,7 +10,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: ['generator/**/*.ts', 'src/**/*.ts'],
-      exclude: ['**/*.spec.ts', 'generator/cli.ts', 'generator/testing.ts'],
+      exclude: ['**/*.spec.ts', 'generator/cli.ts', 'generator/testing.ts', 'src/main.ts', 'src/fixture.ts'],
       reporter: ['text-summary', 'html', 'lcovonly'],
       reportsDirectory: '../../coverage/mcp',
       thresholds: { statements: 100, branches: 100, functions: 100, lines: 100 },
