@@ -6,17 +6,20 @@ import { UI_CONTROL, type UiControl, type UiControlError } from '@joanroucoux/ca
 export const CONTROL_SIZES = ['sm', 'md', 'lg', 'xl'] as const;
 export type ControlSize = (typeof CONTROL_SIZES)[number];
 
+/** @internal Shared with `select` and `choice-chips`. */
 export const CONTROL_BASE_CLASSES =
   'w-full rounded-control px-3 text-body text-(--foreground) shadow-[inset_0_0_0_1px_var(--border)] placeholder:text-(--muted-foreground) focus-visible:shadow-[inset_0_0_0_2px_var(--ring)] aria-invalid:shadow-[inset_0_0_0_2px_var(--negative)] disabled:cursor-not-allowed disabled:opacity-50';
 
 export const CONTROL_SURFACES = ['background', 'card'] as const;
 export type ControlSurface = (typeof CONTROL_SURFACES)[number];
 
+/** @internal Shared with `select` and `choice-chips`. */
 export const CONTROL_SURFACE_CLASSES: Record<ControlSurface, string> = {
   background: 'bg-(--background)',
   card: 'bg-(--card)',
 };
 
+/** @internal Shared with `select` and `choice-chips`. */
 export const CONTROL_SIZE_CLASSES: Record<ControlSize, string> = {
   sm: 'h-9',
   md: 'min-h-(--row-min)',
