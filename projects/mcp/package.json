@@ -1,11 +1,40 @@
 {
   "name": "@joanroucoux/cairn-ui-mcp",
-  "version": "0.0.0",
-  "private": true,
-  "description": "MCP server for Cairn UI, the monochrome, accessible Angular design system.",
+  "version": "0.1.0",
+  "description": "MCP server for Cairn UI: lets coding agents look up its components, tokens and setup.",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "angular",
+    "design-system",
+    "cairn"
+  ],
+  "homepage": "https://github.com/JoanRoucoux/cairn-ui/tree/main/projects/mcp#readme",
+  "bugs": {
+    "url": "https://github.com/JoanRoucoux/cairn-ui/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JoanRoucoux/cairn-ui.git",
+    "directory": "projects/mcp"
+  },
   "license": "MIT",
+  "author": {
+    "name": "Joan Roucoux",
+    "email": "joan.roucoux@gmail.com"
+  },
   "type": "module",
+  "bin": {
+    "cairn-ui-mcp": "./src/main.js"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "node": "^22.22.3 || ^24.15.0 || >=26.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.1",
+    "zod": "4.6.5"
   }
 }

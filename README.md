@@ -158,6 +158,14 @@ Light and dark follow the operating system through `light-dark()`; to force a sc
 | `drawer` | `UiDrawer`                                                                                       | Modal side panel on the right edge, for a row's detail on a desktop |
 | `motion` | `UiFlipList`, `UiFlipItem`, `UiHighlight`, `injectReducedMotion`, `holdTransitionsUntilRendered` | List reflow, highlight and reduced-motion helpers                   |
 
+## MCP server
+
+[`@joanroucoux/cairn-ui-mcp`](projects/mcp/README.md) lets a coding agent look up the components, their selectors and inputs, when to use each one, the tokens and the setup, from the manifest the library ships:
+
+```bash
+claude mcp add cairn-ui -- npx -y @joanroucoux/cairn-ui-mcp
+```
+
 ## Design principles
 
 - **Tokens, not values.** Components consume `--primary`, `--border` and friends through Tailwind arbitrary values. The token sheet is the single place a color changes.
@@ -181,6 +189,8 @@ pnpm start      # Storybook on http://localhost:6006
 | ---------------------------- | ---------------------------------------------------------- |
 | `pnpm start`                 | Storybook dev server                                       |
 | `pnpm run build`             | Builds the library into `dist/ui` (Angular Package Format) |
+| `pnpm run build:mcp`         | Builds the MCP server into `dist/mcp`, after `build`       |
+| `pnpm run test:mcp`          | MCP server and manifest generator tests, with coverage     |
 | `pnpm run build-storybook`   | Static Storybook build (to `storybook-static/`)            |
 | `pnpm test`                  | Unit tests (Vitest)                                        |
 | `pnpm run test:coverage`     | Unit tests with coverage report and thresholds             |
@@ -200,6 +210,8 @@ The library version lives in `projects/ui/package.json`, independently of the ro
 3. Push the tag `vX.Y.Z` on the merge commit.
 
 The [release workflow](.github/workflows/release.yml) checks that the tag matches the version and that the commit is on `main`, runs the CI checks, publishes `dist/ui` to npm with provenance (trusted publishing, no token), then creates the GitHub Release with the changelog section as its notes. The Storybook is redeployed to GitHub Pages on every push to `main` by [its own workflow](.github/workflows/storybook.yml).
+
+The MCP server is released separately, the same way: bump `projects/mcp/package.json`, add the entry to [`projects/mcp/CHANGELOG.md`](projects/mcp/CHANGELOG.md), merge, then push the tag `mcp-vX.Y.Z`. [Its workflow](.github/workflows/release-mcp.yml) publishes `dist/mcp`, which bundles the manifest of the library at that commit.
 
 ## Used by
 
