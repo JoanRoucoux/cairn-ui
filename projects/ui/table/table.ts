@@ -170,7 +170,12 @@ export class UiTh {
   );
 }
 
-/** Body cell. Same inputs as `UiTh` bar `tall` and `width`, which must be set on both to match. */
+/**
+ * Body cell. Same inputs as `UiTh` bar `tall` and `width`, which must be set on both to match.
+ *
+ * @example
+ * <td uiTd numeric secondary>12</td>
+ */
 @Directive({
   selector: 'td[uiTd]',
   host: {
@@ -317,7 +322,12 @@ export class UiRowLink {
   );
 }
 
-/** A control in another cell of a stretched-link row: keeps it clickable above the row-wide link. */
+/**
+ * A control in another cell of a stretched-link row: keeps it clickable above the row-wide link.
+ *
+ * @example
+ * <td uiTd><button uiRowAction type="button">Enter a price</button></td>
+ */
 @Directive({
   selector: '[uiRowAction]',
   host: { class: 'relative z-1' },

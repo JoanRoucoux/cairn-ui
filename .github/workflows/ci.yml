@@ -40,8 +40,14 @@ jobs:
       - name: Unit tests
         run: pnpm run test:coverage
 
+      - name: MCP manifest generator tests
+        run: pnpm run test:mcp
+
       - name: Build library
         run: pnpm run build
+
+      - name: Build MCP server
+        run: pnpm run build:mcp
 
       - name: Build Storybook
         run: pnpm run build-storybook
