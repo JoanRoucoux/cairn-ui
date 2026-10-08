@@ -7,9 +7,12 @@ export const config: SheriffConfig = {
   enableBarrelLess: true,
   modules: {
     'projects/ui/<component>': 'component:<component>',
+    // The MCP server reads the library's files, it never imports its code.
+    'projects/mcp': 'mcp',
   },
   depRules: {
     root: ['component:*'],
+    mcp: [],
     'component:*': [],
     'component:input': ['component:control'],
     'component:choice-chips': ['component:input', 'component:control'],
