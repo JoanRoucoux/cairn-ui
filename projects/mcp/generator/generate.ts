@@ -37,7 +37,8 @@ export function generateManifest({ uiRoot, storybookUrl }: GenerateOptions): Gen
   );
   const tokens = readTokens(read('styles/tokens.css'), read('styles/theme.css'));
 
-  applyRoles(tokens, join(uiRoot, 'docs/colors.mdx'), report);
+  applyRoles(tokens, join(uiRoot, 'docs/colors.mdx'), 'tokens', 1, report);
+  applyRoles(tokens, join(uiRoot, 'docs/typography.mdx'), 'sizes', 2, report);
 
   const setup = extractSection(read('README.md'), 'Setup');
 
@@ -59,21 +60,25 @@ export function generateManifest({ uiRoot, storybookUrl }: GenerateOptions): Gen
   };
 }
 
-/** Gives each token the role the Colors page lists for it, in its `tokens` array. */
-function applyRoles(tokens: Token[], colorsPage: string, report: Report): void {
-  const roles = readExportedTuples(readFileSync(colorsPage, 'utf8'), 'tokens');
+/**
+ * Gives each token the role a Foundations page lists for it, in its `export const <exportName>`
+ * array: the token is the first item of a row (`background`, `text-title`), the role the item at `roleIndex`.
+ */
+function applyRoles(tokens: Token[], page: string, exportName: string, roleIndex: number, report: Report): void {
+  const roles = readExportedTuples(readFileSync(page, 'utf8'), exportName);
 
   if (!roles) {
-    report(colorsPage, 'has no `export const tokens = [...]` of token roles');
+    report(page, `has no \`export const ${exportName} = [...]\` of token roles`);
   }
 
-  for (const [name, role] of roles ?? []) {
+  for (const row of roles ?? []) {
+    const [name, role] = [row[0], row[roleIndex]];
     const token = tokens.find((candidate) => candidate.name === `--${name}`);
 
     if (!token) {
-      report(colorsPage, `describes --${name}, which tokens.css does not declare`);
+      report(page, `describes --${name}, which tokens.css does not declare`);
     } else if (!role) {
-      report(colorsPage, `gives --${name} no role`);
+      report(page, `gives --${name} no role`);
     } else {
       token.role = role;
     }
@@ -100,7 +105,7 @@ function readEntry(
   const exports = readEntryExports(program, join(folder, 'index.ts'), report);
   const docs = readdirSync(folder)
     .filter((file) => file.endsWith('.stories.ts'))
-    .sort()
+    .sort((a, b) => Number(b === `${name}.stories.ts`) - Number(a === `${name}.stories.ts`) || a.localeCompare(b))
     .flatMap((file) => {
       const path = join(folder, file);
       const page = readDocsPage(path, readFileSync(path, 'utf8'), storybookUrl, report);
@@ -123,7 +128,11 @@ function readFoundations(uiRoot: string, storybookUrl: string, report: Report): 
     .sort((a, b) => Number(b === 'overview.mdx') - Number(a === 'overview.mdx') || a.localeCompare(b));
 
   return files.flatMap((file) => {
-    const { title, content } = mdxToMarkdown(readFileSync(join(folder, file), 'utf8'), storybookUrl);
+    const { title, content, problems } = mdxToMarkdown(readFileSync(join(folder, file), 'utf8'), storybookUrl);
+
+    for (const problem of problems) {
+      report(join(folder, file), problem);
+    }
 
     if (!title) {
       report(join(folder, file), 'has no <Meta title="..." />');

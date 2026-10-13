@@ -16,6 +16,25 @@ const short = (problem: string): string => {
   return `${basename(file)}: ${message.join(': ')}`;
 };
 
+const TYPOGRAPHY = [
+  '<Meta title="Foundations/Typography" />',
+  '',
+  'export const sizes = [',
+  "  ['text-title', '20 / 28', 'Card titles'],",
+  '];',
+  '',
+  '<table>',
+  '  <thead>',
+  '    <tr><th>Class</th><th>Use</th></tr>',
+  '  </thead>',
+  '  <tbody>',
+  '    {sizes.map(([className, axes, use]) => (',
+  '      <tr><td><code>{className}</code></td><td>{use}</td></tr>',
+  '    ))}',
+  '  </tbody>',
+  '</table>',
+].join('\n');
+
 describe('generateManifest on projects/ui', () => {
   let result: GenerateResult;
 
@@ -64,6 +83,29 @@ describe('generateManifest on projects/ui', () => {
     });
   });
 
+  it('gives the type sizes their use, from the Typography page', () => {
+    const title = result.manifest.tokens.find((token) => token.name === '--text-title');
+    const typography = result.manifest.foundations.find((page) => page.slug === 'typography');
+
+    expect(title?.role).toBe('Card and section titles');
+    expect(typography?.content).toContain('| `text-title` | 20 / 28 | Card and section titles |');
+  });
+
+  it('keeps the theme table of the Overview page', () => {
+    const overview = result.manifest.foundations.find((page) => page.slug === 'overview');
+
+    expect(overview?.content).toContain('| `dark` | `data-theme="dark"` | dark |');
+  });
+
+  it('describes a multi-page entry by its own stories file first', () => {
+    const table = result.manifest.entries.find((entry) => entry.name === 'table');
+
+    expect(table?.docs.map((page) => page.url)).toEqual([
+      `${URL_BASE}?path=/docs/data-display-table--docs`,
+      `${URL_BASE}?path=/docs/data-display-table-groups--docs`,
+    ]);
+  });
+
   it('carries the Setup section and the Foundations pages, Overview first', () => {
     expect(result.manifest.setup).toContain("@source '../node_modules/@joanroucoux/cairn-ui'");
     expect(result.manifest.foundations[0]?.slug).toBe('overview');
@@ -77,9 +119,10 @@ describe('generateManifest on an incomplete library', () => {
       'package.json': JSON.stringify({ name: '@scope/ui', version: '1.0.0' }),
       'tsconfig.lib.json': JSON.stringify({ compilerOptions: { experimentalDecorators: true }, include: ['**/*.ts'] }),
       'README.md': '# UI',
-      'styles/tokens.css': ':root { --background: light-dark(#fff, #000); }',
+      'styles/tokens.css': ':root { --background: light-dark(#fff, #000); --text-title: 1.25rem; }',
       'styles/theme.css': '',
       'docs/colors.mdx': '# Colors',
+      'docs/typography.mdx': TYPOGRAPHY,
       'docs/untitled.mdx': '# Untitled',
       'docs/overview.mdx': '<Meta title="Foundations/Overview" />\n\n# Overview',
       'card/ng-package.json': '{}',
@@ -102,7 +145,7 @@ describe('generateManifest on an incomplete library', () => {
 
     expect(manifest.package.peerDependencies).toEqual({});
     expect(manifest.entries.map((entry) => entry.name)).toEqual(['card', 'helpers']);
-    expect(manifest.foundations.map((page) => page.slug)).toEqual(['overview']);
+    expect(manifest.foundations.map((page) => page.slug)).toEqual(['overview', 'typography']);
     expect(problems.map(short)).toEqual([
       'card: exports a component or directive but has no stories file to document it',
       'colors.mdx: has no `export const tokens = [...]` of token roles',
@@ -117,10 +160,11 @@ describe('generateManifest on an incomplete library', () => {
       'package.json': JSON.stringify({ name: '@scope/ui', version: '1.0.0', peerDependencies: { a: '1' } }),
       'tsconfig.lib.json': JSON.stringify({ include: ['**/*.ts'] }),
       'README.md': '# UI\n\n## Setup\n\nImport it.',
-      'styles/tokens.css': ':root { --background: light-dark(#fff, #000); }',
+      'styles/tokens.css': ':root { --background: light-dark(#fff, #000); --text-title: 1.25rem; }',
       'styles/theme.css': '',
       'docs/colors.mdx':
         "export const tokens = [\n  ['background', 'Page'],\n  ['ghost', 'Gone'],\n  ['background'],\n];",
+      'docs/typography.mdx': TYPOGRAPHY,
       'button/ng-package.json': '{}',
       'button/index.ts': 'export {};',
       'button/button.stories.ts': "export default { title: 'Inputs/Button' };",
@@ -135,6 +179,7 @@ describe('generateManifest on an incomplete library', () => {
       'button.stories.ts: has no static parameters.docs.description.component',
       'colors.mdx: describes --ghost, which tokens.css does not declare',
       'colors.mdx: gives --background no role',
+      'colors.mdx: exports tokens, which no table renders',
       'colors.mdx: has no <Meta title="..." />',
     ]);
   });

@@ -48,6 +48,7 @@ describe('run', () => {
       'projects/ui/styles/tokens.css': '',
       'projects/ui/styles/theme.css': '',
       'projects/ui/docs/colors.mdx': '',
+      'projects/ui/docs/typography.mdx': '',
     });
 
     expect(run(['--out', 'manifest.json'], root)).toBe(1);
