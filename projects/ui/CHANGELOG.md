@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.10.0
+
+### Added
+
+- `icon-toggle` entry point: `button[uiIconToggle]`, a round icon button with an on and off state, 44px on a touch
+  screen and 40px from 64rem. `aria-pressed` draws a `--soft` fill that a fine-pointer hover (`--glow`) does not
+  replace; the fill changes at once and only the press scale transitions. `type="button"` by default.
+
 ## 0.9.2
 
 ### Breaking
