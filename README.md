@@ -100,6 +100,7 @@ Light and dark follow the operating system through `light-dark()`; to force a sc
 | `field`        | `UiField`, `UiFieldLeading`, `UiFieldTrailing` | Label, hint and error around a projected control             |
 | `control`      | `UI_CONTROL`, `UiControl`, `UiControlError`    | Contract between a field and its control                     |
 | `switch`       | `UiSwitch`                                     | Native checkbox styled as a switch                           |
+| `icon-toggle`  | `UiIconToggle`                                 | Round icon button with an on and off state                   |
 | `segmented`    | `UiSegmented`                                  | Exclusive choice in a small set, such as a chart range       |
 | `choice-chips` | `UiChoiceChips`                                | Exclusive choice among named options, as wrapping pills      |
 | `filter-chips` | `UiFilterChips`                                | Single-choice filter pills with optional counts              |
