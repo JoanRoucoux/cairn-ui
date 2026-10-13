@@ -9,6 +9,8 @@ import type { Report } from './report.ts';
 /** The folder virtual files live in: inside the repository, so `@angular/core` resolves from its node_modules. */
 export const VIRTUAL_ROOT = fileURLToPath(new URL('./__virtual__/', import.meta.url));
 
+export const posix = (path: string): string => path.replaceAll('\\', '/');
+
 /** A program over in-memory files, typed against the real `@angular/core`. */
 export function virtualProgram(files: Record<string, string>): ts.Program {
   const options: ts.CompilerOptions = {
@@ -20,15 +22,16 @@ export function virtualProgram(files: Record<string, string>): ts.Program {
     skipLibCheck: true,
     noEmit: true,
   };
-  const virtual = new Map(Object.entries(files).map(([name, text]) => [join(VIRTUAL_ROOT, name), text]));
+  const virtual = new Map(Object.entries(files).map(([name, text]) => [posix(join(VIRTUAL_ROOT, name)), text]));
   const host = ts.createCompilerHost(options);
   const { fileExists, directoryExists, readFile, getSourceFile } = host;
 
-  host.fileExists = (file) => virtual.has(file) || fileExists(file);
-  host.directoryExists = (directory) => `${directory}/` === VIRTUAL_ROOT || !!directoryExists?.(directory);
-  host.readFile = (file) => virtual.get(file) ?? readFile(file);
+  host.fileExists = (file) => virtual.has(posix(file)) || fileExists(file);
+  host.directoryExists = (directory) =>
+    `${posix(directory)}/` === posix(VIRTUAL_ROOT) || !!directoryExists?.(directory);
+  host.readFile = (file) => virtual.get(posix(file)) ?? readFile(file);
   host.getSourceFile = (file, language, ...rest) => {
-    const text = virtual.get(file);
+    const text = virtual.get(posix(file));
 
     return text === undefined
       ? getSourceFile(file, language, ...rest)
