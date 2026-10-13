@@ -85,6 +85,10 @@ function readManifest(path: string): Manifest {
   const manifest = JSON.parse(readFileSync(path, 'utf8')) as Partial<Manifest>;
   const version = manifest.schemaVersion;
 
+  if (version === undefined) {
+    throw new Error(`${path} is not a Cairn UI manifest: it has no schemaVersion.`);
+  }
+
   if (version !== MANIFEST_SCHEMA_VERSION) {
     const upgrade = typeof version === 'number' && version > MANIFEST_SCHEMA_VERSION ? 'this server' : UI_PACKAGE;
 

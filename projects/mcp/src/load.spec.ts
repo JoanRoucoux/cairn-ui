@@ -72,6 +72,14 @@ describe('loadManifest', () => {
     expect(() => loadManifest({ cwd: root, explicit: 'none.json', bundled: '' })).toThrow(/schema x,/);
   });
 
+  it('says a JSON file without a schemaVersion is not a manifest', () => {
+    const root = temporaryTree({ 'package.json': '{ "name": "app" }' });
+
+    expect(() => loadManifest({ cwd: root, explicit: 'package.json', bundled: '' })).toThrow(
+      /package\.json is not a Cairn UI manifest: it has no schemaVersion\.$/,
+    );
+  });
+
   it('fails when there is nothing to answer from', () => {
     const root = temporaryTree({});
 

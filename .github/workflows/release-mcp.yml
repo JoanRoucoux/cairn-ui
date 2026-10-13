@@ -62,7 +62,6 @@ jobs:
       - name: MCP tests
         run: pnpm run test:mcp
 
-      # The library build writes the manifest the server bundles as its snapshot.
       - name: Build library
         run: pnpm run build
 

@@ -39,7 +39,7 @@ inside `@joanroucoux/cairn-ui`. It looks for it, in order:
    packages, so the answers match the version the application builds against;
 3. in the snapshot bundled with the server, which describes the library version current when the server was released.
 
-A copy of the library older than the manifest falls back to the snapshot, with a warning on stderr.
+A copy of the library older than the manifest, or one with a manifest schema this server does not read, falls back to the snapshot, and the server says so: in its instructions and at the top of `cairn_get_setup`, so the agent knows the answers describe another version than the project builds against, and on stderr.
 
 ## Tools
 

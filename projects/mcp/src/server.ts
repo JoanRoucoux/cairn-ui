@@ -25,8 +25,11 @@ const markdown = (uri: string, body: string): { contents: { uri: string; mimeTyp
 });
 
 /** The MCP server over one manifest: read-only tools and resources, no network, no file access. */
-export function createServer({ manifest, origin }: ManifestSource, version: string): McpServer {
+export function createServer({ manifest, origin, warnings }: ManifestSource, version: string): McpServer {
   const { name, version: uiVersion } = manifest.package;
+  const notice = warnings.length
+    ? `${warnings.join(' ')} These answers describe ${name} ${uiVersion}, which may not be the version the project builds against.`
+    : undefined;
   const server = new McpServer(
     { name: 'cairn-ui', title: 'Cairn UI', version },
     {
@@ -36,17 +39,18 @@ export function createServer({ manifest, origin }: ManifestSource, version: stri
         'it gives the import path, the selector, the inputs and outputs, and when to use the component or not.',
         'Never hardcode a color: cairn_get_tokens lists the tokens and the utilities derived from them.',
         `Answers come from ${origin}.`,
+        ...(notice ? [`Notice: ${notice}`] : []),
       ].join(' '),
     },
   );
 
-  registerTools(server, manifest, origin);
-  registerResources(server, manifest, origin);
+  registerTools(server, manifest, origin, notice);
+  registerResources(server, manifest, origin, notice);
 
   return server;
 }
 
-function registerTools(server: McpServer, manifest: Manifest, origin: string): void {
+function registerTools(server: McpServer, manifest: Manifest, origin: string, notice?: string): void {
   const groups = [...new Set(manifest.tokens.map((token) => token.group))];
 
   server.registerTool(
@@ -168,7 +172,7 @@ function registerTools(server: McpServer, manifest: Manifest, origin: string): v
         'How to install the library in an Angular application: stylesheets in order, the Tailwind source, the fonts, and the import conventions.',
       annotations: READ_ONLY,
     },
-    () => text(renderSetup(manifest, origin)),
+    () => text(renderSetup(manifest, origin, notice)),
   );
 
   server.registerTool(
@@ -191,12 +195,12 @@ function registerTools(server: McpServer, manifest: Manifest, origin: string): v
   );
 }
 
-function registerResources(server: McpServer, manifest: Manifest, origin: string): void {
+function registerResources(server: McpServer, manifest: Manifest, origin: string, notice?: string): void {
   server.registerResource(
     'setup',
     'cairn://setup',
     { title: 'Setup', description: 'Installation, stylesheets and conventions.', mimeType: 'text/markdown' },
-    (uri) => markdown(uri.href, renderSetup(manifest, origin)),
+    (uri) => markdown(uri.href, renderSetup(manifest, origin, notice)),
   );
 
   server.registerResource(

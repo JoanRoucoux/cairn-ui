@@ -36,6 +36,7 @@ describe('renderEntry', () => {
     );
     expect(text).toContain('| `[(pressed)]` | `boolean` | `false` |  |');
     expect(text).toContain('| `label` (required) | `string` |  | From the JSDoc. |');
+    expect(text).toContain('| `loading` (bare attribute) | `boolean` | `false` |  |');
     expect(text).toContain('| `activated` | `void` | Fires on press. |');
     expect(text).toContain('### Content slots\n\n- Default slot\n- `[icon]`');
     expect(text).toContain('```html\n<button ui-button>Save</button>\n```');

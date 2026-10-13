@@ -147,7 +147,7 @@ function renderDeclaration(declaration: Declaration, args: Map<string, string>):
       `### Inputs\n\n${table(
         ['Input', 'Type', 'Default', 'Description'],
         declaration.inputs.map((input) => [
-          `${code(input.twoWay ? `[(${input.name})]` : input.name)}${input.required ? ' (required)' : ''}`,
+          `${code(input.twoWay ? `[(${input.name})]` : input.name)}${input.required ? ' (required)' : ''}${input.attribute ? ' (bare attribute)' : ''}`,
           code(cell(input.type)),
           code(cell(input.default)),
           cell(input.description ?? args.get(input.name)),
@@ -199,13 +199,13 @@ export function renderTokens(tokens: Token[]): string {
     .join('\n\n');
 }
 
-export function renderSetup(manifest: Manifest, origin: string): string {
+export function renderSetup(manifest: Manifest, origin: string, notice?: string): string {
   const { name, version, peerDependencies } = manifest.package;
   const peers = Object.entries(peerDependencies).map(([peer, range]) => `\`${peer}\` ${range}`);
 
   return [
     `# Setting up ${name} ${version}`,
-    `Answering from ${origin}.`,
+    [`Answering from ${origin}.`, ...(notice ? [`> **Notice:** ${notice}`] : [])].join('\n\n'),
     `## Installation\n\n\`\`\`sh\nnpm install ${name}\n\`\`\`${peers.length ? `\n\nPeer dependencies: ${peers.join(', ')}.` : ''}`,
     `## Setup\n\n${manifest.setup}`,
     [

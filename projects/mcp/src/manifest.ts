@@ -53,6 +53,8 @@ export type Input = {
   required: boolean;
   /** Source text of the default value, as written in the component. */
   default?: string;
+  /** `true` when the input has `transform: booleanAttribute`: a bare attribute (`<button loading>`) sets it. */
+  attribute?: true;
   /** `true` for a `model()`, which also accepts `[(name)]`. */
   twoWay: boolean;
   description?: string;

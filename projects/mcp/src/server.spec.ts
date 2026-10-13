@@ -10,9 +10,9 @@ import { createServer } from './server.ts';
 
 let client: Client | undefined;
 
-async function connect(manifest: Manifest = fixtureManifest()): Promise<Client> {
+async function connect(manifest: Manifest = fixtureManifest(), warnings: string[] = []): Promise<Client> {
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
-  const server = createServer({ manifest, origin: 'the fixture', warnings: [] }, '9.9.9');
+  const server = createServer({ manifest, origin: 'the fixture', warnings }, '9.9.9');
 
   client = new Client({ name: 'spec', version: '0.0.0' });
   await server.connect(serverTransport);
@@ -40,6 +40,24 @@ describe('createServer', () => {
     expect(connected.getServerVersion()).toMatchObject({ name: 'cairn-ui', version: '9.9.9' });
     expect(connected.getInstructions()).toContain('@scope/ui 1.2.3 is an Angular design system');
     expect(connected.getInstructions()).toContain('Answers come from the fixture.');
+  });
+
+  it('tells the agent when it fell back to another version than the project builds against', async () => {
+    const connected = await connect(fixtureManifest(), ['@scope/ui@0.8.0 is installed but predates the MCP manifest.']);
+    const notice = '@scope/ui@0.8.0 is installed but predates the MCP manifest. These answers describe @scope/ui 1.2.3';
+
+    expect(connected.getInstructions()).toContain(`Notice: ${notice}`);
+    expect((await call('cairn_get_setup')).text).toContain(`> **Notice:** ${notice}`);
+    expect((await connected.readResource({ uri: 'cairn://setup' })).contents[0]).toMatchObject({
+      text: expect.stringContaining('> **Notice:**'),
+    });
+  });
+
+  it('adds no notice when nothing was skipped', async () => {
+    const connected = await connect();
+
+    expect(connected.getInstructions()).not.toContain('Notice');
+    expect((await call('cairn_get_setup')).text).not.toContain('Notice');
   });
 
   it('exposes six read-only tools', async () => {

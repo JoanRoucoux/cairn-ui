@@ -6,7 +6,8 @@ type Block = { prelude: string; body: string };
  * Reads the custom properties of `tokens.css`: the `:root` defaults, their `light-dark()` pair, the
  * values a media query swaps in, and the Tailwind utility `theme.css` derives from each.
  *
- * `:root[data-theme=...]` blocks only pin `color-scheme`, so they add nothing a token reader needs.
+ * `:root[data-theme=...]` blocks only pin `color-scheme` and `--chevron-down`: the reader skips them, so the
+ * dark override of `--chevron-down` is not in the manifest.
  */
 export function readTokens(tokensCss: string, themeCss: string): Token[] {
   const tokens = new Map<string, Token>();

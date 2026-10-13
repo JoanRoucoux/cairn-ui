@@ -30,7 +30,7 @@ export function run(args: string[], root: string): number {
   const out = resolve(root, values.out);
 
   mkdirSync(dirname(out), { recursive: true });
-  writeFileSync(out, `${JSON.stringify(manifest, null, 2)}\n`);
+  writeFileSync(out, `${JSON.stringify(manifest)}\n`);
   process.stdout.write(`Wrote ${values.out}: ${manifest.entries.length} entries, ${manifest.tokens.length} tokens.\n`);
 
   return 0;

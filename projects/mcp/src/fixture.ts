@@ -32,6 +32,7 @@ export function fixtureManifest(): Manifest {
             inputs: [
               { name: 'variant', type: "'primary' | 'ghost'", required: false, default: "'primary'", twoWay: false },
               { name: 'pressed', type: 'boolean', required: false, default: 'false', twoWay: true },
+              { name: 'loading', type: 'boolean', required: false, default: 'false', attribute: true, twoWay: false },
               { name: 'label', type: 'string', required: true, twoWay: false, description: 'From the JSDoc.' },
             ],
             outputs: [{ name: 'activated', type: 'void', description: 'Fires on press.' }],

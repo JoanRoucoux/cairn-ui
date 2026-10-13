@@ -2,7 +2,7 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import { readEntryExports, readSlots } from './declarations.ts';
-import { VIRTUAL_ROOT, collector, virtualProgram } from './testing.ts';
+import { VIRTUAL_ROOT, collector, posix, virtualProgram } from './testing.ts';
 
 const BUTTON = `
 import { Component, booleanAttribute, input, model, output } from '@angular/core';
@@ -66,7 +66,7 @@ describe('readEntryExports', () => {
             },
             { name: 'tone', type: "'neutral' | 'positive' | undefined", required: false, twoWay: false },
             { name: 'ariaLabel', type: 'string', required: true, twoWay: false },
-            { name: 'loading', type: 'boolean', required: false, default: 'false', twoWay: false },
+            { name: 'loading', type: 'boolean', required: false, default: 'false', attribute: true, twoWay: false },
             { name: 'level', type: 'number', required: false, default: '1', twoWay: false },
             { name: 'value', type: 'string', required: true, twoWay: true },
             { name: 'open', type: 'boolean', required: false, default: 'false', twoWay: true },
@@ -256,9 +256,9 @@ describe('readEntryExports', () => {
 
     readEntryExports(program, join(VIRTUAL_ROOT, 'index.ts'), report);
 
-    const file = join(VIRTUAL_ROOT, 'index.ts');
+    const file = posix(join(VIRTUAL_ROOT, 'index.ts'));
 
-    expect(problems).toEqual([
+    expect(problems.map(posix)).toEqual([
       `${file}: undocumented has no JSDoc description`,
       `${file}: UiBare has no JSDoc description`,
       `${file}: UiBare has no @example`,

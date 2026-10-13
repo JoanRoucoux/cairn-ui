@@ -7,7 +7,6 @@ export const config: SheriffConfig = {
   enableBarrelLess: true,
   modules: {
     'projects/ui/<component>': 'component:<component>',
-    // The MCP server reads the library's files, it never imports its code.
     'projects/mcp': 'mcp',
   },
   depRules: {

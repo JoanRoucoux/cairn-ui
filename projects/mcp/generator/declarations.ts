@@ -10,7 +10,7 @@ import type {
   Service,
   TypeExport,
 } from '../src/manifest.ts';
-import { asObject, optional, stringProperty } from './ast.ts';
+import { asObject, initializer, optional, stringProperty } from './ast.ts';
 import type { Report } from './report.ts';
 import { constArrayValues, formatSignature, formatType, literalsOf } from './types.ts';
 
@@ -172,6 +172,7 @@ function readSignals(checker: ts.TypeChecker, node: ts.ClassDeclaration): { inpu
         type,
         required,
         ...optional('default', fallback),
+        ...(readsBareAttribute(options) ? { attribute: true as const } : {}),
         twoWay: factory.startsWith('model'),
         ...optional('description', description),
       });
@@ -179,6 +180,11 @@ function readSignals(checker: ts.TypeChecker, node: ts.ClassDeclaration): { inpu
   }
 
   return { inputs, outputs };
+}
+
+/** Whether the input is declared with `transform: booleanAttribute`, so `<x loading>` sets it. */
+function readsBareAttribute(options: ts.Expression | undefined): boolean {
+  return initializer(asObject(options), 'transform')?.getText() === 'booleanAttribute';
 }
 
 /** The `T` of `InputSignal<T>`, `ModelSignal<T>` or `OutputEmitterRef<T>`: what a consumer binds. */
