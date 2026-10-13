@@ -62,6 +62,9 @@ jobs:
       - name: Unit tests
         run: pnpm run test:coverage
 
+      - name: MCP tests
+        run: pnpm run test:mcp
+
       - name: Build library
         run: pnpm run build
 

@@ -7,9 +7,11 @@ export const config: SheriffConfig = {
   enableBarrelLess: true,
   modules: {
     'projects/ui/<component>': 'component:<component>',
+    'projects/mcp': 'mcp',
   },
   depRules: {
     root: ['component:*'],
+    mcp: [],
     'component:*': [],
     'component:input': ['component:control'],
     'component:choice-chips': ['component:input', 'component:control'],

@@ -65,5 +65,7 @@ export class Example {}
 
 - [Repository README](https://github.com/JoanRoucoux/cairn-ui#readme): the component list, design principles and development guide
 - [Changelog](https://github.com/JoanRoucoux/cairn-ui/blob/main/projects/ui/CHANGELOG.md)
+- [MCP server](https://github.com/JoanRoucoux/cairn-ui/tree/main/projects/mcp#readme): lets a coding agent look up the
+  components, tokens and setup of the version you installed
 
 MIT licensed.
