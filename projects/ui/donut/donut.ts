@@ -29,7 +29,7 @@ const RAMP_DOT_CLASSES: Record<Ramp, string> = {
  * activating a legend row highlights its slice.
  *
  * @example
- * <ui-donut [slices]="byAssetClass()" label="Par classe d'actif" othersLabel="Autres" [valueFormat]="formatEur" [shareFormat]="formatShare" (sliceSelect)="goToHoldings($event)" />
+ * <ui-donut [slices]="byAssetClass()" label="By asset class" othersLabel="Other" [valueFormat]="formatEur" [shareFormat]="formatShare" (sliceSelect)="goToHoldings($event)" />
  */
 @Component({
   selector: 'ui-donut',
@@ -156,7 +156,7 @@ export class UiDonut {
       .map((slice) => `${slice.label} ${this.shareFormat()(slice.share)}`)
       .join(', ');
 
-    return detail ? `${this.label()} : ${detail}` : this.label();
+    return detail ? `${this.label()}: ${detail}` : this.label();
   });
 
   protected readonly radius = RADIUS;

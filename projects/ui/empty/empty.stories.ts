@@ -12,11 +12,11 @@ const meta: Meta<EmptyArgs> = {
   parameters: {
     docs: {
       description: {
-        component: `A centred empty state: a title, a hint and an action slot.
+        component: `A centered empty state: a title, a hint and an action slot.
 
 #### When to use
 
-* For a list or a search that has nothing to show and can offer the next step: a catalogue search that matches nothing, an account with no line.
+* For a list or a search that has nothing to show and can offer the next step: a catalog search that matches nothing, an account with no holding.
 
 #### When not to use
 
@@ -33,13 +33,13 @@ const meta: Meta<EmptyArgs> = {
     props: args,
     template: `
       <ui-empty class="w-[342px] lg:w-[680px]" [heading]="heading" [hint]="hint">
-        <button ui-button variant="outline" size="md" type="button">Ajouter une ligne</button>
+        <button ui-button variant="outline" size="md" type="button">Add a holding</button>
       </ui-empty>
     `,
   }),
   args: {
-    heading: 'Aucune ligne ne correspond à « zzz »',
-    hint: "La recherche porte sur le nom et l'ISIN.",
+    heading: 'No holding matches “zzz”',
+    hint: 'Search covers the name and the ISIN.',
   },
   argTypes: {
     heading: { control: 'text', description: 'The title of the state.' },
@@ -54,8 +54,8 @@ export const Default: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(canvas.getByText('Aucune ligne ne correspond à « zzz »')).toBeVisible();
-    await expect(canvas.getByRole('button', { name: 'Ajouter une ligne' })).toBeVisible();
+    await expect(canvas.getByText('No holding matches “zzz”')).toBeVisible();
+    await expect(canvas.getByRole('button', { name: 'Add a holding' })).toBeVisible();
   },
 };
 
@@ -72,7 +72,7 @@ export const HeadingOnly: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const empty = canvas.getByTestId('empty');
-    const heading = canvas.getByText('Aucune ligne ne correspond à « zzz »');
+    const heading = canvas.getByText('No holding matches “zzz”');
 
     await expect(heading).toBeVisible();
     await expect(empty.lastElementChild).not.toBe(heading);

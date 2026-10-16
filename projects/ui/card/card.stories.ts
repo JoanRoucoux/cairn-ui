@@ -171,18 +171,18 @@ const RESULT_HEADING =
   'padding: 10px 10px 4px; font-size: var(--text-caption); line-height: var(--text-caption--line-height); letter-spacing: var(--tracking-caption); font-weight: 500; color: var(--subtle-foreground)';
 
 export const InsetPickedTitle: Story = {
-  name: 'Inset, picked title',
+  name: 'Inset, picked security',
   ...insetOnCard(`<ui-card variant="inset" border="border" padding="sm">
     <div style="display: flex; align-items: flex-start; gap: 12px">
       <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
         <div style="display: flex; align-items: flex-start; flex-wrap: wrap; gap: 4px 8px; min-width: 0">
           <span style="font-size: var(--text-body); line-height: var(--text-body--line-height); font-weight: 500; text-wrap: pretty">Air Liquide</span>
-          <span style="flex: none; display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: var(--radius-pill); background: var(--muted); font-size: var(--text-caption); font-weight: 500">Nouveau</span>
+          <span style="flex: none; display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: var(--radius-pill); background: var(--muted); font-size: var(--text-caption); font-weight: 500">New</span>
         </div>
         <span style="${RESULT_SUB}">FR0000120073 &middot; Euronext Paris &middot; AI.PA</span>
-        <span style="margin-top: 4px; font-size: var(--text-label); line-height: var(--text-label--line-height); color: var(--muted-foreground); font-variant-numeric: var(--numeric)">Cours d'essai 178,42&nbsp;€ &middot; Yahoo Finance. Le titre sera ajouté au catalogue.</span>
+        <span style="margin-top: 4px; font-size: var(--text-label); line-height: var(--text-label--line-height); color: var(--muted-foreground); font-variant-numeric: var(--numeric)">Test price 178,42&nbsp;€ &middot; Yahoo Finance. The title will be added to the catalog.</span>
       </div>
-      <button type="button" style="flex: none; height: 44px; margin: -8px -4px 0 0; padding: 0 10px; border: 0; border-radius: var(--radius-control); background: none; color: var(--foreground); font: inherit; font-size: var(--text-label); font-weight: 500">Changer</button>
+      <button type="button" style="flex: none; height: 44px; margin: -8px -4px 0 0; padding: 0 10px; border: 0; border-radius: var(--radius-control); background: none; color: var(--foreground); font: inherit; font-size: var(--text-label); font-weight: 500">Change</button>
     </div>
   </ui-card>`),
 };
@@ -190,14 +190,14 @@ export const InsetPickedTitle: Story = {
 export const InsetResultsBox: Story = {
   name: 'Inset, hairline results box',
   ...insetOnCard(`<ui-card variant="inset" border="hairline" padding="xs" style="display: flex; flex-direction: column; margin-top: 4px">
-    <div style="${RESULT_HEADING}">Dans le catalogue</div>
-    <button type="button" style="${RESULT_ROW}; min-height: 56px"><div style="flex: 1; min-width: 0; display: flex; flex-direction: column"><span style="${RESULT_NAME}">Amundi MSCI World</span><span style="${RESULT_SUB}">LU1681043599 &middot; ETF</span></div><span style="flex: none; font-size: var(--text-caption); color: var(--muted-foreground)">1 ligne</span></button>
-    <button type="button" style="${RESULT_ROW}; min-height: 56px"><div style="flex: 1; min-width: 0; display: flex; flex-direction: column"><span style="${RESULT_NAME}">Amundi PEA Monde MSCI World</span><span style="${RESULT_SUB}">FR001400U5Q4 &middot; ETF</span></div><span style="flex: none; font-size: var(--text-caption); color: var(--muted-foreground)">Aucune ligne</span></button>
-    <button type="button" style="${RESULT_ROW}; min-height: 56px"><div style="flex: 1; min-width: 0; display: flex; flex-direction: column"><span style="${RESULT_NAME}">iShares MSCI World PEA</span><span style="${RESULT_SUB}">IE0002XZSH01 &middot; ETF</span></div><span style="flex: none; font-size: var(--text-caption); color: var(--muted-foreground)">1 ligne</span></button>
-    <div style="${RESULT_HEADING}">Nouveau titre, trouvé en ligne</div>
-    <button type="button" style="${RESULT_ROW}; min-height: 48px"><div style="flex: 1; min-width: 0; display: flex; flex-direction: column"><span style="${RESULT_NAME}">iShares Core MSCI World UCITS ETF USD (Acc)</span><span style="${RESULT_SUB}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">IE00B4L5Y983 &middot; Xetra &middot; EUNL.DE</span></div><div style="flex: none; display: flex; flex-direction: column; align-items: flex-end"><span style="font-size: var(--text-label); font-weight: 500; font-variant-numeric: var(--numeric)">97,84&nbsp;€</span><span style="font-size: var(--text-caption); color: var(--subtle-foreground)">cours d'essai</span></div></button>
-    <button type="button" style="${RESULT_ROW}; min-height: 48px"><div style="flex: 1; min-width: 0; display: flex; flex-direction: column"><span style="${RESULT_NAME}">iShares Core MSCI World UCITS ETF USD (Acc)</span><span style="${RESULT_SUB}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">IE00B4L5Y983 &middot; Euronext Amsterdam &middot; IWDA.AS</span></div><div style="flex: none; display: flex; flex-direction: column; align-items: flex-end"><span style="font-size: var(--text-label); font-weight: 500; font-variant-numeric: var(--numeric)">97,91&nbsp;€</span><span style="font-size: var(--text-caption); color: var(--subtle-foreground)">cours d'essai</span></div></button>
-    <button type="button" style="${RESULT_ROW}; min-height: 48px"><div style="flex: 1; min-width: 0; display: flex; flex-direction: column"><span style="${RESULT_NAME}">Xtrackers MSCI World UCITS ETF 1C</span><span style="${RESULT_SUB}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">IE00BJ0KDQ92 &middot; Xetra &middot; XDWD.DE</span></div><div style="flex: none; display: flex; flex-direction: column; align-items: flex-end"><span style="font-size: var(--text-label); font-weight: 500; font-variant-numeric: var(--numeric)">112,36&nbsp;€</span><span style="font-size: var(--text-caption); color: var(--subtle-foreground)">cours d'essai</span></div></button>
+    <div style="${RESULT_HEADING}">In the catalog</div>
+    <button type="button" style="${RESULT_ROW}; min-height: 56px"><div style="flex: 1; min-width: 0; display: flex; flex-direction: column"><span style="${RESULT_NAME}">Amundi MSCI World</span><span style="${RESULT_SUB}">LU1681043599 &middot; ETF</span></div><span style="flex: none; font-size: var(--text-caption); color: var(--muted-foreground)">1 holding</span></button>
+    <button type="button" style="${RESULT_ROW}; min-height: 56px"><div style="flex: 1; min-width: 0; display: flex; flex-direction: column"><span style="${RESULT_NAME}">Amundi PEA Monde MSCI World</span><span style="${RESULT_SUB}">FR001400U5Q4 &middot; ETF</span></div><span style="flex: none; font-size: var(--text-caption); color: var(--muted-foreground)">No holdings</span></button>
+    <button type="button" style="${RESULT_ROW}; min-height: 56px"><div style="flex: 1; min-width: 0; display: flex; flex-direction: column"><span style="${RESULT_NAME}">iShares MSCI World PEA</span><span style="${RESULT_SUB}">IE0002XZSH01 &middot; ETF</span></div><span style="flex: none; font-size: var(--text-caption); color: var(--muted-foreground)">1 holding</span></button>
+    <div style="${RESULT_HEADING}">New security, found online</div>
+    <button type="button" style="${RESULT_ROW}; min-height: 48px"><div style="flex: 1; min-width: 0; display: flex; flex-direction: column"><span style="${RESULT_NAME}">iShares Core MSCI World UCITS ETF USD (Acc)</span><span style="${RESULT_SUB}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">IE00B4L5Y983 &middot; Xetra &middot; EUNL.DE</span></div><div style="flex: none; display: flex; flex-direction: column; align-items: flex-end"><span style="font-size: var(--text-label); font-weight: 500; font-variant-numeric: var(--numeric)">97,84&nbsp;€</span><span style="font-size: var(--text-caption); color: var(--subtle-foreground)">test price</span></div></button>
+    <button type="button" style="${RESULT_ROW}; min-height: 48px"><div style="flex: 1; min-width: 0; display: flex; flex-direction: column"><span style="${RESULT_NAME}">iShares Core MSCI World UCITS ETF USD (Acc)</span><span style="${RESULT_SUB}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">IE00B4L5Y983 &middot; Euronext Amsterdam &middot; IWDA.AS</span></div><div style="flex: none; display: flex; flex-direction: column; align-items: flex-end"><span style="font-size: var(--text-label); font-weight: 500; font-variant-numeric: var(--numeric)">97,91&nbsp;€</span><span style="font-size: var(--text-caption); color: var(--subtle-foreground)">test price</span></div></button>
+    <button type="button" style="${RESULT_ROW}; min-height: 48px"><div style="flex: 1; min-width: 0; display: flex; flex-direction: column"><span style="${RESULT_NAME}">Xtrackers MSCI World UCITS ETF 1C</span><span style="${RESULT_SUB}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">IE00BJ0KDQ92 &middot; Xetra &middot; XDWD.DE</span></div><div style="flex: none; display: flex; flex-direction: column; align-items: flex-end"><span style="font-size: var(--text-label); font-weight: 500; font-variant-numeric: var(--numeric)">112,36&nbsp;€</span><span style="font-size: var(--text-caption); color: var(--subtle-foreground)">test price</span></div></button>
   </ui-card>`),
 };
 
@@ -208,8 +208,8 @@ export const InsetEmptyPanel: Story = {
   name: 'Inset, empty-account panel on an iPhone',
   ...insetOnCard(
     `<ui-card variant="inset" padding="panel" style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
-    <span style="font-size: var(--text-label); line-height: var(--text-label--line-height); color: var(--muted-foreground)">Aucune ligne. Ajoutez un titre ou importez un CSV.</span>
-    <button type="button" style="${OUTLINE_BUTTON}">Ajouter une ligne</button>
+    <span style="font-size: var(--text-label); line-height: var(--text-label--line-height); color: var(--muted-foreground)">No holdings. Add one or import a CSV.</span>
+    <button type="button" style="${OUTLINE_BUTTON}">Add a holding</button>
   </ui-card>`,
     '20.625rem',
   ),
@@ -219,10 +219,10 @@ export const InsetEmptyPanelDesktop: Story = {
   name: 'Inset, empty-account panel on a desktop',
   ...insetOnCard(
     `<ui-card variant="inset" padding="panel" style="display: flex; align-items: center; justify-content: space-between; gap: 16px">
-    <span style="font-size: var(--text-label); color: var(--muted-foreground)">Ce compte n'a encore aucune ligne. Ajoutez un titre, ou importez les lignes depuis un fichier CSV.</span>
+    <span style="font-size: var(--text-label); color: var(--muted-foreground)">This account has no holdings yet. Add one, or import your holdings from a CSV file.</span>
     <div style="display: flex; gap: 8px; flex: none">
-      <button type="button" style="${OUTLINE_BUTTON}">Ajouter une ligne</button>
-      <button type="button" style="${OUTLINE_BUTTON}; background: none; box-shadow: none">Importer un CSV</button>
+      <button type="button" style="${OUTLINE_BUTTON}">Add a holding</button>
+      <button type="button" style="${OUTLINE_BUTTON}; background: none; box-shadow: none">Import a CSV</button>
     </div>
   </ui-card>`,
     '67rem',

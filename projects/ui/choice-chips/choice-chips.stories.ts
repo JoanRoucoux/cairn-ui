@@ -13,7 +13,7 @@ type ChoiceChipsArgs = {
   disabled: boolean;
 };
 
-const ENVELOPES: ChoiceChipOption[] = ['PEA', 'PEE', 'PER', 'CTO', 'Assurance-vie', 'Crypto', 'Épargne'].map(
+const WRAPPERS: ChoiceChipOption[] = ['PEA', 'PEE', 'PER', 'CTO', 'Life insurance', 'Crypto', 'Savings'].map(
   (label) => ({ value: label, label }),
 );
 
@@ -24,7 +24,7 @@ const meta: Meta<ChoiceChipsArgs> = {
     docs: {
       description: {
         component: `Exclusive choice among a handful of named options, shown as wrapping pills, such as an
-account envelope, a category or a frequency. The selection is a \`model()\`, bound with \`[(value)]\`
+account wrapper, a category or a frequency. The selection is a \`model()\`, bound with \`[(value)]\`
 or with Signal Forms' \`[formField]\`, which fills \`disabled\`, \`errors\`, \`invalid\`, \`required\` and \`touched\` too.
 
 #### When to use
@@ -66,12 +66,12 @@ or with Signal Forms' \`[formField]\`, which fills \`disabled\`, \`errors\`, \`i
     `,
   }),
   args: {
-    label: 'Enveloppe',
+    label: 'Wrapper',
     ariaLabel: undefined,
     value: 'PEA',
     surface: 'background',
     disabled: false,
-    options: ENVELOPES,
+    options: WRAPPERS,
   },
   argTypes: {
     options: { control: false, description: 'Ordered `{ value, label }` list of choices.' },
@@ -97,7 +97,7 @@ export const Default: Story = {};
 
 export const NothingSelected: Story = { args: { value: '' } };
 
-export const LastSelected: Story = { args: { value: 'Épargne' } };
+export const LastSelected: Story = { args: { value: 'Savings' } };
 
 export const OnACardSurface: Story = {
   args: { surface: 'card' },
@@ -109,7 +109,7 @@ export const OnACardSurface: Story = {
   ],
 };
 
-export const WithoutVisibleLabel: Story = { args: { label: undefined, ariaLabel: 'Enveloppe' } };
+export const WithoutVisibleLabel: Story = { args: { label: undefined, ariaLabel: 'Wrapper' } };
 
 export const Disabled: Story = { args: { disabled: true } };
 
@@ -141,8 +141,8 @@ export const MovesWithTheArrowKeys: Story = {
     canvas.getByRole('radio', { name: 'PEA' }).focus();
     await userEvent.keyboard('{ArrowLeft}');
 
-    await expect(canvas.getByRole('radio', { name: 'Épargne' })).toBeChecked();
-    await expect(canvas.getByRole('radio', { name: 'Épargne' })).toHaveFocus();
+    await expect(canvas.getByRole('radio', { name: 'Savings' })).toBeChecked();
+    await expect(canvas.getByRole('radio', { name: 'Savings' })).toHaveFocus();
 
     await userEvent.keyboard('{Home}');
     await expect(canvas.getByRole('radio', { name: 'PEA' })).toBeChecked();

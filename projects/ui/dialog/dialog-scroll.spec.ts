@@ -5,7 +5,7 @@ import { UiDialog } from './dialog';
 const renderDialog = (): Promise<RenderResult<unknown>> =>
   render(
     `<ui-dialog heading="Enter a price" [open]="true">
-       <p>Corps</p>
+       <p>Body</p>
        <button dialogActions type="button">Cancel</button>
      </ui-dialog>`,
     { imports: [UiDialog] },

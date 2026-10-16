@@ -30,7 +30,7 @@ describe('UiSkeleton', () => {
     expect(container.querySelector<HTMLElement>('ui-skeleton > span')?.style.width).toBe('100%');
   });
 
-  it('honours the requested height', async () => {
+  it('honors the requested height', async () => {
     const { container } = await render('<ui-skeleton [height]="200" />', { imports: [UiSkeleton] });
 
     expect(container.querySelector<HTMLElement>('ui-skeleton > span')?.style.height).toBe('200px');
@@ -106,7 +106,7 @@ describe('UiSkeleton', () => {
     expect(row.lastElementChild).toHaveClass('w-[90px]', 'h-4');
   });
 
-  it('defaults to the text shape, which keeps the lines and height behaviour', async () => {
+  it('defaults to the text shape, which keeps the lines and height behavior', async () => {
     const { container } = await render('<ui-skeleton [lines]="2" />', { imports: [UiSkeleton] });
 
     expect(container.querySelectorAll('ui-skeleton > span')).toHaveLength(2);

@@ -50,13 +50,13 @@ three are optional; only the value is required.
     template: `
       <ui-stat [label]="label" [size]="size">
         <span uiStatValue>{{ value }}</span>
-        <ui-delta uiStatDelta [value]="1" unknownLabel="Non disponible">{{ delta }}</ui-delta>
-        <span uiStatCaption>aujourd'hui</span>
+        <ui-delta uiStatDelta [value]="1" unknownLabel="Not available">{{ delta }}</ui-delta>
+        <span uiStatCaption>today</span>
       </ui-stat>
     `,
   }),
   args: {
-    label: 'Patrimoine',
+    label: 'Net worth',
     size: 'hero',
     value: '144 539,35 €',
     delta: '+361,40 € · +0,25 %',
@@ -79,14 +79,14 @@ type Story = StoryObj<StatArgs>;
 export const Hero: Story = {};
 
 export const Tile: Story = {
-  args: { size: 'tile', label: 'Plus-value latente', value: '+18 912,35 €', delta: '+15,34 %' },
+  args: { size: 'tile', label: 'Unrealized gain', value: '+18 912,35 €', delta: '+15,34 %' },
   render: (args) => ({
     props: args,
     template: `
       <div class="rounded-container box-content w-[200px] bg-(--card) p-4 shadow-[inset_0_0_0_1px_var(--border)]">
         <ui-stat [label]="label" [size]="size">
           <span uiStatValue>{{ value }}</span>
-          <ui-delta uiStatDelta [value]="1" unknownLabel="Non disponible">{{ delta }}</ui-delta>
+          <ui-delta uiStatDelta [value]="1" unknownLabel="Not available">{{ delta }}</ui-delta>
         </ui-stat>
       </div>
     `,
@@ -110,8 +110,8 @@ export const WithAside: Story = {
     template: `
       <ui-stat [label]="label" [size]="size">
         <span uiStatValue>{{ value }}</span>
-        <ui-delta uiStatDelta [value]="1" unknownLabel="Non disponible">{{ delta }}</ui-delta>
-        <span uiStatCaption>aujourd'hui</span>
+        <ui-delta uiStatDelta [value]="1" unknownLabel="Not available">{{ delta }}</ui-delta>
+        <span uiStatCaption>today</span>
         <svg uiStatAside width="80" height="32" viewBox="0 0 80 32" aria-hidden="true">
           <polyline points="0,24 20,18 40,20 60,8 80,4" fill="none" stroke="currentColor" stroke-width="2" />
         </svg>
@@ -126,8 +126,8 @@ export const AssociatesLabelAndValue: Story = {
     const dt = canvasElement.querySelector('dt');
     const dd = canvasElement.querySelector('dd');
 
-    await expect(dt).toHaveTextContent('Patrimoine');
+    await expect(dt).toHaveTextContent('Net worth');
     await expect(dd).toHaveTextContent('144 539,35 €');
-    await expect(canvas.getByText("aujourd'hui")).toBeInTheDocument();
+    await expect(canvas.getByText('today')).toBeInTheDocument();
   },
 };

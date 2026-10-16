@@ -9,7 +9,7 @@ const points: ChartPoint[] = [
 ];
 const fmt = (v: number): string => `${v.toFixed(2)} EUR`;
 const time = (t: number): string => new Date(t).toISOString().slice(0, 10);
-const tip = (point: ChartPoint): string => `${fmt(point.v)} · cours ${time(point.t)}`;
+const tip = (point: ChartPoint): string => `${fmt(point.v)} · price ${time(point.t)}`;
 
 describe('UiLineChart formats and screen-reader table', () => {
   it('clips the screen-reader table inside an sr-only wrapper so it cannot widen the page', async () => {
@@ -33,19 +33,19 @@ describe('UiLineChart formats and screen-reader table', () => {
     fireEvent.pointerMove(fixture.nativeElement.querySelector('svg'), { clientX: 0, clientY: 0 });
 
     expect(screen.getByTestId('chart-tooltip')).toHaveTextContent('142120.75 EUR');
-    expect(screen.getByTestId('chart-tooltip')).not.toHaveTextContent('cours');
+    expect(screen.getByTestId('chart-tooltip')).not.toHaveTextContent('price');
   });
 
   it('formats the tooltip value from the point while valueFormat keeps the start label and the table', async () => {
     const { fixture } = await render(
-      `<ui-line-chart label="x" startLabel="Depart" [points]="points" [valueFormat]="fmt" [tooltipFormat]="tip" />`,
+      `<ui-line-chart label="x" startLabel="Start" [points]="points" [valueFormat]="fmt" [tooltipFormat]="tip" />`,
       { imports: [UiLineChart], componentProperties: { points, fmt, tip } },
     );
 
     fireEvent.pointerMove(fixture.nativeElement.querySelector('svg'), { clientX: 0, clientY: 0 });
 
-    expect(screen.getByTestId('chart-tooltip')).toHaveTextContent('142120.75 EUR · cours 2026-08-25');
-    expect(screen.getByText('Depart 142120.75 EUR')).toBeInTheDocument();
+    expect(screen.getByTestId('chart-tooltip')).toHaveTextContent('142120.75 EUR · price 2026-08-25');
+    expect(screen.getByText('Start 142120.75 EUR')).toBeInTheDocument();
     expect(screen.getAllByRole('cell', { name: '142120.75 EUR' })).toHaveLength(1);
   });
 });

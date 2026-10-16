@@ -4,7 +4,7 @@ import { Component, Directive, booleanAttribute, computed, input } from '@angula
 export const FACT_SIZES = ['md', 'sm', 'auto', 'recap'] as const;
 export type FactSize = (typeof FACT_SIZES)[number];
 
-/** Colour of the line under a fact value. `stale` flags an out-of-date figure. */
+/** Color of the line under a fact value. `stale` flags an out-of-date figure. */
 export const FACT_SUB_TONES = ['subtle', 'stale'] as const;
 export type FactSubTone = (typeof FACT_SUB_TONES)[number];
 

@@ -51,17 +51,17 @@ Escape closes the dialog first, then the drawer. Closing or submitting the dialo
 goes back to the drawer button that opened the dialog: the owner only toggles the dialog's \`open\`.
 
 \`\`\`html
-<ui-drawer heading="Northwind Monde" closeLabel="Fermer le détail" [open]="detail()" (dismissed)="detail.set(false)">
+<ui-drawer heading="Northwind World" closeLabel="Close the detail" [open]="detail()" (dismissed)="detail.set(false)">
   ...
-  <button ui-button (click)="buying.set(true)">Acheter</button>
+  <button ui-button (click)="buying.set(true)">Buy</button>
 </ui-drawer>
-<ui-dialog heading="Acheter" [open]="buying()" (dismissed)="buying.set(false)">
+<ui-dialog heading="Buy" [open]="buying()" (dismissed)="buying.set(false)">
   ...
-  <button dialogActions ui-button (click)="buy()">Acheter 10 parts</button>
+  <button dialogActions ui-button (click)="buy()">Buy 10 shares</button>
 </ui-dialog>
 \`\`\`
 
-After a delete or a sale of everything, the line is gone: set both \`open\` to \`false\`, then move focus to the list.
+After a delete or a sale of everything, the holding is gone: set both \`open\` to \`false\`, then move focus to the list.
 
 #### When to use
 
@@ -75,7 +75,7 @@ After a delete or a sale of everything, the line is gone: set both \`open\` to \
 #### Accessibility
 
 * Named by \`label\` when it is set, otherwise by its heading through \`aria-labelledby\`; described by
-  \`description\`. Set \`label\` when the panel's role reads better than the row's name (« Détail de la ligne »): the
+  \`description\`. Set \`label\` when the panel's role reads better than the row's name (“Holding detail”): the
   heading stays its visible title. Never set the ARIA attributes by hand.
 * Follows the [W3C dialog pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/) through the native
   element: focus moves into the panel on open and goes back to the opener on close.
@@ -85,9 +85,9 @@ After a delete or a sale of everything, the line is gone: set both \`open\` to \
   },
   render: (args) => ({ props: args, template: defaultTemplate }),
   args: {
-    heading: 'Northwind Monde',
-    description: 'ETF · Compte-titres Contoso',
-    closeLabel: 'Fermer le détail',
+    heading: 'Northwind World',
+    description: 'ETF · Contoso CTO',
+    closeLabel: 'Close the detail',
     label: undefined,
     width: '440px',
     open: false,
@@ -99,10 +99,10 @@ After a delete or a sale of everything, the line is gone: set both \`open\` to \
 export default meta;
 type Story = StoryObj<DrawerArgs>;
 
-const openDrawer = async (canvasElement: HTMLElement, name = 'Northwind Monde'): Promise<HTMLElement> => {
+const openDrawer = async (canvasElement: HTMLElement, name = 'Northwind World'): Promise<HTMLElement> => {
   const canvas = within(canvasElement);
 
-  await userEvent.click(canvas.getByRole('button', { name: 'Ouvrir le détail' }));
+  await userEvent.click(canvas.getByRole('button', { name: 'Open the detail' }));
   const drawer = await canvas.findByRole('dialog', { name });
   await waitFor(() => expect(getComputedStyle(drawer).opacity).toBe('1'));
 
@@ -130,7 +130,7 @@ export const Opens: Story = {
     await expect(style.transitionProperty).toBe('opacity, transform, overlay, display');
     await expect(style.transitionDuration).toBe('0.26s, 0.26s, 0.26s, 0.26s');
     await expect(getComputedStyle(drawer, '::backdrop').backgroundColor).toBe('oklab(0 0 0 / 0.36)');
-    await expect(within(drawer).getByRole('button', { name: 'Fermer le détail' })).toHaveFocus();
+    await expect(within(drawer).getByRole('button', { name: 'Close the detail' })).toHaveFocus();
   },
 };
 
@@ -138,7 +138,7 @@ export const OpenOnLoad: Story = {
   name: 'Open on load, no outline on the panel',
   args: { open: true, closeLabel: undefined },
   play: async ({ canvasElement }) => {
-    const drawer = await within(canvasElement).findByRole('dialog', { name: 'Northwind Monde' });
+    const drawer = await within(canvasElement).findByRole('dialog', { name: 'Northwind World' });
 
     drawer.focus();
     await expect(drawer).toHaveFocus();
@@ -153,7 +153,7 @@ export const EscapeCloses: Story = {
     platformEscape(await openDrawer(canvasElement));
 
     await waitFor(() => expect(canvas.queryByRole('dialog')).not.toBeInTheDocument());
-    await expect(canvas.getByRole('button', { name: 'Ouvrir le détail' })).toHaveFocus();
+    await expect(canvas.getByRole('button', { name: 'Open the detail' })).toHaveFocus();
   },
 };
 
@@ -162,10 +162,10 @@ export const CrossCloses: Story = {
     const canvas = within(canvasElement);
     const drawer = await openDrawer(canvasElement);
 
-    await userEvent.click(within(drawer).getByRole('button', { name: 'Fermer le détail' }));
+    await userEvent.click(within(drawer).getByRole('button', { name: 'Close the detail' }));
 
     await waitFor(() => expect(canvas.queryByRole('dialog')).not.toBeInTheDocument());
-    await expect(canvas.getByRole('button', { name: 'Ouvrir le détail' })).toHaveFocus();
+    await expect(canvas.getByRole('button', { name: 'Open the detail' })).toHaveFocus();
   },
 };
 
@@ -177,7 +177,7 @@ export const VeilCloses: Story = {
     await userEvent.pointer({ keys: '[MouseLeft]', target: drawer, coords: { clientX: 40, clientY: 40 } });
 
     await waitFor(() => expect(canvas.queryByRole('dialog')).not.toBeInTheDocument());
-    await expect(canvas.getByRole('button', { name: 'Ouvrir le détail' })).toHaveFocus();
+    await expect(canvas.getByRole('button', { name: 'Open the detail' })).toHaveFocus();
   },
 };
 
@@ -185,10 +185,10 @@ export const BusyStaysOpen: Story = {
   args: { open: true, busy: true },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const drawer = await canvas.findByRole('dialog', { name: 'Northwind Monde' });
+    const drawer = await canvas.findByRole('dialog', { name: 'Northwind World' });
 
     await expect(drawer).toHaveAttribute('aria-busy', 'true');
-    await expect(canvas.getByRole('button', { name: 'Fermer le détail' })).toBeDisabled();
+    await expect(canvas.getByRole('button', { name: 'Close the detail' })).toBeDisabled();
     platformEscape(drawer);
     await userEvent.pointer({ keys: '[MouseLeft]', target: drawer, coords: { clientX: 40, clientY: 40 } });
 
@@ -198,25 +198,25 @@ export const BusyStaysOpen: Story = {
 
 export const WithoutHeader: Story = {
   name: 'Without header, the content brings its own',
-  args: { heading: undefined, description: undefined, closeLabel: undefined, label: 'Détail de la ligne' },
+  args: { heading: undefined, description: undefined, closeLabel: undefined, label: 'Holding detail' },
   render: (args) => ({
     props: args,
     template: `
-      <button ui-button variant="outline" (click)="open = true">Ouvrir le détail</button>
+      <button ui-button variant="outline" (click)="open = true">Open the detail</button>
       <ui-drawer [label]="label" [width]="width" [open]="open" (dismissed)="open = false">
         <div class="flex items-start justify-between gap-3">
           <div class="flex flex-col gap-0.5">
-            <h2 class="text-title font-semibold">Woodgrove Énergie</h2>
-            <span class="text-label text-(--muted-foreground)">Action · PEA Woodgrove</span>
+            <h2 class="text-title font-semibold">Woodgrove Energy</h2>
+            <span class="text-label text-(--muted-foreground)">Stock · Woodgrove PEA</span>
           </div>
-          <button ui-button variant="ghost" (click)="open = false">Fermer</button>
+          <button ui-button variant="ghost" (click)="open = false">Close</button>
         </div>
         ${facts}
       </ui-drawer>
     `,
   }),
   play: async ({ canvasElement }) => {
-    const drawer = await openDrawer(canvasElement, 'Détail de la ligne');
+    const drawer = await openDrawer(canvasElement, 'Holding detail');
 
     await expect(drawer).not.toHaveAttribute('aria-labelledby');
     await expect(within(drawer).getAllByRole('heading')).toHaveLength(1);
@@ -225,13 +225,13 @@ export const WithoutHeader: Story = {
 
 export const LabelOverHeading: Story = {
   name: 'Named by label, the heading stays visible',
-  args: { label: 'Détail de la ligne' },
+  args: { label: 'Holding detail' },
   play: async ({ canvasElement }) => {
-    const drawer = await openDrawer(canvasElement, 'Détail de la ligne');
+    const drawer = await openDrawer(canvasElement, 'Holding detail');
 
     await expect(drawer).not.toHaveAttribute('aria-labelledby');
-    await expect(drawer).toHaveAccessibleDescription('ETF · Compte-titres Contoso');
-    await expect(within(drawer).getByRole('heading', { level: 2, name: 'Northwind Monde' })).toBeVisible();
+    await expect(drawer).toHaveAccessibleDescription('ETF · Contoso CTO');
+    await expect(within(drawer).getByRole('heading', { level: 2, name: 'Northwind World' })).toBeVisible();
   },
 };
 
@@ -243,19 +243,19 @@ export const ScrollsAlone: Story = {
     template: `
       <div class="flex flex-col gap-2 p-4">
         @for (row of rows; track row) {
-          <p class="text-label">Ligne {{ row }} de la liste derrière le tiroir.</p>
+          <p class="text-label">Row {{ row }} of the list behind the drawer.</p>
         }
       </div>
       <ui-drawer [heading]="heading" [description]="description" [closeLabel]="closeLabel" [open]="open" (dismissed)="open = false">
         @for (row of rows; track row) {
-          <p class="text-label text-(--muted-foreground)">Mouvement {{ row }} : achat de 10 parts.</p>
+          <p class="text-label text-(--muted-foreground)">Transaction {{ row }}: bought 10 shares.</p>
         }
       </ui-drawer>
     `,
   }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const drawer = await canvas.findByRole('dialog', { name: 'Northwind Monde' });
+    const drawer = await canvas.findByRole('dialog', { name: 'Northwind World' });
     const style = getComputedStyle(drawer);
     const pageScroll = window.scrollY;
 
@@ -284,14 +284,14 @@ export const DialogOverDrawer: Story = {
   render: () => ({ template: `<ui-drawer-stack-demo />` }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const opener = canvas.getByRole('button', { name: 'Northwind Monde' });
+    const opener = canvas.getByRole('button', { name: 'Northwind World' });
     const log = canvasElement.querySelector('[data-story-log]') as HTMLElement;
     const drawer = canvasElement.querySelector('ui-drawer dialog') as HTMLElement;
     const dialog = canvasElement.querySelector('ui-dialog dialog') as HTMLElement;
 
     await userEvent.click(opener);
     await shown(drawer);
-    const buy = within(drawer).getByRole('button', { name: 'Acheter' });
+    const buy = within(drawer).getByRole('button', { name: 'Buy' });
 
     await userEvent.click(buy);
     await shown(dialog);
@@ -306,26 +306,26 @@ export const DialogOverDrawer: Story = {
     await gone(dialog);
     await expect(drawer).toHaveAttribute('open');
     await expect(buy).toHaveFocus();
-    await waitFor(() => expect(log).toHaveTextContent('dialogue fermé (escape)'));
+    await waitFor(() => expect(log).toHaveTextContent('dialog closed (escape)'));
 
     platformEscape(drawer);
     await gone(drawer);
     await expect(opener).toHaveFocus();
-    await waitFor(() => expect(log).toHaveTextContent('tiroir fermé (escape)'));
+    await waitFor(() => expect(log).toHaveTextContent('drawer closed (escape)'));
 
     await userEvent.click(opener);
     await shown(drawer);
-    const sell = within(drawer).getByRole('button', { name: 'Vendre' });
+    const sell = within(drawer).getByRole('button', { name: 'Sell' });
 
     await userEvent.click(sell);
     await shown(dialog);
-    await userEvent.click(within(dialog).getByRole('button', { name: 'Vendre 10 parts' }));
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Sell 10 shares' }));
     await gone(dialog);
 
     await expect(drawer).toHaveAttribute('open');
     await expect(sell).toHaveFocus();
-    await expect(drawer.querySelector('[data-story-quantity]')).toHaveTextContent('30 parts');
-    await waitFor(() => expect(log).toHaveTextContent('dialogue fermé (programmatic)'));
+    await expect(drawer.querySelector('[data-story-quantity]')).toHaveTextContent('30 shares');
+    await waitFor(() => expect(log).toHaveTextContent('dialog closed (programmatic)'));
   },
 };
 
@@ -334,10 +334,10 @@ export const DialogOverDrawerOpen: Story = {
   render: () => ({ template: `<ui-drawer-stack-demo stacked />` }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const dialog = await canvas.findByRole('dialog', { name: 'Acheter' });
+    const dialog = await canvas.findByRole('dialog', { name: 'Buy' });
 
     await shown(dialog);
-    await expect(canvas.getByRole('dialog', { name: 'Northwind Monde' })).toHaveAttribute('open');
+    await expect(canvas.getByRole('dialog', { name: 'Northwind World' })).toHaveAttribute('open');
     await expect(veil(dialog)).toBe('oklab(0 0 0 / 0.24)');
   },
 };

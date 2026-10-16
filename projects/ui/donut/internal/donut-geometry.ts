@@ -9,7 +9,7 @@ export const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 const GAP = 2;
 
 export function positionSlices(slices: RankedSlice[]): PositionedSlice[] {
-  let travelled = 0;
+  let traveled = 0;
 
   return slices.map((slice) => {
     const length = slice.share * CIRCUMFERENCE;
@@ -17,9 +17,9 @@ export function positionSlices(slices: RankedSlice[]): PositionedSlice[] {
     const positioned = {
       ...slice,
       dash: `${drawn.toFixed(2)} ${(CIRCUMFERENCE - drawn).toFixed(2)}`,
-      offset: (-travelled).toFixed(2),
+      offset: (-traveled).toFixed(2),
     };
-    travelled += length;
+    traveled += length;
 
     return positioned;
   });

@@ -9,8 +9,8 @@ const renderTable = (attributes = ''): Promise<RenderResult<unknown>> =>
     `<table uiTable>
        <thead>
          <tr>
-           <th uiTh>Ligne</th>
-           <th uiTh numeric ${attributes}>Valeur</th>
+           <th uiTh>Holding</th>
+           <th uiTh numeric ${attributes}>Value</th>
          </tr>
        </thead>
        <tbody>
@@ -28,7 +28,7 @@ describe('UiTable', () => {
     await renderTable();
 
     expect(screen.getByRole('table')).toBeInTheDocument();
-    expect(screen.getByRole('columnheader', { name: 'Ligne' })).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: 'Holding' })).toBeInTheDocument();
     expect(screen.getAllByRole('cell')).toHaveLength(2);
   });
 
@@ -38,10 +38,10 @@ describe('UiTable', () => {
     expect(screen.getByRole('table')).toHaveClass('w-full');
   });
 
-  it('styles headers as captions in the subtle color, centred in 36px', async () => {
+  it('styles headers as captions in the subtle color, centered in 36px', async () => {
     await renderTable();
 
-    expect(screen.getByRole('columnheader', { name: 'Ligne' })).toHaveClass(
+    expect(screen.getByRole('columnheader', { name: 'Holding' })).toHaveClass(
       '[--table-head:2.25rem]',
       'align-middle',
       'text-caption',
@@ -50,13 +50,13 @@ describe('UiTable', () => {
   });
 
   it('makes a header 40px tall when asked', async () => {
-    await render(`<table uiTable><thead><tr><th uiTh tall>Compte</th></tr></thead></table>`, { imports });
+    await render(`<table uiTable><thead><tr><th uiTh tall>Account</th></tr></thead></table>`, { imports });
 
     expect(screen.getByRole('columnheader')).toHaveClass('[--table-head:2.5rem]');
   });
 
   it('fixes a column width and keeps it from shrinking', async () => {
-    await render('<table uiTable><thead><tr><th uiTh width="108px">Quantité</th></tr></thead></table>', { imports });
+    await render('<table uiTable><thead><tr><th uiTh width="108px">Quantity</th></tr></thead></table>', { imports });
 
     expect(screen.getByRole('columnheader')).toHaveStyle({ width: '108px', minWidth: '108px' });
   });
@@ -70,14 +70,14 @@ describe('UiTable', () => {
   it('aligns a numeric column to the right and lines up its digits', async () => {
     await renderTable();
 
-    expect(screen.getByRole('columnheader', { name: 'Valeur' })).toHaveClass('text-right', 'tabular-nums');
+    expect(screen.getByRole('columnheader', { name: 'Value' })).toHaveClass('text-right', 'tabular-nums');
     expect(screen.getByRole('cell', { name: '20 010,00 EUR' })).toHaveClass('text-right', 'tabular-nums');
   });
 
   it('keeps a textual column aligned to the start', async () => {
     await renderTable();
 
-    expect(screen.getByRole('columnheader', { name: 'Ligne' })).toHaveClass('text-left');
+    expect(screen.getByRole('columnheader', { name: 'Holding' })).toHaveClass('text-left');
   });
 
   it('lets the primary column absorb the free width', async () => {
@@ -89,21 +89,21 @@ describe('UiTable', () => {
   it('holds a secondary column back until its breakpoint', async () => {
     await renderTable('from="md"');
 
-    expect(screen.getByRole('columnheader', { name: 'Valeur' })).toHaveClass('hidden', 'md:table-cell');
+    expect(screen.getByRole('columnheader', { name: 'Value' })).toHaveClass('hidden', 'md:table-cell');
     expect(screen.getByRole('cell', { name: '20 010,00 EUR' })).toHaveClass('hidden', 'md:table-cell');
   });
 
   it('holds a cell marked secondary back under 1024px', async () => {
     await renderTable('secondary');
 
-    expect(screen.getByRole('columnheader', { name: 'Valeur' })).toHaveClass('hidden', 'lg:table-cell');
+    expect(screen.getByRole('columnheader', { name: 'Value' })).toHaveClass('hidden', 'lg:table-cell');
     expect(screen.getByRole('cell', { name: '20 010,00 EUR' })).toHaveClass('hidden', 'lg:table-cell');
   });
 
   it('shows every column when no breakpoint is asked for', async () => {
     await renderTable();
 
-    expect(screen.getByRole('columnheader', { name: 'Valeur' })).not.toHaveClass('hidden');
+    expect(screen.getByRole('columnheader', { name: 'Value' })).not.toHaveClass('hidden');
   });
 });
 
@@ -190,7 +190,7 @@ describe('UiGroupCell', () => {
 describe('UiRowLink', () => {
   it('stretches a link over its whole row', async () => {
     await render(
-      `<table uiTable><tbody><tr uiTr><td uiTd><a uiRowLink href="/lines/1">Ferrari</a></td></tr></tbody></table>`,
+      `<table uiTable><tbody><tr uiTr><td uiTd><a uiRowLink href="/holdings/1">Ferrari</a></td></tr></tbody></table>`,
       { imports },
     );
 
@@ -273,7 +273,7 @@ describe('UiTable options', () => {
     await renderTable();
 
     expect(screen.getByRole('cell', { name: 'Savings account' })).toHaveClass('h-(--table-row)');
-    expect(screen.getByRole('columnheader', { name: 'Ligne' })).toHaveClass('shadow-(--table-rule)');
+    expect(screen.getByRole('columnheader', { name: 'Holding' })).toHaveClass('shadow-(--table-rule)');
   });
 });
 
@@ -354,7 +354,7 @@ describe('UiRowLink variants', () => {
     expect(screen.getByRole('link')).not.toHaveClass('after:absolute');
   });
 
-  it('marks the open line with aria-current', async () => {
+  it('marks the open holding with aria-current', async () => {
     await render(`<a uiRowLink current href="/a">Ferrari</a>`, { imports });
 
     expect(screen.getByRole('link')).toHaveAttribute('aria-current', 'true');

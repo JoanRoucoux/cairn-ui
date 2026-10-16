@@ -192,7 +192,7 @@ describe('SheetDrag', () => {
     expect(offset()).toBe('');
   });
 
-  it('does not drag a centred dialog from 64rem', () => {
+  it('does not drag a centered dialog from 64rem', () => {
     mockMatchMedia(true);
 
     pointer(handle, 'pointerdown', { y: 100, at: 0 });

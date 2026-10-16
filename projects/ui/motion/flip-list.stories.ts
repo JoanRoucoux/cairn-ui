@@ -62,8 +62,8 @@ const slideOf = (element: Element): number | null => {
 export const RemoveThenReinsert: Story = {
   render: () => ({
     props: {
-      all: ['Livret A', 'LDDS', 'PEA', 'Assurance vie'],
-      items: ['Livret A', 'LDDS', 'PEA', 'Assurance vie'],
+      all: ['Livret A', 'LDDS', 'PEA', 'Life insurance'],
+      items: ['Livret A', 'LDDS', 'PEA', 'Life insurance'],
       remove(this: { items: string[] }) {
         this.items = this.items.filter((item) => item !== 'LDDS');
       },
@@ -131,10 +131,10 @@ const ACCOUNTS: Account[] = [
   },
   {
     name: 'Fabrikam Life',
-    meta: 'Assurance vie',
+    meta: 'Life insurance',
     total: '19 800,00 €',
     rows: [
-      { name: 'Fonds euros', value: '14 000,00 €' },
+      { name: 'Euro fund', value: '14 000,00 €' },
       { name: 'Comgest Monde', value: '5 800,00 €' },
     ],
   },
@@ -182,7 +182,7 @@ export const AcrossGroups: Story = {
     const canvas = within(canvasElement);
     const hermes = canvas.getByTestId('Hermes');
     const fabrikam = canvas.getByTestId('Fabrikam Life');
-    const fonds = canvas.getByTestId('Fonds euros');
+    const euroFund = canvas.getByTestId('Euro fund');
     const height = hermes.getBoundingClientRect().height;
 
     await userEvent.click(canvas.getByRole('button', { name: 'Remove Schneider Electric' }));
@@ -190,7 +190,7 @@ export const AcrossGroups: Story = {
 
     await waitFor(() => expect(slideOf(hermes)).toBeCloseTo(height, 0));
     await expect(slideOf(fabrikam)).toBeCloseTo(height, 0);
-    await expect(slideOf(fonds)).toBeCloseTo(height, 0);
+    await expect(slideOf(euroFund)).toBeCloseTo(height, 0);
     await expect(slideOf(canvas.getByTestId('TotalEnergies'))).toBeNull();
     await expect(slideOf(canvas.getByTestId('Northwind PEA'))).toBeNull();
   },
@@ -242,14 +242,14 @@ export const AcrossCards: Story = {
 
     await waitFor(() => expect(slideOf(hermes)).toBeCloseTo(height, 0));
     await expect(slideOf(fabrikam)).toBeCloseTo(height, 0);
-    await expect(slideOf(canvas.getByTestId('Fonds euros'))).toBeNull();
+    await expect(slideOf(canvas.getByTestId('Euro fund'))).toBeNull();
   },
 };
 
 export const AfterTheListMoved: Story = {
   render: () => ({
     props: {
-      items: ['Livret A', 'LDDS', 'PEA', 'Assurance vie'],
+      items: ['Livret A', 'LDDS', 'PEA', 'Life insurance'],
       panel: false,
       open(this: { panel: boolean }) {
         this.panel = true;

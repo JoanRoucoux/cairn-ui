@@ -52,8 +52,8 @@ and scrolls, rather than flipping above the control.
   render: (args) => ({
     props: args,
     template: `
-      <select uiSelect [size]="size" [disabled]="disabled" aria-label="Envelope">
-        <option value="">Choose an envelope</option>
+      <select uiSelect [size]="size" [disabled]="disabled" aria-label="Wrapper">
+        <option value="">Choose a wrapper</option>
         <option value="pea">PEA</option>
         <option value="cto">CTO</option>
         <option value="pee">PEE</option>
@@ -78,7 +78,7 @@ export const Default: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(canvas.getByRole('combobox', { name: 'Envelope' })).toBeEnabled();
+    await expect(canvas.getByRole('combobox', { name: 'Wrapper' })).toBeEnabled();
   },
 };
 
@@ -95,7 +95,7 @@ export const Focus: Story = {
     const canvas = within(canvasElement);
 
     await userEvent.tab();
-    await expect(canvas.getByRole('combobox', { name: 'Envelope' })).toHaveFocus();
+    await expect(canvas.getByRole('combobox', { name: 'Wrapper' })).toHaveFocus();
   },
 };
 
@@ -103,13 +103,13 @@ export const States: Story = {
   render: () => ({
     template: `
       <div class="flex flex-wrap items-end gap-6">
-        @for (state of ['Repos', 'Focus', 'Désactivé']; track state) {
+        @for (state of ['Rest', 'Focus', 'Disabled']; track state) {
           <div class="flex flex-col items-start gap-2">
             <select
               uiSelect
               style="width: 15rem"
               [class.shadow-[inset_0_0_0_2px_var(--ring)]]="state === 'Focus'"
-              [disabled]="state === 'Désactivé'"
+              [disabled]="state === 'Disabled'"
               [attr.aria-label]="state"
             >
               <option>Northwind PEA · PEA</option>

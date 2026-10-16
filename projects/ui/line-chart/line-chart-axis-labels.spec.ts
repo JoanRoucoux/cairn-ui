@@ -45,7 +45,7 @@ describe('UiLineChart axis labels', () => {
     expect(drawn(fixture.nativeElement)).toEqual(['01', '03']);
   });
 
-  it('decides per layout: a core label survives below sm when only a hidden neighbour repeats it', async () => {
+  it('decides per layout: a core label survives below sm when only a hidden neighbor repeats it', async () => {
     const { fixture } = await render(`<ui-line-chart label="x" [points]="points" [axisFormat]="month" />`, {
       imports: [UiLineChart],
       componentProperties: { points: series([0, 1, 1, 2, 2]), month },

@@ -12,12 +12,12 @@ type FilterChipsArgs = {
 };
 
 const CLASSES: FilterChipOption[] = [
-  { value: 'all', label: 'Toutes', count: 31 },
+  { value: 'all', label: 'All', count: 31 },
   { value: 'etf', label: 'ETF', count: 6 },
-  { value: 'funds', label: 'Fonds', count: 8 },
-  { value: 'stocks', label: 'Actions', count: 4 },
+  { value: 'funds', label: 'Funds', count: 8 },
+  { value: 'stocks', label: 'Stocks', count: 4 },
   { value: 'crypto', label: 'Crypto', count: 5 },
-  { value: 'cash', label: 'Liquidités', count: 8 },
+  { value: 'cash', label: 'Cash', count: 8 },
 ];
 
 const WITHOUT_COUNTS: FilterChipOption[] = CLASSES.map(({ value, label }) => ({ value, label }));
@@ -30,7 +30,7 @@ const meta: Meta<FilterChipsArgs> = {
       description: {
         component: `A row of single-choice filter pills that narrows a list in place, each with an optional
 count: an asset class, a status. The choice is a \`model()\`, bound with \`[(value)]\`. One option usually
-stands for "no filter" (such as "All"). On a touch screen the row stays on one line and scrolls
+stands for “no filter” (such as “All”). On a touch screen the row stays on one line and scrolls
 sideways, with no visible scrollbar, bleeding to the screen edges through the \`--gutter\` token; each
 pill is 34 px tall inside a 44 px target. With a fine pointer the pills are 32 px and wrap.
 
@@ -61,7 +61,7 @@ pill is 34 px tall inside a 44 px target. With a fine pointer the pills are 32 p
     template: `<ui-filter-chips [options]="options" [ariaLabel]="ariaLabel" [(value)]="value" />`,
   }),
   args: {
-    ariaLabel: "Filtrer par classe d'actif",
+    ariaLabel: 'Filter by asset class',
     value: 'all',
     options: CLASSES,
   },
@@ -101,10 +101,10 @@ export const SelectsOnClick: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await userEvent.click(canvas.getByRole('button', { name: 'Fonds 8' }));
+    await userEvent.click(canvas.getByRole('button', { name: 'Funds 8' }));
 
-    await expect(canvas.getByRole('button', { name: 'Fonds 8' })).toHaveAttribute('aria-pressed', 'true');
-    await expect(canvas.getByRole('button', { name: 'Toutes 31' })).toHaveAttribute('aria-pressed', 'false');
+    await expect(canvas.getByRole('button', { name: 'Funds 8' })).toHaveAttribute('aria-pressed', 'true');
+    await expect(canvas.getByRole('button', { name: 'All 31' })).toHaveAttribute('aria-pressed', 'false');
   },
 };
 
@@ -122,11 +122,11 @@ export const SelectsWithTheKeyboard: Story = {
 
 const ACCOUNT_ROW = `
   <div style="padding: 0 var(--gutter)">
-    <ui-filter-chips ariaLabel="Filtrer par classe d'actif" [options]="options" [(value)]="value">
-      <ui-select-pill uiChipsLeading [active]="account !== ''" clearLabel="Retirer le filtre de compte" contextLabel="Compte" (cleared)="account = ''">
+    <ui-filter-chips ariaLabel="Filter by asset class" [options]="options" [(value)]="value">
+      <ui-select-pill uiChipsLeading [active]="account !== ''" clearLabel="Remove the account filter" contextLabel="Account" (cleared)="account = ''">
         {{ names[account] }}
-        <ui-menu label="Compte" sheet heading="Compte">
-          <button uiMenuItem type="button" [checked]="account === ''" (click)="account = ''">Tous les comptes</button>
+        <ui-menu label="Account" sheet heading="Account">
+          <button uiMenuItem type="button" [checked]="account === ''" (click)="account = ''">All accounts</button>
           <button uiMenuItem type="button" [checked]="account === 'pea'" (click)="account = 'pea'">Northwind PEA</button>
           <button uiMenuItem type="button" [checked]="account === 'cto'" (click)="account = 'cto'">Contoso CTO</button>
         </ui-menu>
@@ -135,7 +135,7 @@ const ACCOUNT_ROW = `
   </div>
 `;
 
-const NAMES = { '': 'Tous les comptes', pea: 'Northwind PEA', cto: 'Contoso CTO' };
+const NAMES = { '': 'All accounts', pea: 'Northwind PEA', cto: 'Contoso CTO' };
 
 const PHONE = { viewport: { width: 390, height: 640 } };
 const DESKTOP = { viewport: { width: 1440, height: 480 } };
@@ -152,39 +152,39 @@ const accountRow = (parameters: Story['parameters'], play: Story['play']): Story
 const atRest: Story['play'] = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
   const rule = canvasElement.querySelector('[data-chips-rule]')!;
-  const trigger = canvas.getByRole('button', { name: 'Tous les comptes' });
+  const trigger = canvas.getByRole('button', { name: 'All accounts' });
 
   await expect(trigger).toHaveAttribute('aria-expanded', 'false');
-  await expect(canvas.queryByRole('button', { name: 'Retirer le filtre de compte' })).toBeNull();
+  await expect(canvas.queryByRole('button', { name: 'Remove the account filter' })).toBeNull();
   await expect(getComputedStyle(rule).display).toBe('block');
-  await expect(canvas.getByRole('group', { name: "Filtrer par classe d'actif" })).not.toContainElement(trigger);
+  await expect(canvas.getByRole('group', { name: 'Filter by asset class' })).not.toContainElement(trigger);
 };
 
 const opened: Story['play'] = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
 
-  await userEvent.click(canvas.getByRole('button', { name: 'Tous les comptes' }));
+  await userEvent.click(canvas.getByRole('button', { name: 'All accounts' }));
 
-  await waitFor(() => expect(canvas.getByRole('menu', { name: 'Compte' })).toBeVisible());
+  await waitFor(() => expect(canvas.getByRole('menu', { name: 'Account' })).toBeVisible());
   await expect(canvas.getAllByRole('menuitemradio')).toHaveLength(3);
-  await expect(canvas.getByRole('menuitemradio', { name: 'Tous les comptes' })).toHaveAttribute('aria-checked', 'true');
-  await expect(canvas.getByRole('menuitemradio', { name: 'Tous les comptes' })).toHaveFocus();
+  await expect(canvas.getByRole('menuitemradio', { name: 'All accounts' })).toHaveAttribute('aria-checked', 'true');
+  await expect(canvas.getByRole('menuitemradio', { name: 'All accounts' })).toHaveFocus();
 };
 
 const chosenThenCleared: Story['play'] = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
 
-  await userEvent.click(canvas.getByRole('button', { name: 'Tous les comptes' }));
+  await userEvent.click(canvas.getByRole('button', { name: 'All accounts' }));
   await userEvent.click(await canvas.findByRole('menuitemradio', { name: 'Northwind PEA' }));
 
-  const cross = await canvas.findByRole('button', { name: 'Retirer le filtre de compte' });
-  await expect(canvas.getByRole('button', { name: 'Compte Northwind PEA' })).toBeVisible();
+  const cross = await canvas.findByRole('button', { name: 'Remove the account filter' });
+  await expect(canvas.getByRole('button', { name: 'Account Northwind PEA' })).toBeVisible();
   await expect(cross).toBeVisible();
 
   await userEvent.click(cross);
 
-  await expect(canvas.getByRole('button', { name: 'Tous les comptes' })).toHaveFocus();
-  await expect(canvas.queryByRole('button', { name: 'Retirer le filtre de compte' })).toBeNull();
+  await expect(canvas.getByRole('button', { name: 'All accounts' })).toHaveFocus();
+  await expect(canvas.queryByRole('button', { name: 'Remove the account filter' })).toBeNull();
 };
 
 export const AccountSelectorAtRest390: Story = {

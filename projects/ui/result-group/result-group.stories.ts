@@ -55,7 +55,7 @@ foreign-currency row last) and the empty message with the \`resultGroupMessage\`
             </span>
             <span class="flex flex-none flex-col items-end">
               <span class="text-label font-medium">112,40 €</span>
-              <span class="text-caption text-(--subtle-foreground)">en continu</span>
+              <span class="text-caption text-(--subtle-foreground)">live</span>
             </span>
           </button>
           <button ui-row size="dense" type="button" unavailable>
@@ -65,20 +65,20 @@ foreign-currency row last) and the empty message with the \`resultGroupMessage\`
             </span>
             <span class="flex flex-none flex-col items-end">
               <span class="text-label font-medium">Contoso Exchange</span>
-              <span class="text-caption text-(--subtle-foreground)">indisponible</span>
+              <span class="text-caption text-(--subtle-foreground)">unavailable</span>
             </span>
           </button>
-          <span resultGroupMessage>Aucun résultat chez Northwind Markets.</span>
+          <span resultGroupMessage>No results from Northwind Markets.</span>
         </ui-result-group>
       </ui-card>
     `,
   }),
   args: {
     label: 'Northwind Markets',
-    hint: 'cours en continu',
+    hint: 'live prices',
     state: 'ready',
-    errorMessage: "Northwind Markets n'a pas répondu.",
-    retryLabel: 'Réessayer',
+    errorMessage: 'Northwind Markets didn’t respond.',
+    retryLabel: 'Try again',
     retry: fn(),
   },
   argTypes: {
@@ -103,7 +103,7 @@ export const Results: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(canvas.getByRole('group', { name: 'Northwind Markets, cours en continu' })).toBeVisible();
+    await expect(canvas.getByRole('group', { name: 'Northwind Markets, live prices' })).toBeVisible();
     await expect(canvas.getByRole('button', { name: /Woodgrove Holdings/ })).toHaveAttribute('aria-disabled', 'true');
   },
 };
@@ -119,7 +119,7 @@ export const Loading: Story = {
 export const Empty: Story = {
   args: { state: 'empty' },
   play: async ({ canvasElement }) => {
-    await expect(within(canvasElement).getByText('Aucun résultat chez Northwind Markets.')).toBeVisible();
+    await expect(within(canvasElement).getByText('No results from Northwind Markets.')).toBeVisible();
   },
 };
 
@@ -127,7 +127,7 @@ export const SourceError: Story = {
   args: { state: 'error' },
   play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement);
-    const retry = await canvas.findByRole('button', { name: 'Réessayer' });
+    const retry = await canvas.findByRole('button', { name: 'Try again' });
 
     await expect(retry.querySelector('svg')).toBeNull();
     await userEvent.click(retry);
@@ -140,7 +140,7 @@ export const SeveralGroups: Story = {
   render: () => ({
     template: `
       <ui-card variant="inset" border="hairline" padding="xs" class="w-[350px]">
-        <ui-result-group label="Déjà suivi" hint="dans vos lignes">
+        <ui-result-group label="Already tracked" hint="in your holdings">
           <button ui-row size="dense" type="button">
             <span class="flex min-w-0 flex-1 flex-col">
               <span class="text-body truncate font-medium">Fabrikam Bond Fund</span>
@@ -148,10 +148,10 @@ export const SeveralGroups: Story = {
             </span>
           </button>
         </ui-result-group>
-        <ui-result-group label="Northwind Markets" hint="cours en continu" state="loading" />
-        <ui-result-group label="Contoso Coins" hint="cours en continu" state="error" errorMessage="Contoso Coins n'a pas répondu." retryLabel="Réessayer" />
-        <ui-result-group label="Woodgrove Funds" hint="valeur liquidative" state="empty">
-          <span resultGroupMessage>Saisissez un ISIN complet, 12 caractères : Woodgrove Funds ne cherche pas par nom.</span>
+        <ui-result-group label="Northwind Markets" hint="live prices" state="loading" />
+        <ui-result-group label="Contoso Coins" hint="live prices" state="error" errorMessage="Contoso Coins didn’t respond." retryLabel="Try again" />
+        <ui-result-group label="Woodgrove Funds" hint="net asset value" state="empty">
+          <span resultGroupMessage>Enter a full 12-character ISIN: Woodgrove Funds doesn’t search by name.</span>
         </ui-result-group>
       </ui-card>
     `,

@@ -4,9 +4,9 @@ import userEvent from '@testing-library/user-event';
 import { type DonutSlice, UiDonut } from './donut';
 
 const threeSlices: DonutSlice[] = [
-  { id: 'a', label: 'ETF', value: 60, sublabel: '6 lignes' },
-  { id: 'b', label: 'Fonds', value: 30, sublabel: '8 lignes' },
-  { id: 'c', label: 'Actions', value: 10, sublabel: '4 lignes' },
+  { id: 'a', label: 'ETF', value: 60, sublabel: '6 holdings' },
+  { id: 'b', label: 'Funds', value: 30, sublabel: '8 holdings' },
+  { id: 'c', label: 'Stocks', value: 10, sublabel: '4 holdings' },
 ];
 
 const sevenSlices: DonutSlice[] = [
@@ -23,8 +23,8 @@ const pct = (share: number): string => `${(share * 100).toFixed(1)}%`;
 const eur = (value: number): string => `${value.toFixed(2)} EUR`;
 
 describe('UiDonut', () => {
-  it('renders one arc per ranked slice, stroked from the grey ramp by rank', async () => {
-    const { fixture } = await render(`<ui-donut [slices]="slices" label="Par classe d'actif" othersLabel="Autres" />`, {
+  it('renders one arc per ranked slice, stroked from the gray ramp by rank', async () => {
+    const { fixture } = await render(`<ui-donut [slices]="slices" label="By asset class" othersLabel="Other" />`, {
       imports: [UiDonut],
       componentProperties: { slices: threeSlices },
     });
@@ -36,25 +36,25 @@ describe('UiDonut', () => {
     expect((paths[2] as SVGElement).style.stroke).toBe('var(--ramp-3)');
   });
 
-  it('shows the largest slice at the centre by default', async () => {
+  it('shows the largest slice at the center by default', async () => {
     const { fixture } = await render(
-      `<ui-donut [slices]="slices" label="Par classe d'actif" othersLabel="Autres" [valueFormat]="eur" [shareFormat]="pct" />`,
+      `<ui-donut [slices]="slices" label="By asset class" othersLabel="Other" [valueFormat]="eur" [shareFormat]="pct" />`,
       { imports: [UiDonut], componentProperties: { slices: threeSlices, eur, pct } },
     );
-    const centre = within(fixture.nativeElement.querySelector('[data-testid="donut-centre"]'));
+    const center = within(fixture.nativeElement.querySelector('[data-testid="donut-centre"]'));
 
-    expect(centre.getByText('ETF')).toBeInTheDocument();
-    expect(centre.getByText('60.0%')).toBeInTheDocument();
-    expect(centre.getByText('60.00 EUR')).toBeInTheDocument();
+    expect(center.getByText('ETF')).toBeInTheDocument();
+    expect(center.getByText('60.0%')).toBeInTheDocument();
+    expect(center.getByText('60.00 EUR')).toBeInTheDocument();
   });
 
-  it('moves the centre, grows the hovered arc around the ring centre and dims the others when a legend row is hovered, focused or touched', async () => {
+  it('moves the center, grows the hovered arc around the ring center and dims the others when a legend row is hovered, focused or touched', async () => {
     const { fixture } = await render(
-      `<ui-donut [slices]="slices" label="Par classe d'actif" othersLabel="Autres" [valueFormat]="eur" [shareFormat]="pct" />`,
+      `<ui-donut [slices]="slices" label="By asset class" othersLabel="Other" [valueFormat]="eur" [shareFormat]="pct" />`,
       { imports: [UiDonut], componentProperties: { slices: threeSlices, eur, pct } },
     );
-    const row = screen.getByRole('button', { name: /Fonds/ });
-    const centre = within(fixture.nativeElement.querySelector('[data-testid="donut-centre"]'));
+    const row = screen.getByRole('button', { name: /Funds/ });
+    const center = within(fixture.nativeElement.querySelector('[data-testid="donut-centre"]'));
     const arcs = fixture.nativeElement.querySelectorAll('svg circle[data-slice]');
 
     for (const arc of arcs) {
@@ -64,7 +64,7 @@ describe('UiDonut', () => {
 
     await userEvent.hover(row);
 
-    expect(centre.getByText('Fonds')).toBeInTheDocument();
+    expect(center.getByText('Funds')).toBeInTheDocument();
     expect(arcs[1]).toHaveClass('scale-104', 'motion-reduce:scale-100');
     expect(arcs[1]).not.toHaveClass('opacity-50');
     expect(arcs[0]).not.toHaveClass('scale-104');
@@ -75,7 +75,7 @@ describe('UiDonut', () => {
     await userEvent.unhover(row);
     fireEvent.focus(row);
 
-    expect(centre.getByText('Fonds')).toBeInTheDocument();
+    expect(center.getByText('Funds')).toBeInTheDocument();
     expect(arcs[1]).toHaveClass('scale-104');
 
     fireEvent.blur(row);
@@ -84,12 +84,12 @@ describe('UiDonut', () => {
 
     fireEvent.pointerEnter(row, { pointerType: 'touch' });
 
-    expect(centre.getByText('Fonds')).toBeInTheDocument();
+    expect(center.getByText('Funds')).toBeInTheDocument();
     expect(arcs[1]).toHaveClass('scale-104');
   });
 
-  it('scales every arc from the ring centre and animates only scale and opacity at the fast duration', async () => {
-    const { fixture } = await render(`<ui-donut [slices]="slices" label="x" othersLabel="Autres" />`, {
+  it('scales every arc from the ring center and animates only scale and opacity at the fast duration', async () => {
+    const { fixture } = await render(`<ui-donut [slices]="slices" label="x" othersLabel="Other" />`, {
       imports: [UiDonut],
       componentProperties: { slices: threeSlices },
     });
@@ -110,14 +110,14 @@ describe('UiDonut', () => {
 
   it('presses a legend row with an eased scale and fades its hover fill at the fast duration', async () => {
     await render(
-      `<ui-donut [slices]="slices" label="Par classe d'actif" othersLabel="Autres" [valueFormat]="eur" [shareFormat]="pct" />`,
+      `<ui-donut [slices]="slices" label="By asset class" othersLabel="Other" [valueFormat]="eur" [shareFormat]="pct" />`,
       {
         imports: [UiDonut],
         componentProperties: { slices: threeSlices, eur, pct },
       },
     );
 
-    expect(screen.getByRole('button', { name: /Fonds/ })).toHaveClass(
+    expect(screen.getByRole('button', { name: /Funds/ })).toHaveClass(
       'transition-[scale,background-color]',
       '[transition-duration:var(--duration-press),var(--duration-fast)]',
       'ease-out',
@@ -126,7 +126,7 @@ describe('UiDonut', () => {
   });
 
   it('draws a muted track and every slice on the same r=78 circle', async () => {
-    const { fixture } = await render(`<ui-donut [slices]="slices" label="x" othersLabel="Autres" />`, {
+    const { fixture } = await render(`<ui-donut [slices]="slices" label="x" othersLabel="Other" />`, {
       imports: [UiDonut],
       componentProperties: { slices: threeSlices },
     });
@@ -137,25 +137,25 @@ describe('UiDonut', () => {
     expect(circles[0]).toHaveClass('stroke-(--muted)');
   });
 
-  it('sets the centre name at 14px 500 muted, the share at 28px 600 and the amount as a muted caption', async () => {
-    const { fixture } = await render(`<ui-donut [slices]="slices" label="x" othersLabel="Autres" />`, {
+  it('sets the center name at 14px 500 muted, the share at 28px 600 and the amount as a muted caption', async () => {
+    const { fixture } = await render(`<ui-donut [slices]="slices" label="x" othersLabel="Other" />`, {
       imports: [UiDonut],
       componentProperties: { slices: threeSlices },
     });
-    const centre = within(fixture.nativeElement.querySelector('[data-testid="donut-centre"]'));
+    const center = within(fixture.nativeElement.querySelector('[data-testid="donut-centre"]'));
 
-    expect(centre.getByText('ETF')).toHaveClass('text-label', 'font-medium', 'text-(--muted-foreground)');
-    expect(centre.getByText('60%')).toHaveClass('text-heading', 'font-semibold');
-    expect(centre.getByText('60')).toHaveClass('text-caption', 'text-(--muted-foreground)');
+    expect(center.getByText('ETF')).toHaveClass('text-label', 'font-medium', 'text-(--muted-foreground)');
+    expect(center.getByText('60%')).toHaveClass('text-heading', 'font-semibold');
+    expect(center.getByText('60')).toHaveClass('text-caption', 'text-(--muted-foreground)');
   });
 
   it('hovering an arc highlights its legend row and leaving it clears the highlight', async () => {
-    const { fixture } = await render(`<ui-donut [slices]="slices" label="Par classe d'actif" othersLabel="Autres" />`, {
+    const { fixture } = await render(`<ui-donut [slices]="slices" label="By asset class" othersLabel="Other" />`, {
       imports: [UiDonut],
       componentProperties: { slices: threeSlices },
     });
     const paths = fixture.nativeElement.querySelectorAll('svg circle[data-slice]');
-    const row = screen.getByRole('button', { name: /Fonds/ });
+    const row = screen.getByRole('button', { name: /Funds/ });
 
     fireEvent.pointerEnter(paths[1]);
 
@@ -167,12 +167,12 @@ describe('UiDonut', () => {
   });
 
   it('ignores a leave event for a row that is no longer the active one', async () => {
-    await render(`<ui-donut [slices]="slices" label="Par classe d'actif" othersLabel="Autres" />`, {
+    await render(`<ui-donut [slices]="slices" label="By asset class" othersLabel="Other" />`, {
       imports: [UiDonut],
       componentProperties: { slices: threeSlices },
     });
     const rowA = screen.getByRole('button', { name: /^ETF/ });
-    const rowB = screen.getByRole('button', { name: /Fonds/ });
+    const rowB = screen.getByRole('button', { name: /Funds/ });
 
     fireEvent.pointerEnter(rowA);
     fireEvent.pointerEnter(rowB);
@@ -184,11 +184,11 @@ describe('UiDonut', () => {
   it('emits sliceSelect with the slice id when a legend row is clicked', async () => {
     const onSelect = vi.fn();
     await render(
-      `<ui-donut [slices]="slices" label="Par classe d'actif" othersLabel="Autres" (sliceSelect)="onSelect($event)" />`,
+      `<ui-donut [slices]="slices" label="By asset class" othersLabel="Other" (sliceSelect)="onSelect($event)" />`,
       { imports: [UiDonut], componentProperties: { slices: threeSlices, onSelect } },
     );
 
-    await userEvent.click(screen.getByRole('button', { name: /Actions/ }));
+    await userEvent.click(screen.getByRole('button', { name: /Stocks/ }));
 
     expect(onSelect).toHaveBeenCalledWith('c');
   });
@@ -196,7 +196,7 @@ describe('UiDonut', () => {
   it('emits sliceSelect when a legend row is activated with Enter', async () => {
     const onSelect = vi.fn();
     await render(
-      `<ui-donut [slices]="slices" label="Par classe d'actif" othersLabel="Autres" (sliceSelect)="onSelect($event)" />`,
+      `<ui-donut [slices]="slices" label="By asset class" othersLabel="Other" (sliceSelect)="onSelect($event)" />`,
       { imports: [UiDonut], componentProperties: { slices: threeSlices, onSelect } },
     );
 
@@ -208,7 +208,7 @@ describe('UiDonut', () => {
 
   it("keeps the SVG's aria-label detailed with every original slice, not only the grouped ones", async () => {
     const { fixture } = await render(
-      `<ui-donut [slices]="slices" label="Par compte" othersLabel="Autres" [shareFormat]="pct" />`,
+      `<ui-donut [slices]="slices" label="By account" othersLabel="Other" [shareFormat]="pct" />`,
       { imports: [UiDonut], componentProperties: { slices: sevenSlices, pct } },
     );
     const svg = fixture.nativeElement.querySelector('svg');
@@ -217,48 +217,48 @@ describe('UiDonut', () => {
     for (const slice of sevenSlices) {
       expect(label).toContain(slice.label);
     }
-    expect(label).not.toContain('Autres');
+    expect(label).not.toContain('Other');
   });
 
-  it('groups the smallest accounts into an Others legend row on seven slices', async () => {
-    await render(`<ui-donut [slices]="slices" label="Par compte" othersLabel="Autres" [shareFormat]="pct" />`, {
+  it('groups the smallest accounts into an Other legend row on seven slices', async () => {
+    await render(`<ui-donut [slices]="slices" label="By account" othersLabel="Other" [shareFormat]="pct" />`, {
       imports: [UiDonut],
       componentProperties: { slices: sevenSlices, pct },
     });
 
     expect(screen.getAllByRole('button')).toHaveLength(6);
-    expect(screen.getByRole('button', { name: /Autres/ })).toHaveTextContent('Fabrikam Life, Woodgrove Retirement');
+    expect(screen.getByRole('button', { name: /Other/ })).toHaveTextContent('Fabrikam Life, Woodgrove Retirement');
   });
 
   it('gives every legend row the name, sub-label, share and value, and drops a zero-value slice', async () => {
     const withZero: DonutSlice[] = [...threeSlices, { id: 'z', label: 'Zero', value: 0 }];
     await render(
-      `<ui-donut [slices]="slices" label="Par classe d'actif" othersLabel="Autres" [valueFormat]="eur" [shareFormat]="pct" />`,
+      `<ui-donut [slices]="slices" label="By asset class" othersLabel="Other" [valueFormat]="eur" [shareFormat]="pct" />`,
       { imports: [UiDonut], componentProperties: { slices: withZero, eur, pct } },
     );
 
     expect(screen.getAllByRole('button')).toHaveLength(3);
     const row = screen.getByRole('button', { name: /ETF/ });
     expect(row).toHaveTextContent('ETF');
-    expect(row).toHaveTextContent('6 lignes');
+    expect(row).toHaveTextContent('6 holdings');
     expect(row).toHaveTextContent('60.0%');
     expect(row).toHaveTextContent('60.00 EUR');
     expect(screen.queryByText('Zero')).not.toBeInTheDocument();
   });
 
   it('formats the value and the share as-is when no formatter is given', async () => {
-    const { fixture } = await render(`<ui-donut [slices]="slices" label="x" othersLabel="Autres" />`, {
+    const { fixture } = await render(`<ui-donut [slices]="slices" label="x" othersLabel="Other" />`, {
       imports: [UiDonut],
       componentProperties: { slices: threeSlices },
     });
-    const centre = within(fixture.nativeElement.querySelector('[data-testid="donut-centre"]'));
+    const center = within(fixture.nativeElement.querySelector('[data-testid="donut-centre"]'));
 
-    expect(centre.getByText('60%')).toBeInTheDocument();
-    expect(centre.getByText('60')).toBeInTheDocument();
+    expect(center.getByText('60%')).toBeInTheDocument();
+    expect(center.getByText('60')).toBeInTheDocument();
   });
 
-  it('renders nothing to draw and no centre for an empty series, still naming the ring', async () => {
-    const { fixture } = await render(`<ui-donut [slices]="slices" label="Empty" othersLabel="Autres" />`, {
+  it('renders nothing to draw and no center for an empty series, still naming the ring', async () => {
+    const { fixture } = await render(`<ui-donut [slices]="slices" label="Empty" othersLabel="Other" />`, {
       imports: [UiDonut],
       componentProperties: { slices: [] as DonutSlice[] },
     });
@@ -268,7 +268,7 @@ describe('UiDonut', () => {
     expect(screen.queryAllByRole('button')).toHaveLength(0);
   });
   it('stretches the legend to the full width on a narrow screen so rows run edge to edge', async () => {
-    const { fixture } = await render(`<ui-donut [slices]="slices" label="x" othersLabel="Autres" />`, {
+    const { fixture } = await render(`<ui-donut [slices]="slices" label="x" othersLabel="Other" />`, {
       imports: [UiDonut],
       componentProperties: { slices: threeSlices },
     });
@@ -279,19 +279,19 @@ describe('UiDonut', () => {
 
 describe('UiDonut legend press state', () => {
   it('turns a pressed row to the soft surface, as a button and as a link', async () => {
-    await render(`<ui-donut [slices]="slices" label="x" othersLabel="Autres" [legendHref]="href" />`, {
+    await render(`<ui-donut [slices]="slices" label="x" othersLabel="Other" [legendHref]="href" />`, {
       imports: [UiDonut],
       componentProperties: { slices: threeSlices, href: (id: string) => (id === 'c' ? null : `/${id}`) },
     });
 
-    expect(screen.getByRole('button', { name: /Actions/ })).toHaveClass('hover:bg-(--glow)', 'active:bg-(--soft)');
+    expect(screen.getByRole('button', { name: /Stocks/ })).toHaveClass('hover:bg-(--glow)', 'active:bg-(--soft)');
     expect(screen.getByRole('link', { name: /ETF/ })).toHaveClass('hover:bg-(--glow)', 'active:bg-(--soft)');
   });
 });
 
 describe('UiDonut legend links', () => {
-  const href = (id: string): string => `/holdings?classe=${id}`;
-  const linkTemplate = `<ui-donut [slices]="slices" label="Par classe d'actif" othersLabel="Autres" [legendHref]="href" (sliceSelect)="onSelect($event)" />`;
+  const href = (id: string): string => `/holdings?class=${id}`;
+  const linkTemplate = `<ui-donut [slices]="slices" label="By asset class" othersLabel="Other" [legendHref]="href" (sliceSelect)="onSelect($event)" />`;
 
   it('renders each legend row as a link to its href instead of a button', async () => {
     await render(linkTemplate, {
@@ -300,7 +300,7 @@ describe('UiDonut legend links', () => {
     });
 
     expect(screen.queryAllByRole('button')).toHaveLength(0);
-    expect(screen.getByRole('link', { name: /Fonds/ })).toHaveAttribute('href', '/holdings?classe=b');
+    expect(screen.getByRole('link', { name: /Funds/ })).toHaveAttribute('href', '/holdings?class=b');
     expect(screen.getAllByRole('link')).toHaveLength(3);
   });
 
@@ -314,14 +314,14 @@ describe('UiDonut legend links', () => {
       },
     });
 
-    expect(screen.getByRole('button', { name: /Actions/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Stocks/ })).toBeInTheDocument();
     expect(screen.getAllByRole('link')).toHaveLength(2);
   });
 
   it('hands a plain click to sliceSelect and cancels the page load, so the caller can route', async () => {
     const onSelect = vi.fn();
     await render(linkTemplate, { imports: [UiDonut], componentProperties: { slices: threeSlices, href, onSelect } });
-    const link = screen.getByRole('link', { name: /Actions/ });
+    const link = screen.getByRole('link', { name: /Stocks/ });
     const click = new MouseEvent('click', { bubbles: true, cancelable: true });
 
     link.dispatchEvent(click);
@@ -343,7 +343,7 @@ describe('UiDonut legend links', () => {
       };
       document.addEventListener('click', swallow, { once: true });
 
-      screen.getByRole('link', { name: /Actions/ }).dispatchEvent(click);
+      screen.getByRole('link', { name: /Stocks/ }).dispatchEvent(click);
 
       expect(prevented).toBe(false);
       expect(onSelect).not.toHaveBeenCalled();
@@ -355,12 +355,12 @@ describe('UiDonut legend links', () => {
       imports: [UiDonut],
       componentProperties: { slices: threeSlices, href, onSelect: vi.fn() },
     });
-    const link = screen.getByRole('link', { name: /Fonds/ });
-    const centre = within(fixture.nativeElement.querySelector('[data-testid="donut-centre"]'));
+    const link = screen.getByRole('link', { name: /Funds/ });
+    const center = within(fixture.nativeElement.querySelector('[data-testid="donut-centre"]'));
 
     await userEvent.hover(link);
     expect(link).toHaveClass('bg-(--soft)');
-    expect(centre.getByText('Fonds')).toBeInTheDocument();
+    expect(center.getByText('Funds')).toBeInTheDocument();
 
     await userEvent.unhover(link);
     fireEvent.focus(link);

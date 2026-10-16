@@ -24,7 +24,7 @@ describe('buildGeometry', () => {
     expect(geometry?.end).toEqual({ x: 96, y: 4 });
   });
 
-  it('should keep a flat series on the vertical centre rather than dividing by zero', () => {
+  it('should keep a flat series on the vertical center rather than dividing by zero', () => {
     const flat: ChartPoint[] = [
       { t: 0, v: 42 },
       { t: 1, v: 42 },

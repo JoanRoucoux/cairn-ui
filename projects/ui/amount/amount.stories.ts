@@ -30,10 +30,10 @@ const meta: Meta<AmountArgs> = {
         component: `Formats a number or an amount of money for the locale: two decimals, the currency symbol
 after the figure with a no-break space, the typographic minus (U+2212) on a negative value, an
 explicit plus on a signed gain. A missing value renders as an em dash. Screens never format an
-amount themselves — this is the only place that does.
+amount themselves: this is the only place that does.
 
 Masking comes from the \`UI_AMOUNT_MASKED\` injection token, a signal the app provides (Cairn's
-"Masquer les montants" setting). By default nothing is masked.
+“Hide amounts” setting). By default nothing is masked.
 
 #### When to use
 
@@ -157,7 +157,7 @@ export const HiddenNextToAPercentage: Story = {
       <span class="text-label flex gap-1.5 tabular-nums">
         <ui-amount class="font-medium text-(--positive)" [value]="value" [currency]="currency" signed whenMasked="hide" locale="fr-FR" />
         <span class="font-medium text-(--positive)">+0,25 %</span>
-        <span class="text-(--muted-foreground)">aujourd'hui</span>
+        <span class="text-(--muted-foreground)">today</span>
       </span>
     `,
   }),

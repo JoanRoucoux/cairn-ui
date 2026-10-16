@@ -8,7 +8,7 @@ const renderDialog = (open = true): Promise<RenderResult<unknown> & { onDismisse
 
   return render(
     `<ui-dialog heading="Enter a price" [open]="open" (dismissed)="onDismissed()">
-       <p>Corps</p>
+       <p>Body</p>
        <button dialogActions type="button">Cancel</button>
      </ui-dialog>`,
     { imports: [UiDialog], componentProperties: { open, onDismissed } },
@@ -47,7 +47,7 @@ describe('UiDialog', () => {
   it('projects the body and the actions in separate slots', async () => {
     await renderDialog();
 
-    expect(screen.getByText('Corps')).toBeInTheDocument();
+    expect(screen.getByText('Body')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
   });
 
@@ -98,7 +98,7 @@ describe('UiDialog', () => {
     expect(container.querySelector('dialog')).not.toHaveClass('flex');
   });
 
-  it('centres itself, which Tailwind preflight would otherwise prevent', async () => {
+  it('centers itself, which Tailwind preflight would otherwise prevent', async () => {
     const { container } = await renderDialog();
 
     expect(container.querySelector('dialog')).toHaveClass('m-auto');
@@ -158,7 +158,7 @@ describe('UiDialog', () => {
     const { container, onDismissed } = await renderDialog();
     const dialog = container.querySelector('dialog') as HTMLDialogElement;
 
-    press(screen.getByText('Corps'), 'pointerdown', 0, 0);
+    press(screen.getByText('Body'), 'pointerdown', 0, 0);
     press(dialog, 'click', -20, -20);
 
     expect(dialog).toHaveAttribute('open');
@@ -169,7 +169,7 @@ describe('UiDialog', () => {
     const user = userEvent.setup();
     const { container, onDismissed } = await renderDialog();
 
-    await user.click(screen.getByText('Corps'));
+    await user.click(screen.getByText('Body'));
     press(container.querySelector('dialog') as Element, 'click', 0, 0);
 
     expect(container.querySelector('dialog')).toHaveAttribute('open');
@@ -178,7 +178,7 @@ describe('UiDialog', () => {
 
   it('lets a long subtitle wrap', async () => {
     const { container } = await render(
-      `<ui-dialog heading="Supprimer" description="Une phrase entière qui explique ce qui sera supprimé." [open]="true"></ui-dialog>`,
+      `<ui-dialog heading="Delete" description="A whole sentence that explains what will be deleted." [open]="true"></ui-dialog>`,
       { imports: [UiDialog] },
     );
 
@@ -189,7 +189,7 @@ describe('UiDialog', () => {
 
   it('truncates the subtitle when asked to', async () => {
     const { container } = await render(
-      `<ui-dialog heading="Acheter" description="Ferrari · PEA" truncateDescription [open]="true"></ui-dialog>`,
+      `<ui-dialog heading="Buy" description="Ferrari · PEA" truncateDescription [open]="true"></ui-dialog>`,
       { imports: [UiDialog] },
     );
 
@@ -241,32 +241,32 @@ describe('UiDialog', () => {
 
   it('shows the subtitle under the title', async () => {
     const { container } = await render(
-      `<ui-dialog heading="Acheter" description="Ferrari · PEA" [open]="true"></ui-dialog>`,
+      `<ui-dialog heading="Buy" description="Ferrari · PEA" [open]="true"></ui-dialog>`,
       { imports: [UiDialog] },
     );
 
     const header = container.querySelector('[data-dialog-header]');
     expect(header).toHaveTextContent('Ferrari · PEA');
-    expect(header?.querySelector('h2')).toHaveTextContent('Acheter');
+    expect(header?.querySelector('h2')).toHaveTextContent('Buy');
   });
 
   it('labels the cross with the text the consumer passes', async () => {
-    await render(`<ui-dialog heading="Acheter" closeLabel="Fermer" [open]="true"></ui-dialog>`, {
+    await render(`<ui-dialog heading="Buy" closeLabel="Close" [open]="true"></ui-dialog>`, {
       imports: [UiDialog],
     });
 
-    expect(screen.getByRole('button', { name: 'Fermer' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
   });
 
   it('closes and reports when the cross is used', async () => {
     const user = userEvent.setup();
     const onDismissed = vi.fn();
     const { container } = await render(
-      `<ui-dialog heading="Acheter" closeLabel="Fermer" [open]="true" (dismissed)="onDismissed()"></ui-dialog>`,
+      `<ui-dialog heading="Buy" closeLabel="Close" [open]="true" (dismissed)="onDismissed()"></ui-dialog>`,
       { imports: [UiDialog], componentProperties: { onDismissed } },
     );
 
-    await user.click(screen.getByRole('button', { name: 'Fermer' }));
+    await user.click(screen.getByRole('button', { name: 'Close' }));
 
     expect(container.querySelector('dialog')).not.toHaveAttribute('open');
     expect(onDismissed).toHaveBeenCalledOnce();

@@ -17,7 +17,7 @@ const meta: Meta<SwitchArgs> = {
       description: {
         component: `A native checkbox styled as a track and a sliding knob, exposed to assistive technology as
 \`role="switch"\`. Being a real checkbox, it works with a plain \`[checked]\` / \`(change)\` pair or with
-Angular forms — no custom \`ControlValueAccessor\` is involved.
+Angular forms: no custom \`ControlValueAccessor\` is involved.
 
 #### When to use
 

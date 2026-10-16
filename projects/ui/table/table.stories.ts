@@ -14,38 +14,38 @@ function holding(line: string, tone: Tone): Holding {
   const cells = line.split('|');
   const f = Object.fromEntries(FIELDS.map((field, index) => [field, cells[index]]));
   const flags = { selected: cells[10] === 'selected', stale: cells[10] === 'stale', noValue: cells[10] === 'noValue' };
-  const compact = flags.stale ? 'Cours du 24/09' : flags.noValue ? 'Aucun cours' : f['cls'];
+  const compact = flags.stale ? 'Price as of 24/09' : flags.noValue ? 'No price' : f['cls'];
   const narrow = flags.noValue
-    ? `${f['quantity']} · PRU ${f['average']} €`
-    : `${f['quantity']} × ${f['price']} € · PRU ${f['average']} €`;
-  const note = flags.stale ? 'Cours du 24/09, en retard' : flags.noValue ? 'Aucun cours, à saisir' : '';
+    ? `${f['quantity']} · Avg. cost ${f['average']} €`
+    : `${f['quantity']} × ${f['price']} € · Avg. cost ${f['average']} €`;
+  const note = flags.stale ? 'Price as of 24/09, stale' : flags.noValue ? 'No price, enter one' : '';
   return { ...f, sub: `${f['isin']} · ${f['cls']}`, compact, narrow, note, tone, ...flags } as Holding;
 }
 
 const GROUPS: { name: string; meta: string; total: string; rows: Holding[] }[] = [
   {
     name: 'Northwind PEA',
-    meta: 'PEA · Northwind Bank · 3 lignes',
+    meta: 'PEA · Northwind Bank · 3 holdings',
     total: '48 215,60 €',
     rows: [
-      holding('Ferrari|NL00150001Q9|Actions|8|388,10|421,26|3 370,08 €|+265,28 €|+8,54 %|+1,60 %', 'positive'),
+      holding('Ferrari|NL00150001Q9|Stocks|8|388,10|421,26|3 370,08 €|+265,28 €|+8,54 %|+1,60 %', 'positive'),
       holding(
         'Amundi MSCI World|LU1681043599|ETF|300|26,40|28,64|8 592,00 €|+672,00 €|+8,48 %|+0,90 %|selected',
         'positive',
       ),
-      holding('Accor|FR0000120404|Actions|50|40,12|38,42|1 921,00 €|−85,00 €|−4,24 %|−0,42 %', 'negative'),
+      holding('Accor|FR0000120404|Stocks|50|40,12|38,42|1 921,00 €|−85,00 €|−4,24 %|−0,42 %', 'negative'),
     ],
   },
   {
     name: 'Woodgrove Savings Plan',
-    meta: 'PEE · Woodgrove Bank · 2 lignes',
+    meta: 'PEE · Woodgrove Bank · 2 holdings',
     total: '18 049,20 €',
     rows: [
       holding(
-        'Carmignac Patrimoine|FR0010135103|Fonds|120,000|118,62|150,41|18 049,20 €|+3 814,80 €|+26,80 %||stale',
+        'Carmignac Patrimoine|FR0010135103|Funds|120,000|118,62|150,41|18 049,20 €|+3 814,80 €|+26,80 %||stale',
         'positive',
       ),
-      holding('Comgest Monde|FR0000284689|Fonds|10,55|119,84||—||||noValue', 'none'),
+      holding('Comgest Monde|FR0000284689|Funds|10,55|119,84||—||||noValue', 'none'),
     ],
   },
 ];
@@ -67,23 +67,23 @@ const meta: Meta<TableArgs> = {
     docs: {
       description: {
         component: `Styled native \`<table>\`. The rows and cells stay plain \`<tr>\` and \`<td>\`, with \`uiTable\`,
-\`uiTh\`, \`uiTd\` and \`uiTr\` applied as attributes. The header caption reads once, centred, in the subtle color.
-Table options: \`row\` (48, 52 or 60px body rows), \`[rule]="false"\` (no hairline under the header, as on Lignes)
-and \`spaced\` (4px between the header and the first row, as on Comptes). A row glows on hover;
+\`uiTh\`, \`uiTd\` and \`uiTr\` applied as attributes. The header caption reads once, centered, in the subtle color.
+Table options: \`row\` (48, 52 or 60px body rows), \`[rule]="false"\` (no hairline under the header, as on Holdings)
+and \`spaced\` (4px between the header and the first row, as on Accounts). A row glows on hover;
 \`selected\` takes the soft fill.
 
 \`numeric\` right aligns a column and lines its digits up, on the \`<th>\` and on every \`<td>\`. \`primary\` marks the
 one column that absorbs the free width and truncates; give the others a \`width\` on their header.
-\`td[ui-group-cell]\` is the muted band that opens a group (\`size="lg"\` is the 48px band of Lignes); wrap the
+\`td[ui-group-cell]\` is the muted band that opens a group (\`size="lg"\` is the 48px band of Holdings); wrap the
 group in \`<tbody uiGroup>\` for its 4px tail. Its total is a \`ui-amount\`. Its heading takes focus with no ring: \`h2[data-group-heading]\`.
 
 \`a[uiRowLink]\` or \`button[uiRowLink]\` in the first cell makes the whole row one target, with a row-wide ring
-(Lignes). \`[stretch]="false"\` keeps the target on the name, underlined on hover with its own ring
-(Comptes). \`current\` sets \`aria-current\`. A control in another cell takes \`uiRowAction\`. A row
+(Holdings). \`[stretch]="false"\` keeps the target on the name, underlined on hover with its own ring
+(Accounts). \`current\` sets \`aria-current\`. A control in another cell takes \`uiRowAction\`. A row
 that opens something is \`interactive\` (it presses to the soft fill); one with no action keeps a plain name,
 \`<td uiTd primary class="truncate font-medium">\`.
 
-Under 1024px, mark Quantité, PRU and Cours \`secondary\` on their header and cells: they are hidden, and a
+Under 1024px, mark Quantity, Avg. cost and Price \`secondary\` on their header and cells: they are hidden, and a
 \`<span uiCellSub narrow>\` carries them as the row subtitle. \`uiCellSub\` takes a \`tone\`: subtle, stale or
 inherit. Amounts in a subtitle go through \`ui-amount\`.
 
@@ -99,7 +99,7 @@ inherit. Amounts in a subtitle go through \`ui-amount\`.
 #### Accessibility
 
 * The semantics come from the real \`<table>\`, so rows, columns and header association work without any ARIA.
-* \`selected\` sets \`aria-selected\` on the row; put \`current\` on its link so the open line is announced.
+* \`selected\` sets \`aria-selected\` on the row; put \`current\` on its link so the open holding is announced.
 * A column held back by \`secondary\` must be held back on its header and its cells together. Its content stays
   available in the subtitle.`,
       },
@@ -111,11 +111,11 @@ inherit. Amounts in a subtitle go through \`ui-amount\`.
         <table uiTable>
           <thead>
             <tr>
-              <th uiTh primary>Ligne</th>
-              <th uiTh numeric width="106px">Quantité</th>
-              <th uiTh numeric width="126px">Cours</th>
-              <th uiTh numeric width="146px">Valeur</th>
-              <th uiTh numeric width="106px">Jour</th>
+              <th uiTh primary>Holding</th>
+              <th uiTh numeric width="106px">Quantity</th>
+              <th uiTh numeric width="126px">Price</th>
+              <th uiTh numeric width="146px">Value</th>
+              <th uiTh numeric width="106px">Day</th>
             </tr>
           </thead>
           <tbody>
@@ -154,7 +154,7 @@ export default meta;
 type Story = StoryObj<TableArgs>;
 
 export const Default: Story = {
-  name: 'Groupe, lignes, survol',
+  name: 'Group, holdings, hover',
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
@@ -185,11 +185,11 @@ const holdingsTemplate = (columns: 'full' | 'compact' | 'narrow'): string => {
       <table uiTable row="60" [rule]="false">
         <thead>
           <tr>
-            <th uiTh primary>Ligne</th>
-            ${compact ? '' : `<th uiTh numeric ${hold} width="108px">Quantité</th><th uiTh numeric ${hold} width="116px">PRU</th><th uiTh numeric ${hold} width="128px">Cours</th>`}
-            <th uiTh numeric width="140px">Valeur</th>
-            ${compact ? '' : '<th uiTh numeric width="152px">Plus-value latente</th>'}
-            <th uiTh numeric width="92px">Jour</th>
+            <th uiTh primary>Holding</th>
+            ${compact ? '' : `<th uiTh numeric ${hold} width="108px">Quantity</th><th uiTh numeric ${hold} width="116px">Avg. cost</th><th uiTh numeric ${hold} width="128px">Price</th>`}
+            <th uiTh numeric width="140px">Value</th>
+            ${compact ? '' : '<th uiTh numeric width="152px">Unrealized gain</th>'}
+            <th uiTh numeric width="92px">Day</th>
           </tr>
         </thead>
         @for (group of groups; track group.name) {
@@ -210,11 +210,11 @@ const holdingsTemplate = (columns: 'full' | 'compact' | 'narrow'): string => {
                 <td uiTd numeric ${hold}>{{ row.average }}</td>
                 <td uiTd numeric ${hold}>
                   @if (row.noValue) {
-                    <button uiRowAction type="button" class="h-8 rounded-control bg-(--card) px-2.5 text-label font-medium whitespace-nowrap shadow-[inset_0_0_0_1px_var(--border)] hover:bg-(--glow)">Saisir un cours</button>
+                    <button uiRowAction type="button" class="h-8 rounded-control bg-(--card) px-2.5 text-label font-medium whitespace-nowrap shadow-[inset_0_0_0_1px_var(--border)] hover:bg-(--glow)">Enter a price</button>
                   } @else {
                     {{ row.price }}
                     @if (row.stale) {
-                      <span uiCellSub tone="stale">Cours du 24/09</span>
+                      <span uiCellSub tone="stale">Price as of 24/09</span>
                     }
                   }
                 </td>`
@@ -224,7 +224,7 @@ const holdingsTemplate = (columns: 'full' | 'compact' | 'narrow'): string => {
                   ${
                     narrow
                       ? `@if (row.noValue) {
-                    <button uiRowAction type="button" class="mt-1 h-8 rounded-control bg-(--card) px-2.5 text-label font-medium whitespace-nowrap shadow-[inset_0_0_0_1px_var(--border)] hover:bg-(--glow) lg:hidden">Saisir un cours</button>
+                    <button uiRowAction type="button" class="mt-1 h-8 rounded-control bg-(--card) px-2.5 text-label font-medium whitespace-nowrap shadow-[inset_0_0_0_1px_var(--border)] hover:bg-(--glow) lg:hidden">Enter a price</button>
                   }`
                       : ''
                   }
@@ -249,7 +249,7 @@ const holdingsTemplate = (columns: 'full' | 'compact' | 'narrow'): string => {
   `;
 };
 
-export const Lignes: Story = {
+export const Holdings: Story = {
   render: () => ({ props: { groups: GROUPS }, template: holdingsTemplate('full') }),
   parameters: { viewport: { width: 1280, height: 900 } },
   play: async ({ canvasElement }) => {
@@ -257,51 +257,51 @@ export const Lignes: Story = {
 
     await expect(canvas.getAllByRole('columnheader')).toHaveLength(7);
     await expect(canvas.getAllByRole('link')).toHaveLength(5);
-    await expect(canvas.getByRole('button', { name: 'Saisir un cours' })).toBeInTheDocument();
+    await expect(canvas.getByRole('button', { name: 'Enter a price' })).toBeInTheDocument();
   },
 };
 
-export const LigneOuverte: Story = {
-  name: 'Lignes, détail ouvert',
+export const HoldingOpen: Story = {
+  name: 'Holdings, detail open',
   render: () => ({ props: { groups: GROUPS }, template: holdingsTemplate('compact') }),
   parameters: { viewport: { width: 1280, height: 900 } },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
     await expect(canvas.getAllByRole('columnheader').map((header) => header.textContent)).toEqual([
-      'Ligne',
-      'Valeur',
-      'Jour',
+      'Holding',
+      'Value',
+      'Day',
     ]);
     await expect(canvas.getByRole('row', { selected: true })).toHaveTextContent('Amundi MSCI World');
     await expect(canvas.getByRole('link', { current: true })).toBeInTheDocument();
   },
 };
 
-export const Etroit: Story = {
+export const Narrow: Story = {
   render: () => ({ props: { groups: GROUPS }, template: holdingsTemplate('narrow') }),
   parameters: { viewport: { width: 768, height: 900 } },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(canvas.queryByRole('columnheader', { name: 'PRU' })).not.toBeInTheDocument();
-    await expect(canvas.getByRole('columnheader', { name: 'Plus-value latente' })).toBeVisible();
-    await expect(canvas.getByText('8 × 421,26 € · PRU 388,10 €')).toBeVisible();
-    await expect(canvas.getByRole('button', { name: 'Saisir un cours' })).toBeVisible();
+    await expect(canvas.queryByRole('columnheader', { name: 'Avg. cost' })).not.toBeInTheDocument();
+    await expect(canvas.getByRole('columnheader', { name: 'Unrealized gain' })).toBeVisible();
+    await expect(canvas.getByText('8 × 421,26 € · Avg. cost 388,10 €')).toBeVisible();
+    await expect(canvas.getByRole('button', { name: 'Enter a price' })).toBeVisible();
   },
 };
 
 const ACCOUNTS = [
-  ['Northwind PEA', 'PEA', 'Northwind Bank', '8 lignes', '48 215,60 €', '33,4 %'],
-  ['Woodgrove Savings Plan', 'PEE', 'Woodgrove Bank', '3 lignes', '31 840,15 €', '22,0 %'],
-  ['Livret A', 'Épargne', 'Woodgrove Bank', '1 ligne', '16 120,45 €', '11,2 %'],
-  ['Northwind PEA-PME', 'PEA-PME', 'Northwind Bank', 'Aucune ligne', '0,00 €', '—'],
+  ['Northwind PEA', 'PEA', 'Northwind Bank', '8 holdings', '48 215,60 €', '33,4 %'],
+  ['Woodgrove Savings Plan', 'PEE', 'Woodgrove Bank', '3 holdings', '31 840,15 €', '22,0 %'],
+  ['Livret A', 'Savings', 'Woodgrove Bank', '1 holding', '16 120,45 €', '11,2 %'],
+  ['Northwind PEA-PME', 'PEA-PME', 'Northwind Bank', 'No holdings', '0,00 €', '—'],
 ].map(([name, env, inst, lines, value, share]) => ({ name, env, inst, lines, value, share }));
 
 const rowActions = (label: string): string =>
-  `<button uiRowAction type="button" [attr.aria-label]="'Actions sur ' + ${label}" class="${ACTION}">${DOTS}</button>`;
+  `<button uiRowAction type="button" [attr.aria-label]="${label} + ' actions'" class="${ACTION}">${DOTS}</button>`;
 
-const catalogue = (headers: string, rows: string): string => `
+const catalog = (headers: string, rows: string): string => `
   <div class="${CARD} w-[1120px]">
     <table uiTable spaced>
       <thead><tr>${headers}</tr></thead>
@@ -310,16 +310,16 @@ const catalogue = (headers: string, rows: string): string => `
   </div>
 `;
 
-export const Comptes: Story = {
+export const Accounts: Story = {
   render: () => ({
     props: { accounts: ACCOUNTS },
-    template: catalogue(
-      `<th uiTh tall primary>Compte</th>
-       <th uiTh tall width="166px">Enveloppe</th>
-       <th uiTh tall width="186px">Établissement</th>
-       <th uiTh tall numeric width="126px">Lignes</th>
-       <th uiTh tall numeric width="166px">Valeur</th>
-       <th uiTh tall numeric width="88px">Part</th>
+    template: catalog(
+      `<th uiTh tall primary>Account</th>
+       <th uiTh tall width="166px">Wrapper</th>
+       <th uiTh tall width="186px">Institution</th>
+       <th uiTh tall numeric width="126px">Holdings</th>
+       <th uiTh tall numeric width="166px">Value</th>
+       <th uiTh tall numeric width="88px">Share</th>
        <th uiTh tall width="56px"><span class="sr-only">Actions</span></th>`,
       `@for (account of accounts; track account.name) {
          <tr uiTr>
@@ -340,6 +340,6 @@ export const Comptes: Story = {
 
     await userEvent.tab();
     await expect(canvas.getByRole('link', { name: 'Northwind PEA' })).toHaveFocus();
-    await expect(canvas.getByRole('button', { name: 'Actions sur Northwind PEA' })).toBeInTheDocument();
+    await expect(canvas.getByRole('button', { name: 'Northwind PEA actions' })).toBeInTheDocument();
   },
 };

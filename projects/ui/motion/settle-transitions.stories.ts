@@ -16,14 +16,14 @@ import { expect, userEvent, waitFor, within } from 'storybook/test';
   imports: [UiAsync, UiBackLink, UiButton, UiNavItem, UiRow, UiSegmented, UiSwitch, UiTable, UiTd, UiTr],
   template: `
     <div class="flex w-90 flex-col items-start gap-3 p-4">
-      <a href="#" ui-back-link>Profil</a>
-      <a active href="#" ui-nav-item>Lignes</a>
-      <button type="button" ui-button variant="outline">Ajouter une clé</button>
-      <button size="block" type="button" ui-button variant="outline-destructive">Se déconnecter</button>
-      <input aria-label="Masquer les montants" type="checkbox" uiSwitch [checked]="true" />
-      <ui-segmented label="Thème" [options]="themes" [value]="'dark'" />
+      <a href="#" ui-back-link>Profile</a>
+      <a active href="#" ui-nav-item>Holdings</a>
+      <button type="button" ui-button variant="outline">Add a passkey</button>
+      <button size="block" type="button" ui-button variant="outline-destructive">Sign out</button>
+      <input aria-label="Hide amounts" type="checkbox" uiSwitch [checked]="true" />
+      <ui-segmented label="Theme" [options]="themes" [value]="'dark'" />
       <a href="#" selected ui-row>Livret A</a>
-      <ui-async errorTitle="Clés indisponibles" retryLabel="Réessayer" state="error" />
+      <ui-async errorTitle="Passkeys couldn’t be loaded" retryLabel="Try again" state="error" />
       <table uiTable>
         <tbody>
           <tr selected uiTr>
@@ -36,9 +36,9 @@ import { expect, userEvent, waitFor, within } from 'storybook/test';
 })
 class MountedPage {
   protected readonly themes = [
-    { value: 'system', label: 'Système' },
-    { value: 'light', label: 'Clair' },
-    { value: 'dark', label: 'Sombre' },
+    { value: 'system', label: 'System' },
+    { value: 'light', label: 'Light' },
+    { value: 'dark', label: 'Dark' },
   ];
 }
 
@@ -68,7 +68,7 @@ change detection. Opening a route creates its elements first and binds their cla
 tick; a layout read in between (the router's scroll to the top, a view transition capturing the
 page) styles the elements without their classes, and the classes then arrive as a change. The
 components below hold their transitions (and their descendants') until two frames after their first
-render, so their fill, colour, thumb and switch track are simply there.
+render, so their fill, color, thumb and switch track are simply there.
 
 #### When to use
 
@@ -107,7 +107,7 @@ export const NothingAnimatesOnMount: Story = {
     await new Promise((resolve) => setTimeout(resolve, 400));
     document.removeEventListener('transitionrun', record, true);
 
-    await expect(canvas.getByRole('switch', { name: 'Masquer les montants' })).toBeChecked();
+    await expect(canvas.getByRole('switch', { name: 'Hide amounts' })).toBeChecked();
     await expect(runs.join(' | ')).toBe('');
   },
 };
@@ -125,7 +125,7 @@ export const TransitionsRunAfterMount: Story = {
       runs.push(event.propertyName);
     };
     document.addEventListener('transitionrun', record, true);
-    await userEvent.click(canvas.getByRole('switch', { name: 'Masquer les montants' }));
+    await userEvent.click(canvas.getByRole('switch', { name: 'Hide amounts' }));
     await waitFor(() => expect(runs).toContain('background-color'));
     document.removeEventListener('transitionrun', record, true);
   },

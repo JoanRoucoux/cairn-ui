@@ -16,7 +16,7 @@ describe('UiAlert', () => {
   });
 
   it('is an alert on the card surface by default', async () => {
-    await render('<ui-alert>Identifiant ou mot de passe incorrect.</ui-alert>', { imports: [UiAlert] });
+    await render('<ui-alert>Incorrect username or password.</ui-alert>', { imports: [UiAlert] });
 
     const alert = screen.getByRole('alert');
     expect(alert).toHaveClass(
@@ -26,7 +26,7 @@ describe('UiAlert', () => {
       'px-3.5',
       'py-3',
     );
-    expect(alert).toHaveTextContent('Identifiant ou mot de passe incorrect.');
+    expect(alert).toHaveTextContent('Incorrect username or password.');
   });
 
   it('draws the circle-alert icon in the negative color, hidden from assistive technology', async () => {
@@ -41,20 +41,20 @@ describe('UiAlert', () => {
   });
 
   it('renders the heading above muted text when one is given', async () => {
-    await render('<ui-alert heading="La connexion n\'a pas abouti">Réessayez.</ui-alert>', { imports: [UiAlert] });
+    await render('<ui-alert heading="Sign-in failed">Try again.</ui-alert>', { imports: [UiAlert] });
 
-    expect(screen.getByText("La connexion n'a pas abouti")).toHaveClass('font-medium');
-    expect(screen.getByText('Réessayez.')).toHaveClass('text-(--muted-foreground)');
+    expect(screen.getByText('Sign-in failed')).toHaveClass('font-medium');
+    expect(screen.getByText('Try again.')).toHaveClass('text-(--muted-foreground)');
   });
 
-  it('keeps the text in the foreground colour without a heading', async () => {
+  it('keeps the text in the foreground color without a heading', async () => {
     await render('<ui-alert>Text</ui-alert>', { imports: [UiAlert] });
 
     expect(screen.getByText('Text')).not.toHaveClass('text-(--muted-foreground)');
   });
 
   it('turns the warning variant into an inline status with the triangle icon', async () => {
-    await render('<ui-alert variant="warning">Cette action est définitive.</ui-alert>', { imports: [UiAlert] });
+    await render('<ui-alert variant="warning">This can’t be undone.</ui-alert>', { imports: [UiAlert] });
 
     const status = screen.getByRole('status');
     expect(status).not.toHaveClass('bg-(--card)');
@@ -67,7 +67,7 @@ describe('UiAlert', () => {
 
 describe('UiAlert info', () => {
   it('is a note on the muted surface, not a live region', async () => {
-    await render('<ui-alert variant="info">Cairn ne peut pas vérifier cet ISIN avant l\'ajout.</ui-alert>', {
+    await render('<ui-alert variant="info">Cairn can’t verify this ISIN before it’s added.</ui-alert>', {
       imports: [UiAlert],
     });
 
@@ -76,10 +76,10 @@ describe('UiAlert info', () => {
     expect(note).not.toHaveClass('bg-(--card)');
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     expect(screen.queryByRole('status')).not.toBeInTheDocument();
-    expect(note).toHaveTextContent("Cairn ne peut pas vérifier cet ISIN avant l'ajout.");
+    expect(note).toHaveTextContent('Cairn can’t verify this ISIN before it’s added.');
   });
 
-  it('draws the 18 px circle-info icon in the current colour, hidden from assistive technology', async () => {
+  it('draws the 18 px circle-info icon in the current color, hidden from assistive technology', async () => {
     await render('<ui-alert variant="info">Text</ui-alert>', { imports: [UiAlert] });
 
     const icon = screen.getByRole('note').querySelector('svg');

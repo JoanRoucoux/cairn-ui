@@ -8,7 +8,7 @@ type CollapsibleArgs = { locked: boolean };
 const GROUPS = [
   {
     name: 'Northwind PEA',
-    meta: 'PEA · Northwind Bank · 2 lignes',
+    meta: 'PEA · Northwind Bank · 2 holdings',
     total: '12 011,08 €',
     rows: [
       { name: 'Ferrari', value: '3 370,08 €', day: '+1,60 %' },
@@ -17,7 +17,7 @@ const GROUPS = [
   },
   {
     name: 'Woodgrove Savings Plan',
-    meta: 'PEE · Woodgrove Bank · 1 ligne',
+    meta: 'PEE · Woodgrove Bank · 1 holding',
     total: '18 049,20 €',
     rows: [{ name: 'Carmignac Patrimoine', value: '18 049,20 €', day: '−0,42 %' }],
   },
@@ -66,9 +66,9 @@ of the group it folds.
         <table uiTable row="60" [rule]="false">
           <thead>
             <tr>
-              <th uiTh primary>Ligne</th>
-              <th uiTh numeric width="140px">Valeur</th>
-              <th uiTh numeric width="92px">Jour</th>
+              <th uiTh primary>Holding</th>
+              <th uiTh numeric width="140px">Value</th>
+              <th uiTh numeric width="92px">Day</th>
             </tr>
           </thead>
           @for (group of groups; track group.name) {

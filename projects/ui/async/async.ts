@@ -12,7 +12,7 @@ export type AsyncState = (typeof ASYNC_STATES)[number];
 export const ASYNC_VARIANTS = ['elevated', 'plain', 'emphasis', 'inline'] as const;
 export type AsyncVariant = (typeof ASYNC_VARIANTS)[number];
 
-/** Alignments of the error block; `auto` is centred from 64rem. */
+/** Alignments of the error block; `auto` is centered from 64rem. */
 export const ASYNC_ALIGNS = ['start', 'center', 'auto'] as const;
 export type AsyncAlign = (typeof ASYNC_ALIGNS)[number];
 
@@ -96,7 +96,7 @@ const INLINE_BOX_CLASSES = 'flex-row items-center justify-between gap-3 pt-1.5 p
  * The three states of a block that depends on a service call, next to the ready content.
  *
  * @example
- * <ui-async [state]="totalState()" errorTitle="Total could not be loaded" errorMessage="The server did not answer." retryLabel="Retry" (retry)="reload()">
+ * <ui-async [state]="totalState()" errorTitle="The total couldn’t be loaded" errorMessage="The server didn’t respond." retryLabel="Try again" (retry)="reload()">
  *   <span asyncLoading><ui-skeleton shape="figure" /></span>
  *   <span asyncEmpty>Add a holding to see your total.</span>
  *   <span>{{ total() }}</span>
@@ -161,7 +161,7 @@ export class UiAsync {
   readonly errorTitle = input<string>();
   readonly errorMessage = input<string>();
   readonly retryLabel = input<string>();
-  /** Draws the rotate icon in the retry button. Only the `inline` variant honours `false`. */
+  /** Draws the rotate icon in the retry button. Only the `inline` variant honors `false`. */
   readonly retryIcon = input(true, { transform: booleanAttribute });
   readonly variant = input<AsyncVariant>('elevated');
   readonly align = input<AsyncAlign>('start');

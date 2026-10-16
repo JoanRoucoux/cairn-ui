@@ -32,7 +32,7 @@ that action is, so a screen reads at a glance.
 
 * For ordinary navigation between screens. A link should look like a link, and its role should stay
   a link.
-* More than one \`primary\` per screen. If every action is emphasised, none of them is.
+* More than one \`primary\` per screen. If every action is emphasized, none of them is.
 * For a destructive action without a confirmation step. Pair \`destructive\` with a dialog.
 
 #### Accessibility
@@ -84,7 +84,7 @@ that action is, so a screen reads at a glance.
     busy: {
       control: 'boolean',
       description:
-        'Marks the button busy like `loading`, without the spinner: the label alone says what is happening ("Connexion...").',
+        'Marks the button busy like `loading`, without the spinner: the label alone says what is happening (“Signing in…”).',
     },
     label: { control: 'text', description: 'Projected text content.' },
     onClick: { action: 'onClick', table: { disable: true } },
@@ -132,7 +132,7 @@ export const ExtraExtraLarge: Story = {
 };
 
 export const WithLeadingIcon: Story = {
-  args: { label: 'Ajouter une ligne' },
+  args: { label: 'Add a holding' },
   render: (args) => ({
     props: args,
     template: `
@@ -208,13 +208,13 @@ const ICON_LOGOUT = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"
 const ICON_TRASH = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>`;
 
 export const SmallActions: Story = {
-  name: 'Small actions (Comptes panel)',
+  name: 'Small actions (Accounts panel)',
   render: () => ({
     template: `
       <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-        <button ui-button variant="outline" size="sm">Ajouter une ligne</button>
-        <button ui-button variant="ghost" size="sm">Importer un CSV</button>
-        <button ui-button variant="outline" size="xs">Saisir un cours</button>
+        <button ui-button variant="outline" size="sm">Add a holding</button>
+        <button ui-button variant="ghost" size="sm">Import a CSV</button>
+        <button ui-button variant="outline" size="xs">Enter a price</button>
       </div>
     `,
   }),
@@ -225,32 +225,32 @@ export const QuietIcons: Story = {
   render: () => ({
     template: `
       <div style="display: flex; gap: 12px; align-items: center;">
-        <button ui-button variant="quiet" size="icon-sm" aria-label="Actions du compte">${ICON_DOTS}</button>
-        <button ui-button variant="quiet-destructive" size="icon-sm" aria-label="Supprimer">${ICON_TRASH}</button>
+        <button ui-button variant="quiet" size="icon-sm" aria-label="Account actions">${ICON_DOTS}</button>
+        <button ui-button variant="quiet-destructive" size="icon-sm" aria-label="Delete">${ICON_TRASH}</button>
       </div>
     `,
   }),
 };
 
 export const OutlineDestructive: Story = {
-  name: 'Outline destructive (Profil, 50 then 44)',
+  name: 'Outline destructive (Profile, 50 then 44)',
   render: () => ({
     template: `
       <button ui-button variant="outline-destructive" size="block" class="w-[320px]">
         ${ICON_LOGOUT}
-        Se déconnecter
+        Sign out
       </button>
     `,
   }),
 };
 
 export const TonalCompact: Story = {
-  name: 'Tonal compact (Tout vendre)',
+  name: 'Tonal compact (Sell all)',
   render: () => ({
     template: `
       <div style="display: flex; gap: 12px; align-items: center; justify-content: flex-end; width: 320px;">
-        <span class="text-label text-(--muted-foreground)">Vous détenez 500 parts</span>
-        <button ui-button variant="tonal" size="compact" class="-mr-1">Tout vendre</button>
+        <span class="text-label text-(--muted-foreground)">You hold 500 shares</span>
+        <button ui-button variant="tonal" size="compact" class="-mr-1">Sell all</button>
       </div>
     `,
   }),
@@ -259,20 +259,20 @@ export const TonalCompact: Story = {
 const ICON_HOME = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" /><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></svg>`;
 
 export const ResponsiveSizes: Story = {
-  name: 'Sizes that step down at 64rem (404, sign-in, Profil)',
+  name: 'Sizes that step down at 64rem (404, sign-in, Profile)',
   render: () => ({
     template: `
       <div style="display: flex; flex-direction: column; gap: 12px; width: 320px;">
-        <a ui-button size="xxl" href="#">${ICON_HOME}Revenir au portefeuille</a>
-        <button ui-button size="tall" variant="ghost">Utiliser plutôt une clé d'accès</button>
-        <button ui-button size="block" variant="outline">Exporter</button>
+        <a ui-button size="xxl" href="#">${ICON_HOME}Back to portfolio</a>
+        <button ui-button size="tall" variant="ghost">Use a passkey instead</button>
+        <button ui-button size="block" variant="outline">Export</button>
       </div>
     `,
   }),
 };
 
 export const Busy: Story = {
-  args: { busy: true, label: 'En attente de la clé...', size: 'xxl' },
+  args: { busy: true, label: 'Waiting for the passkey…', size: 'xxl' },
   render: (args) => ({
     props: args,
     template: `
@@ -284,7 +284,7 @@ export const Busy: Story = {
   }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const button = canvas.getByRole('button', { name: /En attente/ });
+    const button = canvas.getByRole('button', { name: /Waiting for/ });
 
     await expect(button).toHaveAttribute('aria-busy', 'true');
     await expect(button).toHaveAttribute('aria-disabled', 'true');
@@ -293,22 +293,22 @@ export const Busy: Story = {
 };
 
 export const DetailBar: Story = {
-  name: 'Detail action bar (Lignes iPhone, 48 px)',
+  name: 'Detail action bar (Holdings iPhone, 48 px)',
   render: () => ({
     template: `
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 340px;">
-        <button ui-button variant="outline" size="tall">Vendre</button>
-        <button ui-button size="tall">Acheter</button>
+        <button ui-button variant="outline" size="tall">Sell</button>
+        <button ui-button size="tall">Buy</button>
       </div>
     `,
   }),
 };
 
 export const CloseCross: Story = {
-  name: 'Close cross (Lignes desktop detail, 36 px)',
+  name: 'Close cross (Holdings desktop detail, 36 px)',
   render: () => ({
     template: `
-      <button ui-button variant="quiet-glow" size="icon-sm" aria-label="Fermer le détail">
+      <button ui-button variant="quiet-glow" size="icon-sm" aria-label="Close detail">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
       </button>
     `,
@@ -316,8 +316,8 @@ export const CloseCross: Story = {
 };
 
 export const SlimChange: Story = {
-  name: 'Slim ghost (Changer)',
+  name: 'Slim ghost (Change)',
   render: () => ({
-    template: `<button ui-button variant="ghost" size="slim" type="button">Changer</button>`,
+    template: `<button ui-button variant="ghost" size="slim" type="button">Change</button>`,
   }),
 };

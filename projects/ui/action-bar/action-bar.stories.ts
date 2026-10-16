@@ -12,7 +12,7 @@ const meta: Meta = {
     viewport: { width: 390, height: 600 },
     docs: {
       description: {
-        component: `Bar of actions fixed above the tab bar on iPhone, such as Vendre and Acheter on a holding's
+        component: `Bar of actions fixed above the tab bar on iPhone, such as Sell and Buy on a holding's
 detail: the primary actions, within thumb reach. It sits \`--tab-bar-height\` (52px plus the safe area) above the
 bottom edge, so it clears \`ui-tab-bar\`, draws a hairline on top over the page background, pads with the
 gutter, and splits its width equally between its children. It is hidden from \`64rem\`, where the same
@@ -43,12 +43,12 @@ While it is on the page the bar publishes its height as \`--action-bar-height\` 
     template: `
       <div class="relative h-[300px] w-[390px] overflow-hidden bg-(--background) shadow-[0_0_0_1px_var(--border)]" style="transform: translateZ(0)">
         <ui-action-bar style="display: grid">
-          <button ui-button variant="outline" size="tall" type="button">Vendre</button>
-          <button ui-button size="tall" type="button">Acheter</button>
+          <button ui-button variant="outline" size="tall" type="button">Sell</button>
+          <button ui-button size="tall" type="button">Buy</button>
         </ui-action-bar>
         <nav ui-tab-bar class="absolute inset-x-0 bottom-0">
-          <a ui-tab active href="#">Portefeuille</a>
-          <a ui-tab href="#">Lignes</a>
+          <a ui-tab active href="#">Portfolio</a>
+          <a ui-tab href="#">Holdings</a>
         </nav>
       </div>
     `,
@@ -62,7 +62,7 @@ export const Default: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(canvas.getByRole('button', { name: 'Vendre' })).toBeVisible();
-    await expect(canvas.getByRole('button', { name: 'Acheter' })).toBeVisible();
+    await expect(canvas.getByRole('button', { name: 'Sell' })).toBeVisible();
+    await expect(canvas.getByRole('button', { name: 'Buy' })).toBeVisible();
   },
 };

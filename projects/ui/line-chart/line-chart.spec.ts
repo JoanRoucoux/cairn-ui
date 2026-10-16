@@ -17,7 +17,7 @@ const time = (t: number): string => new Date(t).toISOString().slice(0, 10);
 describe('UiLineChart', () => {
   it('draws the curve, the dashed start line and the end dot, with no area and no gridline', async () => {
     const { fixture } = await render(
-      `<ui-line-chart label="Net worth over one month" startLabel="Depart" [points]="points" [valueFormat]="fmt" [deltaFormat]="delta" />`,
+      `<ui-line-chart label="Net worth over one month" startLabel="Start" [points]="points" [valueFormat]="fmt" [deltaFormat]="delta" />`,
       { imports: [UiLineChart], componentProperties: { points, fmt, delta } },
     );
     const svg = fixture.nativeElement.querySelector('svg');
@@ -31,12 +31,12 @@ describe('UiLineChart', () => {
   });
 
   it('labels the starting value with the app formatter', async () => {
-    await render(`<ui-line-chart label="x" startLabel="Depart" [points]="points" [valueFormat]="fmt" />`, {
+    await render(`<ui-line-chart label="x" startLabel="Start" [points]="points" [valueFormat]="fmt" />`, {
       imports: [UiLineChart],
       componentProperties: { points, fmt },
     });
 
-    expect(screen.getByText('Depart 142120.75 EUR')).toBeInTheDocument();
+    expect(screen.getByText('Start 142120.75 EUR')).toBeInTheDocument();
   });
 
   it('shows the value, the change since the start and the date for the key-selected point', async () => {
@@ -302,7 +302,7 @@ describe('UiLineChart', () => {
   it('never lets the start label cross the curve, moving it away from a crowded right end', async () => {
     const crowded: ChartPoint[] = Array.from({ length: 60 }, (_, index) => ({ t: index, v: index < 55 ? 100 : 500 }));
     const { fixture } = await render(
-      `<ui-line-chart label="x" startLabel="Depart" [points]="points" [valueFormat]="fmt" />`,
+      `<ui-line-chart label="x" startLabel="Start" [points]="points" [valueFormat]="fmt" />`,
       { imports: [UiLineChart], componentProperties: { points: crowded, fmt } },
     );
 

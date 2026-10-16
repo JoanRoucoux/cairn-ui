@@ -25,7 +25,7 @@ describe('UiIconToggle', () => {
     expect(screen.getByRole('button')).toHaveAttribute('type', 'submit');
   });
 
-  it('is a round 44 px hit area, 40 px from 64rem, in the foreground colour', async () => {
+  it('is a round 44 px hit area, 40 px from 64rem, in the foreground color', async () => {
     await render(toggle(), { imports: [UiIconToggle] });
 
     expect(screen.getByRole('button')).toHaveClass(

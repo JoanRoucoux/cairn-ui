@@ -76,7 +76,7 @@ mode. The selection is a \`model()\`, bound with \`[(value)]\`.
       control: 'inline-radio',
       options: [...SEGMENTED_SIZES],
       description:
-        'Option height: `md` is 40 px on touch and 32 px with a mouse (Dashboard, Profil); `sm` is 40 px, then 30 px with a mouse (the Lignes detail range).',
+        'Option height: `md` is 40 px on touch and 32 px with a mouse (Dashboard, Profile); `sm` is 40 px, then 30 px with a mouse (the Holdings detail range).',
     },
     options: { control: false, description: 'Ordered `{ value, label }` list of choices.' },
   },
@@ -111,15 +111,15 @@ export const InAFlexHeaderWithNoWidth: Story = {
 };
 
 export const VisibleLabel: Story = {
-  name: 'Profil, theme with a visible label',
+  name: 'Profile, theme with a visible label',
   args: {
-    label: 'Thème',
+    label: 'Theme',
     showLabel: true,
     value: 'system',
     options: [
-      { value: 'system', label: 'Système' },
-      { value: 'light', label: 'Clair' },
-      { value: 'dark', label: 'Sombre' },
+      { value: 'system', label: 'System' },
+      { value: 'light', label: 'Light' },
+      { value: 'dark', label: 'Dark' },
     ],
   },
   render: (args) => ({
@@ -129,11 +129,11 @@ export const VisibleLabel: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(canvas.getByRole('radiogroup', { name: 'Thème' })).toBeInTheDocument();
+    await expect(canvas.getByRole('radiogroup', { name: 'Theme' })).toBeInTheDocument();
   },
 };
 
 export const SmallWithAMouse: Story = {
-  name: 'Small (Lignes detail range)',
+  name: 'Small (Holdings detail range)',
   args: { size: 'sm' },
 };

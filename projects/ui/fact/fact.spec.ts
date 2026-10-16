@@ -4,8 +4,8 @@ import { type FactSize, type FactSubTone, UiFact, UiFacts } from './fact';
 
 const template = `
   <dl uiFacts [ruled]="ruled">
-    <div ui-fact label="Quantité" [size]="size">500</div>
-    <div ui-fact label="Cours" [size]="size" sub="24/09 · Yahoo" [subTone]="tone">28,64 €</div>
+    <div ui-fact label="Quantity" [size]="size">500</div>
+    <div ui-fact label="Price" [size]="size" sub="24/09 · Yahoo" [subTone]="tone">28,64 €</div>
   </dl>`;
 
 const renderFacts = (
@@ -20,7 +20,7 @@ describe('UiFact', () => {
   it('reads as a term and its value', async () => {
     await renderFacts();
 
-    expect(screen.getByText('Quantité').tagName).toBe('DT');
+    expect(screen.getByText('Quantity').tagName).toBe('DT');
     expect(screen.getByText('500').closest('dd')).not.toBeNull();
   });
 
@@ -28,7 +28,7 @@ describe('UiFact', () => {
     const { container } = await renderFacts();
 
     expect(container.querySelector('[ui-fact]')).toHaveClass('flex', 'justify-between', 'items-baseline', 'gap-4');
-    expect(screen.getByText('Quantité')).toHaveClass('text-label', 'text-(--muted-foreground)');
+    expect(screen.getByText('Quantity')).toHaveClass('text-label', 'text-(--muted-foreground)');
     expect(screen.getByText('500').closest('dd')).toHaveClass('items-end', 'text-right');
   });
 
@@ -62,7 +62,7 @@ describe('UiFact', () => {
     expect(screen.getByText('24/09 · Yahoo')).toHaveClass('text-caption', 'text-(--subtle-foreground)');
   });
 
-  it('paints a stale sub-line in the stale colour', async () => {
+  it('paints a stale sub-line in the stale color', async () => {
     await renderFacts({ tone: 'stale' });
 
     const sub = screen.getByText('24/09 · Yahoo');

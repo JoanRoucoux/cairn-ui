@@ -3,7 +3,7 @@ import { type RenderResult, render } from '@testing-library/angular';
 import { UiDialog } from './dialog';
 
 const renderDialog = (open: boolean): Promise<RenderResult<unknown>> =>
-  render(`<ui-dialog heading="Acheter" [open]="open"><p>Corps</p></ui-dialog>`, {
+  render(`<ui-dialog heading="Buy" [open]="open"><p>Body</p></ui-dialog>`, {
     imports: [UiDialog],
     componentProperties: { open },
   });
