@@ -11,22 +11,22 @@ export const field = (label: string): string => `
 
 export const result = (index: number): string => `
   <button type="button" class="flex w-full items-center justify-between rounded-control px-3 py-2 text-left hover:bg-(--glow)">
-    <span class="text-body font-medium">Résultat ${index}</span>
-    <span class="text-caption text-(--muted-foreground)">cours d'essai</span>
+    <span class="text-body font-medium">Result ${index}</span>
+    <span class="text-caption text-(--muted-foreground)">test price</span>
   </button>`;
 
 export const sheetStaysFixed: StoryObj['play'] = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
-  const dialog = canvas.getByRole('dialog', { name: 'Ajouter une ligne' });
+  const dialog = canvas.getByRole('dialog', { name: 'Add a holding' });
   const footer = dialog.querySelector('[data-dialog-footer]') as HTMLElement;
 
   await waitFor(() => expect(Math.round(dialog.getBoundingClientRect().height)).toBe(window.innerHeight - 58));
   await waitFor(() => expect(Math.round(footer.getBoundingClientRect().bottom)).toBe(window.innerHeight));
 };
 
-export const desktopCentred: StoryObj['play'] = async ({ canvasElement }) => {
+export const desktopCentered: StoryObj['play'] = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
-  const dialog = canvas.getByRole('dialog', { name: 'Ajouter une ligne' });
+  const dialog = canvas.getByRole('dialog', { name: 'Add a holding' });
 
   await waitFor(() => {
     const rect = dialog.getBoundingClientRect();
@@ -45,7 +45,7 @@ const headerBoxes = (canvasElement: HTMLElement): { title: DOMRect; cross: DOMRe
   };
 };
 
-export const headerCentred: StoryObj['play'] = async ({ canvasElement }) => {
+export const headerCentered: StoryObj['play'] = async ({ canvasElement }) => {
   await waitFor(() => {
     const { title, cross } = headerBoxes(canvasElement);
 
@@ -76,10 +76,10 @@ export const bodyReachable: StoryObj['play'] = async ({ canvasElement }) => {
 
 export const sheetFitsTheScreen: StoryObj['play'] = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
-  const dialog = canvas.getByRole('dialog', { name: 'Acheter Ferrari' });
+  const dialog = canvas.getByRole('dialog', { name: 'Buy Ferrari' });
   const footer = dialog.querySelector('[data-dialog-footer]') as HTMLElement;
   const body = dialog.querySelector('[data-dialog-body]') as HTMLElement;
-  const primary = canvas.getByRole('button', { name: 'Acheter 10 parts' });
+  const primary = canvas.getByRole('button', { name: 'Buy 10 shares' });
 
   await waitFor(() => expect(footer.getBoundingClientRect().bottom).toBeLessThanOrEqual(window.innerHeight));
   await expect(body.scrollHeight).toBeGreaterThan(body.clientHeight);
@@ -87,7 +87,7 @@ export const sheetFitsTheScreen: StoryObj['play'] = async ({ canvasElement }) =>
 };
 
 export const keptMountedTemplate = `
-      <button ui-button (click)="mounted = true; open = true">Ouvrir</button>
+      <button ui-button (click)="mounted = true; open = true">Open</button>
       <p class="text-label text-(--muted-foreground)" data-story-closed>{{ closedCount }} {{ closedReason }}</p>
       @if (mounted) {
         <ui-dialog
@@ -99,8 +99,8 @@ export const keptMountedTemplate = `
           (dismissed)="open = false"
           (closed)="mounted = false; closedCount = closedCount + 1; closedReason = $event"
         >
-          <p class="text-label text-(--muted-foreground)">Le cadre reste monté jusqu'à la fin de la sortie.</p>
-          <button dialogActions ui-button (click)="open = false">Enregistrer</button>
+          <p class="text-label text-(--muted-foreground)">The wrapper stays mounted until the exit has played.</p>
+          <button dialogActions ui-button (click)="open = false">Save</button>
         </ui-dialog>
       }
 `;
@@ -109,29 +109,29 @@ export const keptMountedUntilClosed: StoryObj['play'] = async ({ canvasElement }
   const canvas = within(canvasElement);
   const closed = canvasElement.querySelector('[data-story-closed]') as HTMLElement;
 
-  await userEvent.click(canvas.getByRole('button', { name: 'Ouvrir' }));
-  await waitFor(() => expect(canvas.getByRole('dialog', { name: 'Saisir un cours' })).toBeVisible());
-  await userEvent.click(canvas.getByRole('button', { name: 'Fermer' }));
+  await userEvent.click(canvas.getByRole('button', { name: 'Open' }));
+  await waitFor(() => expect(canvas.getByRole('dialog', { name: 'Enter a price' })).toBeVisible());
+  await userEvent.click(canvas.getByRole('button', { name: 'Close' }));
 
   await expect(canvasElement.querySelector('ui-dialog')).not.toBeNull();
   await waitFor(() => expect(canvasElement.querySelector('ui-dialog')).toBeNull());
   await expect(closed).toHaveTextContent('1 cross');
-  await expect(canvas.getByRole('button', { name: 'Ouvrir' })).toHaveFocus();
+  await expect(canvas.getByRole('button', { name: 'Open' })).toHaveFocus();
 
-  await userEvent.click(canvas.getByRole('button', { name: 'Ouvrir' }));
-  await waitFor(() => expect(canvas.getByRole('dialog', { name: 'Saisir un cours' })).toBeVisible());
-  await userEvent.click(canvas.getByRole('button', { name: 'Enregistrer' }));
+  await userEvent.click(canvas.getByRole('button', { name: 'Open' }));
+  await waitFor(() => expect(canvas.getByRole('dialog', { name: 'Enter a price' })).toBeVisible());
+  await userEvent.click(canvas.getByRole('button', { name: 'Save' }));
 
   await waitFor(() => expect(canvasElement.querySelector('ui-dialog')).toBeNull());
   await expect(closed).toHaveTextContent('2 programmatic');
-  await expect(canvas.getByRole('button', { name: 'Ouvrir' })).toHaveFocus();
+  await expect(canvas.getByRole('button', { name: 'Open' })).toHaveFocus();
 };
 
 export const sheetHasGrips: StoryObj['play'] = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
 
-  await userEvent.click(canvas.getByRole('button', { name: 'Ouvrir' }));
-  const dialog = await canvas.findByRole('dialog', { name: 'Saisir un cours' });
+  await userEvent.click(canvas.getByRole('button', { name: 'Open' }));
+  const dialog = await canvas.findByRole('dialog', { name: 'Enter a price' });
   const header = dialog.querySelector('[data-dialog-header]') as HTMLElement;
 
   await waitFor(() => expect(dialog.querySelector('[data-dialog-handle]')).toBeVisible());
@@ -139,13 +139,13 @@ export const sheetHasGrips: StoryObj['play'] = async ({ canvasElement }) => {
 };
 
 const confirmActions = `
-        <button dialogActions ui-button variant="outline" (click)="open = false">Annuler</button>
-        <button dialogActions ui-button variant="destructive" (click)="open = false">Supprimer la clé</button>`;
+        <button dialogActions ui-button variant="outline" (click)="open = false">Cancel</button>
+        <button dialogActions ui-button variant="destructive" (click)="open = false">Delete passkey</button>`;
 
 export const confirmTemplate = (actions: boolean): string => `
       <ui-dialog [heading]="heading" [variant]="variant" [open]="open" (dismissed)="open = false">
         <p class="text-body text-(--muted-foreground)" data-story-body>
-          Cet appareil ne pourra plus se connecter à Cairn avec cette clé. Les autres clés restent valables.
+          This device will no longer be able to sign in to Cairn with this passkey. Your other passkeys stay valid.
         </p>
         ${actions ? confirmActions : ''}
       </ui-dialog>
@@ -161,7 +161,7 @@ export const emptyFooterUnpadded: StoryObj['play'] = async ({ canvasElement }) =
 };
 
 export const defaultTemplate = `
-      <button ui-button (click)="open = true">Ouvrir</button>
+      <button ui-button (click)="open = true">Open</button>
       <ui-dialog
         [heading]="heading"
         [description]="description"
@@ -172,14 +172,14 @@ export const defaultTemplate = `
         (dismissed)="open = false"
       >
         <p class="text-label text-(--muted-foreground)">
-          Le cours saisi remplace la dernière valeur connue jusqu'à la prochaine actualisation.
+          The price you enter replaces the last known value until the next refresh.
         </p>
-        <button dialogActions ui-button variant="outline" class="max-lg:hidden" (click)="open = false">Annuler</button>
-        <button dialogActions ui-button (click)="open = false">Enregistrer</button>
+        <button dialogActions ui-button variant="outline" class="max-lg:hidden" (click)="open = false">Cancel</button>
+        <button dialogActions ui-button (click)="open = false">Save</button>
       </ui-dialog>
 `;
 
-export const addLineTemplate = (results: number): string => `
+export const addHoldingTemplate = (results: number): string => `
       <ui-dialog
         [heading]="heading"
         [closeLabel]="closeLabel"
@@ -189,11 +189,11 @@ export const addLineTemplate = (results: number): string => `
         (dismissed)="open = false"
       >
         <div class="flex flex-col gap-4" data-story-body>
-          ${field('Compte')}${field('Titre')}
+          ${field('Account')}${field('Security')}
           <div class="flex flex-col">${Array.from({ length: results }, (_, index) => result(index + 1)).join('')}</div>
         </div>
-        <button dialogActions ui-button variant="outline" class="max-lg:hidden" (click)="open = false">Annuler</button>
-        <button dialogActions ui-button (click)="open = false">Ajouter la ligne</button>
+        <button dialogActions ui-button variant="outline" class="max-lg:hidden" (click)="open = false">Cancel</button>
+        <button dialogActions ui-button (click)="open = false">Add holding</button>
       </ui-dialog>
 `;
 
@@ -256,9 +256,9 @@ export const tradeTemplate = `
         [open]="open"
         (dismissed)="open = false"
       >
-        <div class="flex flex-col gap-4" data-story-body>${field('Quantité')}${field('Prix unitaire')}</div>
-        <button dialogActions ui-button variant="outline" class="max-lg:hidden" (click)="open = false">Annuler</button>
-        <button dialogActions ui-button (click)="open = false">Acheter 40 parts</button>
+        <div class="flex flex-col gap-4" data-story-body>${field('Quantity')}${field('Unit price')}</div>
+        <button dialogActions ui-button variant="outline" class="max-lg:hidden" (click)="open = false">Cancel</button>
+        <button dialogActions ui-button (click)="open = false">Buy 40 shares</button>
       </ui-dialog>
     `;
 
@@ -270,8 +270,8 @@ export const newAccountTemplate = `
         [open]="open"
         (dismissed)="open = false"
       >
-        <div class="flex flex-col gap-4" data-story-body>${field('Nom du compte')}${field('Enveloppe')}${field('Établissement (facultatif)')}</div>
-        <button dialogActions ui-button variant="outline" class="max-lg:hidden" (click)="open = false">Annuler</button>
-        <button dialogActions ui-button (click)="open = false">Créer le compte</button>
+        <div class="flex flex-col gap-4" data-story-body>${field('Account name')}${field('Wrapper')}${field('Institution (optional)')}</div>
+        <button dialogActions ui-button variant="outline" class="max-lg:hidden" (click)="open = false">Cancel</button>
+        <button dialogActions ui-button (click)="open = false">Create account</button>
       </ui-dialog>
     `;

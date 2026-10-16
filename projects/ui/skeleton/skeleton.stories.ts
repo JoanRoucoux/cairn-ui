@@ -31,7 +31,7 @@ screen sizes the box (200 on the phone, 300 and more on the desktop). \`ring\` t
 
 #### When not to use
 
-* For a refresh of content already on screen. Replacing what the user is reading with grey bars
+* For a refresh of content already on screen. Replacing what the user is reading with gray bars
   loses their place.
 * For a wait with no known shape. A skeleton promises a layout it then has to deliver.
 

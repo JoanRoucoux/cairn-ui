@@ -27,10 +27,10 @@ const eur = (value: number): string =>
 const signedEur = (delta: number): string => `${delta > 0 ? '+' : delta < 0 ? '\u2212' : ''}${eur(Math.abs(delta))}`;
 
 const dayFormat = (time: number): string =>
-  new Date(time).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+  new Date(time).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
 
 const hourFormat = (time: number): string =>
-  new Date(time).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  new Date(time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 
 const buildMonthlySeries = (start: number, days: number): ChartPoint[] =>
   Array.from({ length: days }, (_, index) => {
@@ -75,16 +75,16 @@ const meta: Meta<LineChartArgs> = {
       description: {
         component: `A single series' value over time: a monotone curve (Fritsch-Carlson, the same interpolation
 as d3's \`curveMonotoneX\`) that never overshoots the data between two points, a dashed reference
-line at the range's starting value with its "Départ" label, a focus/hover tooltip with the change
+line at the range's starting value with its “Start” label, a focus/hover tooltip with the change
 since the start, and a shape transition when \`points\` changes to a new range.
 
 The transition runs only for a new \`points\` array: mounting, the first measured size and any later
 resize draw at once. It lasts \`--duration-base\` with an ease-out, restarts from the shape on screen
-when the range changes again, and moves the end dot along the curve. The "Départ" label and the
+when the range changes again, and moves the end dot along the curve. The “Start” label and the
 dashed line fade out when it starts and back in at their new place when it ends; the tooltip waits
 for the end. Under \`prefers-reduced-motion\` the new series shows at once.
 
-Bind \`rangeKey\` (the range's id, \`1M\`, \`1A\`) and only a series that comes with a new key
+Bind \`rangeKey\` (the range's id, \`1M\`, \`1Y\`) and only a series that comes with a new key
 interpolates: the same range reloaded after a buy, or a refresh of its prices, redraws at once with
 no fade, as MOUVEMENT.md animates the curve on a range change only. The key may change before its
 series arrives; the interpolation runs when the series does. Without \`rangeKey\`, every new series
@@ -92,7 +92,7 @@ interpolates.
 
 Formatting and locale are the consumer's business: \`valueFormat\`, \`deltaFormat\`, \`timeFormat\` and
 \`axisFormat\` all arrive as inputs, so masking amounts is a matter of passing a formatter that
-returns bullets instead of digits — the curve's shape stays visible either way.
+returns bullets instead of digits: the curve's shape stays visible either way.
 
 The host fills its parent's height (\`block h-full\`); size the chart by sizing its container.
 
@@ -100,7 +100,7 @@ The host fills its parent's height (\`block h-full\`); size the chart by sizing 
 
 * Portfolio or instrument value over a selectable range, one series at a time.
 * A short history under a coarse \`axisFormat\` (years on a 5-year range): a tick label equal to the
-  previous drawn one is skipped, so the axis never reads "2026 2026 2026".
+  previous drawn one is skipped, so the axis never reads “2026 2026 2026”.
 
 #### When not to use
 
@@ -127,7 +127,7 @@ The host fills its parent's height (\`block h-full\`); size the chart by sizing 
   args: {
     points: oneMonthPoints,
     label: 'Net worth over one month',
-    startLabel: 'Départ',
+    startLabel: 'Start',
     timeColumnLabel: 'Date',
     valueColumnLabel: 'Value',
     valueFormat: eur,
@@ -140,7 +140,7 @@ The host fills its parent's height (\`block h-full\`); size the chart by sizing 
     label: { control: 'text', description: 'The SVG\'s accessible name (`role="img"`).' },
     startLabel: {
       control: 'text',
-      description: 'Prefix of the reference-line label, e.g. `Départ`. Empty hides the label.',
+      description: 'Prefix of the reference-line label, e.g. `Start`. Empty hides the label.',
     },
     timeColumnLabel: { control: 'text', description: "Header of the screen-reader table's time column." },
     valueColumnLabel: { control: 'text', description: "Header of the screen-reader table's value column." },
@@ -164,7 +164,7 @@ The host fills its parent's height (\`block h-full\`); size the chart by sizing 
       control: 'inline-radio',
       options: ['auto', 3, 5],
       description:
-        '3 draws start, middle and end only (Lignes), 5 draws five labels, auto (default) draws 3 below 40rem and 5 above (Dashboard).',
+        '3 draws start, middle and end only (Holdings), 5 draws five labels, auto (default) draws 3 below 40rem and 5 above (Dashboard).',
     },
     sparkline: {
       control: 'boolean',
@@ -200,7 +200,7 @@ export const OneMonth: Story = {};
 const framed = (width: number, height: number, attributes: string): Story => ({
   render: (args) => ({
     props: args,
-    template: `<div style="width: ${width}px; height: ${height}px;"><ui-line-chart ${attributes} [points]="points" [label]="label" startLabel="Départ" [valueFormat]="valueFormat" [deltaFormat]="deltaFormat" [timeFormat]="timeFormat" [axisFormat]="axisFormat" /></div>`,
+    template: `<div style="width: ${width}px; height: ${height}px;"><ui-line-chart ${attributes} [points]="points" [label]="label" startLabel="Start" [valueFormat]="valueFormat" [deltaFormat]="deltaFormat" [timeFormat]="timeFormat" [axisFormat]="axisFormat" /></div>`,
   }),
 });
 
@@ -208,23 +208,23 @@ export const DashboardPhone: Story = framed(326, 205, 'tooltip="auto" axisGap="a
 
 export const DashboardDesktop: Story = framed(688, 404, 'tooltip="auto" axisGap="auto"');
 
-export const LignesPhone: Story = framed(326, 179, '[tooltipDelta]="false" axisTicks="3"');
+export const HoldingsPhone: Story = framed(326, 179, '[tooltipDelta]="false" axisTicks="3"');
 
-export const LignesDesktop: Story = framed(352, 169, '[tooltipDelta]="false" axisTicks="3"');
+export const HoldingsDesktop: Story = framed(352, 169, '[tooltipDelta]="false" axisTicks="3"');
 
 export const Sparkline: Story = {
   render: (args) => ({
     props: { ...args, sparklinePoints },
     template: `<div class="h-6 w-20"><ui-line-chart sparkline [points]="sparklinePoints" [label]="label" [valueFormat]="valueFormat" [timeFormat]="timeFormat" /></div>`,
   }),
-  args: { label: 'Évolution sur 7 jours' },
+  args: { label: 'Change over 7 days' },
 };
 
 export const OneDay: Story = {
   args: {
     points: oneDayPoints,
     label: 'Net worth over one day',
-    startLabel: 'Départ',
+    startLabel: 'Start',
     timeFormat: hourFormat,
     axisFormat: hourFormat,
   },
@@ -273,7 +273,7 @@ export const MaskedAmounts: Story = {
   args: {
     valueFormat: () => '\u2022\u2022\u2022\u2022 \u20ac',
     deltaFormat: () => '\u2022\u2022\u2022\u2022 \u20ac',
-    deltaSuffix: 'depuis le début',
+    deltaSuffix: 'since the start',
   },
 };
 
@@ -302,7 +302,7 @@ export const RangeTransitionSettles: Story = {
       },
       template: `
         <div style="width: 640px; height: 240px;">
-          <ui-line-chart [points]="points()" label="Net worth" startLabel="Départ" [valueFormat]="valueFormat" />
+          <ui-line-chart [points]="points()" label="Net worth" startLabel="Start" [valueFormat]="valueFormat" />
         </div>
         <button type="button" (click)="switchRange()">Switch range</button>
       `,
@@ -335,13 +335,13 @@ export const SameRangeReloadDrawsAtOnce: Story = {
         valueFormat: eur,
         reload: () => points.set(oneMonthPoints.map((point) => ({ ...point, v: point.v + 4000 }))),
         switchRange: () => {
-          rangeKey.set('1J');
+          rangeKey.set('1D');
           points.set(oneDayPoints);
         },
       },
       template: `
         <div style="width: 640px; height: 240px;">
-          <ui-line-chart [points]="points()" [rangeKey]="rangeKey()" label="Net worth" startLabel="Départ" [valueFormat]="valueFormat" />
+          <ui-line-chart [points]="points()" [rangeKey]="rangeKey()" label="Net worth" startLabel="Start" [valueFormat]="valueFormat" />
         </div>
         <button type="button" (click)="reload()">Reload</button>
         <button type="button" (click)="switchRange()">Switch range</button>
@@ -365,22 +365,22 @@ export const SameRangeReloadDrawsAtOnce: Story = {
   },
 };
 
-export const LignesDetailTooltip: Story = {
-  name: 'Lignes detail, tooltip with the unit price',
+export const HoldingsDetailTooltip: Story = {
+  name: 'Holdings detail, tooltip with the unit price',
   args: {
-    tooltipFormat: (point: ChartPoint) => `${eur(point.v)} · cours ${eur(point.v / 500)}`,
+    tooltipFormat: (point: ChartPoint) => `${eur(point.v)} · price ${eur(point.v / 500)}`,
   },
   render: (args) => ({
     props: args,
-    template: `<div data-frame class="bg-(--card) p-4" style="width: 358px"><div style="height: 150px;"><ui-line-chart [tooltipDelta]="false" axisTicks="3" [points]="points" [label]="label" startLabel="Départ" [valueFormat]="valueFormat" [tooltipFormat]="tooltipFormat" [timeFormat]="timeFormat" [axisFormat]="axisFormat" /></div></div>`,
+    template: `<div data-frame class="bg-(--card) p-4" style="width: 358px"><div style="height: 150px;"><ui-line-chart [tooltipDelta]="false" axisTicks="3" [points]="points" [label]="label" startLabel="Start" [valueFormat]="valueFormat" [tooltipFormat]="tooltipFormat" [timeFormat]="timeFormat" [axisFormat]="axisFormat" /></div></div>`,
   }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
     await userEvent.hover(canvasElement.querySelector('svg') as HTMLElement);
 
-    await expect(canvas.getByTestId('chart-tooltip')).toHaveTextContent(/cours/);
-    await expect(canvas.getByText(/^Départ /)).not.toHaveTextContent(/cours/);
+    await expect(canvas.getByTestId('chart-tooltip')).toHaveTextContent(/price/);
+    await expect(canvas.getByText(/^Start /)).not.toHaveTextContent(/price/);
   },
 };
 

@@ -48,7 +48,7 @@ export default meta;
 
 type Story = StoryObj;
 
-const ROWS = ['Livret A', 'LDDS', 'PEA', 'Assurance vie'];
+const ROWS = ['Livret A', 'LDDS', 'PEA', 'Life insurance'];
 
 export const AfterAnAction: Story = {
   render: () => ({

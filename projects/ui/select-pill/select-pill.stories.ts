@@ -41,7 +41,7 @@ emits \`cleared\`, so the list goes back to every value in one tap. It is 34 px 
 * The cross is a real button named by \`clearLabel\`, which the app passes in its own language, and it is a
   tab stop of its own, outside the trigger.
 * The trigger's focus ring sits 2 px outside the pill; the cross's is a 24 px circle around its icon, in the pill's
-  text colour so it shows on the solid pill. Both are outlines, so they show in forced colors; the pill keeps a
+  text color so it shows on the solid pill. Both are outlines, so they show in forced colors; the pill keeps a
   border there.`,
       },
     },
@@ -49,17 +49,17 @@ emits \`cleared\`, so the list goes back to every value in one tap. It is 34 px 
   render: (args) => ({
     props: args,
     template: `
-      <ui-select-pill [active]="active" [disabled]="disabled" [clearLabel]="clearLabel" contextLabel="Compte" (cleared)="cleared()">
-        {{ active ? 'Northwind PEA' : 'Tous les comptes' }}
-        <ui-menu label="Compte" sheet heading="Compte">
-          <button uiMenuItem type="button" [checked]="!active">Tous les comptes</button>
+      <ui-select-pill [active]="active" [disabled]="disabled" [clearLabel]="clearLabel" contextLabel="Account" (cleared)="cleared()">
+        {{ active ? 'Northwind PEA' : 'All accounts' }}
+        <ui-menu label="Account" sheet heading="Account">
+          <button uiMenuItem type="button" [checked]="!active">All accounts</button>
           <button uiMenuItem type="button" [checked]="active">Northwind PEA</button>
           <button uiMenuItem type="button">Contoso CTO</button>
         </ui-menu>
       </ui-select-pill>
     `,
   }),
-  args: { active: false, clearLabel: 'Retirer le filtre de compte', cleared: fn() },
+  args: { active: false, clearLabel: 'Remove the account filter', cleared: fn() },
   argTypes: {
     active: {
       control: 'boolean',
@@ -86,7 +86,7 @@ type Story = StoryObj<SelectPillArgs>;
 
 export const Rest: Story = {
   play: async ({ canvasElement }) => {
-    await expect(within(canvasElement).getByRole('button', { name: 'Tous les comptes' })).toHaveAttribute(
+    await expect(within(canvasElement).getByRole('button', { name: 'All accounts' })).toHaveAttribute(
       'aria-expanded',
       'false',
     );
@@ -96,7 +96,7 @@ export const Rest: Story = {
 export const Active: Story = {
   args: { active: true },
   play: async ({ canvasElement, args }) => {
-    await userEvent.click(within(canvasElement).getByRole('button', { name: 'Retirer le filtre de compte' }));
+    await userEvent.click(within(canvasElement).getByRole('button', { name: 'Remove the account filter' }));
 
     await expect(args.cleared).toHaveBeenCalledTimes(1);
   },
@@ -105,7 +105,7 @@ export const Active: Story = {
 export const Disabled: Story = {
   args: { disabled: true },
   play: async ({ canvasElement }) => {
-    const trigger = within(canvasElement).getByRole('button', { name: 'Tous les comptes' });
+    const trigger = within(canvasElement).getByRole('button', { name: 'All accounts' });
 
     await expect(trigger).toBeDisabled();
     await expect(trigger).toHaveAttribute('aria-disabled', 'true');
@@ -118,7 +118,7 @@ export const Disabled: Story = {
 export const Focus: Story = {
   play: async ({ canvasElement }) => {
     await userEvent.tab();
-    const trigger = within(canvasElement).getByRole('button', { name: 'Tous les comptes' });
+    const trigger = within(canvasElement).getByRole('button', { name: 'All accounts' });
 
     await expect(trigger).toHaveFocus();
     await expect(getComputedStyle(trigger).outlineStyle).toBe('solid');
@@ -131,7 +131,7 @@ export const ActiveFocus: Story = {
   args: { active: true },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const cross = canvas.getByRole('button', { name: 'Retirer le filtre de compte' });
+    const cross = canvas.getByRole('button', { name: 'Remove the account filter' });
     const pill = canvasElement.querySelector('[data-pill]')!;
 
     await userEvent.tab();

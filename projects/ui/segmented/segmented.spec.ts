@@ -22,7 +22,7 @@ describe('UiSegmented', () => {
     expect(screen.getByRole('radio', { name: '1D' })).toHaveClass('h-10', 'pointer-fine:h-8');
   });
 
-  it('transitions the press scale at the press duration and switches the label colour at once', async () => {
+  it('transitions the press scale at the press duration and switches the label color at once', async () => {
     await renderSegmented();
 
     expect(screen.getByRole('radio', { name: '1D' }).className).not.toContain('color]');

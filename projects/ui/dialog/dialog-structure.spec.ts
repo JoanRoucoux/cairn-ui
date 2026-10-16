@@ -4,10 +4,10 @@ import { UiDialog } from './dialog';
 
 describe('UiDialog structure', () => {
   const renderWith = (attributes: string): Promise<RenderResult<unknown>> =>
-    render(`<ui-dialog heading="Titre" ${attributes} [open]="true"></ui-dialog>`, { imports: [UiDialog] });
+    render(`<ui-dialog heading="Title" ${attributes} [open]="true"></ui-dialog>`, { imports: [UiDialog] });
 
   it('draws the three zones of the default variant', async () => {
-    const { container } = await renderWith('closeLabel="Fermer"');
+    const { container } = await renderWith('closeLabel="Close"');
 
     expect(container.querySelector('[data-dialog-header]')).toHaveClass('pb-3', 'lg:py-4', 'lg:pl-6');
     expect(container.querySelector('[data-dialog-body] > div')).toHaveClass('py-4', 'lg:py-5');
@@ -19,8 +19,8 @@ describe('UiDialog structure', () => {
     expect(container.querySelector('[data-dialog-handle]')).toHaveClass('pt-[7.5px]');
   });
 
-  it('centres the title and the cross without a description', async () => {
-    const { container } = await renderWith('closeLabel="Fermer"');
+  it('centers the title and the cross without a description', async () => {
+    const { container } = await renderWith('closeLabel="Close"');
     const header = container.querySelector('[data-dialog-header]');
 
     expect(header).toHaveClass('items-center');
@@ -28,7 +28,7 @@ describe('UiDialog structure', () => {
   });
 
   it('tops the title, its description and the cross with a description', async () => {
-    const { container } = await renderWith('closeLabel="Fermer" description="Ferrari · PEA"');
+    const { container } = await renderWith('closeLabel="Close" description="Ferrari · PEA"');
     const header = container.querySelector('[data-dialog-header]');
 
     expect(header).toHaveClass('items-start');
@@ -36,7 +36,7 @@ describe('UiDialog structure', () => {
   });
 
   it('draws a hairline under the header and above the footer when there is a cross', async () => {
-    const { container } = await renderWith('closeLabel="Fermer"');
+    const { container } = await renderWith('closeLabel="Close"');
 
     expect(container.querySelector('[data-dialog-header]')).toHaveClass('shadow-[inset_0_-1px_0_var(--hairline)]');
     expect(container.querySelector('[data-dialog-footer]')).toHaveClass('shadow-[inset_0_1px_0_var(--hairline)]');
@@ -50,14 +50,14 @@ describe('UiDialog structure', () => {
   });
 
   it('gives the cross a 36px target on a desktop and 44px on a sheet', async () => {
-    await renderWith('closeLabel="Fermer"');
-    const cross = screen.getByRole('button', { name: 'Fermer' });
+    await renderWith('closeLabel="Close"');
+    const cross = screen.getByRole('button', { name: 'Close' });
 
     expect(cross).toHaveClass('size-11', 'lg:size-9');
     expect(cross.querySelector('svg')).toHaveClass('size-[22px]');
   });
 
-  it('is centred and capped 96px short of the viewport height on a desktop', async () => {
+  it('is centered and capped 96px short of the viewport height on a desktop', async () => {
     const { container } = await renderWith('');
 
     expect(container.querySelector('dialog')).toHaveClass('m-auto', 'lg:max-h-[calc(100dvh-96px)]');
@@ -77,9 +77,9 @@ describe('UiDialog structure', () => {
   });
 
   it('turns the confirm variant into an alertdialog with one 24px padding and no hairlines', async () => {
-    const { container } = await renderWith('variant="confirm" closeLabel="Fermer"');
+    const { container } = await renderWith('variant="confirm" closeLabel="Close"');
 
-    expect(screen.getByRole('alertdialog', { name: 'Titre' })).toBeInTheDocument();
+    expect(screen.getByRole('alertdialog', { name: 'Title' })).toBeInTheDocument();
     expect(container.querySelector('[data-dialog-header]')).toHaveClass('pt-3', 'lg:pt-6', 'lg:pl-6');
     expect(container.querySelector('[data-dialog-header]')).not.toHaveClass('shadow-[inset_0_-1px_0_var(--hairline)]');
     expect(container.querySelector('[data-dialog-footer]')).toHaveClass(
@@ -99,7 +99,7 @@ describe('UiDialog structure', () => {
     async (attributes, offset) => {
       await renderWith(attributes);
 
-      const title = screen.getByRole('heading', { name: 'Titre' }).parentElement;
+      const title = screen.getByRole('heading', { name: 'Title' }).parentElement;
       if (offset) {
         expect(title).toHaveClass('max-lg:pt-1');
       } else {
@@ -140,7 +140,7 @@ describe('UiDialog structure', () => {
   });
 
   it('leaves no role on the host element, which would be a nameless alertdialog', async () => {
-    const { container } = await render(`<ui-dialog heading="Supprimer" variant="confirm" [open]="true"></ui-dialog>`, {
+    const { container } = await render(`<ui-dialog heading="Delete" variant="confirm" [open]="true"></ui-dialog>`, {
       imports: [UiDialog],
     });
 

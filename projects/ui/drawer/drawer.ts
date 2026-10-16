@@ -21,7 +21,7 @@ const nextId = (() => {
  * With both, `label` names the panel and the heading stays its visible title.
  *
  * @example
- * <ui-drawer heading="Northwind Monde" closeLabel="Fermer le détail" [open]="open()" (dismissed)="open.set(false)">
+ * <ui-drawer heading="Northwind World" closeLabel="Close the detail" [open]="open()" (dismissed)="open.set(false)">
  *   <p>Body</p>
  * </ui-drawer>
  */

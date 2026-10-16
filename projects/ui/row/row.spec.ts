@@ -5,8 +5,8 @@ import { UiListRow, UiRow, UiRowGroup, UiRowItem, UiRowTile } from './row';
 
 describe('UiRow trailing chevron', () => {
   it('draws no chevron and keeps its padding and hover fill by default', async () => {
-    await render('<button ui-row type="button">Saisir à la main</button>', { imports: [UiRow] });
-    const row = screen.getByRole('button', { name: 'Saisir à la main' });
+    await render('<button ui-row type="button">Enter manually</button>', { imports: [UiRow] });
+    const row = screen.getByRole('button', { name: 'Enter manually' });
 
     expect(row.querySelector('svg')).toBeNull();
     expect(row).toHaveClass('px-2.5', 'min-h-14', 'hover:bg-(--glow)');
@@ -14,8 +14,8 @@ describe('UiRow trailing chevron', () => {
   });
 
   it('draws a 16 px subtle chevron, with no side padding and a dimming hover', async () => {
-    await render('<button ui-row type="button" trailing="chevron">Saisir à la main</button>', { imports: [UiRow] });
-    const row = screen.getByRole('button', { name: 'Saisir à la main' });
+    await render('<button ui-row type="button" trailing="chevron">Enter manually</button>', { imports: [UiRow] });
+    const row = screen.getByRole('button', { name: 'Enter manually' });
     const chevron = row.querySelector('svg');
 
     expect(chevron).toHaveAttribute('aria-hidden', 'true');
@@ -27,10 +27,10 @@ describe('UiRow trailing chevron', () => {
   });
 
   it('keeps the chevron on an unavailable row without hover or press', async () => {
-    await render('<button ui-row type="button" trailing="chevron" unavailable>Saisir à la main</button>', {
+    await render('<button ui-row type="button" trailing="chevron" unavailable>Enter manually</button>', {
       imports: [UiRow],
     });
-    const row = screen.getByRole('button', { name: 'Saisir à la main' });
+    const row = screen.getByRole('button', { name: 'Enter manually' });
 
     expect(row.querySelector('svg')).not.toBeNull();
     expect(row).toHaveClass('opacity-50');
@@ -183,7 +183,7 @@ describe('UiRow', () => {
     expect(row).not.toHaveClass('gap-3');
   });
 
-  it('greys an unavailable row, forbids the cursor and drops hover and press', async () => {
+  it('grays an unavailable row, forbids the cursor and drops hover and press', async () => {
     await render('<button ui-row unavailable type="button">Row</button>', { imports: [UiRow] });
 
     const row = screen.getByRole('button', { name: 'Row' });
@@ -254,10 +254,10 @@ describe('UiRowItem', () => {
   const template = `
     <div uiRowItem data-testid="item">
       <a ui-row size="xl" padding="sm" href="#">Northwind PEA</a>
-      <button type="button" aria-label="Actions sur Northwind PEA">...</button>
+      <button type="button" aria-label="Northwind PEA actions">...</button>
     </div>`;
 
-  it('lays the row and its trailing action side by side, 4 px apart, centred', async () => {
+  it('lays the row and its trailing action side by side, 4 px apart, centered', async () => {
     await render(template, { imports: [UiRow, UiRowItem] });
 
     expect(screen.getByTestId('item')).toHaveClass('flex', 'items-center', 'gap-1');
@@ -324,7 +324,7 @@ describe('UiRowTile', () => {
 describe('UiRowGroup', () => {
   it('stacks its rows under a hairline with a 4 px lead', async () => {
     await render(
-      '<div uiRowGroup data-testid="group"><button ui-row type="button" trailing="chevron">Saisir à la main</button></div>',
+      '<div uiRowGroup data-testid="group"><button ui-row type="button" trailing="chevron">Enter manually</button></div>',
       { imports: [UiRow, UiRowGroup] },
     );
 

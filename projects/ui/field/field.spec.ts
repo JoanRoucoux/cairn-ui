@@ -79,11 +79,11 @@ describe('UiField', () => {
   });
 
   it('works the same around a select', async () => {
-    await render('<ui-field label="Envelope"><select uiSelect><option value="pea">PEA</option></select></ui-field>', {
+    await render('<ui-field label="Wrapper"><select uiSelect><option value="pea">PEA</option></select></ui-field>', {
       imports: [UiField, UiSelect],
     });
 
-    expect(screen.getByLabelText('Envelope')).toBeInTheDocument();
+    expect(screen.getByLabelText('Wrapper')).toBeInTheDocument();
   });
 
   it('does nothing when no native control is projected', async () => {
@@ -162,21 +162,21 @@ describe('UiField', () => {
   });
 
   it('renders the unit inside the field, after the value', async () => {
-    await render(`<ui-field label="Quantity" unit="parts"><input uiInput inputmode="decimal" /></ui-field>`, {
+    await render(`<ui-field label="Quantity" unit="shares"><input uiInput inputmode="decimal" /></ui-field>`, {
       imports: [UiField, UiInput],
     });
 
-    expect(screen.getByText('parts')).toBeInTheDocument();
+    expect(screen.getByText('shares')).toBeInTheDocument();
     expect(screen.getByRole('textbox', { name: 'Quantity' })).toHaveClass('text-body');
   });
 
   it('draws a 2px negative ring when the field is in error', async () => {
-    await render(`<ui-field label="Quantity" error="You hold 500 parts."><input uiInput /></ui-field>`, {
+    await render(`<ui-field label="Quantity" error="You hold 500 shares."><input uiInput /></ui-field>`, {
       imports: [UiField, UiInput],
     });
 
     expect(screen.getByRole('textbox', { name: 'Quantity' })).toHaveAttribute('aria-invalid', 'true');
-    expect(screen.getByText('You hold 500 parts.')).toHaveClass('text-(--negative)');
+    expect(screen.getByText('You hold 500 shares.')).toHaveClass('text-(--negative)');
   });
 
   describe('leading slot', () => {
@@ -184,7 +184,7 @@ describe('UiField', () => {
       render(
         `<ui-field label="Search" labelHidden>
           <svg uiFieldLeading data-testid="icon" width="18" height="18"></svg>
-          <input uiInput type="search" placeholder="Rechercher une ligne" />
+          <input uiInput type="search" placeholder="Search holdings" />
         </ui-field>`,
         { imports: [UiField, UiFieldLeading, UiInput] },
       );
@@ -240,9 +240,9 @@ describe('UiField', () => {
   describe('trailing slot', () => {
     const renderPassword = (): Promise<RenderResult<unknown>> =>
       render(
-        `<ui-field label="Mot de passe">
+        `<ui-field label="Password">
           <input uiInput size="xl" type="password" />
-          <button uiFieldTrailing type="button" aria-label="Afficher">o</button>
+          <button uiFieldTrailing type="button" aria-label="Show">o</button>
         </ui-field>`,
         { imports: [UiField, UiFieldTrailing, UiInput] },
       );
@@ -250,14 +250,14 @@ describe('UiField', () => {
     it('renders the action in the control row, after the input', async () => {
       await renderPassword();
 
-      const action = screen.getByRole('button', { name: 'Afficher' });
-      expect(action.parentElement).toBe(screen.getByLabelText('Mot de passe').parentElement);
+      const action = screen.getByRole('button', { name: 'Show' });
+      expect(action.parentElement).toBe(screen.getByLabelText('Password').parentElement);
     });
 
     it('pins a square action to the right edge, as tall as the control', async () => {
       await renderPassword();
 
-      expect(screen.getByRole('button', { name: 'Afficher' })).toHaveClass(
+      expect(screen.getByRole('button', { name: 'Show' })).toHaveClass(
         'absolute',
         'right-0',
         'h-full',
@@ -272,7 +272,7 @@ describe('UiField', () => {
     it('clears the action with right padding on the input, 48 px on touch and 44 px from 64rem', async () => {
       await renderPassword();
 
-      const row = screen.getByLabelText('Mot de passe').parentElement;
+      const row = screen.getByLabelText('Password').parentElement;
       expect(row?.className).toContain('[&>input]:pr-12');
       expect(row?.className).toContain('lg:[&>input]:pr-11');
     });
@@ -320,10 +320,10 @@ describe('UiField', () => {
 
   describe('optional', () => {
     it('adds a lighter suffix after the label and keeps it in the name of the control', async () => {
-      await renderField('optional="(facultatif)"');
+      await renderField('optional="(optional)"');
 
-      expect(screen.getByText('(facultatif)')).toHaveClass('font-normal', 'text-(--subtle-foreground)');
-      expect(screen.getByLabelText('Quantity (facultatif)')).toBeInTheDocument();
+      expect(screen.getByText('(optional)')).toHaveClass('font-normal', 'text-(--subtle-foreground)');
+      expect(screen.getByLabelText('Quantity (optional)')).toBeInTheDocument();
     });
 
     it('adds nothing by default', async () => {

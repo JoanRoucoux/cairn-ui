@@ -47,7 +47,7 @@ describe('tickLabels', () => {
     expect(classes(['a', 'b', 'c', 'd', 'e'], 'auto')).toEqual(['', 'max-sm:hidden', '', 'max-sm:hidden', '']);
   });
 
-  it('lets a core label stay below sm when only a hidden neighbour repeats it', () => {
+  it('lets a core label stay below sm when only a hidden neighbor repeats it', () => {
     expect(classes(['a', 'b', 'b', 'c', 'c'], 'auto')).toEqual([
       '',
       'max-sm:hidden',

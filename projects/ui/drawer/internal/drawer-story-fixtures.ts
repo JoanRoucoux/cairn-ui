@@ -11,11 +11,11 @@ const fact = (term: string, value: string, last = false): string =>
 
 export const facts = `
   <dl class="flex flex-col">
-    ${fact('Quantité', '40 parts')}${fact('Classe', 'ETF')}${fact('Source', 'Yahoo Finance')}${fact('Compte', 'Compte-titres Contoso', true)}
+    ${fact('Quantity', '40 shares')}${fact('Class', 'ETF')}${fact('Source', 'Yahoo Finance')}${fact('Account', 'Contoso CTO', true)}
   </dl>`;
 
 export const defaultTemplate = `
-  <button ui-button variant="outline" (click)="open = true">Ouvrir le détail</button>
+  <button ui-button variant="outline" (click)="open = true">Open the detail</button>
   <ui-drawer
     [heading]="heading"
     [description]="description"
@@ -28,52 +28,52 @@ export const defaultTemplate = `
   >
     ${facts}
     <div class="grid grid-cols-2 gap-2">
-      <button ui-button variant="outline" (click)="open = false">Vendre</button>
-      <button ui-button (click)="open = false">Acheter</button>
+      <button ui-button variant="outline" (click)="open = false">Sell</button>
+      <button ui-button (click)="open = false">Buy</button>
     </div>
   </ui-drawer>
 `;
 
-type Trade = 'Acheter' | 'Vendre';
+type Trade = 'Buy' | 'Sell';
 
 @Component({
   selector: 'ui-drawer-stack-demo',
   imports: [UiButton, UiDialog, UiDrawer],
   template: `
     <div class="flex flex-col items-start gap-4 p-4">
-      <button type="button" ui-button variant="outline" (click)="drawer.set(true)">Northwind Monde</button>
+      <button type="button" ui-button variant="outline" (click)="drawer.set(true)">Northwind World</button>
       <p class="text-label text-(--muted-foreground)" data-story-log>{{ log().join(' · ') }}</p>
     </div>
 
     <ui-drawer
-      closeLabel="Fermer le détail"
-      description="ETF · Compte-titres Contoso"
-      heading="Northwind Monde"
+      closeLabel="Close the detail"
+      description="ETF · Contoso CTO"
+      heading="Northwind World"
       [open]="drawer()"
-      (closed)="note('tiroir fermé (' + $event + ')')"
+      (closed)="note('drawer closed (' + $event + ')')"
       (dismissed)="drawer.set(false)"
     >
       <p class="text-label text-(--muted-foreground)" data-story-quantity>
-        {{ quantity() }} parts sur le Compte-titres Contoso.
+        {{ quantity() }} shares in the Contoso CTO.
       </p>
       <div class="grid grid-cols-2 gap-2">
-        <button type="button" ui-button (click)="openTrade('Acheter')">Acheter</button>
-        <button type="button" ui-button variant="outline" (click)="openTrade('Vendre')">Vendre</button>
+        <button type="button" ui-button (click)="openTrade('Buy')">Buy</button>
+        <button type="button" ui-button variant="outline" (click)="openTrade('Sell')">Sell</button>
       </div>
     </ui-drawer>
 
     <ui-dialog
-      closeLabel="Fermer"
-      description="Northwind Monde · Compte-titres Contoso"
+      closeLabel="Close"
+      description="Northwind World · Contoso CTO"
       width="480px"
       [heading]="trade()"
       [open]="dialog()"
-      (closed)="note('dialogue fermé (' + $event + ')')"
+      (closed)="note('dialog closed (' + $event + ')')"
       (dismissed)="dialog.set(false)"
     >
-      <p class="text-label text-(--muted-foreground)">Le tiroir reste ouvert dessous.</p>
-      <button dialogActions type="button" ui-button variant="outline" (click)="dialog.set(false)">Annuler</button>
-      <button dialogActions type="button" ui-button (click)="submit()">{{ trade() }} 10 parts</button>
+      <p class="text-label text-(--muted-foreground)">The drawer stays open underneath.</p>
+      <button dialogActions type="button" ui-button variant="outline" (click)="dialog.set(false)">Cancel</button>
+      <button dialogActions type="button" ui-button (click)="submit()">{{ trade() }} 10 shares</button>
     </ui-dialog>
   `,
 })
@@ -82,7 +82,7 @@ export class DrawerStackDemo {
 
   protected readonly drawer = signal(false);
   protected readonly dialog = signal(false);
-  protected readonly trade = signal<Trade>('Acheter');
+  protected readonly trade = signal<Trade>('Buy');
   protected readonly quantity = signal(40);
   protected readonly log = signal<string[]>([]);
 
@@ -103,7 +103,7 @@ export class DrawerStackDemo {
   }
 
   protected submit(): void {
-    this.quantity.update((quantity) => quantity + (this.trade() === 'Acheter' ? 10 : -10));
+    this.quantity.update((quantity) => quantity + (this.trade() === 'Buy' ? 10 : -10));
     this.dialog.set(false);
   }
 
@@ -128,7 +128,7 @@ export const drawerArgTypes: Meta['argTypes'] = {
   label: {
     control: 'text',
     description:
-      'Accessible name of the panel, such as « Détail de la ligne ». Required without a heading; with one, it names the panel in place of the heading.',
+      'Accessible name of the panel, such as “Holding detail”. Required without a heading; with one, it names the panel in place of the heading.',
   },
   width: {
     control: 'text',

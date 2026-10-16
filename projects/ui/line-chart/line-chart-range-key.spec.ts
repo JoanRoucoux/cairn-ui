@@ -4,7 +4,7 @@ import { render } from '@testing-library/angular';
 
 import { type ChartPoint, UiLineChart } from './line-chart';
 
-const template = `<ui-line-chart label="x" startLabel="Départ" [points]="points" [rangeKey]="rangeKey" />`;
+const template = `<ui-line-chart label="x" startLabel="Start" [points]="points" [rangeKey]="rangeKey" />`;
 
 const month: ChartPoint[] = [
   { t: 0, v: 100 },
@@ -74,7 +74,7 @@ describe('UiLineChart rangeKey', () => {
     vi.restoreAllMocks();
   });
 
-  it('redraws a new series of the same range at once, with no fade of Départ or of the dashed line', async () => {
+  it('redraws a new series of the same range at once, with no fade of the start label or of the dashed line', async () => {
     const { fixture, rerender } = await render(template, {
       imports: [UiLineChart],
       componentProperties: { points: month, rangeKey: '1M' },
@@ -90,14 +90,14 @@ describe('UiLineChart rangeKey', () => {
     expect(drawn).toBe(await targetPath(afterBuy));
   });
 
-  it('interpolates and fades Départ when the range changes with the series', async () => {
+  it('interpolates and fades the start label when the range changes with the series', async () => {
     vi.spyOn(performance, 'now').mockReturnValue(1000);
     const { fixture, rerender } = await render(template, {
       imports: [UiLineChart],
       componentProperties: { points: month, rangeKey: '1M' },
     });
 
-    await rerender({ componentProperties: { points: day, rangeKey: '1J' } });
+    await rerender({ componentProperties: { points: day, rangeKey: '1D' } });
     fixture.detectChanges();
 
     const element: HTMLElement = fixture.nativeElement;
@@ -119,11 +119,11 @@ describe('UiLineChart rangeKey', () => {
       componentProperties: { points: month, rangeKey: '1M' },
     });
 
-    await rerender({ componentProperties: { points: month, rangeKey: '1J' } });
+    await rerender({ componentProperties: { points: month, rangeKey: '1D' } });
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('[data-chart-start-label]')).not.toHaveClass('opacity-0');
 
-    await rerender({ componentProperties: { points: day, rangeKey: '1J' } });
+    await rerender({ componentProperties: { points: day, rangeKey: '1D' } });
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('[data-chart-start-label]')).toHaveClass('opacity-0');
@@ -136,9 +136,9 @@ describe('UiLineChart rangeKey', () => {
       componentProperties: { points: month, rangeKey: '1M' },
     });
 
-    await rerender({ componentProperties: { points: day, rangeKey: '1J' } });
+    await rerender({ componentProperties: { points: day, rangeKey: '1D' } });
     flushFrame(1100);
-    await rerender({ componentProperties: { points: afterBuy, rangeKey: '1J' } });
+    await rerender({ componentProperties: { points: afterBuy, rangeKey: '1D' } });
     fixture.detectChanges();
 
     const element: HTMLElement = fixture.nativeElement;

@@ -11,10 +11,10 @@ const BAR_CLASSES = 'block h-4 rounded-control bg-(--muted)';
  * message when it has nothing, or an inline error with a retry.
  *
  * @example
- * <ui-result-group label="Yahoo Finance" hint="cours en continu" [state]="state()"
- *   errorMessage="Yahoo Finance n'a pas répondu." retryLabel="Réessayer" (retry)="search()">
+ * <ui-result-group label="Yahoo Finance" hint="live prices" [state]="state()"
+ *   errorMessage="Yahoo Finance didn’t respond." retryLabel="Try again" (retry)="search()">
  *   <button ui-row size="dense" type="button">...</button>
- *   <span resultGroupMessage>Aucun résultat chez Yahoo Finance.</span>
+ *   <span resultGroupMessage>No results from Yahoo Finance.</span>
  * </ui-result-group>
  */
 @Component({

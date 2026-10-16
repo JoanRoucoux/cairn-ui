@@ -6,11 +6,11 @@ import { type ChoiceChipOption, UiChoiceChips } from './choice-chips';
 const options: ChoiceChipOption[] = [
   { value: 'pea', label: 'PEA' },
   { value: 'cto', label: 'CTO' },
-  { value: 'av', label: 'Assurance-vie' },
+  { value: 'av', label: 'Life insurance' },
 ];
 
 const renderChips = (value = 'pea', extra = ''): Promise<RenderResult<unknown>> =>
-  render(`<ui-choice-chips [options]="options" label="Envelope" [(value)]="value" ${extra} />`, {
+  render(`<ui-choice-chips [options]="options" label="Wrapper" [(value)]="value" ${extra} />`, {
     imports: [UiChoiceChips],
     componentProperties: { options, value },
   });
@@ -19,14 +19,14 @@ describe('UiChoiceChips', () => {
   it('exposes the group under its visible label', async () => {
     await renderChips();
 
-    expect(screen.getByRole('radiogroup', { name: 'Envelope' })).toBeInTheDocument();
-    expect(screen.getByText('Envelope')).toBeVisible();
+    expect(screen.getByRole('radiogroup', { name: 'Wrapper' })).toBeInTheDocument();
+    expect(screen.getByText('Wrapper')).toBeVisible();
   });
 
   it('sets the visible label in label size and weight with the 17 px line height', async () => {
     await renderChips();
 
-    expect(screen.getByText('Envelope')).toHaveClass('text-label', 'font-medium', 'leading-[17px]');
+    expect(screen.getByText('Wrapper')).toHaveClass('text-label', 'font-medium', 'leading-[17px]');
   });
 
   it('names the group with ariaLabel when no visible label is given', async () => {
@@ -96,9 +96,9 @@ describe('UiChoiceChips', () => {
     const user = userEvent.setup();
     await renderChips();
 
-    await user.click(screen.getByRole('radio', { name: 'Assurance-vie' }));
+    await user.click(screen.getByRole('radio', { name: 'Life insurance' }));
 
-    expect(await screen.findByRole('radio', { name: 'Assurance-vie' })).toBeChecked();
+    expect(await screen.findByRole('radio', { name: 'Life insurance' })).toBeChecked();
   });
 
   it('keeps only the selected chip in the tab sequence', async () => {
@@ -119,7 +119,7 @@ describe('UiChoiceChips', () => {
     const user = userEvent.setup();
     await renderChips('av');
 
-    screen.getByRole('radio', { name: 'Assurance-vie' }).focus();
+    screen.getByRole('radio', { name: 'Life insurance' }).focus();
     await user.keyboard(key);
 
     expect(screen.getByRole('radio', { name: 'PEA' })).toBeChecked();
@@ -133,8 +133,8 @@ describe('UiChoiceChips', () => {
     screen.getByRole('radio', { name: 'PEA' }).focus();
     await user.keyboard(key);
 
-    expect(screen.getByRole('radio', { name: 'Assurance-vie' })).toBeChecked();
-    expect(screen.getByRole('radio', { name: 'Assurance-vie' })).toHaveFocus();
+    expect(screen.getByRole('radio', { name: 'Life insurance' })).toBeChecked();
+    expect(screen.getByRole('radio', { name: 'Life insurance' })).toHaveFocus();
   });
 
   it('moves to the first chip on Home and the last on End', async () => {
@@ -143,8 +143,8 @@ describe('UiChoiceChips', () => {
 
     screen.getByRole('radio', { name: 'CTO' }).focus();
     await user.keyboard('{End}');
-    expect(screen.getByRole('radio', { name: 'Assurance-vie' })).toBeChecked();
-    expect(screen.getByRole('radio', { name: 'Assurance-vie' })).toHaveFocus();
+    expect(screen.getByRole('radio', { name: 'Life insurance' })).toBeChecked();
+    expect(screen.getByRole('radio', { name: 'Life insurance' })).toHaveFocus();
 
     await user.keyboard('{Home}');
     expect(screen.getByRole('radio', { name: 'PEA' })).toBeChecked();
@@ -239,6 +239,6 @@ describe('UiChoiceChips', () => {
 
     screen.getByRole('radio', { name: 'PEA' }).focus();
     await user.keyboard('{ArrowLeft}');
-    expect(screen.getByRole('radio', { name: 'Assurance-vie' })).toBeChecked();
+    expect(screen.getByRole('radio', { name: 'Life insurance' })).toBeChecked();
   });
 });

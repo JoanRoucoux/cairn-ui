@@ -37,7 +37,7 @@ const meta: Meta<RowArgs> = {
         component: `A clickable row for lists: holdings, accounts, search results. It replaces the per-row cards and
 text "Edit" / "Delete" buttons the previous version used.
 
-Applies to a native \`<a>\` for navigation or a \`<button>\` for an in-place action — never a \`<div>\`
+Applies to a native \`<a>\` for navigation or a \`<button>\` for an in-place action, never a \`<div>\`
 with a click handler, so keyboard and assistive technology support come for free.
 
 #### When to use
@@ -53,7 +53,7 @@ with a click handler, so keyboard and assistive technology support come for free
 
 * \`selected\` sets \`aria-current="true"\`, for the row whose detail is open next to it.
 * \`busy\` sets \`aria-busy\` and \`aria-disabled\`, shows a spinner in the trailing slot and swallows the clicks while the row keeps its focus.
-* \`unavailable\` sets \`aria-disabled="true"\`, greys the row to half opacity, shows a not-allowed cursor, drops hover and press, and swallows the clicks. The row stays focusable, so a screen reader finds it and reads why it cannot be picked: put the reason in the row.
+* \`unavailable\` sets \`aria-disabled="true"\`, grays the row to half opacity, shows a not-allowed cursor, drops hover and press, and swallows the clicks. The row stays focusable, so a screen reader finds it and reads why it cannot be picked: put the reason in the row.
 * Follows the native element's own semantics: an \`<a>\` for navigation, a \`<button>\` for an action.`,
       },
     },
@@ -92,7 +92,7 @@ with a click handler, so keyboard and assistive technology support come for free
     unavailable: {
       control: 'boolean',
       description:
-        'Greys the row (half opacity), forbids the cursor, drops hover and press and swallows clicks. Sets `aria-disabled="true"`.',
+        'Grays the row (half opacity), forbids the cursor, drops hover and press and swallows clicks. Sets `aria-disabled="true"`.',
     },
     size: {
       control: 'select',
@@ -155,11 +155,11 @@ export const Unavailable: Story = {
       <button ui-row type="button" [size]="size" [unavailable]="unavailable" class="w-[340px] lg:w-[680px]">
         <span class="flex min-w-0 flex-1 flex-col">
           <span class="text-body truncate font-medium">iShares Core MSCI World UCITS ETF USD (Acc)</span>
-          <span class="text-caption text-pretty text-(--subtle-foreground)">Coté en USD. Cairn ne suit que les cotations en euros.</span>
+          <span class="text-caption text-pretty text-(--subtle-foreground)">Listed in USD. Cairn only tracks euro listings.</span>
         </span>
         <span class="flex flex-none flex-col items-end">
           <span class="text-label font-medium">London Stock Exchange</span>
-          <span class="text-caption text-(--subtle-foreground)">indisponible</span>
+          <span class="text-caption text-(--subtle-foreground)">unavailable</span>
         </span>
       </button>
     `,
@@ -189,8 +189,8 @@ export const Profile: Story = {
             <svg class="block size-[18px] flex-none fill-none stroke-current stroke-[1.75]" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"></path><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"></path></svg>
           </span>
           <span class="flex min-w-0 flex-1 flex-col">
-            <span class="text-body font-medium">Exporter le portefeuille</span>
-            <span class="text-caption text-(--subtle-foreground)">Toutes les lignes en CSV, au cours du jour</span>
+            <span class="text-body font-medium">Export the portfolio</span>
+            <span class="text-caption text-(--subtle-foreground)">All holdings as CSV, at today’s price</span>
           </span>
           <svg class="block size-4 flex-none fill-none stroke-(--subtle-foreground) stroke-[1.75]" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
         </a>
@@ -200,7 +200,7 @@ export const Profile: Story = {
 };
 
 export const Card: Story = {
-  name: 'Card row (Lignes iPhone)',
+  name: 'Card row (Holdings iPhone)',
   args: { size: 'card', padding: 'sm' },
   render: (args) => ({
     props: args,
@@ -230,7 +230,7 @@ export const NarrowGap: Story = {
       <a ui-row href="#" [selected]="selected" [size]="size" [padding]="padding" [gap]="gap" class="w-[340px]">
         <div class="flex min-w-0 flex-1 flex-col">
           <span class="text-body font-medium">Amundi MSCI World</span>
-          <span class="text-label text-(--muted-foreground)">ETF Actions</span>
+          <span class="text-label text-(--muted-foreground)">Stock ETF</span>
         </div>
         <span class="flex flex-col items-end whitespace-nowrap">
           <span class="text-body font-medium">8 592,00 €</span>
@@ -243,7 +243,7 @@ export const NarrowGap: Story = {
 };
 
 export const WithTrailingAction: Story = {
-  name: 'With a trailing action (Comptes iPhone)',
+  name: 'With a trailing action (Accounts iPhone)',
   args: { size: 'xl', padding: 'sm' },
   render: (args) => ({
     props: args,
@@ -257,10 +257,10 @@ export const WithTrailingAction: Story = {
             </span>
             <span class="flex flex-col items-end whitespace-nowrap">
               <span class="text-body font-medium">48 215,60 €</span>
-              <span class="text-label text-(--muted-foreground)">8 lignes</span>
+              <span class="text-label text-(--muted-foreground)">8 holdings</span>
             </span>
           </a>
-          <button ui-button variant="quiet" size="icon-sm" aria-label="Actions sur Northwind PEA">
+          <button ui-button variant="quiet" size="icon-sm" aria-label="Northwind PEA actions">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /><circle cx="5" cy="12" r="1" /></svg>
           </button>
         </div>
@@ -270,14 +270,14 @@ export const WithTrailingAction: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const row = canvas.getByRole('link', { name: /Northwind PEA/ });
-    const action = canvas.getByRole('button', { name: 'Actions sur Northwind PEA' });
+    const action = canvas.getByRole('button', { name: 'Northwind PEA actions' });
 
     await expect(row.getBoundingClientRect().right + 4).toBeCloseTo(action.getBoundingClientRect().left, 0);
   },
 };
 
 export const Dense: Story = {
-  name: 'Dense result row (add a line)',
+  name: 'Dense result row (add a holding)',
   args: { size: 'dense' },
   render: (args) => ({
     props: args,
@@ -305,7 +305,7 @@ export const DenseOnDesktop: Story = {
 };
 
 export const RuledListRows: Story = {
-  name: 'Hairline-separated list rows (Profil clés)',
+  name: 'Hairline-separated list rows (Profile passkeys)',
   render: () => ({
     template: `
       <ul class="w-[326px]">
@@ -313,12 +313,12 @@ export const RuledListRows: Story = {
           <span uiRowTile><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" /><circle cx="16.5" cy="7.5" r=".5" fill="currentColor" /></svg></span>
           <span class="flex min-w-0 flex-1 flex-col">
             <span class="flex items-center gap-2">
-              <span class="text-body truncate font-medium">iPhone d'Alex</span>
-              <span class="rounded-pill text-caption inline-flex h-[22px] flex-none items-center bg-(--muted) px-2 font-medium">Cet appareil</span>
+              <span class="text-body truncate font-medium">Alex’s iPhone</span>
+              <span class="rounded-pill text-caption inline-flex h-[22px] flex-none items-center bg-(--muted) px-2 font-medium">This device</span>
             </span>
-            <span class="text-caption text-(--subtle-foreground)">iCloud · Créée le 12/03/2025 · Utilisée aujourd'hui</span>
+            <span class="text-caption text-(--subtle-foreground)">iCloud · Created 12/03/2025 · Used today</span>
           </span>
-          <button ui-button variant="quiet-destructive" size="icon-sm" class="-mr-2" aria-label="Supprimer la clé iPhone d'Alex"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg></button>
+          <button ui-button variant="quiet-destructive" size="icon-sm" class="-mr-2" aria-label="Delete Alex’s iPhone"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg></button>
         </li>
         <li uiListRow>
           <span uiRowTile><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" /><circle cx="16.5" cy="7.5" r=".5" fill="currentColor" /></svg></span>
@@ -326,9 +326,9 @@ export const RuledListRows: Story = {
             <span class="flex items-center gap-2">
               <span class="text-body truncate font-medium">MacBook Air</span>
             </span>
-            <span class="text-caption text-(--subtle-foreground)">iCloud · Créée le 12/03/2025 · Utilisée hier</span>
+            <span class="text-caption text-(--subtle-foreground)">iCloud · Created 12/03/2025 · Used yesterday</span>
           </span>
-          <button ui-button variant="quiet-destructive" size="icon-sm" class="-mr-2" aria-label="Supprimer la clé MacBook Air"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg></button>
+          <button ui-button variant="quiet-destructive" size="icon-sm" class="-mr-2" aria-label="Delete MacBook Air"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg></button>
         </li>
         <li uiListRow>
           <span uiRowTile><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" /><circle cx="16.5" cy="7.5" r=".5" fill="currentColor" /></svg></span>
@@ -336,9 +336,9 @@ export const RuledListRows: Story = {
             <span class="flex items-center gap-2">
               <span class="text-body truncate font-medium">YubiKey 5C</span>
             </span>
-            <span class="text-caption text-(--subtle-foreground)">Clé de sécurité · Créée le 04/11/2025 · Utilisée le 02/09/2026</span>
+            <span class="text-caption text-(--subtle-foreground)">Security key · Created 04/11/2025 · Used 02/09/2026</span>
           </span>
-          <button ui-button variant="quiet-destructive" size="icon-sm" class="-mr-2" aria-label="Supprimer la clé YubiKey 5C"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg></button>
+          <button ui-button variant="quiet-destructive" size="icon-sm" class="-mr-2" aria-label="Delete YubiKey 5C"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg></button>
         </li>
       </ul>
     `,
@@ -351,21 +351,21 @@ export const RuledListRows: Story = {
 };
 
 export const LinkRow: Story = {
-  name: 'Link row (Ajouter une ligne)',
+  name: 'Link row (Add a holding)',
   args: { trailing: 'chevron' },
   render: () => ({
     template: `
       <div uiRowGroup class="w-[360px]">
         <button ui-row type="button" trailing="chevron">
           <span class="flex min-w-0 flex-1 flex-col">
-            <span class="text-label font-medium">Produit structuré SG Sirius</span>
-            <span class="text-caption text-(--subtle-foreground)">Pas de recherche : saisir l'ISIN</span>
+            <span class="text-label font-medium">SG Sirius structured product</span>
+            <span class="text-caption text-(--subtle-foreground)">No search: enter the ISIN</span>
           </span>
         </button>
         <button ui-row type="button" trailing="chevron">
           <span class="flex min-w-0 flex-1 flex-col">
-            <span class="text-label font-medium">Saisir à la main</span>
-            <span class="text-caption text-(--subtle-foreground)">Pour un titre sans source, cours saisi par vous</span>
+            <span class="text-label font-medium">Enter manually</span>
+            <span class="text-caption text-(--subtle-foreground)">For a security with no source, priced by you</span>
           </span>
         </button>
       </div>
@@ -373,7 +373,7 @@ export const LinkRow: Story = {
   }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const row = canvas.getByRole('button', { name: /Saisir à la main/ });
+    const row = canvas.getByRole('button', { name: /Enter manually/ });
 
     await expect(getComputedStyle(row).paddingLeft).toBe('0px');
     await expect(getComputedStyle(row.parentElement as HTMLElement).boxShadow).toContain('inset');

@@ -4,19 +4,15 @@ import { UiEmpty } from './empty';
 
 describe('UiEmpty', () => {
   const template = `
-    <ui-empty heading="Aucune ligne ne correspond à « zzz »" hint="La recherche porte sur le nom et l'ISIN.">
-      <button type="button">Ajouter une ligne</button>
+    <ui-empty heading="No holding matches “zzz”" hint="Search covers the name and the ISIN.">
+      <button type="button">Add a holding</button>
     </ui-empty>`;
 
   it('shows the title and the hint', async () => {
     await render(template, { imports: [UiEmpty] });
 
-    expect(screen.getByText('Aucune ligne ne correspond à « zzz »')).toHaveClass(
-      'text-body',
-      'font-medium',
-      'text-pretty',
-    );
-    expect(screen.getByText("La recherche porte sur le nom et l'ISIN.")).toHaveClass(
+    expect(screen.getByText('No holding matches “zzz”')).toHaveClass('text-body', 'font-medium', 'text-pretty');
+    expect(screen.getByText('Search covers the name and the ISIN.')).toHaveClass(
       'text-label',
       'text-(--muted-foreground)',
     );
@@ -25,10 +21,10 @@ describe('UiEmpty', () => {
   it('projects the action below the text', async () => {
     await render(template, { imports: [UiEmpty] });
 
-    expect(screen.getByRole('button', { name: 'Ajouter une ligne' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Add a holding' })).toBeInTheDocument();
   });
 
-  it('is centred with 24 px of padding, 48 px from 64rem', async () => {
+  it('is centered with 24 px of padding, 48 px from 64rem', async () => {
     const { container } = await render(template, { imports: [UiEmpty] });
 
     expect(container.querySelector('ui-empty')).toHaveClass(
@@ -44,12 +40,12 @@ describe('UiEmpty', () => {
   });
 
   it('omits the hint and leaves the action slot empty when absent', async () => {
-    const { container } = await render('<ui-empty heading="Rien" />', { imports: [UiEmpty] });
+    const { container } = await render('<ui-empty heading="Nothing" />', { imports: [UiEmpty] });
     const host = container.querySelector('ui-empty')!;
 
-    expect(host).toHaveTextContent(/^Rien$/);
+    expect(host).toHaveTextContent(/^Nothing$/);
     expect(screen.queryByRole('button')).toBeNull();
-    expect(host.lastElementChild).not.toBe(screen.getByText('Rien'));
+    expect(host.lastElementChild).not.toBe(screen.getByText('Nothing'));
     expect(host.lastElementChild).toBeEmptyDOMElement();
   });
 });

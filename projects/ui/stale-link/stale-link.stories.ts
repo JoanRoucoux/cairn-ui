@@ -15,8 +15,8 @@ const meta: Meta<StaleLinkArgs> = {
 
 #### When to use
 
-* For a caption that leads to the lines concerned: "1 cours en retard", "1 ligne sans cours, non comptée".
-* \`size="label"\` (14/20) where the link sits in a 14px line, as the dashboard total draws "1 cours en retard ›"; the default \`caption\` (12/17) elsewhere.
+* For a caption that leads to the holdings concerned: "1 stale price", "1 holding without a price, not counted".
+* \`size="label"\` (14/20) where the link sits in a 14px line, as the dashboard total draws "1 stale price ›"; the default \`caption\` (12/17) elsewhere.
 
 #### When not to use
 
@@ -27,7 +27,7 @@ const meta: Meta<StaleLinkArgs> = {
 
 * A native \`<a>\`: the caption names the destination. The optional chevron is a decoration drawn by CSS, so it is not read.
 * Underlined on hover, with a 2px ring on keyboard focus.
-* The text keeps its size (12/17, or 14/20 with \`size="label"\`), but a \`::before\` pseudo-element extends the hit area to 44px high (40px with a mouse), centred on the text.`,
+* The text keeps its size (12/17, or 14/20 with \`size="label"\`), but a \`::before\` pseudo-element extends the hit area to 44px high (40px with a mouse), centered on the text.`,
       },
     },
   },
@@ -35,7 +35,7 @@ const meta: Meta<StaleLinkArgs> = {
     props: args,
     template: `<a uiStaleLink href="#" [chevron]="chevron" [size]="size">{{ label }}</a>`,
   }),
-  args: { chevron: false, label: '1 cours en retard', size: 'caption' },
+  args: { chevron: false, label: '1 stale price', size: 'caption' },
   argTypes: {
     chevron: { control: 'boolean', description: 'Adds a trailing chevron.' },
     label: { control: 'text', description: 'Projected text: names what is late or left out.' },
@@ -55,7 +55,7 @@ export const Default: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    const link = canvas.getByRole('link', { name: '1 cours en retard' });
+    const link = canvas.getByRole('link', { name: '1 stale price' });
     await expect(link).toBeVisible();
 
     const box = link.getBoundingClientRect();
@@ -68,14 +68,14 @@ export const Default: Story = {
 };
 
 export const WithChevron: Story = {
-  args: { chevron: true, label: '1 ligne sans cours, non comptée' },
+  args: { chevron: true, label: '1 holding without a price, not counted' },
 };
 
 export const LabelSize: Story = {
   name: 'Label size (dashboard total)',
-  args: { chevron: true, label: '1 cours en retard', size: 'label' },
+  args: { chevron: true, label: '1 stale price', size: 'label' },
   play: async ({ canvasElement }) => {
-    const link = within(canvasElement).getByRole('link', { name: '1 cours en retard' });
+    const link = within(canvasElement).getByRole('link', { name: '1 stale price' });
     const style = getComputedStyle(link);
 
     await expect(style.fontSize).toBe('14px');

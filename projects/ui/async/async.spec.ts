@@ -161,7 +161,7 @@ describe('UiAsync', () => {
       ['elevated', ['px-4', 'py-10']],
       ['plain', ['px-4', 'py-12']],
       ['emphasis', ['px-4', 'py-14']],
-    ])('centres %s with its own padding', async (variant, padding) => {
+    ])('centers %s with its own padding', async (variant, padding) => {
       const { alert } = await draw(`variant="${variant}" align="center"`);
 
       expect(alert).toHaveClass('items-center', 'text-center', ...padding);
@@ -172,7 +172,7 @@ describe('UiAsync', () => {
       ['elevated', ['p-4', 'lg:py-10']],
       ['plain', ['px-4', 'py-5', 'lg:py-12']],
       ['emphasis', ['px-4', 'py-6', 'lg:py-14']],
-    ])('switches %s to centred from 64rem with align auto', async (variant, padding) => {
+    ])('switches %s to centered from 64rem with align auto', async (variant, padding) => {
       const { alert } = await draw(`variant="${variant}" align="auto"`);
 
       expect(alert).toHaveClass('items-start', 'lg:items-center', 'lg:text-center', ...padding);
@@ -186,7 +186,7 @@ describe('UiAsync', () => {
       expect(retry).toHaveClass('mt-1');
     });
 
-    it('uses the body message with a normal line height when emphasis is centred', async () => {
+    it('uses the body message with a normal line height when emphasis is centered', async () => {
       const { message, retry } = await draw('variant="emphasis" align="center"');
 
       expect(message).toHaveClass('text-body', 'leading-[normal]');
@@ -200,7 +200,7 @@ describe('UiAsync', () => {
       expect(alert).not.toHaveClass('bg-(--elevated)');
     });
 
-    it('fills and vertically centres in its host while in error', async () => {
+    it('fills and vertically centers in its host while in error', async () => {
       const { host, alert } = await draw('fill');
 
       expect(host).toHaveClass('flex', 'flex-col');
@@ -215,7 +215,7 @@ describe('UiAsync', () => {
       expect(fixture.nativeElement.querySelector('ui-async')).not.toHaveClass('flex');
     });
 
-    it('draws the inline row with a card and fill without vertical centring', async () => {
+    it('draws the inline row with a card and fill without vertical centering', async () => {
       const { alert } = await draw('variant="inline" card fill');
 
       expect(alert).toHaveClass('bg-(--card)', 'flex-1', 'justify-between');

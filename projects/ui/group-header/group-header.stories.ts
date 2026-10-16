@@ -54,7 +54,7 @@ of the body it folds.
   },
   args: {
     name: 'Northwind PEA',
-    meta: 'PEA · Northwind Bank · 3 lignes',
+    meta: 'PEA · Northwind Bank · 3 holdings',
     collapsible: true,
     expanded: true,
     toggleDisabled: false,
@@ -73,7 +73,7 @@ of the body it folds.
 export default meta;
 type Story = StoryObj<GroupHeaderArgs>;
 
-export const Ouvert: Story = {
+export const Expanded: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const button = canvas.getByRole('button');
@@ -88,7 +88,7 @@ export const Ouvert: Story = {
   },
 };
 
-export const Replie: Story = {
+export const Collapsed: Story = {
   args: { expanded: false },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -98,8 +98,8 @@ export const Replie: Story = {
   },
 };
 
-export const OuvertParUnFiltre: Story = {
-  name: 'Tenu ouvert (clic sans effet)',
+export const HeldOpenByAFilter: Story = {
+  name: 'Held open (click has no effect)',
   args: { toggleDisabled: true },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -113,7 +113,7 @@ export const OuvertParUnFiltre: Story = {
   },
 };
 
-export const Statique: Story = {
+export const Static: Story = {
   args: { collapsible: false },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);

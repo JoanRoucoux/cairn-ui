@@ -25,7 +25,7 @@ const flush = async (): Promise<void> => {
 })
 class QueuedBeforeRender {
   constructor() {
-    inject(UiToasts).show('Déjà là');
+    inject(UiToasts).show('Already there');
   }
 }
 
@@ -49,7 +49,7 @@ describe('UiToaster top layer', () => {
 
     expect(hidden).not.toHaveBeenCalled();
     expect(host.style.display).toBe('block');
-    expect(host).toHaveTextContent('Déjà là');
+    expect(host).toHaveTextContent('Already there');
   });
 
   const renderWithDialog = async (): Promise<{
@@ -76,7 +76,7 @@ describe('UiToaster top layer', () => {
     expect(fixture.nativeElement.querySelector('dialog')).toHaveAttribute('open');
     shown.mockClear();
 
-    TestBed.inject(UiToasts).show('Achat enregistré');
+    TestBed.inject(UiToasts).show('Purchase recorded');
     await flush();
 
     expect(shown).toHaveBeenCalled();
@@ -85,7 +85,7 @@ describe('UiToaster top layer', () => {
 
   it('is not shown again when a modal dialog opens while a message is visible', async () => {
     const { fixture, shown } = await renderWithDialog();
-    TestBed.inject(UiToasts).show('Achat enregistré');
+    TestBed.inject(UiToasts).show('Purchase recorded');
     await flush();
     shown.mockClear();
 
@@ -99,9 +99,9 @@ describe('UiToaster top layer', () => {
 
   it('is not shown again by a hover or focus change after a modal dialog opened over it', async () => {
     const { fixture, shown } = await renderWithDialog();
-    TestBed.inject(UiToasts).show('Achat enregistré');
+    TestBed.inject(UiToasts).show('Purchase recorded');
     await flush();
-    const message = screen.getByText('Achat enregistré').parentElement!;
+    const message = screen.getByText('Purchase recorded').parentElement!;
     message.dispatchEvent(new MouseEvent('mouseenter'));
     await flush();
 

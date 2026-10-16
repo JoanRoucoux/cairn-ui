@@ -22,27 +22,27 @@ const pct = (share: number): string =>
 const maskedEur = (): string => '••••\u00a0€';
 
 const byAssetClass: DonutSlice[] = [
-  { id: 'etf', label: 'ETF', value: 52318.4, sublabel: '6 lignes' },
-  { id: 'funds', label: 'Fonds', value: 41206.15, sublabel: '8 lignes' },
-  { id: 'stocks', label: 'Actions', value: 24870.55, sublabel: '4 lignes' },
-  { id: 'cash', label: 'Liquidités', value: 15880.25, sublabel: 'Soldes et livrets' },
-  { id: 'crypto', label: 'Crypto', value: 10264, sublabel: '5 lignes' },
+  { id: 'etf', label: 'ETF', value: 52318.4, sublabel: '6 holdings' },
+  { id: 'funds', label: 'Funds', value: 41206.15, sublabel: '8 holdings' },
+  { id: 'stocks', label: 'Stocks', value: 24870.55, sublabel: '4 holdings' },
+  { id: 'cash', label: 'Cash', value: 15880.25, sublabel: 'Balances and savings accounts' },
+  { id: 'crypto', label: 'Crypto', value: 10264, sublabel: '5 holdings' },
 ];
 
 const byAccount: DonutSlice[] = [
   { id: 'northwind-pea', label: 'Northwind PEA', value: 48215.6, sublabel: 'PEA · Northwind Bank' },
   { id: 'woodgrove-savings', label: 'Woodgrove Savings Plan', value: 31840.15, sublabel: 'PEE · Woodgrove Bank' },
   { id: 'contoso', label: 'Contoso Trading', value: 22377.9, sublabel: 'CTO · Contoso Securities' },
-  { id: 'livret-a', label: 'Livret A', value: 16120.45, sublabel: 'Épargne · Woodgrove Bank' },
+  { id: 'livret-a', label: 'Livret A', value: 16120.45, sublabel: 'Savings · Woodgrove Bank' },
   { id: 'tailspin', label: 'Tailspin Wallet', value: 11264.3, sublabel: 'Crypto · Tailspin Exchange' },
-  { id: 'fabrikam-life', label: 'Fabrikam Life', value: 8530.75, sublabel: 'Assurance-vie · Fabrikam Insurance' },
+  { id: 'fabrikam-life', label: 'Fabrikam Life', value: 8530.75, sublabel: 'Life insurance · Fabrikam Insurance' },
   { id: 'woodgrove-retirement', label: 'Woodgrove Retirement', value: 6190.2, sublabel: 'PER · Woodgrove Bank' },
 ];
 
 const withATinySlice: DonutSlice[] = [
-  { id: 'northwind-pea', label: 'Northwind PEA', value: 90000, sublabel: '12 lignes' },
-  { id: 'woodgrove-savings', label: 'Woodgrove Savings Plan', value: 9900, sublabel: '4 lignes' },
-  { id: 'tailspin', label: 'Tailspin Wallet', value: 100, sublabel: '1 ligne' },
+  { id: 'northwind-pea', label: 'Northwind PEA', value: 90000, sublabel: '12 holdings' },
+  { id: 'woodgrove-savings', label: 'Woodgrove Savings Plan', value: 9900, sublabel: '4 holdings' },
+  { id: 'tailspin', label: 'Tailspin Wallet', value: 100, sublabel: '1 holding' },
 ];
 
 const meta: Meta<DonutArgs> = {
@@ -51,33 +51,33 @@ const meta: Meta<DonutArgs> = {
   parameters: {
     docs: {
       description: {
-        component: `A ring chart with its legend: slices come from \`slices\`, ranked largest first on the neutral grey
+        component: `A ring chart with its legend: slices come from \`slices\`, ranked largest first on the neutral gray
 ramp (\`--ramp-1\` to \`--ramp-6\`). Beyond six slices, the five largest keep their rank and the rest
-merge into one "Others" slice on \`--ramp-6\`, whose legend sub-label lists the merged names — the
+merge into one “Other” slice on \`--ramp-6\`, whose legend sub-label lists the merged names, while the
 ring's \`aria-label\` still names every original slice.
 
-Hovering, focusing or touching a legend row (or its arc) grows that arc by 4 % around the ring centre, dims the other arcs to half opacity, and shows its name, share
-and value at the centre; activating a row (click or Enter) emits \`sliceSelect\` with its id, for the
-caller to navigate with. With \`legendHref\`, rows are real links: a plain click is cancelled and emitted as \`sliceSelect\` so a router can navigate, while Ctrl/Cmd/Shift-click and middle-click keep the browser's behaviour. Formatting is the caller's business: \`valueFormat\` and \`shareFormat\` both
-arrive as inputs, so masking amounts is a matter of a formatter that returns bullets — shares stay
+Hovering, focusing or touching a legend row (or its arc) grows that arc by 4 % around the ring center, dims the other arcs to half opacity, and shows its name, share
+and value at the center; activating a row (click or Enter) emits \`sliceSelect\` with its id, for the
+caller to navigate with. With \`legendHref\`, rows are real links: a plain click is canceled and emitted as \`sliceSelect\` so a router can navigate, while Ctrl/Cmd/Shift-click and middle-click keep the browser's behavior. Formatting is the caller's business: \`valueFormat\` and \`shareFormat\` both
+arrive as inputs, so masking amounts is a matter of a formatter that returns bullets; shares stay
 visible either way.
 
 #### When to use
 
-* A breakdown by one dimension (asset class, account, envelope) where the parts sum to a whole.
+* A breakdown by one dimension (asset class, account, wrapper) where the parts sum to a whole.
 
 #### When not to use
 
 * Comparing two breakdowns side by side with a shared color meaning: the ramp is assigned by rank,
   not by category, so the same color means different things in two different rings.
-* A value that is not a share of a total, such as a trend over time — use \`ui-line-chart\` instead.
+* A value that is not a share of a total, such as a trend over time. Use \`ui-line-chart\` instead.
 
 #### Accessibility
 
 * The \`<svg>\` is \`role="img"\`, named by \`label\` followed by every slice and its share, so the full
-  detail survives even when several slices are grouped into "Others" visually.
+  detail survives even when several slices are grouped into “Other” visually.
 * Every legend row is a \`<button>\`, or a link when \`legendHref\` returns a URL for it: reachable by Tab, activated with Enter (and Space on a button), and its own text
-  already carries the name, the sub-label, the share and the value — nothing depends on color alone.`,
+  already carries the name, the sub-label, the share and the value: nothing depends on color alone.`,
       },
     },
   },
@@ -87,8 +87,8 @@ visible either way.
   }),
   args: {
     slices: byAssetClass,
-    label: "Par classe d'actif",
-    othersLabel: 'Autres',
+    label: 'By asset class',
+    othersLabel: 'Other',
     valueFormat: eur,
     shareFormat: pct,
     legendHref: undefined,
@@ -96,10 +96,10 @@ visible either way.
   },
   argTypes: {
     slices: { control: false, description: 'Slices to rank and draw, each `{ id, label, value, sublabel? }`.' },
-    label: { control: 'text', description: 'The ring\'s accessible name, e.g. "Par classe d\'actif".' },
-    othersLabel: { control: 'text', description: 'Label of the grouped slice beyond the sixth, e.g. "Autres".' },
-    valueFormat: { control: false, description: "Formats a slice's value, for the legend and the centre." },
-    shareFormat: { control: false, description: "Formats a slice's share (0..1), for the legend and the centre." },
+    label: { control: 'text', description: 'The ring’s accessible name, e.g. “By asset class”.' },
+    othersLabel: { control: 'text', description: 'Label of the grouped slice beyond the sixth, e.g. “Other”.' },
+    valueFormat: { control: false, description: "Formats a slice's value, for the legend and the center." },
+    shareFormat: { control: false, description: "Formats a slice's share (0..1), for the legend and the center." },
     legendHref: {
       control: false,
       description:
@@ -117,13 +117,13 @@ export const ByAssetClass: Story = {
 };
 
 export const ByAccount: Story = {
-  name: 'Seven slices grouped into Others, by account',
-  args: { slices: byAccount, label: 'Par compte' },
+  name: 'Seven slices grouped into Other, by account',
+  args: { slices: byAccount, label: 'By account' },
 };
 
 export const TinySlice: Story = {
   name: 'A slice under 1 %',
-  args: { slices: withATinySlice, label: 'Par compte' },
+  args: { slices: withATinySlice, label: 'By account' },
   play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement);
     const tinyRow = canvas.getByRole('button', { name: /Tailspin Wallet/ });
@@ -141,17 +141,17 @@ export const MaskedAmounts: Story = {
 };
 
 export const HoverHighlightsTheLegendRow: Story = {
-  name: 'Hover highlights the legend row and the centre',
+  name: 'Hover highlights the legend row and the center',
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const row = canvas.getByRole('button', { name: /Fonds/ });
+    const row = canvas.getByRole('button', { name: /Funds/ });
 
     await userEvent.hover(row);
 
     await expect(row).toHaveClass('bg-(--soft)');
 
-    const centre = canvasElement.querySelector('[data-testid="donut-centre"]') as HTMLElement;
-    await expect(within(centre).getByText('Fonds')).toBeInTheDocument();
+    const center = canvasElement.querySelector('[data-testid="donut-centre"]') as HTMLElement;
+    await expect(within(center).getByText('Funds')).toBeInTheDocument();
   },
 };
 
@@ -160,7 +160,7 @@ export const SelectingARowEmitsSliceSelect: Story = {
   play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await userEvent.click(canvas.getByRole('button', { name: /Actions/ }));
+    await userEvent.click(canvas.getByRole('button', { name: /Stocks/ }));
 
     await expect(args.sliceSelect).toHaveBeenCalledWith('stocks');
   },
@@ -182,17 +182,17 @@ export const HighlightedSliceGrowsInPlace: Story = {
 
 export const LegendLinks: Story = {
   name: 'Legend rows as links',
-  args: { legendHref: (id: string) => `#classe-${id}` },
+  args: { legendHref: (id: string) => `#class-${id}` },
 };
 
 export const ClickingALinkEmitsSliceSelect: Story = {
   name: 'Clicking a legend link emits sliceSelect',
-  args: { legendHref: (id: string) => `#classe-${id}` },
+  args: { legendHref: (id: string) => `#class-${id}` },
   play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement);
-    const link = canvas.getByRole('link', { name: /Actions/ });
+    const link = canvas.getByRole('link', { name: /Stocks/ });
 
-    await expect(link).toHaveAttribute('href', '#classe-stocks');
+    await expect(link).toHaveAttribute('href', '#class-stocks');
     await userEvent.hover(link);
     await expect(link).toHaveClass('bg-(--soft)');
     await userEvent.click(link);
@@ -205,13 +205,13 @@ export const LegendLinksByAccount: Story = {
   name: 'Legend links, the grouped row stays a button',
   args: {
     slices: byAccount,
-    label: 'Par compte',
-    legendHref: (id: string) => (id === 'others' ? null : `#compte-${id}`),
+    label: 'By account',
+    legendHref: (id: string) => (id === 'others' ? null : `#account-${id}`),
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
     await expect(canvas.getAllByRole('link')).toHaveLength(5);
-    await expect(canvas.getByRole('button', { name: /Autres/ })).toBeInTheDocument();
+    await expect(canvas.getByRole('button', { name: /Other/ })).toBeInTheDocument();
   },
 };
