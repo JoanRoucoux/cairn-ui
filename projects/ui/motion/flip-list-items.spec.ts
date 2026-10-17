@@ -16,6 +16,7 @@ const GROUPS: Group[] = [
 ];
 
 @Component({
+  selector: 'ui-groups-host',
   imports: [UiFlipList, UiFlipItem],
   template: `
     <div uiFlipList>
@@ -35,6 +36,7 @@ class GroupsHost {
 }
 
 @Component({
+  selector: 'ui-cards-host',
   imports: [UiFlipList, UiFlipItem],
   template: `
     <div uiFlipList>
