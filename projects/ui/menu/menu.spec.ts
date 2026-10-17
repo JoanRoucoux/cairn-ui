@@ -171,13 +171,13 @@ describe('UiMenu', () => {
     const { showPopover, hidePopover } = proto;
     proto.showPopover = undefined;
     proto.hidePopover = undefined;
-
     try {
       const { fixture } = await render(template, {
         imports: [UiMenu, UiMenuTrigger, UiMenuItem],
         componentProperties: { edited: vi.fn() },
       });
       const trigger = screen.getByRole('button', { name: 'More' });
+      screen.getByRole('menu', { hidden: true }).style.display = 'block';
 
       await userEvent.click(trigger);
       expect(screen.getByRole('menuitem', { name: 'Edit', hidden: true })).toHaveFocus();
