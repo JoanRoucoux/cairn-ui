@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.10.1
+
+### Added
+
+- The package ships `mcp-manifest.json` (export `@joanroucoux/cairn-ui/mcp-manifest.json`), the machine-readable
+  description of this version that the `@joanroucoux/cairn-ui-mcp` server answers from.
+
+### Breaking
+
+- `UiToasts.showError(message, closeLabel)`: the close label defaults to `'Close'`; it was `'Fermer'`.
+- Migration: an app that relied on the default and wants another label passes it as the second argument; a test
+  that found the button with `getByRole('button', { name: 'Fermer' })` looks for `'Close'` instead.
+
+### Changed
+
+- `ui-donut`: the accessible name of the ring reads `label: detail`, without the space before the colon.
+- Stories, specs, JSDoc examples, story descriptions and docs are in English, following the Cairn design system
+  wording and glossary (holding, wrapper, avg. cost, price as of). Amounts and percentages keep the French number
+  format. Stories whose export name was French are renamed (`Expanded`, `Holdings`, `AddHolding`...), which changes
+  their Storybook URLs.
+
+### Fixed
+
+- `ui-menu`: a menu of fractional width, placed against the right edge of the window, stays inside the 8px margin.
+  It was placed from `offsetWidth`, which rounds to an integer, and overflowed by up to half a pixel.
+
 ## 0.10.0
 
 ### Added
