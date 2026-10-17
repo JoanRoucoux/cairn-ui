@@ -2,6 +2,11 @@
 
 ## 0.10.1
 
+### Added
+
+- The package ships `mcp-manifest.json` (export `@joanroucoux/cairn-ui/mcp-manifest.json`), the machine-readable
+  description of this version that the `@joanroucoux/cairn-ui-mcp` server answers from.
+
 ### Breaking
 
 - `UiToasts.showError(message, closeLabel)`: the close label defaults to `'Close'`; it was `'Fermer'`.
