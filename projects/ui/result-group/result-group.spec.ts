@@ -4,9 +4,9 @@ import userEvent from '@testing-library/user-event';
 import { UiResultGroup } from './result-group';
 
 const template = `
-  <ui-result-group label="Northwind Markets" hint="cours en continu" [state]="state" errorMessage="Northwind Markets n'a pas répondu." retryLabel="Réessayer" (retry)="retried()">
+  <ui-result-group label="Northwind Markets" hint="live prices" [state]="state" errorMessage="Northwind Markets didn’t respond." retryLabel="Try again" (retry)="retried()">
     <button type="button">Contoso Global Equity</button>
-    <span resultGroupMessage>Aucun résultat chez Northwind Markets.</span>
+    <span resultGroupMessage>No results from Northwind Markets.</span>
   </ui-result-group>
 `;
 
@@ -26,9 +26,9 @@ describe('UiResultGroup', () => {
   it('is a group named by its two-tone heading', async () => {
     await draw('ready');
 
-    const group = screen.getByRole('group', { name: 'Northwind Markets, cours en continu' });
+    const group = screen.getByRole('group', { name: 'Northwind Markets, live prices' });
     expect(screen.getByText('Northwind Markets')).toHaveClass('font-semibold', 'text-(--foreground)');
-    expect(screen.getByText('cours en continu')).toHaveClass('text-(--subtle-foreground)');
+    expect(screen.getByText('live prices')).toHaveClass('text-(--subtle-foreground)');
     expect(screen.getByText('Northwind Markets').parentElement).toHaveClass(
       'text-caption',
       'gap-1.5',
@@ -41,17 +41,17 @@ describe('UiResultGroup', () => {
   });
 
   it('draws the heading without a hint', async () => {
-    await render('<ui-result-group label="Déjà suivi" />', { imports: [UiResultGroup] });
+    await render('<ui-result-group label="Already tracked" />', { imports: [UiResultGroup] });
 
-    expect(screen.getByRole('group', { name: 'Déjà suivi' })).toBeInTheDocument();
-    expect(screen.getByText('Déjà suivi').parentElement?.children).toHaveLength(1);
+    expect(screen.getByRole('group', { name: 'Already tracked' })).toBeInTheDocument();
+    expect(screen.getByText('Already tracked').parentElement?.children).toHaveLength(1);
   });
 
   it('shows the rows when ready, without the message', async () => {
     await draw('ready');
 
     expect(screen.getByRole('button', { name: 'Contoso Global Equity' })).toBeInTheDocument();
-    expect(screen.queryByText('Aucun résultat chez Northwind Markets.')).not.toBeInTheDocument();
+    expect(screen.queryByText('No results from Northwind Markets.')).not.toBeInTheDocument();
   });
 
   it('shows a skeleton of two rows while loading', async () => {
@@ -68,7 +68,7 @@ describe('UiResultGroup', () => {
   it('shows the message when empty', async () => {
     await draw('empty');
 
-    expect(screen.getByText('Aucun résultat chez Northwind Markets.').parentElement).toHaveClass(
+    expect(screen.getByText('No results from Northwind Markets.').parentElement).toHaveClass(
       'text-label',
       'text-(--muted-foreground)',
       'pt-1',
@@ -83,11 +83,11 @@ describe('UiResultGroup', () => {
     const retried = vi.fn();
     await draw('error', retried);
 
-    const retry = screen.getByRole('button', { name: 'Réessayer' });
+    const retry = screen.getByRole('button', { name: 'Try again' });
     vi.useRealTimers();
     await userEvent.click(retry);
 
-    expect(screen.getByRole('alert')).toHaveTextContent("Northwind Markets n'a pas répondu.");
+    expect(screen.getByRole('alert')).toHaveTextContent('Northwind Markets didn’t respond.');
     expect(retry.querySelector('svg')).toBeNull();
     expect(retried).toHaveBeenCalledOnce();
   });

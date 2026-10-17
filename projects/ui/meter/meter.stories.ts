@@ -33,7 +33,7 @@ comparison when every bar starts at the same edge.
 
 #### When not to use
 
-* For progress towards completion, such as an upload. That is a progress bar, and it carries a
+* For progress toward completion, such as an upload. That is a progress bar, and it carries a
   different meaning.
 * As the only place a figure appears. The bar shows a relationship, not a value.
 
@@ -43,7 +43,7 @@ comparison when every bar starts at the same edge.
   \`aria-valuetext\`.
 * \`valueText\` should read as a full phrase carrying both the share and the amount, so a screen
   reader announces exactly what a sighted user reads next to the bar.
-* \`tone\` is decorative. Neighbouring ramp steps separate by at least 1.36:1, which distinguishes
+* \`tone\` is decorative. Neighboring ramp steps separate by at least 1.36:1, which distinguishes
   them without ever identifying a category on its own.`,
       },
     },
@@ -82,7 +82,7 @@ comparison when every bar starts at the same edge.
     size: {
       control: 'inline-radio',
       options: [...METER_SIZES],
-      description: 'Track thickness: `md` is 6px (the default), `sm` is 4px for dense lists such as the envelopes.',
+      description: 'Track thickness: `md` is 6px (the default), `sm` is 4px for dense lists such as the wrappers.',
     },
     tone: {
       control: 'select',
@@ -121,12 +121,12 @@ export const ExposesItsValue: Story = {
 };
 
 export const Thin: Story = {
-  name: 'Envelope bar, 4px (size sm)',
+  name: 'Wrapper bar, 4px (size sm)',
   render: () => ({
     template: `
       <div data-frame class="flex w-[326px] flex-col gap-2 bg-(--card) p-2">
         <ui-meter size="sm" [tone]="2" [value]="0.62" label="PEA" valueText="62 %, 48 215,60 €" />
-        <ui-meter size="sm" [tone]="2" [value]="0" label="Chargement" valueText="" aria-hidden="true" />
+        <ui-meter size="sm" [tone]="2" [value]="0" label="Loading" valueText="" aria-hidden="true" />
       </div>`,
   }),
 };

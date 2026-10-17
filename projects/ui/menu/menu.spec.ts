@@ -6,9 +6,9 @@ import { UiMenu, UiMenuItem, UiMenuTrigger } from './menu';
 describe('UiMenu', () => {
   const template = `
     <button type="button" [uiMenuTrigger]="menu">More</button>
-    <ui-menu #menu label="Line actions">
+    <ui-menu #menu label="Holding actions">
       <button uiMenuItem (click)="edited()">Edit</button>
-      <button uiMenuItem destructive>Delete the line</button>
+      <button uiMenuItem destructive>Delete the holding</button>
     </ui-menu>`;
 
   it('wires the trigger for assistive technology', async () => {
@@ -24,7 +24,7 @@ describe('UiMenu', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'More' }));
 
-    expect(screen.getByRole('menu', { name: 'Line actions' })).toBeInTheDocument();
+    expect(screen.getByRole('menu', { name: 'Holding actions' })).toBeInTheDocument();
     expect(screen.getByRole('menuitem', { name: 'Edit' })).toHaveFocus();
     expect(screen.getByRole('button', { name: 'More' })).toHaveAttribute('aria-expanded', 'true');
   });
@@ -34,7 +34,7 @@ describe('UiMenu', () => {
     await userEvent.click(screen.getByRole('button', { name: 'More' }));
 
     await userEvent.keyboard('{ArrowDown}');
-    expect(screen.getByRole('menuitem', { name: 'Delete the line' })).toHaveFocus();
+    expect(screen.getByRole('menuitem', { name: 'Delete the holding' })).toHaveFocus();
     await userEvent.keyboard('{ArrowDown}');
     expect(screen.getByRole('menuitem', { name: 'Edit' })).toHaveFocus();
   });
@@ -56,7 +56,7 @@ describe('UiMenu', () => {
     await userEvent.click(screen.getByRole('button', { name: 'More' }));
 
     expect(screen.getByRole('menuitem', { name: 'Edit' })).toHaveClass('active:bg-(--soft)');
-    expect(screen.getByRole('menuitem', { name: 'Delete the line' })).toHaveClass('active:bg-(--soft)');
+    expect(screen.getByRole('menuitem', { name: 'Delete the holding' })).toHaveClass('active:bg-(--soft)');
   });
 
   it('fades an item hover fill at the fast duration', async () => {
@@ -83,7 +83,7 @@ describe('UiMenu', () => {
     await render(template, { imports: [UiMenu, UiMenuTrigger, UiMenuItem], componentProperties: { edited: vi.fn() } });
     await userEvent.click(screen.getByRole('button', { name: 'More' }));
 
-    expect(screen.getByRole('menuitem', { name: 'Delete the line' })).toHaveClass(
+    expect(screen.getByRole('menuitem', { name: 'Delete the holding' })).toHaveClass(
       'text-(--negative)',
       'hover:bg-(--glow)',
     );
@@ -93,7 +93,7 @@ describe('UiMenu', () => {
     await render(template, { imports: [UiMenu, UiMenuTrigger, UiMenuItem], componentProperties: { edited: vi.fn() } });
     await userEvent.click(screen.getByRole('button', { name: 'More' }));
 
-    expect(screen.getByRole('menuitem', { name: 'Delete the line' })).toHaveClass(
+    expect(screen.getByRole('menuitem', { name: 'Delete the holding' })).toHaveClass(
       'focus-visible:bg-(--glow)',
       'focus-visible:outline-2',
       'focus-visible:-outline-offset-2',
@@ -105,7 +105,7 @@ describe('UiMenu', () => {
     await render(template, { imports: [UiMenu, UiMenuTrigger, UiMenuItem], componentProperties: { edited: vi.fn() } });
     await userEvent.click(screen.getByRole('button', { name: 'More' }));
 
-    expect(screen.getByRole('menuitem', { name: 'Delete the line' })).toHaveClass(
+    expect(screen.getByRole('menuitem', { name: 'Delete the holding' })).toHaveClass(
       'min-h-11',
       'px-3',
       'text-body',
@@ -121,7 +121,7 @@ describe('UiMenu', () => {
     await userEvent.click(screen.getByRole('button', { name: 'More' }));
 
     await userEvent.keyboard('{ArrowUp}');
-    expect(screen.getByRole('menuitem', { name: 'Delete the line' })).toHaveFocus();
+    expect(screen.getByRole('menuitem', { name: 'Delete the holding' })).toHaveFocus();
     await userEvent.keyboard('{ArrowUp}');
     expect(screen.getByRole('menuitem', { name: 'Edit' })).toHaveFocus();
   });
@@ -131,7 +131,7 @@ describe('UiMenu', () => {
     await userEvent.click(screen.getByRole('button', { name: 'More' }));
 
     await userEvent.keyboard('{End}');
-    expect(screen.getByRole('menuitem', { name: 'Delete the line' })).toHaveFocus();
+    expect(screen.getByRole('menuitem', { name: 'Delete the holding' })).toHaveFocus();
     await userEvent.keyboard('{Home}');
     expect(screen.getByRole('menuitem', { name: 'Edit' })).toHaveFocus();
   });
@@ -331,7 +331,7 @@ describe('UiMenu', () => {
 
     it('ignores a width that is not a number', async () => {
       const { container } = await render(
-        `<ui-menu label="Line actions" width="wide"><button uiMenuItem>Edit</button></ui-menu>`,
+        `<ui-menu label="Holding actions" width="wide"><button uiMenuItem>Edit</button></ui-menu>`,
         { imports },
       );
 
@@ -342,7 +342,7 @@ describe('UiMenu', () => {
 
     it('accepts a static width attribute', async () => {
       const { container } = await render(
-        `<ui-menu label="Line actions" width="208"><button uiMenuItem>Edit</button></ui-menu>`,
+        `<ui-menu label="Holding actions" width="208"><button uiMenuItem>Edit</button></ui-menu>`,
         { imports },
       );
 
@@ -353,7 +353,7 @@ describe('UiMenu', () => {
 
     it('sets a fixed width in pixels', async () => {
       const { container } = await render(
-        `<ui-menu label="Line actions" [width]="210"><button uiMenuItem>Edit</button></ui-menu>`,
+        `<ui-menu label="Holding actions" [width]="210"><button uiMenuItem>Edit</button></ui-menu>`,
         { imports },
       );
 

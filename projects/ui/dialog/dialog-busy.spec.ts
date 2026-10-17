@@ -15,8 +15,8 @@ const renderDialog = async (busy = true): Promise<Rendered> => {
   const onDismissed = vi.fn<() => void>();
   const onClosed = vi.fn<(reason: DialogCloseReason) => void>();
   const result = await render(
-    `<ui-dialog heading="Vendre" closeLabel="Fermer" [open]="open" [busy]="busy" (dismissed)="onDismissed()" (closed)="onClosed($event)">
-       <p>Corps</p>
+    `<ui-dialog heading="Sell" closeLabel="Close" [open]="open" [busy]="busy" (dismissed)="onDismissed()" (closed)="onClosed($event)">
+       <p>Body</p>
      </ui-dialog>`,
     { imports: [UiDialog], componentProperties: { open: true, busy, onDismissed, onClosed } },
   );
@@ -65,19 +65,19 @@ describe('UiDialog while busy', () => {
   });
 
   it('is not busy by default', async () => {
-    await render(`<ui-dialog heading="Vendre" closeLabel="Fermer" [open]="true"><p>Corps</p></ui-dialog>`, {
+    await render(`<ui-dialog heading="Sell" closeLabel="Close" [open]="true"><p>Body</p></ui-dialog>`, {
       imports: [UiDialog],
     });
 
     expect(screen.getByRole('dialog')).not.toHaveAttribute('aria-busy');
-    expect(screen.getByRole('button', { name: 'Fermer' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Close' })).toBeEnabled();
   });
 
   it('marks itself busy and disables the cross', async () => {
     const { dialog } = await renderDialog();
 
     expect(dialog).toHaveAttribute('aria-busy', 'true');
-    expect(screen.getByRole('button', { name: 'Fermer' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Close' })).toBeDisabled();
   });
 
   it('swallows Escape before the platform turns it into a close request', async () => {

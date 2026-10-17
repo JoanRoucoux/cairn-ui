@@ -10,8 +10,8 @@ const EYE = `${SVG_OPEN}<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 
 
 const EYE_OFF = `${SVG_OPEN}<path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49" /><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242" /><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143" /><path d="m2 2 20 20" /></svg>`;
 
-const rest = `<button uiIconToggle aria-label="Masquer les montants" [attr.aria-pressed]="false">${EYE}</button>`;
-const pressed = `<button uiIconToggle aria-label="Afficher les montants" [attr.aria-pressed]="true">${EYE_OFF}</button>`;
+const rest = `<button uiIconToggle aria-label="Hide amounts" [attr.aria-pressed]="false">${EYE}</button>`;
+const pressed = `<button uiIconToggle aria-label="Show amounts" [attr.aria-pressed]="true">${EYE_OFF}</button>`;
 
 const PHONE = { viewport: { width: 390, height: 240 } };
 const DESKTOP = { viewport: { width: 1440, height: 240 } };
@@ -41,7 +41,7 @@ amounts: the icon changes from an eye to a crossed-out eye and the button takes 
 
 * The host stays a native \`<button>\`, with \`type="button"\` unless one is set.
 * It has no visible text: give it an \`aria-label\`. The state is \`aria-pressed\`, which the consumer sets; when the
-  label also changes with the state ("Masquer" / "Afficher"), a screen reader reads both.
+  label also changes with the state (“Hide” / “Show”), a screen reader reads both.
 * The pressed fill is the \`--soft\` token, drawn as a background image so a fine-pointer hover (\`--glow\`) never
   replaces it. The fill changes at once: only the press scale transitions.
 * 44px on a touch screen, 40px from 64rem.`,
@@ -56,7 +56,7 @@ type Story = StoryObj;
 
 export const Rest: Story = {
   play: async ({ canvasElement }) => {
-    const button = within(canvasElement).getByRole('button', { name: 'Masquer les montants' });
+    const button = within(canvasElement).getByRole('button', { name: 'Hide amounts' });
 
     await expect(button).toHaveAttribute('aria-pressed', 'false');
     await expect(button).toHaveAttribute('type', 'button');
@@ -67,7 +67,7 @@ export const Rest: Story = {
 export const Pressed: Story = {
   render: () => ({ template: pressed }),
   play: async ({ canvasElement }) => {
-    const button = within(canvasElement).getByRole('button', { name: 'Afficher les montants' });
+    const button = within(canvasElement).getByRole('button', { name: 'Show amounts' });
 
     await expect(button).toHaveAttribute('aria-pressed', 'true');
     await expect(getComputedStyle(button).backgroundImage).not.toBe('none');
@@ -77,14 +77,14 @@ export const Pressed: Story = {
 export const Toggles: Story = {
   render: () => ({
     props: { hidden: false },
-    template: `<button uiIconToggle [attr.aria-label]="hidden ? 'Afficher les montants' : 'Masquer les montants'" [attr.aria-pressed]="hidden" (click)="hidden = !hidden">${EYE}</button>`,
+    template: `<button uiIconToggle [attr.aria-label]="hidden ? 'Show amounts' : 'Hide amounts'" [attr.aria-pressed]="hidden" (click)="hidden = !hidden">${EYE}</button>`,
   }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await userEvent.click(canvas.getByRole('button', { name: 'Masquer les montants' }));
+    await userEvent.click(canvas.getByRole('button', { name: 'Hide amounts' }));
 
-    await expect(canvas.getByRole('button', { name: 'Afficher les montants' })).toHaveAttribute('aria-pressed', 'true');
+    await expect(canvas.getByRole('button', { name: 'Show amounts' })).toHaveAttribute('aria-pressed', 'true');
   },
 };
 

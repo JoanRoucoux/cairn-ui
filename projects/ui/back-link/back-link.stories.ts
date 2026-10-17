@@ -29,7 +29,7 @@ const meta: Meta<BackLinkArgs> = {
 #### Accessibility
 
 * A native \`<a>\`: it is announced as a link named by its label, which should name the destination
-  ("Comptes"), not the gesture ("Retour").
+  (“Accounts”), not the gesture (“Back”).
 * The chevron is decorative and hidden from assistive technologies.
 * \`md\`, \`sm\` and \`header\` add no margin: place them with \`-mx-2\` or \`-ml-1\` so the chevron lines up
   with the content edge while the hit area stays full size. \`inline\` carries its own outset (-8px top, -4px
@@ -41,13 +41,13 @@ const meta: Meta<BackLinkArgs> = {
     props: args,
     template: `<a ui-back-link href="#" [size]="size">{{ label }}</a>`,
   }),
-  args: { size: 'md', label: 'Comptes' },
+  args: { size: 'md', label: 'Accounts' },
   argTypes: {
     size: {
       control: 'inline-radio',
       options: [...BACK_LINK_SIZES],
       description:
-        '`md` is 44 px high in the foreground colour (screen header on iPhone); `sm` is 36 px, muted, with a hover glow (desktop header); `header` has the `md` metrics with a 24 px chevron and a focus ring drawn inside (a screen header); `inline` is the 14 px 500 muted back step of a form, 44 px high (36 px with a mouse), 18 px chevron, hover to the foreground colour, on a `button`, with its own outset at the top of a form column.',
+        '`md` is 44 px high in the foreground color (screen header on iPhone); `sm` is 36 px, muted, with a hover glow (desktop header); `header` has the `md` metrics with a 24 px chevron and a focus ring drawn inside (a screen header); `inline` is the 14 px 500 muted back step of a form, 44 px high (36 px with a mouse), 18 px chevron, hover to the foreground color, on a `button`, with its own outset at the top of a form column.',
     },
     label: { control: 'text', description: 'Projected text: the name of the destination.' },
   },
@@ -60,29 +60,29 @@ export const Default: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(canvas.getByRole('link', { name: 'Comptes' })).toBeVisible();
+    await expect(canvas.getByRole('link', { name: 'Accounts' })).toBeVisible();
   },
 };
 
 export const Small: Story = {
-  args: { size: 'sm', label: 'Comptes' },
+  args: { size: 'sm', label: 'Accounts' },
 };
 
 export const Header: Story = {
-  name: 'Header (Lignes detail)',
-  args: { size: 'header', label: 'Lignes' },
+  name: 'Header (holding detail)',
+  args: { size: 'header', label: 'Holdings' },
 };
 
 export const InlineButton: Story = {
-  name: 'Inline button (Ajouter une ligne)',
-  args: { size: 'inline', label: 'Retour à la recherche' },
+  name: 'Inline button (Add a holding)',
+  args: { size: 'inline', label: 'Back to search' },
   render: (args) => ({
     props: args,
     template: `<button ui-back-link [size]="size">{{ label }}</button>`,
   }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const button = canvas.getByRole('button', { name: 'Retour à la recherche' });
+    const button = canvas.getByRole('button', { name: 'Back to search' });
 
     await expect(button).toHaveAttribute('type', 'button');
     await expect(getComputedStyle(button).fontSize).toBe('14px');
@@ -92,19 +92,19 @@ export const InlineButton: Story = {
 
 export const InlineAtTheTopOfAForm: Story = {
   name: 'Inline button at the top of a form column',
-  args: { size: 'inline', label: 'Retour à la recherche' },
+  args: { size: 'inline', label: 'Back to search' },
   render: (args) => ({
     props: args,
     template: `
       <div class="flex w-[340px] flex-col gap-4 p-6" data-story-column>
         <button ui-back-link [size]="size">{{ label }}</button>
-        <span class="text-body font-semibold" data-story-title>Saisie manuelle</span>
+        <span class="text-body font-semibold" data-story-title>Manual entry</span>
       </div>
     `,
   }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const button = canvas.getByRole('button', { name: 'Retour à la recherche' }).getBoundingClientRect();
+    const button = canvas.getByRole('button', { name: 'Back to search' }).getBoundingClientRect();
     const column = (canvasElement.querySelector('[data-story-column]') as HTMLElement).getBoundingClientRect();
     const title = (canvasElement.querySelector('[data-story-title]') as HTMLElement).getBoundingClientRect();
 

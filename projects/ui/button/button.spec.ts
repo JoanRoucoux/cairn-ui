@@ -136,7 +136,7 @@ describe('UiButton', () => {
     ['primary', 'hover:bg-(--primary-to)'],
     ['outline', 'active:bg-(--soft)'],
     ['ghost', 'active:bg-(--soft)'],
-  ])('moves the %s variant to its own hover or press colour', async (variant, expectedClass) => {
+  ])('moves the %s variant to its own hover or press color', async (variant, expectedClass) => {
     await render('<button ui-button [variant]="variant">Save</button>', {
       imports: [UiButton],
       componentProperties: { variant },
@@ -165,10 +165,10 @@ describe('UiButton', () => {
   });
 
   it('draws no pressed fill on the quiet-glow variant', async () => {
-    await render('<button ui-button variant="quiet-glow" size="icon-sm" aria-label="Fermer">x</button>', {
+    await render('<button ui-button variant="quiet-glow" size="icon-sm" aria-label="Close">x</button>', {
       imports: [UiButton],
     });
-    const button = screen.getByRole('button', { name: 'Fermer' });
+    const button = screen.getByRole('button', { name: 'Close' });
 
     expect(button.className).not.toContain('active:bg-');
     expect(button).toHaveClass('focus-visible:-outline-offset-2');

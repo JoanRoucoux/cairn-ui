@@ -4,14 +4,14 @@ import { expect, userEvent, waitFor, within } from 'storybook/test';
 
 import { type DialogSheet, type DialogVariant, type DialogWidth, UiDialog } from './dialog';
 import {
-  addLineTemplate,
+  addHoldingTemplate,
   bodyReachable,
   confirmTemplate,
   defaultTemplate,
-  desktopCentred,
+  desktopCentered,
   dialogArgTypes,
   emptyFooterUnpadded,
-  headerCentred,
+  headerCentered,
   headerTopped,
   keptMountedTemplate,
   keptMountedUntilClosed,
@@ -52,15 +52,15 @@ a lighter \`rgb(0 0 0 / 0.24)\` over that one's, with nothing to set.
 
 The header carries the title, an optional subtitle (\`description\`) and a close cross, which exists
 only when the consumer passes \`closeLabel\`. The width is set by the consumer: \`md\`, \`lg\` or any CSS
-length (Ajouter une ligne 560px, Acheter and Nouveau compte 480px, a confirmation 440px).
+length (Add a holding 560px, Buy and New account 480px, a confirmation 440px).
 
-Every dialog has the same three zones. The header (title, optional subtitle, cross) is padded 16px 16px 16px 24px, with the title and the cross centred on each other, or lined up at the top under a subtitle; the body 20px 24px and is the only zone that scrolls, the footer 16px 24px. On a sheet they are 0 8px 12px 16px, 16px and 12px 16px plus the safe area, under a drag handle. A hairline runs under the header and above the footer, and both come with the cross: without \`closeLabel\` there is no cross and no hairlines. On a desktop the dialog is centred and never taller than \`100dvh - 96px\`.
+Every dialog has the same three zones. The header (title, optional subtitle, cross) is padded 16px 16px 16px 24px, with the title and the cross centered on each other, or lined up at the top under a subtitle; the body 20px 24px and is the only zone that scrolls, the footer 16px 24px. On a sheet they are 0 8px 12px 16px, 16px and 12px 16px plus the safe area, under a drag handle. A hairline runs under the header and above the footer, and both come with the cross: without \`closeLabel\` there is no cross and no hairlines. On a desktop the dialog is centered and never taller than \`100dvh - 96px\`.
 
-The \`variant\` input is \`default\` or \`confirm\`: a confirmation (deleting a passkey) is announced as an alertdialog, has no cross and no hairlines, one 24px padding and a 440px width unless \`width\` says otherwise. The \`sheet\` input is \`fit\` (the sheet is as tall as its content) or \`full\` (it fills the screen below 58px, so the footer stays pinned while the content changes, as in Ajouter une ligne). \`truncateDescription\` keeps the subtitle on one ellipsised line instead of wrapping. A click that starts and ends on the backdrop closes the dialog, like Escape.
+The \`variant\` input is \`default\` or \`confirm\`: a confirmation (deleting a passkey) is announced as an alertdialog, has no cross and no hairlines, one 24px padding and a 440px width unless \`width\` says otherwise. The \`sheet\` input is \`fit\` (the sheet is as tall as its content) or \`full\` (it fills the screen below 58px, so the footer stays pinned while the content changes, as in Add a holding). \`truncateDescription\` keeps the subtitle on one ellipsized line instead of wrapping. A click that starts and ends on the backdrop closes the dialog, like Escape.
 
 Content goes in two slots: the default one for the body, and \`[dialogActions]\` for the footer
 buttons. Put the dismissing action first. On a desktop the footer is right-aligned; on a sheet the
-actions stack at full width and 50px, the primary on top, so hide Annuler there with
+actions stack at full width and 50px, the primary on top, so hide Cancel there with
 \`max-lg:hidden\` when the sheet has only the primary.
 
 Every way out goes through one close: Escape, the backdrop, the cross, a drag of the sheet and the
@@ -76,7 +76,7 @@ exit: the \`<dialog>\` leaves the page before the exit has played.
 
 \`\`\`html
 @if (selling()) {
-  <ui-dialog heading="Vendre" [open]="open()" (dismissed)="open.set(false)" (closed)="selling.set(false); sold.emit()">
+  <ui-dialog heading="Sell" [open]="open()" (dismissed)="open.set(false)" (closed)="selling.set(false); sold.emit()">
     ...
   </ui-dialog>
 }
@@ -119,9 +119,9 @@ With \`prefers-reduced-motion: reduce\` the sheet fades instead of sliding.
   },
   render: (args) => ({ props: args, template: defaultTemplate }),
   args: {
-    heading: 'Saisir un cours',
+    heading: 'Enter a price',
     description: 'Ferrari · PEA',
-    closeLabel: 'Fermer',
+    closeLabel: 'Close',
     width: '440px',
     open: false,
     busy: false,
@@ -138,9 +138,9 @@ export const Opens: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await userEvent.click(canvas.getByRole('button', { name: 'Ouvrir' }));
+    await userEvent.click(canvas.getByRole('button', { name: 'Open' }));
 
-    await waitFor(() => expect(canvas.getByRole('dialog', { name: 'Saisir un cours' })).toBeVisible());
+    await waitFor(() => expect(canvas.getByRole('dialog', { name: 'Enter a price' })).toBeVisible());
   },
 };
 
@@ -148,12 +148,12 @@ export const CrossCloses: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await userEvent.click(canvas.getByRole('button', { name: 'Ouvrir' }));
-    await waitFor(() => expect(canvas.getByRole('dialog', { name: 'Saisir un cours' })).toBeVisible());
-    await pressCross(canvas.getByRole('button', { name: 'Fermer' }));
+    await userEvent.click(canvas.getByRole('button', { name: 'Open' }));
+    await waitFor(() => expect(canvas.getByRole('dialog', { name: 'Enter a price' })).toBeVisible());
+    await pressCross(canvas.getByRole('button', { name: 'Close' }));
 
     await waitFor(() => expect(canvas.queryByRole('dialog')).not.toBeInTheDocument());
-    await expect(canvas.getByRole('button', { name: 'Ouvrir' })).toHaveFocus();
+    await expect(canvas.getByRole('button', { name: 'Open' })).toHaveFocus();
   },
 };
 
@@ -161,8 +161,8 @@ export const BackdropCloses: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await userEvent.click(canvas.getByRole('button', { name: 'Ouvrir' }));
-    await waitFor(() => expect(canvas.getByRole('dialog', { name: 'Saisir un cours' })).toBeVisible());
+    await userEvent.click(canvas.getByRole('button', { name: 'Open' }));
+    await waitFor(() => expect(canvas.getByRole('dialog', { name: 'Enter a price' })).toBeVisible());
     await userEvent.pointer({
       keys: '[MouseLeft]',
       target: canvas.getByRole('dialog'),
@@ -170,7 +170,7 @@ export const BackdropCloses: Story = {
     });
 
     await waitFor(() => expect(canvas.queryByRole('dialog')).not.toBeInTheDocument());
-    await expect(canvas.getByRole('button', { name: 'Ouvrir' })).toHaveFocus();
+    await expect(canvas.getByRole('button', { name: 'Open' })).toHaveFocus();
   },
 };
 
@@ -178,13 +178,13 @@ export const BusyStaysOpen: Story = {
   args: { open: true, busy: true },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const dialog = await canvas.findByRole('dialog', { name: 'Saisir un cours' });
+    const dialog = await canvas.findByRole('dialog', { name: 'Enter a price' });
 
     await expect(dialog).toHaveAttribute('aria-busy', 'true');
     dialog.focus();
     await expect(dialog).toHaveFocus();
     await expect(getComputedStyle(dialog).outlineStyle).toBe('none');
-    await expect(canvas.getByRole('button', { name: 'Fermer' })).toBeDisabled();
+    await expect(canvas.getByRole('button', { name: 'Close' })).toBeDisabled();
     await userEvent.keyboard('{Escape}');
     await userEvent.pointer({ keys: '[MouseLeft]', target: dialog, coords: { clientX: 4, clientY: 4 } });
 
@@ -194,7 +194,7 @@ export const BusyStaysOpen: Story = {
 
 export const Board: Story = {
   name: 'Board, dialog (380px)',
-  args: { heading: 'Vendre Ferrari', description: undefined, width: '380px', open: true },
+  args: { heading: 'Sell Ferrari', description: undefined, width: '380px', open: true },
   render: (args) => ({
     props: args,
     template: `
@@ -205,9 +205,9 @@ export const Board: Story = {
         [open]="open"
         (dismissed)="open = false"
       >
-        <p class="text-label text-(--muted-foreground)">Contenu, défilant si besoin.</p>
-        <button dialogActions ui-button variant="outline" (click)="open = false">Annuler</button>
-        <button dialogActions ui-button (click)="open = false">Vendre</button>
+        <p class="text-label text-(--muted-foreground)">Content, scrolling if needed.</p>
+        <button dialogActions ui-button variant="outline" (click)="open = false">Cancel</button>
+        <button dialogActions ui-button (click)="open = false">Sell</button>
       </ui-dialog>
     `,
   }),
@@ -216,97 +216,97 @@ export const Board: Story = {
 export const BoardSheet: Story = {
   name: 'Board, sheet (iPhone, no cross)',
   parameters: { viewport: { width: 390, height: 270 } },
-  args: { heading: 'Acheter Ferrari', description: undefined, closeLabel: undefined, sheet: 'full', open: true },
+  args: { heading: 'Buy Ferrari', description: undefined, closeLabel: undefined, sheet: 'full', open: true },
   render: (args) => ({
     props: args,
     template: `
       <ui-dialog [heading]="heading" [sheet]="sheet" [open]="open" (dismissed)="open = false">
-        <button dialogActions ui-button (click)="open = false">Acheter 10 parts</button>
+        <button dialogActions ui-button (click)="open = false">Buy 10 shares</button>
       </ui-dialog>
     `,
   }),
 };
 
 const trade: Story = {
-  args: { heading: 'Acheter', description: 'Ferrari · PEA', width: '480px', open: true },
+  args: { heading: 'Buy', description: 'Ferrari · PEA', width: '480px', open: true },
   render: (args) => ({ props: args, template: tradeTemplate }),
 };
 
 const newAccount: Story = {
-  args: { heading: 'Nouveau compte', description: undefined, width: '480px', open: true },
+  args: { heading: 'New account', description: undefined, width: '480px', open: true },
   render: (args) => ({ props: args, template: newAccountTemplate }),
 };
 
-export const Trade: Story = { name: 'Acheter, dialog (480px) and sheet', ...trade };
+export const Trade: Story = { name: 'Buy, dialog (480px) and sheet', ...trade };
 
 export const TradeDesktopHeader: Story = {
-  name: 'Acheter at 1440, title, subtitle and cross from the top',
+  name: 'Buy at 1440, title, subtitle and cross from the top',
   parameters: { viewport: { width: 1440, height: 900 } },
   ...trade,
   play: headerTopped,
 };
 
-export const NewAccount: Story = { name: 'Nouveau compte, dialog (480px) and sheet', ...newAccount };
+export const NewAccount: Story = { name: 'New account, dialog (480px) and sheet', ...newAccount };
 
 export const NewAccountDesktopHeader: Story = {
-  name: 'Nouveau compte at 1440, title and cross centred',
+  name: 'New account at 1440, title and cross centered',
   parameters: { viewport: { width: 1440, height: 900 } },
   ...newAccount,
-  play: headerCentred,
+  play: headerCentered,
 };
 
 export const NewAccountSheetHeader: Story = {
-  name: 'Nouveau compte at 390, title and cross centred',
+  name: 'New account at 390, title and cross centered',
   parameters: { viewport: { width: 390, height: 844 } },
   ...newAccount,
-  play: headerCentred,
+  play: headerCentered,
 };
 
-const addLine = (results: number): Story => ({
-  args: { heading: 'Ajouter une ligne', description: undefined, width: '560px', sheet: 'full', open: true },
+const addHolding = (results: number): Story => ({
+  args: { heading: 'Add a holding', description: undefined, width: '560px', sheet: 'full', open: true },
   render: (args) => ({
     props: args,
-    template: addLineTemplate(results),
+    template: addHoldingTemplate(results),
   }),
 });
 
-export const AddLine: Story = { name: 'Ajouter une ligne, dialog (560px) and sheet', ...addLine(2) };
+export const AddHolding: Story = { name: 'Add a holding, dialog (560px) and sheet', ...addHolding(2) };
 
-export const AddLineDesktopFewResults: Story = {
-  name: 'Ajouter une ligne, desktop 1440x900 with few results',
+export const AddHoldingDesktopFewResults: Story = {
+  name: 'Add a holding, desktop 1440x900 with few results',
   parameters: { viewport: { width: 1440, height: 900 } },
-  ...addLine(2),
-  play: desktopCentred,
+  ...addHolding(2),
+  play: desktopCentered,
 };
 
-export const AddLineDesktopManyResultsShortScreen: Story = {
-  name: 'Ajouter une ligne, desktop 1366x650 with many results',
+export const AddHoldingDesktopManyResultsShortScreen: Story = {
+  name: 'Add a holding, desktop 1366x650 with many results',
   parameters: { viewport: { width: 1366, height: 650 } },
-  ...addLine(30),
-  play: desktopCentred,
+  ...addHolding(30),
+  play: desktopCentered,
 };
 
-export const AddLineSheetFewResults: Story = {
-  name: 'Ajouter une ligne, sheet with few results',
+export const AddHoldingSheetFewResults: Story = {
+  name: 'Add a holding, sheet with few results',
   parameters: { viewport: { width: 390, height: 844 } },
-  ...addLine(1),
+  ...addHolding(1),
   play: sheetStaysFixed,
 };
 
-export const AddLineSheetManyResults: Story = {
-  name: 'Ajouter une ligne, sheet with many results',
+export const AddHoldingSheetManyResults: Story = {
+  name: 'Add a holding, sheet with many results',
   parameters: { viewport: { width: 390, height: 844 } },
-  ...addLine(30),
+  ...addHolding(30),
   play: sheetStaysFixed,
 };
 
 export const DeletePasskey: Story = {
-  name: 'Supprimer la clé, alertdialog (440px) and sheet',
+  name: 'Delete passkey, alertdialog (440px) and sheet',
   play: async ({ canvasElement }) => {
     await expect(canvasElement.querySelector('dialog')?.getAttribute('aria-describedby')).toBeTruthy();
   },
   args: {
-    heading: 'Supprimer la clé « MacBook Air » ?',
+    heading: 'Delete the passkey “MacBook Air”?',
     description: undefined,
     closeLabel: undefined,
     variant: 'confirm',
@@ -332,17 +332,17 @@ export const ConfirmWithoutActionsSheet: Story = {
 export const TextOnlyScrollingBody: Story = {
   name: 'Text-only body that scrolls (keyboard reachable)',
   parameters: { viewport: { width: 390, height: 420 } },
-  args: { heading: 'Conditions', closeLabel: 'Fermer', variant: 'confirm', width: '488px', open: true },
+  args: { heading: 'Conditions', closeLabel: 'Close', variant: 'confirm', width: '488px', open: true },
   render: (args) => ({
     props: { ...args, paragraphs: Array.from({ length: 12 }, (_, index) => index + 1) },
     template: `
       <ui-dialog [heading]="heading" [closeLabel]="closeLabel" [variant]="variant" [width]="width" [open]="open" (dismissed)="open = false">
         @for (paragraph of paragraphs; track paragraph) {
           <p class="text-body text-(--muted-foreground)">
-            Le cours saisi remplace la dernière valeur connue jusqu'à la prochaine actualisation de la source.
+            The price you enter replaces the last known value until the source next refreshes.
           </p>
         }
-        <button dialogActions ui-button (click)="open = false">Compris</button>
+        <button dialogActions ui-button (click)="open = false">Got it</button>
       </ui-dialog>
     `,
   }),
@@ -365,14 +365,14 @@ export const SheetOnAnIPhone: Story = {
         (dismissed)="open = false"
       >
         @for (row of rows; track row) {
-          <button type="button" class="flex w-full rounded-control px-3 py-2 text-left text-label hover:bg-(--glow)">Ligne {{ row }} d'un corps plus haut que l'écran.</button>
+          <button type="button" class="flex w-full rounded-control px-3 py-2 text-left text-label hover:bg-(--glow)">Row {{ row }} of a body taller than the screen.</button>
         }
-        <button dialogActions ui-button variant="outline" class="max-lg:hidden" (click)="open = false">Annuler</button>
-        <button dialogActions ui-button (click)="open = false">Acheter 10 parts</button>
+        <button dialogActions ui-button variant="outline" class="max-lg:hidden" (click)="open = false">Cancel</button>
+        <button dialogActions ui-button (click)="open = false">Buy 10 shares</button>
       </ui-dialog>
     `,
   }),
-  args: { heading: 'Acheter Ferrari', open: true },
+  args: { heading: 'Buy Ferrari', open: true },
   play: sheetFitsTheScreen,
 };
 

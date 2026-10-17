@@ -37,7 +37,7 @@ const nextId = (() => {
  * choice (`menuitemradio`): the current one carries a check mark and `aria-checked="true"`.
  *
  * @example
- * <button uiMenuItem destructive (click)="remove()">Delete the line</button>
+ * <button uiMenuItem destructive (click)="remove()">Delete the holding</button>
  * <button uiMenuItem [checked]="account() === 'pea'" (click)="account.set('pea')">Northwind PEA</button>
  */
 @Directive({
@@ -84,9 +84,9 @@ export class UiMenuItem {
  *
  * @example
  * <button ui-button size="icon" aria-label="More" [uiMenuTrigger]="menu">...</button>
- * <ui-menu #menu label="Line actions">
+ * <ui-menu #menu label="Holding actions">
  *   <button uiMenuItem (click)="edit()">Edit</button>
- *   <button uiMenuItem destructive (click)="remove()">Delete the line</button>
+ *   <button uiMenuItem destructive (click)="remove()">Delete the holding</button>
  * </ui-menu>
  */
 @Component({
@@ -208,10 +208,31 @@ export class UiMenu {
     return this.sheet() && typeof window.matchMedia === 'function' && !window.matchMedia('(min-width: 64rem)').matches;
   }
 
+  #layoutWidth(): number {
+    const style = getComputedStyle(this.#host);
+    const width = parseFloat(style.width);
+
+    if (Number.isNaN(width)) {
+      return this.#host.offsetWidth;
+    }
+
+    if (style.boxSizing === 'border-box') {
+      return width;
+    }
+
+    return (
+      width +
+      parseFloat(style.paddingLeft) +
+      parseFloat(style.paddingRight) +
+      parseFloat(style.borderLeftWidth) +
+      parseFloat(style.borderRightWidth)
+    );
+  }
+
   #position(trigger: HTMLElement): void {
     const margin = 8;
     const triggerRect = trigger.getBoundingClientRect();
-    const menuRect = { width: this.#host.offsetWidth, height: this.#host.offsetHeight };
+    const menuRect = { width: this.#layoutWidth(), height: this.#host.offsetHeight };
     const fitsBelow = window.innerHeight - triggerRect.bottom >= menuRect.height + margin;
 
     const top = fitsBelow ? triggerRect.bottom + 4 : Math.max(margin, triggerRect.top - menuRect.height - 4);

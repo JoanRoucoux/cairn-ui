@@ -17,11 +17,11 @@ const CHEVRON_CLASSES =
 
 /**
  * Link in the stale tone, for a caption about data that is late or left out of a total, such as
- * "1 ligne sans cours, non comptée". `chevron` adds a trailing chevron, `size` is `caption` (the
+ * "1 holding without a price, not counted". `chevron` adds a trailing chevron, `size` is `caption` (the
  * default) or `label`.
  *
  * @example
- * <a uiStaleLink chevron size="label" routerLink="/holdings">1 cours en retard</a>
+ * <a uiStaleLink chevron size="label" routerLink="/holdings">1 stale price</a>
  */
 @Directive({
   selector: 'a[uiStaleLink]',

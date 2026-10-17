@@ -33,7 +33,7 @@ const meta: Meta<AsyncArgs> = {
       description: {
         component: `The three states of a block that depends on a service call: a loading skeleton, an error
 shown in place with a retry button, or an empty state. Whichever state is active, the block's own
-title stays visible above it — that title is not part of this component, the caller renders it.
+title stays visible above it: that title is not part of this component, the caller renders it.
 
 One call, one block, its three states: a call that fails never erases the rest of the screen.
 
@@ -41,7 +41,7 @@ The error block has four looks. \`elevated\` (the default) is a tinted box with 
 \`plain\` has no surface and the normal line height, for a block that sits in a card or a table the
 screen already draws. \`emphasis\` is a heading, a longer message and a primary retry button, for a
 list that is the whole page. \`inline\` is one row, message left and retry right, for a failure
-inside a form. \`align\` centres the block (\`auto\`: from 64rem), \`card\` draws a card around it and
+inside a form. \`align\` centers the block (\`auto\`: from 64rem), \`card\` draws a card around it and
 \`fill\` makes it fill a host the screen sizes.
 
 #### When to use
@@ -77,8 +77,8 @@ inside a form. \`align\` centres the block (\`auto\`: from 64rem), \`card\` draw
             <div class="flex justify-between py-1.5"><span class="rounded-control block h-4 bg-(--muted) w-[110px]"></span><span class="rounded-control block h-4 bg-(--muted) w-[90px]"></span></div>
           </div>
           <div asyncEmpty class="rounded-control flex flex-col items-start gap-2 bg-(--background) p-4">
-            <span class="text-label text-(--muted-foreground)">Ce compte n'a encore aucune ligne. Ajoutez un titre ou importez un CSV.</span>
-            <button type="button" class="rounded-control text-label h-9 bg-(--card) px-3 font-medium shadow-[inset_0_0_0_1px_var(--border)]">Ajouter une ligne</button>
+            <span class="text-label text-(--muted-foreground)">This account has no holdings yet. Add one or import a CSV.</span>
+            <button type="button" class="rounded-control text-label h-9 bg-(--card) px-3 font-medium shadow-[inset_0_0_0_1px_var(--border)]">Add a holding</button>
           </div>
           <span class="text-body font-medium tabular-nums">8 592,00 €</span>
         </ui-async>
@@ -86,11 +86,11 @@ inside a form. \`align\` centres the block (\`auto\`: from 64rem), \`card\` draw
     `,
   }),
   args: {
-    title: 'Par enveloppe',
+    title: 'By wrapper',
     state: 'ready',
-    errorTitle: "Les enveloppes n'ont pas pu être chargées",
-    errorMessage: "Le serveur n'a pas répondu.",
-    retryLabel: 'Réessayer',
+    errorTitle: 'Wrappers couldn’t be loaded',
+    errorMessage: 'The server didn’t respond.',
+    retryLabel: 'Try again',
     retryIcon: true,
     variant: 'elevated',
     align: 'start',
@@ -107,7 +107,7 @@ inside a form. \`align\` centres the block (\`auto\`: from 64rem), \`card\` draw
     retryIcon: {
       control: 'boolean',
       description:
-        'Draws the rotate icon in the retry button (default). Turn it off for a text-only retry, as in a per-source search error. Only the `inline` variant honours it.',
+        'Draws the rotate icon in the retry button (default). Turn it off for a text-only retry, as in a per-source search error. Only the `inline` variant honors it.',
     },
     variant: {
       control: 'inline-radio',
@@ -118,7 +118,7 @@ inside a form. \`align\` centres the block (\`auto\`: from 64rem), \`card\` draw
     align: {
       control: 'inline-radio',
       options: [...ASYNC_ALIGNS],
-      description: 'Alignment of the error block. `auto` is the start below 64rem and centred from 64rem.',
+      description: 'Alignment of the error block. `auto` is the start below 64rem and centered from 64rem.',
     },
     card: {
       control: 'boolean',
@@ -126,7 +126,7 @@ inside a form. \`align\` centres the block (\`auto\`: from 64rem), \`card\` draw
     },
     fill: {
       control: 'boolean',
-      description: 'The error block fills its host and centres vertically; the host sets the minimum height.',
+      description: 'The error block fills its host and centers vertically; the host sets the minimum height.',
     },
     retry: { description: 'Emitted when the retry button is pressed. Only that block reloads.' },
   },
@@ -159,11 +159,11 @@ export const DelayedSkeleton: Story = {
       },
     },
     template: `
-      <button type="button" class="text-label" (click)="run(100)">Appel de 100 ms</button>
-      <button type="button" class="text-label ml-3" (click)="run(300)">Appel de 300 ms</button>
+      <button type="button" class="text-label" (click)="run(100)">100 ms call</button>
+      <button type="button" class="text-label ml-3" (click)="run(300)">300 ms call</button>
       <ui-async [state]="state" class="mt-3 block">
-        <span asyncLoading>Chargement</span>
-        <span>Contenu</span>
+        <span asyncLoading>Loading</span>
+        <span>Content</span>
       </ui-async>
     `,
   }),
@@ -179,7 +179,7 @@ export const Error: Story = {
     const canvas = within(canvasElement);
 
     await expect(canvas.getByRole('alert')).toBeInTheDocument();
-    await userEvent.click(canvas.getByRole('button', { name: 'Réessayer' }));
+    await userEvent.click(canvas.getByRole('button', { name: 'Try again' }));
     await expect(args.retry).toHaveBeenCalledOnce();
   },
 };
@@ -200,94 +200,94 @@ const screen = (name: string, spec: Screen): Story => ({
   render: () => ({
     template: `
       <div data-frame class="p-2 ${spec.surface === 'background' ? 'bg-(--background)' : 'bg-(--card)'} ${spec.wrapper ?? ''}" style="width: ${spec.width + 16}px">
-        <ui-async state="error" errorTitle="${spec.title}" errorMessage="${spec.message ?? "Le serveur n'a pas répondu."}" retryLabel="Réessayer" ${spec.attrs ?? ''} class="${spec.host ?? ''}" />
+        <ui-async state="error" errorTitle="${spec.title}" errorMessage="${spec.message ?? 'The server didn’t respond.'}" retryLabel="Try again" ${spec.attrs ?? ''} class="${spec.host ?? ''}" />
       </div>`,
   }),
 });
 
 export const ElevatedTotalPhone: Story = screen('Dashboard total, phone (elevated)', {
-  title: "Le total n'a pas pu être chargé",
+  title: 'The total couldn’t be loaded',
   width: 326,
 });
 
 export const ElevatedTotalDesktop: Story = screen('Dashboard total, desktop (elevated)', {
-  title: "Le total n'a pas pu être chargé",
+  title: 'The total couldn’t be loaded',
   width: 688,
 });
 
 export const CurveFillPhone: Story = screen('Dashboard curve, phone (center, fill)', {
-  title: "La courbe n'a pas pu être chargée",
+  title: 'The chart couldn’t be loaded',
   width: 326,
   attrs: 'align="center" fill',
   host: 'min-h-63',
 });
 
 export const CurveFillDesktop: Story = screen('Dashboard curve, desktop (center, fill)', {
-  title: "La courbe n'a pas pu être chargée",
+  title: 'The chart couldn’t be loaded',
   width: 688,
   attrs: 'align="center" fill',
   host: 'min-h-93',
 });
 
-export const ElevatedAutoAllocation: Story = screen('Repartition, phone and desktop (elevated, auto)', {
-  title: "La répartition par classe n'a pas pu être chargée",
+export const ElevatedAutoAllocation: Story = screen('Allocation, phone and desktop (elevated, auto)', {
+  title: 'The allocation by asset class couldn’t be loaded',
   width: 326,
   attrs: 'align="auto"',
   wrapper: 'lg:w-[516px]!',
 });
 
-export const PlainCard: Story = screen('Comptes, phone (plain, card)', {
-  title: "Les comptes n'ont pas pu être chargés",
+export const PlainCard: Story = screen('Accounts, phone (plain, card)', {
+  title: 'Accounts couldn’t be loaded',
   width: 358,
   attrs: 'variant="plain" card',
   surface: 'background',
 });
 
-export const PlainCentered: Story = screen('Comptes, desktop (plain, center)', {
-  title: "Les comptes n'ont pas pu être chargés",
+export const PlainCentered: Story = screen('Accounts, desktop (plain, center)', {
+  title: 'Accounts couldn’t be loaded',
   width: 1088,
   attrs: 'variant="plain" align="center"',
 });
 
-export const PlainAuto: Story = screen('Comptes, phone and desktop (plain, auto)', {
-  title: "Les comptes n'ont pas pu être chargés",
+export const PlainAuto: Story = screen('Accounts, phone and desktop (plain, auto)', {
+  title: 'Accounts couldn’t be loaded',
   width: 358,
   attrs: 'variant="plain" align="auto"',
   wrapper: 'lg:w-[1104px]! max-lg:bg-(--background)!',
   host: 'block max-lg:rounded-container max-lg:bg-(--card) max-lg:shadow-[inset_0_0_0_1px_var(--border)]',
 });
 
-export const EmphasisCard: Story = screen('Lignes, phone (emphasis, card)', {
-  title: "Les lignes n'ont pas pu être chargées",
-  message: "Le serveur n'a pas répondu. Vérifiez la connexion, puis réessayez.",
+export const EmphasisCard: Story = screen('Holdings, phone (emphasis, card)', {
+  title: 'Holdings couldn’t be loaded',
+  message: 'The server didn’t respond. Check your connection, then try again.',
   width: 358,
   attrs: 'variant="emphasis" card',
   surface: 'background',
 });
 
-export const EmphasisCentered: Story = screen('Lignes, desktop (emphasis, center)', {
-  title: "Les lignes n'ont pas pu être chargées",
-  message: "Le serveur n'a pas répondu. Vérifiez la connexion, puis réessayez.",
+export const EmphasisCentered: Story = screen('Holdings, desktop (emphasis, center)', {
+  title: 'Holdings couldn’t be loaded',
+  message: 'The server didn’t respond. Check your connection, then try again.',
   width: 1088,
   attrs: 'variant="emphasis" align="center"',
 });
 
-export const InlineSearch: Story = screen('Ajouter une ligne, search (inline)', {
+export const InlineSearch: Story = screen('Add a holding, search (inline)', {
   title: '',
-  message: "La recherche en ligne n'a pas répondu.",
+  message: 'The online search didn’t respond.',
   width: 350,
   attrs: 'variant="inline"',
 });
 
 export const InlineSearchNoIcon: Story = {
-  ...screen('Ajouter une ligne, per-source retry (inline, no icon)', {
+  ...screen('Add a holding, per-source retry (inline, no icon)', {
     title: '',
-    message: "Yahoo Finance n'a pas répondu.",
+    message: 'Yahoo Finance didn’t respond.',
     width: 350,
     attrs: 'variant="inline" [retryIcon]="false"',
   }),
   play: async ({ canvasElement }) => {
-    const retry = within(canvasElement).getByRole('button', { name: 'Réessayer' });
+    const retry = within(canvasElement).getByRole('button', { name: 'Try again' });
 
     await expect(retry.querySelector('svg')).toBeNull();
     await expect(getComputedStyle(retry).paddingLeft).toBe('12px');

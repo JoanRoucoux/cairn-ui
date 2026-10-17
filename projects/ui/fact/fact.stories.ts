@@ -33,8 +33,8 @@ line under the value, and a hairline between rows. Built on a native description
 
 * \`dl[uiFacts]\` holds \`div[ui-fact]\` children, each exposing a \`dt\` (the label) and a \`dd\` (the
   value and its sub-line), which is the markup assistive technologies expect for term and value pairs.
-* The sub-line colour (\`stale\`) is never the only signal: the line says what is out of date.
-* \`size="auto"\` is \`md\` below 64rem and \`sm\` from it, as the Lignes detail does, so one list serves both widths.
+* The sub-line color (\`stale\`) is never the only signal: the line says what is out of date.
+* \`size="auto"\` is \`md\` below 64rem and \`sm\` from it, as the Holdings detail does, so one list serves both widths.
 * \`size="md"\` (12 px rows, body value) is the iPhone detail inside a card; \`sm\` (10 px rows, label
   value) is the desktop detail card. The card around the iPhone list is page layout.`,
       },
@@ -45,9 +45,9 @@ line under the value, and a hairline between rows. Built on a native description
     template: `
       <div class="w-[358px]">
         <dl uiFacts [ruled]="ruled">
-          <div ui-fact label="Quantité" [size]="size">500</div>
-          <div ui-fact label="PRU" [size]="size">24,12 €</div>
-          <div ui-fact label="Cours" [size]="size" sub="Cours du 25/09 à 17:35 · Yahoo Finance" [subTone]="subTone">28,64 €</div>
+          <div ui-fact label="Quantity" [size]="size">500</div>
+          <div ui-fact label="Avg. cost" [size]="size">24,12 €</div>
+          <div ui-fact label="Price" [size]="size" sub="Price as of 25/09 at 17:35 · Yahoo Finance" [subTone]="subTone">28,64 €</div>
           <div ui-fact label="ISIN" [size]="size" sub="ETF">LU1681043599</div>
         </dl>
       </div>
@@ -64,7 +64,7 @@ line under the value, and a hairline between rows. Built on a native description
     subTone: {
       control: 'inline-radio',
       options: [...FACT_SUB_TONES],
-      description: 'Colour of the line under a value: `subtle`, or `stale` for an out-of-date figure.',
+      description: 'Color of the line under a value: `subtle`, or `stale` for an out-of-date figure.',
     },
     ruled: { control: 'boolean', description: 'Also draws the hairline above the first row.' },
   },
@@ -77,21 +77,21 @@ export const Default: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(canvas.getByText('Quantité').tagName).toBe('DT');
+    await expect(canvas.getByText('Quantity').tagName).toBe('DT');
     await expect(canvas.getByText('LU1681043599').closest('dd')).not.toBeNull();
   },
 };
 
 export const InACard: Story = {
-  name: 'In a card (Lignes iPhone detail)',
+  name: 'In a card (Holdings iPhone detail)',
   render: (args) => ({
     props: args,
     template: `
       <div class="rounded-container w-[358px] bg-(--card) px-4 py-1 shadow-[inset_0_0_0_1px_var(--border)]">
         <dl uiFacts>
-          <div ui-fact label="Quantité" size="md">500</div>
-          <div ui-fact label="PRU" size="md">24,12 €</div>
-          <div ui-fact label="Cours" size="md" sub="Cours du 25/09 à 17:35 · Yahoo Finance" [subTone]="subTone">28,64 €</div>
+          <div ui-fact label="Quantity" size="md">500</div>
+          <div ui-fact label="Avg. cost" size="md">24,12 €</div>
+          <div ui-fact label="Price" size="md" sub="Price as of 25/09 at 17:35 · Yahoo Finance" [subTone]="subTone">28,64 €</div>
           <div ui-fact label="ISIN" size="md" sub="ETF">LU1681043599</div>
         </dl>
       </div>
@@ -100,7 +100,7 @@ export const InACard: Story = {
 };
 
 export const Desktop: Story = {
-  name: 'Ruled, small (Lignes desktop detail)',
+  name: 'Ruled, small (Holdings desktop detail)',
   args: { size: 'sm', ruled: true },
 };
 
@@ -109,16 +109,16 @@ export const Stale: Story = {
 };
 
 export const Auto: Story = {
-  name: 'Auto size (Lignes detail, one list for both widths)',
+  name: 'Auto size (Holdings detail, one list for both widths)',
   render: (args) => ({
     props: args,
     template: `
       <div class="w-[358px] lg:w-[420px]">
         <ui-card surface="max-lg" padding="rows">
         <dl uiFacts [ruled]="ruled">
-          <div ui-fact label="Quantité" size="auto">500</div>
-          <div ui-fact label="PRU" size="auto">24,12 €</div>
-          <div ui-fact label="Cours" size="auto" sub="Cours du 25/09 à 17:35 · Yahoo Finance" [subTone]="subTone">28,64 €</div>
+          <div ui-fact label="Quantity" size="auto">500</div>
+          <div ui-fact label="Avg. cost" size="auto">24,12 €</div>
+          <div ui-fact label="Price" size="auto" sub="Price as of 25/09 at 17:35 · Yahoo Finance" [subTone]="subTone">28,64 €</div>
           <div ui-fact label="ISIN" size="auto" sub="ETF">LU1681043599</div>
         </dl>
         </ui-card>
@@ -128,19 +128,19 @@ export const Auto: Story = {
 };
 
 export const TradeRecap: Story = {
-  name: 'Recap (Acheter and Vendre dialogs)',
+  name: 'Recap (Buy and Sell dialogs)',
   render: () => ({
     template: `
       <div class="bg-(--card) p-4 w-[358px] box-content">
         <ui-card variant="inset" padding="recap">
           <dl uiFacts>
-            <div ui-fact label="Quantité" size="recap">
+            <div ui-fact label="Quantity" size="recap">
               <span class="flex items-baseline gap-1.5 text-right"><span class="text-(--subtle-foreground)">500</span><span class="text-(--subtle-foreground)">&rarr;</span><span class="font-medium">540</span></span>
             </div>
-            <div ui-fact label="PRU" size="recap">
+            <div ui-fact label="Avg. cost" size="recap">
               <span class="flex items-baseline gap-1.5 text-right"><span class="text-(--subtle-foreground)">24,12&nbsp;€</span><span class="text-(--subtle-foreground)">&rarr;</span><span class="font-medium">24,49&nbsp;€</span></span>
             </div>
-            <div ui-fact label="Montant de l'achat" size="recap"><span class="font-medium">1&nbsp;164,00&nbsp;€</span></div>
+            <div ui-fact label="Purchase amount" size="recap"><span class="font-medium">1&nbsp;164,00&nbsp;€</span></div>
           </dl>
         </ui-card>
       </div>

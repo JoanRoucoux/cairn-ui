@@ -23,7 +23,7 @@ const readDuration = (host: HTMLElement): number => {
 
 /**
  * Message shown by `UiToasts`: one at a time, no action. A confirmation (`show`) is gone after `--toast-duration`;
- * an error (`showError`) stays until its cross is clicked. Centred at the bottom of the content area: from `64rem`
+ * an error (`showError`) stays until its cross is clicked. Centered at the bottom of the content area: from `64rem`
  * between `--sidebar-width` (0 when unset) and the right edge.
  * Place it once in the app shell.
  *

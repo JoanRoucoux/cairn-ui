@@ -4,18 +4,18 @@ import userEvent from '@testing-library/user-event';
 import { type FilterChipOption, UiFilterChips } from './filter-chips';
 
 const classes: FilterChipOption[] = [
-  { value: 'all', label: 'Toutes', count: 31 },
+  { value: 'all', label: 'All', count: 31 },
   { value: 'etf', label: 'ETF', count: 6 },
-  { value: 'fund', label: 'Fonds', count: 8 },
+  { value: 'fund', label: 'Funds', count: 8 },
 ];
 
-const template = `<ui-filter-chips ariaLabel="Filtrer par classe d'actif" [options]="options" [(value)]="value" />`;
+const template = `<ui-filter-chips ariaLabel="Filter by asset class" [options]="options" [(value)]="value" />`;
 
 describe('UiFilterChips', () => {
   it('names a group of toggle buttons, one per option, with the count after the label', async () => {
     await render(template, { imports: [UiFilterChips], componentProperties: { options: classes, value: 'all' } });
 
-    expect(screen.getByRole('group', { name: "Filtrer par classe d'actif" })).toBeInTheDocument();
+    expect(screen.getByRole('group', { name: 'Filter by asset class' })).toBeInTheDocument();
     expect(screen.getAllByRole('button')).toHaveLength(3);
     expect(screen.getByRole('button', { name: 'ETF 6' })).toBeInTheDocument();
   });
@@ -24,14 +24,14 @@ describe('UiFilterChips', () => {
     await render(template, { imports: [UiFilterChips], componentProperties: { options: classes, value: 'etf' } });
 
     expect(screen.getByRole('button', { name: /^ETF/ })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('button', { name: /^Toutes/ })).toHaveAttribute('aria-pressed', 'false');
-    expect(screen.getByRole('button', { name: /^Fonds/ })).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getByRole('button', { name: /^All/ })).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getByRole('button', { name: /^Funds/ })).toHaveAttribute('aria-pressed', 'false');
   });
 
   it('draws the active chip in primary with its count, the others on the card surface', async () => {
     await render(template, { imports: [UiFilterChips], componentProperties: { options: classes, value: 'etf' } });
     const active = screen.getByRole('button', { name: /^ETF/ });
-    const idle = screen.getByRole('button', { name: /^Fonds/ });
+    const idle = screen.getByRole('button', { name: /^Funds/ });
 
     expect(active.querySelector('[data-chip]')).toHaveClass('bg-(--primary)', 'text-(--primary-foreground)');
     expect(active.querySelector('[data-count]')).toHaveClass('text-(--primary-foreground)');
@@ -66,11 +66,11 @@ describe('UiFilterChips', () => {
       componentProperties: { options: classes, value: 'all' },
     });
 
-    await userEvent.click(screen.getByRole('button', { name: /^Fonds/ }));
+    await userEvent.click(screen.getByRole('button', { name: /^Funds/ }));
 
     expect(fixture.componentInstance.value).toBe('fund');
-    expect(screen.getByRole('button', { name: /^Fonds/ })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('button', { name: /^Toutes/ })).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getByRole('button', { name: /^Funds/ })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: /^All/ })).toHaveAttribute('aria-pressed', 'false');
   });
 
   it('keeps every chip in the tab order and activates with Enter or Space', async () => {
@@ -93,7 +93,7 @@ describe('UiFilterChips', () => {
 
   it('omits the count when absent, as before the data arrives', async () => {
     const labelsOnly: FilterChipOption[] = [
-      { value: 'all', label: 'Toutes' },
+      { value: 'all', label: 'All' },
       { value: 'etf', label: 'ETF', count: null },
     ];
     const { fixture } = await render(template, {
@@ -139,8 +139,8 @@ describe('UiFilterChips', () => {
 
 describe('UiFilterChips leading slot', () => {
   const withLeading = `
-    <ui-filter-chips ariaLabel="Filtrer par classe d'actif" [options]="options" [(value)]="value">
-      <select uiChipsLeading aria-label="Compte"><option>Tous les comptes</option></select>
+    <ui-filter-chips ariaLabel="Filter by asset class" [options]="options" [(value)]="value">
+      <select uiChipsLeading aria-label="Account"><option>All accounts</option></select>
     </ui-filter-chips>`;
 
   it('projects the leading element first, followed by an aria-hidden rule', async () => {
@@ -151,7 +151,7 @@ describe('UiFilterChips leading slot', () => {
     const host = container.querySelector('ui-filter-chips')!;
     const rule = host.querySelector('[data-chips-rule]')!;
 
-    expect(host.firstElementChild).toBe(screen.getByRole('combobox', { name: 'Compte' }));
+    expect(host.firstElementChild).toBe(screen.getByRole('combobox', { name: 'Account' }));
     expect(rule.previousElementSibling).toBe(host.firstElementChild);
     expect(rule).toHaveAttribute('aria-hidden', 'true');
     expect(rule).toHaveClass('hidden', 'h-5', 'w-px', 'bg-(--border)', '[[uiChipsLeading]+&]:block');
@@ -160,8 +160,8 @@ describe('UiFilterChips leading slot', () => {
   it('keeps the leading element outside the chips group', async () => {
     await render(withLeading, { imports: [UiFilterChips], componentProperties: { options: classes, value: 'all' } });
 
-    expect(screen.getByRole('group', { name: "Filtrer par classe d'actif" })).not.toContainElement(
-      screen.getByRole('combobox', { name: 'Compte' }),
+    expect(screen.getByRole('group', { name: 'Filter by asset class' })).not.toContainElement(
+      screen.getByRole('combobox', { name: 'Account' }),
     );
   });
 });

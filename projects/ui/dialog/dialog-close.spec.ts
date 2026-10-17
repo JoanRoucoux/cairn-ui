@@ -15,8 +15,8 @@ const renderDialog = async (exit = '180ms'): Promise<Rendered> => {
   const onDismissed = vi.fn<() => void>();
   const onClosed = vi.fn<(reason: DialogCloseReason) => void>();
   const result = await render(
-    `<ui-dialog heading="Vendre" closeLabel="Fermer" [open]="open" (dismissed)="onDismissed()" (closed)="onClosed($event)">
-       <p>Corps</p>
+    `<ui-dialog heading="Sell" closeLabel="Close" [open]="open" (dismissed)="onDismissed()" (closed)="onClosed($event)">
+       <p>Body</p>
      </ui-dialog>`,
     { imports: [UiDialog], componentProperties: { open: true, onDismissed, onClosed } },
   );
@@ -66,7 +66,7 @@ describe('UiDialog close protocol', () => {
   it('reports the cross at once, and closed only once the exit has played', async () => {
     const { dialog, onDismissed, onClosed } = await renderDialog();
 
-    screen.getByRole('button', { name: 'Fermer' }).click();
+    screen.getByRole('button', { name: 'Close' }).click();
 
     expect(dialog).not.toHaveAttribute('open');
     expect(onDismissed).toHaveBeenCalledOnce();
@@ -80,7 +80,7 @@ describe('UiDialog close protocol', () => {
   it('emits closed once, whichever of the exit transitions ends first', async () => {
     const { dialog, onClosed } = await renderDialog();
 
-    screen.getByRole('button', { name: 'Fermer' }).click();
+    screen.getByRole('button', { name: 'Close' }).click();
     transitionEnd(dialog);
     transitionEnd(dialog);
     vi.advanceTimersByTime(1000);
@@ -107,7 +107,7 @@ describe('UiDialog close protocol', () => {
     const { dialog, onDismissed, onClosed } = await renderDialog();
 
     dialog.dispatchEvent(new Event('cancel', { cancelable: true }));
-    screen.getByRole('button', { name: 'Fermer', hidden: true }).click();
+    screen.getByRole('button', { name: 'Close', hidden: true }).click();
     dialog.dispatchEvent(new Event('cancel', { cancelable: true }));
     transitionEnd(dialog);
     vi.advanceTimersByTime(1000);
@@ -116,7 +116,7 @@ describe('UiDialog close protocol', () => {
     expect(onClosed).toHaveBeenCalledExactlyOnceWith('escape');
   });
 
-  it('stays open when a file picker inside it is cancelled, while Escape on it still closes', async () => {
+  it('stays open when a file picker inside it is canceled, while Escape on it still closes', async () => {
     const { dialog, onDismissed, onClosed } = await renderDialog();
     const input = document.createElement('input');
     input.type = 'file';
@@ -187,7 +187,7 @@ describe('UiDialog close protocol', () => {
   it('falls back on the exit duration when no transition reports its end', async () => {
     const { onClosed } = await renderDialog('0.18s, 0.18s');
 
-    screen.getByRole('button', { name: 'Fermer' }).click();
+    screen.getByRole('button', { name: 'Close' }).click();
     vi.advanceTimersByTime(180);
 
     expect(onClosed).not.toHaveBeenCalled();
@@ -201,7 +201,7 @@ describe('UiDialog close protocol', () => {
     const { dialog, onClosed } = await renderDialog('100ms');
 
     dialog.style.transitionDelay = '100ms';
-    screen.getByRole('button', { name: 'Fermer' }).click();
+    screen.getByRole('button', { name: 'Close' }).click();
     vi.advanceTimersByTime(200);
 
     expect(onClosed).not.toHaveBeenCalled();
@@ -214,7 +214,7 @@ describe('UiDialog close protocol', () => {
   it('emits closed at once when there is no exit to wait for', async () => {
     const { onClosed } = await renderDialog('0s');
 
-    screen.getByRole('button', { name: 'Fermer' }).click();
+    screen.getByRole('button', { name: 'Close' }).click();
 
     expect(onClosed).toHaveBeenCalledExactlyOnceWith('cross');
   });
@@ -222,7 +222,7 @@ describe('UiDialog close protocol', () => {
   it('emits closed at once when no transition is declared at all', async () => {
     const { onClosed } = await renderDialog('');
 
-    screen.getByRole('button', { name: 'Fermer' }).click();
+    screen.getByRole('button', { name: 'Close' }).click();
 
     expect(onClosed).toHaveBeenCalledOnce();
   });
@@ -230,8 +230,8 @@ describe('UiDialog close protocol', () => {
   it('does not take the end of a child transition or of the backdrop for the end of the exit', async () => {
     const { dialog, onClosed } = await renderDialog();
 
-    screen.getByRole('button', { name: 'Fermer' }).click();
-    transitionEnd(screen.getByText('Corps'));
+    screen.getByRole('button', { name: 'Close' }).click();
+    transitionEnd(screen.getByText('Body'));
     transitionEnd(dialog, '::backdrop');
 
     expect(onClosed).not.toHaveBeenCalled();
@@ -270,7 +270,7 @@ describe('UiDialog close protocol', () => {
   it('emits nothing once destroyed in the middle of its exit', async () => {
     const { fixture, onClosed } = await renderDialog();
 
-    screen.getByRole('button', { name: 'Fermer' }).click();
+    screen.getByRole('button', { name: 'Close' }).click();
     fixture.destroy();
     vi.advanceTimersByTime(1000);
 

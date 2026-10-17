@@ -12,7 +12,7 @@ import { UiGroupHeader } from './group-header';
     <ui-group-header
       collapsible
       controls="northwind"
-      meta="PEA · 2 lignes"
+      meta="PEA · 2 holdings"
       name="Northwind PEA"
       [toggleDisabled]="locked()"
       [(expanded)]="open"
@@ -33,7 +33,7 @@ describe('UiGroupHeader', () => {
       const button = screen.getByRole('button');
 
       expect(button.parentElement?.tagName).toBe('H2');
-      expect(button).toHaveAccessibleName(/Northwind PEA\s*PEA · 2 lignes\s*48 215,60 €/);
+      expect(button).toHaveAccessibleName(/Northwind PEA\s*PEA · 2 holdings\s*48 215,60 €/);
       expect(button).toHaveAttribute('aria-expanded', 'true');
       expect(button).toHaveAttribute('aria-controls', 'northwind');
     });
@@ -58,7 +58,7 @@ describe('UiGroupHeader', () => {
       await render(Host);
 
       expect(screen.getByText('Northwind PEA')).toHaveClass('text-title', 'font-semibold');
-      expect(screen.getByText('PEA · 2 lignes')).toHaveClass('text-label', 'text-(--muted-foreground)');
+      expect(screen.getByText('PEA · 2 holdings')).toHaveClass('text-label', 'text-(--muted-foreground)');
       expect(screen.getByText('48 215,60 €')).toHaveClass('text-title', 'font-semibold', 'tabular-nums');
     });
 

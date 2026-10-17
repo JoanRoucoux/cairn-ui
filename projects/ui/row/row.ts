@@ -166,7 +166,7 @@ export class UiListRow {
  *
  * @example
  * <div uiRowGroup>
- *   <button ui-row type="button" trailing="chevron">Saisir à la main</button>
+ *   <button ui-row type="button" trailing="chevron">Enter manually</button>
  * </div>
  */
 @Directive({

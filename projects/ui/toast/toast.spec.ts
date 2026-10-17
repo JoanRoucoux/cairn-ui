@@ -33,10 +33,10 @@ describe('UiToaster', () => {
   it('shows a message with the inverted look, a check icon and no action', async () => {
     const { toasts } = await setup();
 
-    toasts.show('Achat enregistré');
+    toasts.show('Purchase recorded');
     await flush();
 
-    const message = screen.getByText('Achat enregistré').parentElement!;
+    const message = screen.getByText('Purchase recorded').parentElement!;
     expect(screen.getByRole('status')).toContainElement(message);
     expect(message).toHaveClass(
       'bg-(--primary)',
@@ -54,7 +54,7 @@ describe('UiToaster', () => {
     expect(message.querySelector('svg path')).toHaveAttribute('d', 'M20 6 9 17l-5-5');
   });
 
-  it('sits above the tab bar below 64rem and centred in the content area from 64rem', async () => {
+  it('sits above the tab bar below 64rem and centered in the content area from 64rem', async () => {
     await setup();
 
     expect(screen.getByRole('status')).toHaveClass(
@@ -68,20 +68,20 @@ describe('UiToaster', () => {
   it('replaces the current message in the same element', async () => {
     const { toasts } = await setup();
 
-    toasts.show('Premier');
+    toasts.show('First');
     await flush();
-    const first = screen.getByText('Premier');
+    const first = screen.getByText('First');
     toasts.show('Second');
     await flush();
 
-    expect(screen.queryByText('Premier')).toBeNull();
+    expect(screen.queryByText('First')).toBeNull();
     expect(screen.getByText('Second')).toBe(first);
   });
 
   it('dismisses after 5 s by default', async () => {
     const { toasts } = await setup();
 
-    toasts.show('Fait');
+    toasts.show('Done');
     await flush();
     await vi.advanceTimersByTimeAsync(4999);
     expect(toasts.toast()).not.toBeNull();
@@ -97,7 +97,7 @@ describe('UiToaster', () => {
     const { toasts, host } = await setup();
     host.style.setProperty('--toast-duration', value);
 
-    toasts.show('Fait');
+    toasts.show('Done');
     await flush();
     await vi.advanceTimersByTimeAsync(ms - 1);
     expect(toasts.toast()).not.toBeNull();
@@ -109,14 +109,14 @@ describe('UiToaster', () => {
   it('restarts the timer when a new message replaces the current one', async () => {
     const { toasts } = await setup();
 
-    toasts.show('Un');
+    toasts.show('One');
     await flush();
     await vi.advanceTimersByTimeAsync(3000);
-    toasts.show('Deux');
+    toasts.show('Two');
     await flush();
     await vi.advanceTimersByTimeAsync(4000);
 
-    expect(toasts.toast()?.text).toBe('Deux');
+    expect(toasts.toast()?.text).toBe('Two');
     await vi.advanceTimersByTimeAsync(1000);
     expect(toasts.toast()).toBeNull();
   });
@@ -125,14 +125,14 @@ describe('UiToaster', () => {
     const { toasts } = await setup();
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
 
-    toasts.show('Fait');
+    toasts.show('Done');
     await flush();
     await vi.advanceTimersByTimeAsync(2000);
-    await user.hover(screen.getByText('Fait'));
+    await user.hover(screen.getByText('Done'));
     await vi.advanceTimersByTimeAsync(10000);
     expect(toasts.toast()).not.toBeNull();
 
-    await user.unhover(screen.getByText('Fait'));
+    await user.unhover(screen.getByText('Done'));
     await vi.advanceTimersByTimeAsync(2999);
     expect(toasts.toast()).not.toBeNull();
     await vi.advanceTimersByTimeAsync(1);
@@ -143,16 +143,16 @@ describe('UiToaster', () => {
     const { toasts } = await setup();
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
 
-    toasts.show('Un');
+    toasts.show('One');
     await flush();
     await vi.advanceTimersByTimeAsync(3000);
-    await user.hover(screen.getByText('Un'));
-    toasts.show('Deux');
+    await user.hover(screen.getByText('One'));
+    toasts.show('Two');
     await flush();
-    await user.unhover(screen.getByText('Deux'));
+    await user.unhover(screen.getByText('Two'));
     await vi.advanceTimersByTimeAsync(4999);
 
-    expect(toasts.toast()?.text).toBe('Deux');
+    expect(toasts.toast()?.text).toBe('Two');
     await vi.advanceTimersByTimeAsync(1);
     expect(toasts.toast()).toBeNull();
   });
@@ -160,12 +160,12 @@ describe('UiToaster', () => {
   it('pauses while focus is inside the message and resumes with the time left', async () => {
     const { toasts } = await setup();
 
-    toasts.showError('Échec');
+    toasts.showError('Failed');
     await flush();
-    toasts.show('Fait');
+    toasts.show('Done');
     await flush();
     await vi.advanceTimersByTimeAsync(2000);
-    const message = screen.getByText('Fait').parentElement!;
+    const message = screen.getByText('Done').parentElement!;
     message.dispatchEvent(new FocusEvent('focusin', { bubbles: true }));
     await flush();
     await vi.advanceTimersByTimeAsync(10000);
@@ -183,13 +183,13 @@ describe('UiToaster', () => {
   it('removes the message on dismiss and stops the timer on destroy', async () => {
     const { toasts } = await setup();
 
-    toasts.show('Fait');
+    toasts.show('Done');
     await flush();
     toasts.dismiss();
     await flush();
-    expect(screen.queryByText('Fait')).toBeNull();
+    expect(screen.queryByText('Done')).toBeNull();
 
-    toasts.show('Encore');
+    toasts.show('Again');
     await flush();
     TestBed.resetTestingModule();
     expect(vi.getTimerCount()).toBe(0);
@@ -203,22 +203,22 @@ describe('UiToaster error', () => {
   it('shows the same surface with an alert icon, a status role and a close cross', async () => {
     const { toasts } = await setup();
 
-    toasts.showError("Échec de l'import");
+    toasts.showError('Import failed');
     await flush();
 
-    const message = screen.getByText("Échec de l'import").parentElement!;
+    const message = screen.getByText('Import failed').parentElement!;
     expect(message).toHaveClass('bg-(--primary)', 'text-(--primary-foreground)');
     expect(message.querySelector('svg circle')).not.toBeNull();
-    expect(screen.getByRole('status')).toContainElement(screen.getByRole('button', { name: 'Fermer' }));
+    expect(screen.getByRole('status')).toContainElement(screen.getByRole('button', { name: 'Close' }));
   });
 
   it('draws a 28 px cross with a 44 px hit area on touch and 36 px with a fine pointer', async () => {
     const { toasts } = await setup();
 
-    toasts.showError("Échec de l'import");
+    toasts.showError('Import failed');
     await flush();
 
-    expect(screen.getByRole('button', { name: 'Fermer' })).toHaveClass(
+    expect(screen.getByRole('button', { name: 'Close' })).toHaveClass(
       'relative',
       'size-7',
       'after:absolute',
@@ -230,38 +230,38 @@ describe('UiToaster error', () => {
   it('takes the close label given', async () => {
     const { toasts } = await setup();
 
-    toasts.showError('Import failed', 'Close');
+    toasts.showError('Import failed', 'Dismiss');
     await flush();
 
-    expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Dismiss' })).toBeInTheDocument();
   });
 
   it('has no timer and stays until the cross is clicked', async () => {
     const { toasts } = await setup();
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
 
-    toasts.showError("Échec de l'import");
+    toasts.showError('Import failed');
     await flush();
     await vi.advanceTimersByTimeAsync(60000);
     expect(toasts.toast()).not.toBeNull();
     expect(vi.getTimerCount()).toBe(0);
 
-    await user.click(screen.getByRole('button', { name: 'Fermer' }));
+    await user.click(screen.getByRole('button', { name: 'Close' }));
     await flush();
 
     expect(toasts.toast()).toBeNull();
-    expect(screen.queryByText("Échec de l'import")).toBeNull();
+    expect(screen.queryByText('Import failed')).toBeNull();
   });
 
   it('never times out, even once a hover and a focus inside it have paused and resumed', async () => {
     const { toasts } = await setup();
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
 
-    toasts.showError("Échec de l'import");
+    toasts.showError('Import failed');
     await flush();
-    await user.hover(screen.getByText("Échec de l'import"));
-    await user.unhover(screen.getByText("Échec de l'import"));
-    const cross = screen.getByRole('button', { name: 'Fermer' });
+    await user.hover(screen.getByText('Import failed'));
+    await user.unhover(screen.getByText('Import failed'));
+    const cross = screen.getByRole('button', { name: 'Close' });
     cross.focus();
     await flush();
     cross.blur();
@@ -275,17 +275,17 @@ describe('UiToaster error', () => {
   it('replaces a confirmation and is replaced by one, in the same slot', async () => {
     const { toasts } = await setup();
 
-    toasts.show('Fait');
+    toasts.show('Done');
     await flush();
-    toasts.showError('Échec');
+    toasts.showError('Failed');
     await flush();
-    expect(screen.queryByText('Fait')).toBeNull();
+    expect(screen.queryByText('Done')).toBeNull();
     await vi.advanceTimersByTimeAsync(60000);
-    expect(screen.getByText('Échec')).toBeInTheDocument();
+    expect(screen.getByText('Failed')).toBeInTheDocument();
 
-    toasts.show('Refait');
+    toasts.show('Done again');
     await flush();
-    expect(screen.queryByText('Échec')).toBeNull();
+    expect(screen.queryByText('Failed')).toBeNull();
     expect(screen.queryByRole('button')).toBeNull();
     await vi.advanceTimersByTimeAsync(5000);
 
@@ -300,30 +300,30 @@ describe('UiToaster replacement and reset', () => {
   it('drops a message still leaving when a new one is shown', async () => {
     const { toasts, host } = await setup();
 
-    toasts.show('Un');
+    toasts.show('One');
     await flush();
-    const first = screen.getByText('Un').parentElement!;
+    const first = screen.getByText('One').parentElement!;
     first.classList.add('ui-leave-fade');
     toasts.dismiss();
     await flush();
-    toasts.show('Deux');
+    toasts.show('Two');
     await flush();
 
     expect(first.isConnected).toBe(false);
     expect(host.children).toHaveLength(1);
-    expect(host).toHaveTextContent('Deux');
+    expect(host).toHaveTextContent('Two');
   });
 
   it('starts the next timer unpaused after a programmatic dismiss while hovered', async () => {
     const { toasts } = await setup();
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
 
-    toasts.show('Un');
+    toasts.show('One');
     await flush();
-    await user.hover(screen.getByText('Un'));
+    await user.hover(screen.getByText('One'));
     toasts.dismiss();
     await flush();
-    toasts.show('Deux');
+    toasts.show('Two');
     await flush();
     await vi.advanceTimersByTimeAsync(5000);
 

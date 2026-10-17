@@ -33,13 +33,13 @@ backdrop, and \`heading\` names what the actions apply to. \`width\` fixes the p
 #### Accessibility
 
 * \`heading\` is hidden from assistive technologies, so \`label\` must name the target as well, for
-  example "Actions sur Northwind PEA".
+  example “Actions for Northwind PEA”.
 * The trigger carries \`aria-haspopup="menu"\`, \`aria-expanded\` and \`aria-controls\`.
 * Opening moves focus to the first item; the arrow keys move between items and wrap; Home and End
   jump to the first and the last. Escape and a click outside close the menu, and focus returns to
   the trigger either way.
 * A destructive item is colored \`--negative\`, never conveyed by color alone: its label already
-  says what it does ("Delete the line").`,
+  says what it does (“Delete the holding”).`,
       },
     },
   },
@@ -47,9 +47,9 @@ backdrop, and \`heading\` names what the actions apply to. \`width\` fixes the p
     props: args,
     template: `
       <button ui-button size="icon" variant="ghost" aria-label="More" [uiMenuTrigger]="menu">⋯</button>
-      <ui-menu #menu label="Line actions" [sheet]="sheet" [heading]="heading">
+      <ui-menu #menu label="Holding actions" [sheet]="sheet" [heading]="heading">
         <button uiMenuItem type="button">Edit</button>
-        <button uiMenuItem type="button" destructive>Delete the line</button>
+        <button uiMenuItem type="button" destructive>Delete the holding</button>
       </ui-menu>
     `,
   }),
@@ -79,9 +79,9 @@ export const Opens: Story = {
 
     await userEvent.click(canvas.getByRole('button', { name: 'More' }));
 
-    await waitFor(() => expect(canvas.getByRole('menu', { name: 'Line actions' })).toBeVisible());
+    await waitFor(() => expect(canvas.getByRole('menu', { name: 'Holding actions' })).toBeVisible());
     await expect(canvas.getByRole('menuitem', { name: 'Edit' })).toHaveFocus();
-    await expect(getComputedStyle(canvas.getByRole('menu', { name: 'Line actions' })).transitionProperty).toBe(
+    await expect(getComputedStyle(canvas.getByRole('menu', { name: 'Holding actions' })).transitionProperty).toBe(
       'opacity, scale, overlay, display',
     );
     await expect(getComputedStyle(canvas.getByRole('menuitem', { name: 'Edit' })).transitionProperty).toBe(
@@ -113,9 +113,9 @@ export const NearTheBottomRightCorner: Story = {
     template: `
       <div class="flex h-screen items-end justify-end p-4">
         <button ui-button size="icon" variant="ghost" aria-label="More" [uiMenuTrigger]="menu">⋯</button>
-        <ui-menu #menu label="Line actions">
+        <ui-menu #menu label="Holding actions">
           <button uiMenuItem type="button">Edit</button>
-          <button uiMenuItem type="button" destructive>Delete the line</button>
+          <button uiMenuItem type="button" destructive>Delete the holding</button>
         </ui-menu>
       </div>
     `,
@@ -125,7 +125,7 @@ export const NearTheBottomRightCorner: Story = {
 
     await userEvent.click(canvas.getByRole('button', { name: 'More' }));
 
-    const menu = canvas.getByRole('menu', { name: 'Line actions' });
+    const menu = canvas.getByRole('menu', { name: 'Holding actions' });
     const rect = menu.getBoundingClientRect();
 
     await expect(rect.top).toBeGreaterThanOrEqual(0);
@@ -139,15 +139,15 @@ const ICON_PEN = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" st
 const ICON_TRASH = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>`;
 
 export const ActionSheet: Story = {
-  name: 'Action sheet below 64rem (Comptes)',
+  name: 'Action sheet below 64rem (Accounts)',
   parameters: { layout: 'fullscreen' },
   render: () => ({
     template: `
       <div class="flex h-screen items-start justify-end p-4">
-        <button ui-button size="icon-sm" variant="quiet" aria-label="Actions du compte" [uiMenuTrigger]="menu">⋯</button>
-        <ui-menu #menu label="Actions du compte" sheet heading="Livret A" [width]="218">
-          <button uiMenuItem type="button">${ICON_PEN}Modifier le compte</button>
-          <button uiMenuItem type="button" destructive>${ICON_TRASH}Supprimer le compte</button>
+        <button ui-button size="icon-sm" variant="quiet" aria-label="Account actions" [uiMenuTrigger]="menu">⋯</button>
+        <ui-menu #menu label="Account actions" sheet heading="Livret A" [width]="218">
+          <button uiMenuItem type="button">${ICON_PEN}Edit the account</button>
+          <button uiMenuItem type="button" destructive>${ICON_TRASH}Delete the account</button>
         </ui-menu>
       </div>
     `,
@@ -155,15 +155,15 @@ export const ActionSheet: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await userEvent.click(canvas.getByRole('button', { name: 'Actions du compte' }));
+    await userEvent.click(canvas.getByRole('button', { name: 'Account actions' }));
 
-    await waitFor(() => expect(canvas.getByRole('menu', { name: 'Actions du compte' })).toBeVisible());
-    await expect(canvas.getByRole('menuitem', { name: 'Modifier le compte' })).toHaveFocus();
+    await waitFor(() => expect(canvas.getByRole('menu', { name: 'Account actions' })).toBeVisible());
+    await expect(canvas.getByRole('menuitem', { name: 'Edit the account' })).toHaveFocus();
   },
 };
 
 export const FixedWidth: StoryObj<{ width: number }> = {
-  name: 'Fixed width and icon sizes (Lignes 208, Comptes 218)',
+  name: 'Fixed width and icon sizes (Holdings 208, Accounts 218)',
   args: { width: 218 },
   argTypes: {
     width: {
@@ -176,10 +176,10 @@ export const FixedWidth: StoryObj<{ width: number }> = {
     props: args,
     template: `
       <div class="flex h-screen items-start justify-end p-4">
-        <button ui-button size="icon-sm" variant="quiet" aria-label="Actions du compte" [uiMenuTrigger]="menu">⋯</button>
-        <ui-menu #menu label="Actions du compte" [width]="width">
-          <button uiMenuItem type="button">${ICON_PEN}Modifier le compte</button>
-          <button uiMenuItem type="button" destructive>${ICON_TRASH}Supprimer le compte</button>
+        <button ui-button size="icon-sm" variant="quiet" aria-label="Account actions" [uiMenuTrigger]="menu">⋯</button>
+        <ui-menu #menu label="Account actions" [width]="width">
+          <button uiMenuItem type="button">${ICON_PEN}Edit the account</button>
+          <button uiMenuItem type="button" destructive>${ICON_TRASH}Delete the account</button>
         </ui-menu>
       </div>
     `,
@@ -187,9 +187,9 @@ export const FixedWidth: StoryObj<{ width: number }> = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await userEvent.click(canvas.getByRole('button', { name: 'Actions du compte' }));
+    await userEvent.click(canvas.getByRole('button', { name: 'Account actions' }));
 
-    const menu = canvas.getByRole('menu', { name: 'Actions du compte' });
+    const menu = canvas.getByRole('menu', { name: 'Account actions' });
     await waitFor(() => expect(menu).toBeVisible());
     await expect(menu.offsetWidth).toBe(218);
   },
@@ -203,11 +203,11 @@ export const LongLabelOnIphone: Story = {
   render: () => ({
     template: `
       <div class="flex items-start justify-end p-1">
-        <button ui-button size="icon-sm" variant="quiet" aria-label="Actions de la ligne" [uiMenuTrigger]="menu">⋯</button>
-        <ui-menu #menu label="Actions de la ligne">
-          <button uiMenuItem type="button">${ICON_DOWNLOAD}Exporter les mouvements</button>
-          <button uiMenuItem type="button">${ICON_PEN}Modifier</button>
-          <button uiMenuItem type="button" destructive>${ICON_TRASH}Supprimer la ligne</button>
+        <button ui-button size="icon-sm" variant="quiet" aria-label="Holding actions" [uiMenuTrigger]="menu">⋯</button>
+        <ui-menu #menu label="Holding actions">
+          <button uiMenuItem type="button">${ICON_DOWNLOAD}Export the transactions</button>
+          <button uiMenuItem type="button">${ICON_PEN}Edit</button>
+          <button uiMenuItem type="button" destructive>${ICON_TRASH}Delete the holding</button>
         </ui-menu>
       </div>
     `,
@@ -215,9 +215,9 @@ export const LongLabelOnIphone: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await userEvent.click(canvas.getByRole('button', { name: 'Actions de la ligne' }));
+    await userEvent.click(canvas.getByRole('button', { name: 'Holding actions' }));
 
-    const menu = canvas.getByRole('menu', { name: 'Actions de la ligne' });
+    const menu = canvas.getByRole('menu', { name: 'Holding actions' });
     await waitFor(() => expect(menu).toBeVisible());
 
     const textBox = (name: string): DOMRect[] => {
@@ -226,8 +226,8 @@ export const LongLabelOnIphone: Story = {
       range.selectNodeContents(item.lastChild!);
       return [...range.getClientRects()];
     };
-    const long = textBox('Exporter les mouvements');
-    const short = textBox('Modifier');
+    const long = textBox('Export the transactions');
+    const short = textBox('Edit');
 
     await expect(long).toHaveLength(1);
     await expect(long[0]!.left).toBe(short[0]!.left);

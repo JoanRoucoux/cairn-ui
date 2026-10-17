@@ -24,9 +24,9 @@ const meta: Meta<FieldArgs> = {
 
 The control stays a plain native element such as \`uiInput\` or \`uiSelect\`. The field finds it in
 its own projected content and wires the ARIA attributes onto it, instead of replacing it with a
-custom component that would have to reimplement every native forms behaviour.
+custom component that would have to reimplement every native forms behavior.
 
-\`unit\` renders a unit such as \`EUR\` or \`parts\` inside the control's right edge. It is decorative
+\`unit\` renders a unit such as \`EUR\` or \`shares\` inside the control's right edge. It is decorative
 text, not part of the control's value.
 
 \`uiFieldLeading\` marks an element, typically an 18px svg icon, as the control's leading content. It
@@ -94,14 +94,14 @@ validation state on its own, so a form field needs no binding here at all.
     optional: {
       control: 'text',
       description:
-        'Lighter suffix after the label, such as `(facultatif)`. It stays part of the control accessible name.',
+        'Lighter suffix after the label, such as `(optional)`. It stays part of the control accessible name.',
     },
     invalid: {
       control: 'boolean',
       description:
         'Marks the control `aria-invalid` without any message, for a failure the form reports elsewhere. A message from `error` or the control marks it too.',
     },
-    unit: { control: 'text', description: "Unit shown inside the control's right edge, such as `EUR` or `parts`." },
+    unit: { control: 'text', description: "Unit shown inside the control's right edge, such as `EUR` or `shares`." },
   },
 };
 
@@ -115,7 +115,7 @@ export const WithHint: Story = {
 };
 
 export const WithUnit: Story = {
-  args: { label: 'Quantity sold', unit: 'parts' },
+  args: { label: 'Quantity sold', unit: 'shares' },
 };
 
 export const WithError: Story = {
@@ -171,33 +171,33 @@ export const InARow: Story = {
 
 const SEARCH_ICON = `<svg uiFieldLeading width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>`;
 
-export const Recherche: Story = {
+export const Search: Story = {
   render: () => ({
     template: `
       <div class="flex max-w-sm flex-col gap-6">
-        <ui-field label="Rechercher une ligne" labelHidden>
+        <ui-field label="Search holdings" labelHidden>
           ${SEARCH_ICON}
-          <input uiInput surface="card" type="search" placeholder="Rechercher une ligne" />
+          <input uiInput surface="card" type="search" placeholder="Search holdings" />
         </ui-field>
-        <ui-field label="Rechercher une ligne (rempli)" labelHidden>
+        <ui-field label="Search holdings (filled)" labelHidden>
           ${SEARCH_ICON}
           <input uiInput surface="card" type="search" value="msci world" />
         </ui-field>
-        <ui-field label="Rechercher une ligne (focus)" labelHidden>
+        <ui-field label="Search holdings (focus)" labelHidden>
           ${SEARCH_ICON}
-          <input uiInput surface="card" type="search" placeholder="Rechercher une ligne" data-story-focus />
+          <input uiInput surface="card" type="search" placeholder="Search holdings" data-story-focus />
         </ui-field>
-        <ui-field label="Rechercher une ligne (désactivé)" labelHidden>
+        <ui-field label="Search holdings (disabled)" labelHidden>
           ${SEARCH_ICON}
-          <input uiInput surface="card" type="search" placeholder="Rechercher une ligne" disabled />
+          <input uiInput surface="card" type="search" placeholder="Search holdings" disabled />
         </ui-field>
-        <ui-field label="Rechercher une ligne (erreur)" labelHidden error="Saisissez au moins 3 caractères.">
+        <ui-field label="Search holdings (error)" labelHidden error="Enter at least 3 characters.">
           ${SEARCH_ICON}
           <input uiInput surface="card" type="search" value="ms" />
         </ui-field>
-        <ui-field label="Rechercher une ligne (compact)" labelHidden>
+        <ui-field label="Search holdings (compact)" labelHidden>
           ${SEARCH_ICON}
-          <input uiInput surface="card" [size]="'sm'" type="search" placeholder="Rechercher une ligne" />
+          <input uiInput surface="card" [size]="'sm'" type="search" placeholder="Search holdings" />
         </ui-field>
       </div>
     `,
@@ -205,12 +205,12 @@ export const Recherche: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    const empty = canvas.getByRole('searchbox', { name: 'Rechercher une ligne' });
+    const empty = canvas.getByRole('searchbox', { name: 'Search holdings' });
     const icon = canvasElement.querySelector('svg')!;
 
     canvasElement.querySelector<HTMLElement>('[data-story-focus]')!.focus();
 
-    await expect(empty).toHaveAttribute('placeholder', 'Rechercher une ligne');
+    await expect(empty).toHaveAttribute('placeholder', 'Search holdings');
     await expect(icon).toHaveAttribute('aria-hidden', 'true');
     await expect(getComputedStyle(empty).paddingLeft).toBe('38px');
     await expect(icon.getBoundingClientRect().right).toBeLessThanOrEqual(
@@ -226,20 +226,20 @@ export const SignIn: Story = {
   render: () => ({
     template: `
       <div class="flex max-w-sm flex-col gap-4">
-        <ui-field label="Identifiant">
+        <ui-field label="Username">
           <input uiInput surface="card" size="xl" value="alex" />
         </ui-field>
-        <ui-field label="Mot de passe" invalid>
-          <input uiInput surface="card" size="xl" type="password" value="motdepasse" />
-          <button uiFieldTrailing type="button" aria-label="Afficher le mot de passe" aria-pressed="false">${EYE_ICON}</button>
+        <ui-field label="Password" invalid>
+          <input uiInput surface="card" size="xl" type="password" value="password" />
+          <button uiFieldTrailing type="button" aria-label="Show the password" aria-pressed="false">${EYE_ICON}</button>
         </ui-field>
       </div>
     `,
   }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const password = canvas.getByLabelText('Mot de passe');
-    const action = canvas.getByRole('button', { name: 'Afficher le mot de passe' });
+    const password = canvas.getByLabelText('Password');
+    const action = canvas.getByRole('button', { name: 'Show the password' });
 
     await expect(password).toHaveAttribute('aria-invalid', 'true');
     await expect(action.getBoundingClientRect().height).toBe(password.getBoundingClientRect().height);
@@ -255,10 +255,10 @@ export const OptionalSheetForm: Story = {
   render: () => ({
     template: `
       <div class="flex max-w-sm flex-col gap-4">
-        <ui-field label="Nom du compte">
+        <ui-field label="Account name">
           <input uiInput size="lg" placeholder="Livret A" />
         </ui-field>
-        <ui-field label="Établissement" optional="(facultatif)">
+        <ui-field label="Institution" optional="(optional)">
           <input uiInput size="lg" placeholder="Northwind Bank" />
         </ui-field>
       </div>
@@ -267,6 +267,6 @@ export const OptionalSheetForm: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(canvas.getByLabelText('Établissement (facultatif)')).toBeVisible();
+    await expect(canvas.getByLabelText('Institution (optional)')).toBeVisible();
   },
 };

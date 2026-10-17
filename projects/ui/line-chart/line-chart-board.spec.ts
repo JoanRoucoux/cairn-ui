@@ -13,7 +13,7 @@ const fmt = (v: number): string => `${v.toFixed(2)} EUR`;
 describe('UiLineChart against the board', () => {
   describe('board geometry', () => {
     const renderChart = (): ReturnType<typeof render> =>
-      render(`<ui-line-chart label="x" startLabel="Depart" [points]="points" [valueFormat]="fmt" />`, {
+      render(`<ui-line-chart label="x" startLabel="Start" [points]="points" [valueFormat]="fmt" />`, {
         imports: [UiLineChart],
         componentProperties: { points, fmt },
       });
@@ -45,7 +45,7 @@ describe('UiLineChart against the board', () => {
       expect(fixture.nativeElement.querySelector('[data-chart-end]')).toHaveAttribute('cx', '640');
     });
 
-    it('draws the end dot 8px wide inside a 3px ring of the surface colour', async () => {
+    it('draws the end dot 8px wide inside a 3px ring of the surface color', async () => {
       const { fixture } = await renderChart();
       const dot = fixture.nativeElement.querySelector('[data-chart-end]');
 
@@ -247,7 +247,7 @@ describe('UiLineChart against the board', () => {
 
   describe('sparkline', () => {
     const renderSpark = (): ReturnType<typeof render> =>
-      render(`<ui-line-chart label="Trend" sparkline startLabel="Depart" [points]="points" />`, {
+      render(`<ui-line-chart label="Trend" sparkline startLabel="Start" [points]="points" />`, {
         imports: [UiLineChart],
         componentProperties: { points },
       });

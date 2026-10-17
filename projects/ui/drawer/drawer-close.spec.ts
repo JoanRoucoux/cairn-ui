@@ -16,9 +16,9 @@ const renderDrawer = async (busy = false): Promise<Rendered> => {
   const onDismissed = vi.fn<() => void>();
   const onClosed = vi.fn<(reason: DrawerCloseReason) => void>();
   const result = await render(
-    `<ui-drawer heading="Northwind Monde" closeLabel="Fermer le détail" [open]="open" [busy]="busy"
+    `<ui-drawer heading="Northwind World" closeLabel="Close the detail" [open]="open" [busy]="busy"
                 (dismissed)="onDismissed()" (closed)="onClosed($event)">
-       <p>Corps</p>
+       <p>Body</p>
      </ui-drawer>`,
     { imports: [UiDrawer], componentProperties: { open: true, busy, onDismissed, onClosed } },
   );
@@ -70,7 +70,7 @@ describe('UiDrawer close protocol', () => {
   it('reports the cross at once, and closed only once the exit has played', async () => {
     const { drawer, onDismissed, onClosed } = await renderDrawer();
 
-    screen.getByRole('button', { name: 'Fermer le détail' }).click();
+    screen.getByRole('button', { name: 'Close the detail' }).click();
 
     expect(drawer).not.toHaveAttribute('open');
     expect(onDismissed).toHaveBeenCalledOnce();
@@ -133,7 +133,7 @@ describe('UiDrawer close protocol', () => {
     const { drawer, onDismissed } = await renderDrawer();
     vi.spyOn(drawer, 'getBoundingClientRect').mockReturnValue(new DOMRect(1000, 0, 440, 900));
 
-    screen.getByText('Corps').dispatchEvent(new MouseEvent('pointerdown', { bubbles: true, clientX: 1100 }));
+    screen.getByText('Body').dispatchEvent(new MouseEvent('pointerdown', { bubbles: true, clientX: 1100 }));
     drawer.dispatchEvent(new MouseEvent('click', { bubbles: true, clientX: 400, clientY: 300 }));
 
     expect(drawer).toHaveAttribute('open');
@@ -143,7 +143,7 @@ describe('UiDrawer close protocol', () => {
   it('stays open on a click inside its content', async () => {
     const { drawer, onDismissed } = await renderDrawer();
 
-    click(screen.getByText('Corps'), 1100, 300);
+    click(screen.getByText('Body'), 1100, 300);
 
     expect(drawer).toHaveAttribute('open');
     expect(onDismissed).not.toHaveBeenCalled();
@@ -177,7 +177,7 @@ describe('UiDrawer close protocol', () => {
     const { drawer, onDismissed, onClosed } = await renderDrawer();
 
     cancel(drawer);
-    screen.getByRole('button', { name: 'Fermer le détail', hidden: true }).click();
+    screen.getByRole('button', { name: 'Close the detail', hidden: true }).click();
     cancel(drawer);
     transitionEnd(drawer);
     vi.advanceTimersByTime(1000);
@@ -186,7 +186,7 @@ describe('UiDrawer close protocol', () => {
     expect(onClosed).toHaveBeenCalledExactlyOnceWith('escape');
   });
 
-  it('stays open when a file picker inside it is cancelled', async () => {
+  it('stays open when a file picker inside it is canceled', async () => {
     const { drawer, onDismissed } = await renderDrawer();
     const input = document.createElement('input');
     input.type = 'file';
@@ -200,7 +200,7 @@ describe('UiDrawer close protocol', () => {
   it('falls back on the exit duration when no transition reports its end', async () => {
     const { onClosed } = await renderDrawer();
 
-    screen.getByRole('button', { name: 'Fermer le détail' }).click();
+    screen.getByRole('button', { name: 'Close the detail' }).click();
     vi.advanceTimersByTime(180);
 
     expect(onClosed).not.toHaveBeenCalled();
@@ -235,7 +235,7 @@ describe('UiDrawer close protocol', () => {
   it('emits nothing once destroyed in the middle of its exit', async () => {
     const { fixture, onClosed } = await renderDrawer();
 
-    screen.getByRole('button', { name: 'Fermer le détail' }).click();
+    screen.getByRole('button', { name: 'Close the detail' }).click();
     fixture.destroy();
     vi.advanceTimersByTime(1000);
 
@@ -257,9 +257,9 @@ describe('UiDrawer close protocol', () => {
     it('lets Escape reach a dialog hosted inside it: the dialog closes, the drawer stays', async () => {
       const onDialogDismissed = vi.fn<() => void>();
       const { container } = await render(
-        `<ui-drawer heading="Northwind Monde" [open]="true" [busy]="true">
-           <ui-dialog heading="Acheter" [open]="true" (dismissed)="onDialogDismissed()">
-             <input aria-label="Quantité" />
+        `<ui-drawer heading="Northwind World" [open]="true" [busy]="true">
+           <ui-dialog heading="Buy" [open]="true" (dismissed)="onDialogDismissed()">
+             <input aria-label="Quantity" />
            </ui-dialog>
          </ui-drawer>`,
         { imports: [UiDrawer, UiDialog], componentProperties: { onDialogDismissed } },
@@ -267,7 +267,7 @@ describe('UiDrawer close protocol', () => {
       const drawer = container.querySelector('ui-drawer > dialog') as HTMLDialogElement;
       const dialog = container.querySelector('ui-dialog > dialog') as HTMLDialogElement;
 
-      expect(escapeKey(screen.getByLabelText('Quantité')).defaultPrevented).toBe(false);
+      expect(escapeKey(screen.getByLabelText('Quantity')).defaultPrevented).toBe(false);
 
       cancel(dialog);
 

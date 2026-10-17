@@ -298,10 +298,10 @@ export class UiGroupCell {
 /**
  * Makes a link or button the way into its row: by default it stretches over the whole row, so the
  * row is one target. With `[stretch]="false"` only the name is the target. `current` marks the open
- * line. Other controls in the row need `uiRowAction` to stay clickable.
+ * holding. Other controls in the row need `uiRowAction` to stay clickable.
  *
  * @example
- * <td uiTd primary><a uiRowLink href="/lines/42">Ferrari</a></td>
+ * <td uiTd primary><a uiRowLink href="/holdings/42">Ferrari</a></td>
  * <td uiTd primary><a uiRowLink [stretch]="false" href="/accounts/3">Brokerage</a></td>
  */
 @Directive({
@@ -349,8 +349,8 @@ const SUB_TONE_CLASSES: Record<SubTone, string> = {
  * back by `secondary` columns.
  *
  * @example
- * <span uiCellSub narrow>10 × 421.26 € · cost 388.10 €</span>
- * <span uiCellSub tone="stale">Quote of 24/09</span>
+ * <span uiCellSub narrow>10 × 421,26 € · Avg. cost 388,10 €</span>
+ * <span uiCellSub tone="stale">Price as of 24/09</span>
  */
 @Directive({
   selector: '[uiCellSub]',

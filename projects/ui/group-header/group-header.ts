@@ -10,7 +10,7 @@ import { Component, booleanAttribute, input, model } from '@angular/core';
  * changes nothing (a filter holds the group open). `controls` is the id of the body it folds.
  *
  * @example
- * <ui-group-header name="Northwind PEA" meta="PEA · 3 lignes" collapsible [(expanded)]="open">
+ * <ui-group-header name="Northwind PEA" meta="PEA · 3 holdings" collapsible [(expanded)]="open">
  *   <ui-amount [value]="total" />
  * </ui-group-header>
  */

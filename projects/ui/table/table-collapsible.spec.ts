@@ -17,7 +17,7 @@ import { UiGroup, UiGroupCell, UiTable, UiTd, UiTr } from './table';
             collapsible
             colspan="2"
             controls="northwind"
-            meta="PEA · 2 lignes"
+            meta="PEA · 2 holdings"
             name="Northwind PEA"
             ui-group-cell
             [toggleDisabled]="locked()"
@@ -57,7 +57,7 @@ describe('collapsible group band', () => {
 
     expect(button.parentElement?.tagName).toBe('H2');
     expect(screen.getByRole('heading', { level: 2 })).toContainElement(button);
-    expect(button).toHaveAccessibleName(/Northwind PEA\s*PEA · 2 lignes\s*48 215,60 €/);
+    expect(button).toHaveAccessibleName(/Northwind PEA\s*PEA · 2 holdings\s*48 215,60 €/);
     expect(button).toHaveAttribute('type', 'button');
     expect(button).toHaveAttribute('data-group-heading');
   });

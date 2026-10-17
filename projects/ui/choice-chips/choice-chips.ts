@@ -37,10 +37,10 @@ const nextId = (() => {
  * with `[formField]`.
  *
  * @example
- * <ui-choice-chips label="Envelope" [options]="envelopes" [(value)]="envelope" />
+ * <ui-choice-chips label="Wrapper" [options]="wrappers" [(value)]="wrapper" />
  *
  * @example
- * <ui-choice-chips label="Envelope" [options]="envelopes" [formField]="form.envelope" />
+ * <ui-choice-chips label="Wrapper" [options]="wrappers" [formField]="form.wrapper" />
  */
 @Component({
   selector: 'ui-choice-chips',

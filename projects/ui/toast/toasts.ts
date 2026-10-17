@@ -8,8 +8,8 @@ export type Toast =
  * One-slot message queue read by `ui-toaster`: a confirmation that times out, or an error that stays until closed.
  *
  * @example
- * inject(UiToasts).show('Achat enregistré');
- * inject(UiToasts).showError("Échec de l'import");
+ * inject(UiToasts).show('Purchase recorded');
+ * inject(UiToasts).showError('Import failed');
  */
 @Injectable({ providedIn: 'root' })
 export class UiToasts {
@@ -22,7 +22,7 @@ export class UiToasts {
     this.current.set({ id: ++this.sequence, text: message, kind: 'success' });
   }
 
-  showError(message: string, closeLabel = 'Fermer'): void {
+  showError(message: string, closeLabel = 'Close'): void {
     this.current.set({ id: ++this.sequence, text: message, kind: 'error', closeLabel });
   }
 

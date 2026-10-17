@@ -34,7 +34,7 @@ describe('UiLineChart touch and delta suffix', () => {
   });
 
   it('appends the delta suffix after the amount, masked or not', async () => {
-    await render(`<ui-line-chart label="x" deltaSuffix="depuis le début" [points]="points" [deltaFormat]="masked" />`, {
+    await render(`<ui-line-chart label="x" deltaSuffix="since the start" [points]="points" [deltaFormat]="masked" />`, {
       imports: [UiLineChart],
       componentProperties: { points, masked: () => '•••• €' },
     });
@@ -43,7 +43,7 @@ describe('UiLineChart touch and delta suffix', () => {
     await userEvent.keyboard('{End}');
 
     expect(screen.getByTestId('chart-tooltip').querySelector('[data-chart-delta]')).toHaveTextContent(
-      '•••• € depuis le début',
+      '•••• € since the start',
     );
   });
 });

@@ -37,7 +37,7 @@ const fadedOf = (container: Element): boolean[] =>
 
 const vertices = (d: string): number[][] => d.split(' ').map((vertex) => vertex.slice(1).split(',').map(Number));
 
-const template = `<ui-line-chart label="x" startLabel="Départ" [points]="points" [style]="style" />`;
+const template = `<ui-line-chart label="x" startLabel="Start" [points]="points" [style]="style" />`;
 
 describe('UiLineChart motion', () => {
   let frames: Map<number, FrameRequestCallback>;
@@ -295,7 +295,7 @@ describe('UiLineChart motion', () => {
         expect(element).toHaveClass('opacity-0', 'duration-(--duration-exit)');
       }
       expect(dashed()).toHaveAttribute('y1', String(targetOf(rising).start.y));
-      expect(label()).toHaveTextContent('Départ 100');
+      expect(label()).toHaveTextContent('Start 100');
 
       flushFrame(1260);
       fixture.detectChanges();
@@ -305,7 +305,7 @@ describe('UiLineChart motion', () => {
         expect(element).toHaveClass('transition-opacity', 'duration-(--duration-fast)');
       }
       expect(dashed()).toHaveAttribute('y1', String(targetOf(wavy).start.y));
-      expect(label()).toHaveTextContent('Départ 300');
+      expect(label()).toHaveTextContent('Start 300');
     });
 
     it('hides the crosshair while the shape moves, and shows it again once settled', async () => {
@@ -377,7 +377,7 @@ describe('UiLineChart motion', () => {
       expect(frames.size).toBe(0);
       expect(line(fixture.nativeElement)).toBe(targetOf(wavy).line);
       expect(fadedOf(fixture.nativeElement)).toEqual([false, false]);
-      expect(fixture.nativeElement.querySelector('[data-chart-start-label]')).toHaveTextContent('Départ 300');
+      expect(fixture.nativeElement.querySelector('[data-chart-start-label]')).toHaveTextContent('Start 300');
     });
 
     it('stops the frames when the chart is destroyed mid-change', async () => {

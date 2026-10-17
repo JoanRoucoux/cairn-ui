@@ -21,7 +21,7 @@ describe('UiLineChart range transition', () => {
   let originalRaf: typeof requestAnimationFrame;
   let originalCaf: typeof cancelAnimationFrame;
   let originalMatchMedia: typeof matchMedia | undefined;
-  let cancelled: number[];
+  let canceled: number[];
 
   const flushFrame = (time: number): void => {
     const due = [...frames];
@@ -31,7 +31,7 @@ describe('UiLineChart range transition', () => {
 
   beforeEach(() => {
     frames = [];
-    cancelled = [];
+    canceled = [];
     originalRaf = globalThis.requestAnimationFrame;
     originalCaf = globalThis.cancelAnimationFrame;
     originalMatchMedia = globalThis.matchMedia;
@@ -42,7 +42,7 @@ describe('UiLineChart range transition', () => {
       return ++id;
     }) as typeof requestAnimationFrame;
     globalThis.cancelAnimationFrame = ((handle: number) => {
-      cancelled.push(handle);
+      canceled.push(handle);
     }) as typeof cancelAnimationFrame;
   });
 
@@ -204,17 +204,17 @@ describe('UiLineChart range transition', () => {
 
     await rerender({ componentProperties: { points: third } });
 
-    expect(cancelled.length).toBeGreaterThan(0);
+    expect(canceled.length).toBeGreaterThan(0);
 
     fixture.destroy();
 
-    expect(cancelled.length).toBeGreaterThan(1);
+    expect(canceled.length).toBeGreaterThan(1);
   });
 
   it('does not move, fade or drop the tooltip for a new points array that carries the same values', async () => {
     globalThis.matchMedia = vi.fn().mockReturnValue(mediaQuery(false)) as unknown as typeof matchMedia;
     vi.spyOn(performance, 'now').mockReturnValue(1000);
-    const { fixture, rerender } = await render(`<ui-line-chart label="x" startLabel="Départ" [points]="points" />`, {
+    const { fixture, rerender } = await render(`<ui-line-chart label="x" startLabel="Start" [points]="points" />`, {
       imports: [UiLineChart],
       componentProperties: { points },
     });
@@ -235,7 +235,7 @@ describe('UiLineChart range transition', () => {
 
   it('shows the new series at once, without a fade, when the --duration-base token is 0ms', async () => {
     globalThis.matchMedia = vi.fn().mockReturnValue(mediaQuery(false)) as unknown as typeof matchMedia;
-    const template = `<ui-line-chart label="x" startLabel="Départ" style="--duration-base: 0ms" [points]="points" />`;
+    const template = `<ui-line-chart label="x" startLabel="Start" style="--duration-base: 0ms" [points]="points" />`;
     const next = points.map((point) => ({ ...point, v: point.v * 2 }));
     const target = await render(template, { imports: [UiLineChart], componentProperties: { points: next } });
     const targetLine = target.fixture.nativeElement.querySelector('[data-chart-line]').getAttribute('d');
