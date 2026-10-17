@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.10.1
+
+### Added
+
+- The package ships `mcp-manifest.json` (export `@joanroucoux/cairn-ui/mcp-manifest.json`), the machine-readable
+  description of this version that the `@joanroucoux/cairn-ui-mcp` server answers from.
+
+### Changed
+
+- `UiToasts.showError`: the close label defaults to `Close` (was `Fermer`); pass the translated label.
+- Doc comments, examples and stories are in English.
+- `ui-donut`: the accessible label reads `label: detail` (no space before the colon).
+
+### Fixed
+
+- `ui-menu` places itself from its computed width instead of the rounded `offsetWidth`, so a menu of fractional width
+  clamped to the right edge no longer overflows the 8px viewport margin.
+
 ## 0.10.0
 
 ### Added
