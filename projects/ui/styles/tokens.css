@@ -30,11 +30,7 @@
   --ramp-5: light-dark(#b0b6b4, #5a605e);
   --ramp-6: light-dark(#ced3d1, #3b403e);
 
-  --secondary: light-dark(#f1f3f2, #1e2020);
-  --secondary-foreground: light-dark(#111414, #edefee);
   --muted: light-dark(#f1f3f2, #1e2020);
-  --accent: light-dark(#f1f3f2, #1e2020);
-  --accent-foreground: light-dark(#111414, #edefee);
   --destructive: light-dark(#b8443c, #a33a33);
   --destructive-foreground: light-dark(#fafbfa, #fafbfa);
 

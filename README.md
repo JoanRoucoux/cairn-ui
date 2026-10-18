@@ -222,4 +222,4 @@ The MCP server is released separately, the same way: bump `projects/mcp/package.
 
 [MIT](LICENSE)
 
-<sub>Scaffolded from [angular-starter-ui](https://github.com/JoanRoucoux/angular-starter-ui).</sub>
+<sub>Generated from [angular-starter-ui](https://github.com/JoanRoucoux/angular-starter-ui).</sub>

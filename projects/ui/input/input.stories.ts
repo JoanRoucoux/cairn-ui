@@ -44,11 +44,11 @@ textarea grows from a floor instead of sitting at a fixed height.
   },
   render: (args) => ({
     props: args,
-    template: `<input uiInput [type]="type" [placeholder]="placeholder" [disabled]="disabled" [size]="size" aria-label="Example" />`,
+    template: `<input uiInput [type]="type" [placeholder]="placeholder" [disabled]="disabled" [size]="size" aria-label="Account name" />`,
   }),
   args: {
     type: 'text',
-    placeholder: 'you@example.com',
+    placeholder: 'you@contoso.com',
     disabled: false,
     size: 'md',
   },
@@ -81,11 +81,11 @@ export const Disabled: Story = {
 export const AcceptsTyping: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const input = canvas.getByRole('textbox', { name: 'Example' });
+    const input = canvas.getByRole('textbox', { name: 'Account name' });
 
-    await userEvent.type(input, 'jane@example.com');
+    await userEvent.type(input, 'alex@contoso.com');
 
-    await expect(input).toHaveValue('jane@example.com');
+    await expect(input).toHaveValue('alex@contoso.com');
   },
 };
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Removed
+
+- The unused `--secondary`, `--secondary-foreground`, `--accent` and `--accent-foreground` tokens from `styles/tokens.css`.
+
 ## 0.10.1
 
 ### Added
