@@ -19,6 +19,12 @@ describe('UiDialog structure', () => {
     expect(container.querySelector('[data-dialog-handle]')).toHaveClass('pt-[7.5px]');
   });
 
+  it('keeps a tall mobile sheet below the status bar', async () => {
+    const { container } = await renderWith('closeLabel="Close"');
+
+    expect(container.querySelector('dialog')).toHaveClass('max-lg:max-h-[calc(100dvh-2rem-env(safe-area-inset-top))]');
+  });
+
   it('centers the title and the cross without a description', async () => {
     const { container } = await renderWith('closeLabel="Close"');
     const header = container.querySelector('[data-dialog-header]');
