@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.11.4
+
+### Fixed
+
+- `ui-async` keeps the skeleton still while it is invisible: its pulse only starts once the skeleton shows, after 150 ms.
+
 ## 0.11.3
 
 ### Fixed
