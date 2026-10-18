@@ -43,14 +43,30 @@ describe('UiMenu layout', () => {
     vi.spyOn(menu, 'getBoundingClientRect').mockReturnValue({ height: 133, width: 199.5 } as DOMRect);
     vi.spyOn(menu, 'offsetHeight', 'get').mockReturnValue(140);
     vi.spyOn(menu, 'offsetWidth', 'get').mockReturnValue(210);
-    vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(390);
-    vi.spyOn(window, 'innerHeight', 'get').mockReturnValue(844);
+    vi.spyOn(document.documentElement, 'clientWidth', 'get').mockReturnValue(390);
+    vi.spyOn(document.documentElement, 'clientHeight', 'get').mockReturnValue(844);
 
     await userEvent.click(trigger);
 
     expect(menu.style.left).toBe('172px');
     expect(menu.style.right).toBe('auto');
     expect(menu.style.bottom).toBe('auto');
+  });
+
+  it('keeps its 8px margin clear of a classic scrollbar', async () => {
+    const { container } = await render(template, { imports, componentProperties: { sheet: false } });
+    const trigger = screen.getByRole('button', { name: 'More' });
+    const menu = container.querySelector('ui-menu') as HTMLElement;
+    vi.spyOn(trigger, 'getBoundingClientRect').mockReturnValue({ top: 40, bottom: 84, right: 1425 } as DOMRect);
+    vi.spyOn(menu, 'offsetHeight', 'get').mockReturnValue(140);
+    vi.spyOn(menu, 'offsetWidth', 'get').mockReturnValue(210);
+    vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(1440);
+    vi.spyOn(document.documentElement, 'clientWidth', 'get').mockReturnValue(1425);
+    vi.spyOn(document.documentElement, 'clientHeight', 'get').mockReturnValue(900);
+
+    await userEvent.click(trigger);
+
+    expect(menu.style.left).toBe('1207px');
   });
 
   it('places itself from its unrounded layout width, so a fractional width keeps the 8px margin', async () => {
@@ -66,8 +82,8 @@ describe('UiMenu layout', () => {
     vi.spyOn(trigger, 'getBoundingClientRect').mockReturnValue({ top: 40, bottom: 84, right: 386 } as DOMRect);
     vi.spyOn(menu, 'offsetHeight', 'get').mockReturnValue(140);
     vi.spyOn(menu, 'offsetWidth', 'get').mockReturnValue(182);
-    vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(390);
-    vi.spyOn(window, 'innerHeight', 'get').mockReturnValue(844);
+    vi.spyOn(document.documentElement, 'clientWidth', 'get').mockReturnValue(390);
+    vi.spyOn(document.documentElement, 'clientHeight', 'get').mockReturnValue(844);
 
     await userEvent.click(trigger);
 
@@ -93,8 +109,8 @@ describe('UiMenu layout', () => {
     );
     vi.spyOn(trigger, 'getBoundingClientRect').mockReturnValue({ top: 40, bottom: 84, right: 386 } as DOMRect);
     vi.spyOn(menu, 'offsetHeight', 'get').mockReturnValue(140);
-    vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(390);
-    vi.spyOn(window, 'innerHeight', 'get').mockReturnValue(844);
+    vi.spyOn(document.documentElement, 'clientWidth', 'get').mockReturnValue(390);
+    vi.spyOn(document.documentElement, 'clientHeight', 'get').mockReturnValue(844);
 
     await userEvent.click(trigger);
 

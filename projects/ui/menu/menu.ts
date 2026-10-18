@@ -231,18 +231,19 @@ export class UiMenu {
 
   #position(trigger: HTMLElement): void {
     const margin = 8;
+    const { clientWidth: viewportWidth, clientHeight: viewportHeight } = document.documentElement;
     const triggerRect = trigger.getBoundingClientRect();
     const menuRect = { width: this.#layoutWidth(), height: this.#host.offsetHeight };
-    const fitsBelow = window.innerHeight - triggerRect.bottom >= menuRect.height + margin;
+    const fitsBelow = viewportHeight - triggerRect.bottom >= menuRect.height + margin;
 
     const top = fitsBelow ? triggerRect.bottom + 4 : Math.max(margin, triggerRect.top - menuRect.height - 4);
     const left = Math.min(
       Math.max(triggerRect.right - menuRect.width, margin),
-      window.innerWidth - menuRect.width - margin,
+      viewportWidth - menuRect.width - margin,
     );
 
     this.#host.style.position = 'fixed';
-    this.#host.style.top = `${Math.min(top, window.innerHeight - menuRect.height - margin)}px`;
+    this.#host.style.top = `${Math.min(top, viewportHeight - menuRect.height - margin)}px`;
     this.#host.style.left = `${left}px`;
     this.#host.style.right = 'auto';
     this.#host.style.bottom = 'auto';
