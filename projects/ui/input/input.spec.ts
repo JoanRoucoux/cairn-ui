@@ -14,8 +14,8 @@ describe('UiInput', () => {
     const input = screen.getByRole('textbox', { name: 'Email' });
     expect(input).toHaveClass('shadow-[inset_0_0_0_1px_var(--border)]', 'text-body');
 
-    await user.type(input, 'jane@example.com');
-    expect(input).toHaveValue('jane@example.com');
+    await user.type(input, 'alex@contoso.com');
+    expect(input).toHaveValue('alex@contoso.com');
   });
 
   it('draws a 2px focus ring from the ring token', async () => {

@@ -1,7 +1,7 @@
 {
   "name": "cairn-ui",
   "version": "0.1.0",
-  "description": "Cairn UI: Angular design system generated from angular-starter-ui.",
+  "description": "Cairn UI: a monochrome, accessible Angular design system.",
   "keywords": [
     "angular",
     "design-system",
@@ -27,7 +27,6 @@
   "scripts": {
     "ng": "ng",
     "start": "storybook dev -p 6006",
-    "storybook": "storybook dev -p 6006",
     "build": "ng build && pnpm run generate:manifest",
     "build:dev": "ng build --configuration development",
     "watch": "ng build --watch --configuration development",

@@ -35,7 +35,7 @@ const SEARCH_CLASSES = '[&::-webkit-search-cancel-button]:appearance-none';
  * so a surrounding `ui-field` can show the message.
  *
  * @example
- * <input uiInput type="email" placeholder="you@example.com" />
+ * <input uiInput type="email" placeholder="you@contoso.com" />
  */
 @Directive({
   selector: 'input[uiInput]',
