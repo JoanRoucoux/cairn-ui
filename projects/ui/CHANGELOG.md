@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.11.2
+
+### Fixed
+
+- A tall `ui-dialog` sheet on mobile stops below the status bar of a home screen web app on iPhone (`env(safe-area-inset-top)`).
+
 ## 0.11.1
 
 ### Fixed
