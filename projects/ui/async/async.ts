@@ -94,7 +94,7 @@ const INLINE_BOX_CLASSES = 'flex-row items-center justify-between gap-3 pt-1.5 p
 
 /**
  * The three states of a block that depends on a service call, next to the ready content. During the
- * first 150 ms of a load the `[asyncLoading]` content is laid out but invisible and hidden from
+ * first 150 ms of a load the `[asyncLoading]` content is laid out but invisible, unanimated and hidden from
  * assistive technology, so the block already holds its skeleton's space.
  *
  * @example
@@ -108,7 +108,10 @@ const INLINE_BOX_CLASSES = 'flex-row items-center justify-between gap-3 pt-1.5 p
   selector: 'ui-async',
   template: `
     @if (shown() === null || shown() === 'loading') {
-      <div class="contents" [attr.aria-hidden]="shown() === null ? 'true' : null" [class.invisible]="shown() === null">
+      <div
+        [attr.aria-hidden]="shown() === null ? 'true' : null"
+        [class]="shown() === null ? 'invisible contents [&_*]:animate-none!' : 'contents'"
+      >
         <ng-content select="[asyncLoading]" />
       </div>
     } @else {

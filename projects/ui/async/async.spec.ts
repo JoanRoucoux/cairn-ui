@@ -252,12 +252,12 @@ describe('UiAsync skeleton timing', () => {
     fixture.detectChanges();
   };
 
-  it('lays the skeleton out invisible and hidden from assistive technology for a 100 ms call', async () => {
+  it('lays the skeleton out invisible, still and hidden from assistive technology for a 100 ms call', async () => {
     const { fixture } = await render(template, { imports: [UiAsync], componentProperties: { state: 'loading' } });
 
     await vi.advanceTimersByTimeAsync(100);
     const wrapper = screen.getByText('skeleton').parentElement;
-    expect(wrapper).toHaveClass('contents', 'invisible');
+    expect(wrapper).toHaveClass('contents', 'invisible', '[&_*]:animate-none!');
     expect(wrapper).toHaveAttribute('aria-hidden', 'true');
     expect(screen.queryByText('content')).not.toBeInTheDocument();
     await change(fixture, 'ready');
@@ -273,7 +273,7 @@ describe('UiAsync skeleton timing', () => {
     fixture.detectChanges();
     expect(screen.getByText('skeleton')).toBe(skeleton);
     expect(skeleton.parentElement).toHaveClass('contents');
-    expect(skeleton.parentElement).not.toHaveClass('invisible');
+    expect(skeleton.parentElement).not.toHaveClass('invisible', '[&_*]:animate-none!');
     expect(skeleton.parentElement).not.toHaveAttribute('aria-hidden');
   });
 
