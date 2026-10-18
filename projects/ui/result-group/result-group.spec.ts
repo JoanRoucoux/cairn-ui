@@ -60,7 +60,7 @@ describe('UiResultGroup', () => {
     fixture.detectChanges();
 
     expect(container.querySelector('ui-async')).toHaveAttribute('aria-busy', 'true');
-    expect(container.querySelectorAll('ui-async > div > span.flex')).toHaveLength(2);
+    expect(container.querySelectorAll('ui-async > div > div > span.flex')).toHaveLength(2);
     expect(container.querySelectorAll('ui-async span.bg-\\(--muted\\)')).toHaveLength(4);
     expect(screen.queryByRole('button', { name: 'Contoso Global Equity' })).not.toBeInTheDocument();
   });

@@ -36,3 +36,7 @@
   --animate-cairn-spin: cairn-spin var(--duration-spin) linear infinite;
   --animate-cairn-pulse: cairn-pulse var(--pulse-duration) var(--ease-out) infinite alternate;
 }
+
+html {
+  scrollbar-gutter: stable;
+}
