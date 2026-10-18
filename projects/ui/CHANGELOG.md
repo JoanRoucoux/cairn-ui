@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.11.3
+
+### Fixed
+
+- A `button[uiRowLink]` and an available `ui-row` show the pointer cursor, like a link row.
+
 ## 0.11.2
 
 ### Fixed

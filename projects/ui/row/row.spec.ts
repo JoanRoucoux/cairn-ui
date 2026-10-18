@@ -9,7 +9,7 @@ describe('UiRow trailing chevron', () => {
     const row = screen.getByRole('button', { name: 'Enter manually' });
 
     expect(row.querySelector('svg')).toBeNull();
-    expect(row).toHaveClass('px-2.5', 'min-h-14', 'hover:bg-(--glow)');
+    expect(row).toHaveClass('px-2.5', 'min-h-14', 'hover:bg-(--glow)', 'cursor-pointer');
     expect(row).not.toHaveClass('px-0');
   });
 
@@ -22,7 +22,7 @@ describe('UiRow trailing chevron', () => {
     expect(chevron).toHaveAttribute('width', '16');
     expect(chevron).toHaveAttribute('height', '16');
     expect(chevron).toHaveClass('stroke-(--subtle-foreground)');
-    expect(row).toHaveClass('px-0', 'min-h-(--row-min)', 'hover:text-(--muted-foreground)');
+    expect(row).toHaveClass('px-0', 'min-h-(--row-min)', 'hover:text-(--muted-foreground)', 'cursor-pointer');
     expect(row).not.toHaveClass('hover:bg-(--glow)', 'min-h-14', 'px-2.5');
   });
 
@@ -189,6 +189,7 @@ describe('UiRow', () => {
     const row = screen.getByRole('button', { name: 'Row' });
     expect(row).toHaveAttribute('aria-disabled', 'true');
     expect(row).toHaveClass('opacity-50', 'cursor-not-allowed');
+    expect(row).not.toHaveClass('cursor-pointer');
     expect(row).not.toHaveClass('hover:bg-(--glow)');
     expect(row).not.toHaveClass('active:bg-(--soft)');
     expect(row).not.toHaveClass('active:scale-(--press-scale)');

@@ -203,7 +203,7 @@ describe('UiRowLink', () => {
       { imports },
     );
 
-    expect(screen.getByRole('button', { name: 'Ferrari' })).toHaveClass('after:absolute');
+    expect(screen.getByRole('button', { name: 'Ferrari' })).toHaveClass('after:absolute', 'cursor-pointer');
   });
 
   it('lifts a control of another cell above the stretched link', async () => {
@@ -344,7 +344,12 @@ describe('UiRowLink variants', () => {
     await render(`<a uiRowLink [stretch]="false" href="/a">Northwind PEA</a>`, { imports });
 
     const link = screen.getByRole('link');
-    expect(link).toHaveClass('hover:underline', 'focus-visible:outline-2', 'focus-visible:outline-offset-2');
+    expect(link).toHaveClass(
+      'hover:underline',
+      'cursor-pointer',
+      'focus-visible:outline-2',
+      'focus-visible:outline-offset-2',
+    );
     expect(link).not.toHaveClass('after:absolute');
   });
 
