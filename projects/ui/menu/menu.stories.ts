@@ -111,7 +111,7 @@ export const NearTheBottomRightCorner: Story = {
   },
   render: () => ({
     template: `
-      <div class="flex h-screen items-end justify-end p-4">
+      <div class="flex h-screen items-end justify-end py-4">
         <button ui-button size="icon" variant="ghost" aria-label="More" [uiMenuTrigger]="menu">⋯</button>
         <ui-menu #menu label="Holding actions">
           <button uiMenuItem type="button">Edit</button>
@@ -130,8 +130,8 @@ export const NearTheBottomRightCorner: Story = {
 
     await expect(rect.top).toBeGreaterThanOrEqual(0);
     await expect(rect.left).toBeGreaterThanOrEqual(0);
-    await expect(rect.right).toBeLessThanOrEqual(window.innerWidth);
-    await expect(rect.bottom).toBeLessThanOrEqual(window.innerHeight);
+    await expect(rect.right).toBeLessThanOrEqual(document.documentElement.clientWidth - 8);
+    await expect(rect.bottom).toBeLessThanOrEqual(document.documentElement.clientHeight - 8);
   },
 };
 
@@ -234,6 +234,6 @@ export const LongLabelOnIphone: Story = {
 
     const rect = menu.getBoundingClientRect();
     await expect(rect.left).toBeGreaterThanOrEqual(8);
-    await expect(rect.right).toBeLessThanOrEqual(window.innerWidth - 8);
+    await expect(rect.right).toBeLessThanOrEqual(document.documentElement.clientWidth - 8);
   },
 };

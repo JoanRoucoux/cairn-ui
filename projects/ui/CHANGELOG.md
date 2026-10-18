@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.11.1
+
+### Fixed
+
+- `ui-menu` keeps its 8px margin from the edge of the page, not from the window, so a classic scrollbar no longer covers part of it near the right edge.
+
 ## 0.11.0
 
 ### Changed
