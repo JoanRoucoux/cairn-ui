@@ -195,7 +195,9 @@ export const BesideSidebar: Story = {
     await waitFor(() => expect(status).toHaveTextContent('Purchase recorded'));
 
     const rect = status.firstElementChild!.getBoundingClientRect();
-    await expect(Math.round(rect.left + rect.width / 2)).toBe(Math.round((240 + window.innerWidth) / 2));
+    await expect(Math.round(rect.left + rect.width / 2)).toBe(
+      Math.round((240 + document.documentElement.getBoundingClientRect().width) / 2),
+    );
     await waitFor(() =>
       expect(Math.round(window.innerHeight - status.firstElementChild!.getBoundingClientRect().bottom)).toBe(24),
     );

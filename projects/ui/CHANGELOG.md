@@ -1,6 +1,11 @@
 # Changelog
 
-## Unreleased
+## 0.11.0
+
+### Changed
+
+- `styles/theme.css` sets `scrollbar-gutter: stable` on `html`, so a classic scrollbar appearing when content arrives no longer shifts the layout.
+- `ui-async` reserves the skeleton's space while waiting: during the first 150 ms of a load the `[asyncLoading]` content is laid out but invisible and hidden from assistive technology.
 
 ### Removed
 

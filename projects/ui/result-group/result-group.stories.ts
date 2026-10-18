@@ -112,7 +112,7 @@ export const Loading: Story = {
   args: { state: 'loading' },
   play: async ({ canvasElement }) => {
     await waitFor(() => expect(canvasElement.querySelector('ui-async')).toHaveAttribute('aria-busy', 'true'));
-    await waitFor(() => expect(canvasElement.querySelectorAll('ui-async > div > span.flex')).toHaveLength(2));
+    await waitFor(() => expect(canvasElement.querySelectorAll('ui-async > div > div > span.flex')).toHaveLength(2));
   },
 };
 

@@ -146,7 +146,7 @@ export const DelayedSkeleton: Story = {
     docs: {
       description: {
         story:
-          'The skeleton appears only once a call has lasted 150 ms and stays at least 400 ms. The 100 ms call never shows it, the 300 ms call shows it until 550 ms.',
+          'The skeleton appears only once a call has lasted 150 ms and stays at least 400 ms. Until then the skeleton is laid out but invisible and hidden from assistive technology, so the block already holds its space. The 100 ms call never shows it, the 300 ms call shows it until 550 ms.',
       },
     },
   },

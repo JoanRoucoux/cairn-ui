@@ -123,7 +123,7 @@ export const Opens: Story = {
     const style = getComputedStyle(drawer);
 
     await expect(box.width).toBe(440);
-    await expect(box.right).toBe(window.innerWidth);
+    await expect(box.right).toBe(document.documentElement.getBoundingClientRect().width);
     await expect(box.top).toBe(0);
     await expect(box.height).toBe(window.innerHeight);
     await expect(style.paddingLeft).toBe('24px');

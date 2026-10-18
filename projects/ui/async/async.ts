@@ -93,7 +93,9 @@ const ALIGN_CLASSES: Record<AsyncAlign, string> = {
 const INLINE_BOX_CLASSES = 'flex-row items-center justify-between gap-3 pt-1.5 pr-1.5 pb-2 pl-2.5';
 
 /**
- * The three states of a block that depends on a service call, next to the ready content.
+ * The three states of a block that depends on a service call, next to the ready content. During the
+ * first 150 ms of a load the `[asyncLoading]` content is laid out but invisible and hidden from
+ * assistive technology, so the block already holds its skeleton's space.
  *
  * @example
  * <ui-async [state]="totalState()" errorTitle="The total couldn’t be loaded" errorMessage="The server didn’t respond." retryLabel="Try again" (retry)="reload()">
@@ -105,48 +107,50 @@ const INLINE_BOX_CLASSES = 'flex-row items-center justify-between gap-3 pt-1.5 p
 @Component({
   selector: 'ui-async',
   template: `
-    @switch (shown()) {
-      @case (null) {}
-      @case ('loading') {
+    @if (shown() === null || shown() === 'loading') {
+      <div class="contents" [attr.aria-hidden]="shown() === null ? 'true' : null" [class.invisible]="shown() === null">
         <ng-content select="[asyncLoading]" />
-      }
-      @case ('error') {
-        <div aria-live="polite" role="alert" [class]="boxClasses()">
-          @if (variant() === 'inline') {
-            <span class="text-label text-(--muted-foreground)">{{ errorMessage() }}</span>
-          } @else {
-            @if (variant() === 'emphasis') {
-              <h2 [class]="titleClasses()">{{ errorTitle() }}</h2>
+      </div>
+    } @else {
+      @switch (shown()) {
+        @case ('error') {
+          <div aria-live="polite" role="alert" [class]="boxClasses()">
+            @if (variant() === 'inline') {
+              <span class="text-label text-(--muted-foreground)">{{ errorMessage() }}</span>
             } @else {
-              <span [class]="titleClasses()">{{ errorTitle() }}</span>
+              @if (variant() === 'emphasis') {
+                <h2 [class]="titleClasses()">{{ errorTitle() }}</h2>
+              } @else {
+                <span [class]="titleClasses()">{{ errorTitle() }}</span>
+              }
+              <span class="text-(--muted-foreground)" [class]="messageClasses()">{{ errorMessage() }}</span>
             }
-            <span class="text-(--muted-foreground)" [class]="messageClasses()">{{ errorMessage() }}</span>
-          }
-          <button type="button" [class]="retryButtonClasses()" (click)="retry.emit()">
-            @if (retryIcon() || variant() !== 'inline') {
-              <svg
-                aria-hidden="true"
-                class="block flex-none fill-none stroke-current"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="1.75"
-                viewBox="0 0 24 24"
-                [attr.height]="iconSize()"
-                [attr.width]="iconSize()"
-              >
-                <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
-                <path d="M21 3v5h-5" />
-              </svg>
-            }
-            {{ retryLabel() }}
-          </button>
-        </div>
-      }
-      @case ('empty') {
-        <ng-content select="[asyncEmpty]" />
-      }
-      @default {
-        <ng-content />
+            <button type="button" [class]="retryButtonClasses()" (click)="retry.emit()">
+              @if (retryIcon() || variant() !== 'inline') {
+                <svg
+                  aria-hidden="true"
+                  class="block flex-none fill-none stroke-current"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.75"
+                  viewBox="0 0 24 24"
+                  [attr.height]="iconSize()"
+                  [attr.width]="iconSize()"
+                >
+                  <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
+                  <path d="M21 3v5h-5" />
+                </svg>
+              }
+              {{ retryLabel() }}
+            </button>
+          </div>
+        }
+        @case ('empty') {
+          <ng-content select="[asyncEmpty]" />
+        }
+        @default {
+          <ng-content />
+        }
       }
     }
   `,
