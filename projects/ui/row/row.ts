@@ -30,11 +30,12 @@ const BASE_CLASSES =
   'flex w-full items-center py-1.5 rounded-control text-left select-none touch-manipulation focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring)';
 
 const INTERACTIVE_CLASSES =
-  'transition-[scale,background-color] [transition-duration:var(--duration-press),var(--duration-fast)] ease-out hover:bg-(--glow) active:bg-(--soft) active:scale-(--press-scale)';
+  'cursor-pointer transition-[scale,background-color] [transition-duration:var(--duration-press),var(--duration-fast)] ease-out hover:bg-(--glow) active:bg-(--soft) active:scale-(--press-scale)';
 
 const CHEVRON_CLASSES = 'min-h-(--row-min) gap-3 px-0 hover:text-(--muted-foreground)';
 
-const CHEVRON_INTERACTIVE_CLASSES = 'transition-colors [transition-duration:var(--duration-fast)] ease-out';
+const CHEVRON_INTERACTIVE_CLASSES =
+  'cursor-pointer transition-colors [transition-duration:var(--duration-fast)] ease-out';
 
 const UNAVAILABLE_CLASSES = 'opacity-50 cursor-not-allowed';
 
