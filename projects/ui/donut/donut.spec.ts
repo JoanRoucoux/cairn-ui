@@ -48,63 +48,61 @@ describe('UiDonut', () => {
     expect(center.getByText('60.00 EUR')).toBeInTheDocument();
   });
 
-  it('moves the center, grows the hovered arc around the ring center and dims the others when a legend row is hovered, focused or touched', async () => {
+  it('thickens the largest arc by default, then the arc of the row hovered, focused or touched, and keeps it after leaving', async () => {
     const { fixture } = await render(
       `<ui-donut [slices]="slices" label="By asset class" othersLabel="Other" [valueFormat]="eur" [shareFormat]="pct" />`,
       { imports: [UiDonut], componentProperties: { slices: threeSlices, eur, pct } },
     );
-    const row = screen.getByRole('button', { name: /Funds/ });
+    const etf = screen.getByRole('button', { name: /^ETF/ });
+    const funds = screen.getByRole('button', { name: /Funds/ });
+    const stocks = screen.getByRole('button', { name: /Stocks/ });
     const center = within(fixture.nativeElement.querySelector('[data-testid="donut-centre"]'));
-    const arcs = fixture.nativeElement.querySelectorAll('svg circle[data-slice]');
+    const arcs = fixture.nativeElement.querySelectorAll('svg circle[data-slice]') as NodeListOf<SVGCircleElement>;
+    const widths = (): string[] => Array.from(arcs, (arc) => arc.style.strokeWidth);
 
-    for (const arc of arcs) {
-      expect(arc).not.toHaveClass('scale-104');
-      expect(arc).not.toHaveClass('opacity-50');
-    }
+    expect(widths()).toEqual(['38px', '30px', '30px']);
 
-    await userEvent.hover(row);
+    await userEvent.hover(funds);
 
     expect(center.getByText('Funds')).toBeInTheDocument();
-    expect(arcs[1]).toHaveClass('scale-104', 'motion-reduce:scale-100');
-    expect(arcs[1]).not.toHaveClass('opacity-50');
-    expect(arcs[0]).not.toHaveClass('scale-104');
-    expect(arcs[0]).toHaveClass('opacity-50');
-    expect(arcs[2]).toHaveClass('opacity-50');
-    expect(arcs[1].getAttribute('style')).not.toContain('stroke-width');
+    expect(widths()).toEqual(['30px', '38px', '30px']);
 
-    await userEvent.unhover(row);
-    fireEvent.focus(row);
+    await userEvent.unhover(funds);
 
     expect(center.getByText('Funds')).toBeInTheDocument();
-    expect(arcs[1]).toHaveClass('scale-104');
+    expect(funds).toHaveClass('bg-(--soft)');
+    expect(widths()).toEqual(['30px', '38px', '30px']);
 
-    fireEvent.blur(row);
+    fireEvent.focus(etf);
+    fireEvent.blur(etf);
 
-    expect(arcs[1]).not.toHaveClass('scale-104');
+    expect(center.getByText('ETF')).toBeInTheDocument();
+    expect(widths()).toEqual(['38px', '30px', '30px']);
 
-    fireEvent.pointerEnter(row, { pointerType: 'touch' });
+    fireEvent.pointerEnter(stocks, { pointerType: 'touch' });
 
-    expect(center.getByText('Funds')).toBeInTheDocument();
-    expect(arcs[1]).toHaveClass('scale-104');
+    expect(center.getByText('Stocks')).toBeInTheDocument();
+    expect(widths()).toEqual(['30px', '30px', '38px']);
   });
 
-  it('scales every arc from the ring center and animates only scale and opacity at the fast duration', async () => {
+  it('animates only the stroke width at the press duration, never dims an arc, and drops the transition on reduced motion', async () => {
     const { fixture } = await render(`<ui-donut [slices]="slices" label="x" othersLabel="Other" />`, {
       imports: [UiDonut],
       componentProperties: { slices: threeSlices },
     });
     const arcs = fixture.nativeElement.querySelectorAll('svg circle[data-slice]');
 
+    await userEvent.hover(screen.getByRole('button', { name: /Funds/ }));
+
     for (const arc of arcs) {
       expect(arc).toHaveClass(
-        'origin-center',
-        '[transform-box:view-box]',
-        'transition-[scale,opacity]',
-        'duration-(--duration-fast)',
+        'transition-[stroke-width]',
+        'duration-(--duration-press)',
         'ease-out',
+        'motion-reduce:transition-none',
       );
-      expect(arc.getAttribute('stroke-width')).toBe('30');
-      expect(arc).not.toHaveClass('transition-[stroke-width]');
+      expect(arc).not.toHaveClass('opacity-50');
+      expect(arc.getAttribute('class')).not.toContain('scale');
     }
   });
 
@@ -149,36 +147,23 @@ describe('UiDonut', () => {
     expect(center.getByText('60')).toHaveClass('text-caption', 'text-(--muted-foreground)');
   });
 
-  it('hovering an arc highlights its legend row and leaving it clears the highlight', async () => {
+  it('hovering an arc highlights its legend row and leaving it keeps the highlight', async () => {
     const { fixture } = await render(`<ui-donut [slices]="slices" label="By asset class" othersLabel="Other" />`, {
       imports: [UiDonut],
       componentProperties: { slices: threeSlices },
     });
-    const paths = fixture.nativeElement.querySelectorAll('svg circle[data-slice]');
+    const arc = fixture.nativeElement.querySelectorAll('svg circle[data-slice]')[1] as SVGCircleElement;
     const row = screen.getByRole('button', { name: /Funds/ });
 
-    fireEvent.pointerEnter(paths[1]);
+    fireEvent.pointerEnter(arc);
 
     expect(row).toHaveClass('bg-(--soft)');
+    expect(arc.style.strokeWidth).toBe('38px');
 
-    fireEvent.pointerLeave(paths[1]);
+    fireEvent.pointerLeave(arc);
 
-    expect(row).not.toHaveClass('bg-(--soft)');
-  });
-
-  it('ignores a leave event for a row that is no longer the active one', async () => {
-    await render(`<ui-donut [slices]="slices" label="By asset class" othersLabel="Other" />`, {
-      imports: [UiDonut],
-      componentProperties: { slices: threeSlices },
-    });
-    const rowA = screen.getByRole('button', { name: /^ETF/ });
-    const rowB = screen.getByRole('button', { name: /Funds/ });
-
-    fireEvent.pointerEnter(rowA);
-    fireEvent.pointerEnter(rowB);
-    fireEvent.pointerLeave(rowA);
-
-    expect(rowB).toHaveClass('bg-(--soft)');
+    expect(row).toHaveClass('bg-(--soft)');
+    expect(arc.style.strokeWidth).toBe('38px');
   });
 
   it('emits sliceSelect with the slice id when a legend row is clicked', async () => {
@@ -350,7 +335,7 @@ describe('UiDonut legend links', () => {
     },
   );
 
-  it('still highlights the slice on hover and focus', async () => {
+  it('still highlights the slice on hover and focus, and keeps it on blur', async () => {
     const { fixture } = await render(linkTemplate, {
       imports: [UiDonut],
       componentProperties: { slices: threeSlices, href, onSelect: vi.fn() },
@@ -367,7 +352,7 @@ describe('UiDonut legend links', () => {
     expect(link).toHaveClass('bg-(--soft)');
 
     fireEvent.blur(link);
-    expect(link).not.toHaveClass('bg-(--soft)');
+    expect(link).toHaveClass('bg-(--soft)');
   });
 
   it('shares the row geometry and the focus ring with the button rows', async () => {

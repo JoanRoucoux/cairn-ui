@@ -1,7 +1,7 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { Component, computed, input, output, signal } from '@angular/core';
 
-import { RADIUS, RING_WIDTH, positionSlices } from './internal/donut-geometry';
+import { ACTIVE_RING_WIDTH, RADIUS, RING_WIDTH, positionSlices } from './internal/donut-geometry';
 import { type DonutSlice, type Ramp, type RankedSlice, rankSlices, shareSlices } from './internal/donut-slices';
 
 export type { DonutSlice };
@@ -13,7 +13,7 @@ const ROW_CLASSES =
   'flex w-full items-center gap-3 min-h-14 px-2 py-1 [font-variant-numeric:var(--numeric)] rounded-control text-left transition-[scale,background-color] [transition-duration:var(--duration-press),var(--duration-fast)] ease-out hover:bg-(--glow) active:bg-(--soft) active:scale-(--press-scale) focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring)';
 
 const SLICE_CLASSES =
-  'cursor-pointer origin-center [transform-box:view-box] transition-[scale,opacity] duration-(--duration-fast) ease-out';
+  'cursor-pointer transition-[stroke-width] duration-(--duration-press) ease-out motion-reduce:transition-none';
 
 const RAMP_DOT_CLASSES: Record<Ramp, string> = {
   1: 'bg-(--ramp-1)',
@@ -53,12 +53,11 @@ const RAMP_DOT_CLASSES: Record<Ramp, string> = {
             [attr.r]="radius"
             [attr.stroke-dasharray]="slice.dash"
             [attr.stroke-dashoffset]="slice.offset"
-            [attr.stroke-width]="ringWidth"
-            [class]="sliceClasses(slice)"
+            [class]="sliceClasses"
             [style.stroke]="strokeColor(slice)"
+            [style.stroke-width.px]="sliceWidth(slice)"
             (click)="select(slice)"
             (pointerenter)="highlight(slice.id)"
-            (pointerleave)="clearHighlight(slice.id)"
           />
         }
       </svg>
@@ -85,11 +84,9 @@ const RAMP_DOT_CLASSES: Record<Ramp, string> = {
           <a
             [attr.href]="href"
             [class]="rowClasses(slice)"
-            (blur)="clearHighlight(slice.id)"
             (click)="follow($event, slice)"
             (focus)="highlight(slice.id)"
             (pointerenter)="highlight(slice.id)"
-            (pointerleave)="clearHighlight(slice.id)"
           >
             <ng-container *ngTemplateOutlet="rowContent; context: { $implicit: slice }" />
           </a>
@@ -97,11 +94,9 @@ const RAMP_DOT_CLASSES: Record<Ramp, string> = {
           <button
             type="button"
             [class]="rowClasses(slice)"
-            (blur)="clearHighlight(slice.id)"
             (click)="select(slice)"
             (focus)="highlight(slice.id)"
             (pointerenter)="highlight(slice.id)"
-            (pointerleave)="clearHighlight(slice.id)"
           >
             <ng-container *ngTemplateOutlet="rowContent; context: { $implicit: slice }" />
           </button>
@@ -166,13 +161,10 @@ export class UiDonut {
     return `var(--ramp-${slice.ramp})`;
   }
 
-  protected sliceClasses(slice: RankedSlice): string {
-    const id = this.activeId();
-    if (id === null) {
-      return SLICE_CLASSES;
-    }
+  protected readonly sliceClasses = SLICE_CLASSES;
 
-    return `${SLICE_CLASSES} ${id === slice.id ? 'scale-104 motion-reduce:scale-100' : 'opacity-50'}`;
+  protected sliceWidth(slice: RankedSlice): number {
+    return this.isActive(slice) ? ACTIVE_RING_WIDTH : RING_WIDTH;
   }
 
   protected dotClasses(slice: RankedSlice): string {
@@ -193,12 +185,6 @@ export class UiDonut {
 
   protected highlight(id: string): void {
     this.activeId.set(id);
-  }
-
-  protected clearHighlight(id: string): void {
-    if (this.activeId() === id) {
-      this.activeId.set(null);
-    }
   }
 
   protected hrefFor(id: string): string | null {

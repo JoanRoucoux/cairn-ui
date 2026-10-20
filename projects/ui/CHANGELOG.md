@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.12.0
+
+### Changed
+
+- `ui-donut` selects the largest slice by default and marks the selected slice by thickening its arc from 30 to 38 around the same radius, instead of scaling it and dimming the others. The selection stays when the pointer or the focus leaves.
+- `ui-skeleton` draws `shape="ring"` as the donut's empty track (same radius and band, scaled with `size`), so the loaded ring lands exactly on it.
+
 ## 0.11.4
 
 ### Fixed
