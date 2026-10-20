@@ -95,14 +95,15 @@ describe('UiDonut', () => {
     await userEvent.hover(screen.getByRole('button', { name: /Funds/ }));
 
     for (const arc of arcs) {
-      expect(arc).toHaveClass(
-        'transition-[stroke-width]',
-        'duration-(--duration-press)',
-        'ease-out',
-        'motion-reduce:transition-none',
+      expect([...arc.classList].sort()).toEqual(
+        [
+          'cursor-pointer',
+          'duration-(--duration-press)',
+          'ease-out',
+          'motion-reduce:transition-none',
+          'transition-[stroke-width]',
+        ].sort(),
       );
-      expect(arc).not.toHaveClass('opacity-50');
-      expect(arc.getAttribute('class')).not.toContain('scale');
     }
   });
 

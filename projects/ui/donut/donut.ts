@@ -25,8 +25,9 @@ const RAMP_DOT_CLASSES: Record<Ramp, string> = {
 };
 
 /**
- * A ring chart with a legend: slices rank from largest to smallest, and hovering, focusing or
- * activating a legend row highlights its slice.
+ * A ring chart with a legend: slices rank from largest to smallest and the largest is selected first;
+ * hovering, focusing or activating a legend row (or its arc) selects it, and the selection stays when
+ * the pointer or the focus leaves.
  *
  * @example
  * <ui-donut [slices]="byAssetClass()" label="By asset class" othersLabel="Other" [valueFormat]="formatEur" [shareFormat]="formatShare" (sliceSelect)="goToHoldings($event)" />
@@ -57,12 +58,12 @@ const RAMP_DOT_CLASSES: Record<Ramp, string> = {
             [style.stroke]="strokeColor(slice)"
             [style.stroke-width.px]="sliceWidth(slice)"
             (click)="select(slice)"
-            (pointerenter)="highlight(slice.id)"
+            (pointerenter)="choose(slice.id)"
           />
         }
       </svg>
 
-      @if (active(); as slice) {
+      @if (selected(); as slice) {
         <div
           class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-12 text-center"
           data-testid="donut-centre"
@@ -85,8 +86,8 @@ const RAMP_DOT_CLASSES: Record<Ramp, string> = {
             [attr.href]="href"
             [class]="rowClasses(slice)"
             (click)="follow($event, slice)"
-            (focus)="highlight(slice.id)"
-            (pointerenter)="highlight(slice.id)"
+            (focus)="choose(slice.id)"
+            (pointerenter)="choose(slice.id)"
           >
             <ng-container *ngTemplateOutlet="rowContent; context: { $implicit: slice }" />
           </a>
@@ -95,8 +96,8 @@ const RAMP_DOT_CLASSES: Record<Ramp, string> = {
             type="button"
             [class]="rowClasses(slice)"
             (click)="select(slice)"
-            (focus)="highlight(slice.id)"
-            (pointerenter)="highlight(slice.id)"
+            (focus)="choose(slice.id)"
+            (pointerenter)="choose(slice.id)"
           >
             <ng-container *ngTemplateOutlet="rowContent; context: { $implicit: slice }" />
           </button>
@@ -134,14 +135,14 @@ export class UiDonut {
 
   readonly sliceSelect = output<DonutSlice['id']>();
 
-  protected readonly activeId = signal<string | null>(null);
+  protected readonly selectedId = signal<string | null>(null);
 
   protected readonly ranked = computed(() => rankSlices(this.slices(), this.othersLabel()));
   protected readonly positioned = computed(() => positionSlices(this.ranked()));
 
-  protected readonly active = computed<RankedSlice | null>(() => {
+  protected readonly selected = computed<RankedSlice | null>(() => {
     const ranked = this.ranked();
-    const id = this.activeId();
+    const id = this.selectedId();
 
     return ranked.find((slice) => slice.id === id) ?? ranked[0] ?? null;
   });
@@ -164,7 +165,7 @@ export class UiDonut {
   protected readonly sliceClasses = SLICE_CLASSES;
 
   protected sliceWidth(slice: RankedSlice): number {
-    return this.isActive(slice) ? ACTIVE_RING_WIDTH : RING_WIDTH;
+    return this.isSelected(slice) ? ACTIVE_RING_WIDTH : RING_WIDTH;
   }
 
   protected dotClasses(slice: RankedSlice): string {
@@ -172,19 +173,19 @@ export class UiDonut {
   }
 
   protected rowClasses(slice: RankedSlice): string {
-    return `${ROW_CLASSES}${this.isActive(slice) ? ' bg-(--soft)' : ''}`;
+    return `${ROW_CLASSES}${this.isSelected(slice) ? ' bg-(--soft)' : ''}`;
   }
 
   protected subLabel(slice: RankedSlice): string {
     return slice.members.length > 0 ? slice.members.join(', ') : (slice.sublabel ?? '');
   }
 
-  protected isActive(slice: RankedSlice): boolean {
-    return this.active()?.id === slice.id;
+  protected isSelected(slice: RankedSlice): boolean {
+    return this.selected()?.id === slice.id;
   }
 
-  protected highlight(id: string): void {
-    this.activeId.set(id);
+  protected choose(id: string): void {
+    this.selectedId.set(id);
   }
 
   protected hrefFor(id: string): string | null {
@@ -200,7 +201,7 @@ export class UiDonut {
   }
 
   protected select(slice: RankedSlice): void {
-    this.activeId.set(slice.id);
+    this.selectedId.set(slice.id);
     this.sliceSelect.emit(slice.id);
   }
 }
