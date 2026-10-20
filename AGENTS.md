@@ -113,6 +113,7 @@ The Storybook is deployed to GitHub Pages by [storybook.yml](.github/workflows/s
 - Since jsdom 30.1.2, `focus()` is a no-op inside a `display: none` subtree, as in a browser. A spec that removes `showPopover` to simulate a browser without the Popover API must also set `display: block` on the popover host, because jsdom's `[popover]` UA rule keeps hiding it.
 - jsdom parses `:modal` but never matches it. `test-setup.ts` records the dialogs its `showModal()` shim opened and answers `dialog.matches(':modal')` from that record; `querySelector('dialog:modal')` still finds nothing in a spec, so code asks `matches` on each open dialog.
 - `UiMenu.close()` only calls `hidePopover()` when the menu was open: `hidePopover()` throws on a closed popover, and it fires the `toggle` event that calls `close()` again.
+- The required status check `ci` is the gate job at the end of `ci.yml`, not a build job: a new CI job must be added to its `needs`, or its failure will not block a merge.
 - GitHub Actions in `.github/workflows/` are pinned by commit SHA (Dependabot keeps them updated) — when adding one, pin it the same way.
 - npm consumers of the published library must add `@source '../node_modules/<pkg>'` to their Tailwind CSS — templates in `node_modules` are not scanned by default. Keep this documented in both READMEs (root and `projects/ui/README.md`).
 - `projects/mcp/package.json` repeats, for npm, the exact versions of `@modelcontextprotocol/sdk` and `zod` the root installs. Dependabot only bumps the root: `src/package.spec.ts` fails until the copy follows.
