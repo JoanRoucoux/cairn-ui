@@ -40,12 +40,15 @@ const BAR_CLASSES = 'block rounded-control bg-(--muted)';
         <span class="rounded-pill size-3 bg-(--muted)" [style.animation]="animation"></span>
       }
       @case ('ring') {
-        <span
-          class="rounded-pill shadow-[inset_0_0_0_30px_var(--muted)]"
+        <svg
+          class="block"
+          viewBox="0 0 200 200"
           [style.animation]="animation"
           [style.height.px]="size()"
           [style.width.px]="size()"
-        ></span>
+        >
+          <circle class="stroke-(--muted)" cx="100" cy="100" fill="none" r="78" stroke-width="30" />
+        </svg>
       }
       @default {
         @for (line of bars(); track $index) {

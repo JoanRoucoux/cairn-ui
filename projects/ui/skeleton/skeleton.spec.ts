@@ -54,7 +54,6 @@ describe('UiSkeleton', () => {
     ['figure', 'w-65'],
     ['row', 'h-14'],
     ['chart', 'min-h-50'],
-    ['ring', 'rounded-pill'],
   ])('draws the %s shape', async (shape, expectedClass) => {
     const { fixture } = await render('<ui-skeleton [shape]="shape" />', {
       imports: [UiSkeleton],
@@ -76,19 +75,24 @@ describe('UiSkeleton', () => {
     expect(fixture.nativeElement.querySelector('span')).toHaveClass('flex-1', 'min-h-50');
   });
 
-  it('draws the ring 232px wide with a 30px band by default', async () => {
+  it('draws the ring 232px wide by default, on the donut track geometry', async () => {
     const { fixture } = await render('<ui-skeleton shape="ring" />', { imports: [UiSkeleton] });
-    const ring = fixture.nativeElement.querySelector('span') as HTMLElement;
+    const ring = fixture.nativeElement.querySelector('svg') as SVGSVGElement;
+    const track = ring.querySelector('circle') as SVGCircleElement;
 
     expect(ring.style.width).toBe('232px');
     expect(ring.style.height).toBe('232px');
-    expect(ring).toHaveClass('shadow-[inset_0_0_0_30px_var(--muted)]');
+    expect(ring.style.animation).toBe('cairn-pulse var(--pulse-duration) var(--ease-out) infinite alternate');
+    expect(ring.getAttribute('viewBox')).toBe('0 0 200 200');
+    expect(track.getAttribute('r')).toBe('78');
+    expect(track.getAttribute('stroke-width')).toBe('30');
+    expect(track).toHaveClass('stroke-(--muted)');
   });
 
   it('sizes the ring from its size input', async () => {
     const { fixture } = await render('<ui-skeleton shape="ring" [size]="240" />', { imports: [UiSkeleton] });
 
-    expect((fixture.nativeElement.querySelector('span') as HTMLElement).style.width).toBe('240px');
+    expect((fixture.nativeElement.querySelector('svg') as SVGSVGElement).style.width).toBe('240px');
   });
 
   it('draws the figure 260 by 40', async () => {

@@ -22,7 +22,7 @@ replaces: text, a dominant figure, a list row, a chart, a ring, or a legend dot.
 the block reads as the tail of a paragraph rather than another full width line. \`figure\` is the 260 by
 40 dominant figure and \`row\` a list row. \`chart\` fills its host from a 200px floor, so the
 screen sizes the box (200 on the phone, 300 and more on the desktop). \`ring\` takes \`size\`
-(232 on the phone, 240 on the desktop) with a 30px band. \`dot\` is the 12px disc of a legend entry. None of them reads \`lines\` or \`height\`.
+(232 on the phone, 240 on the desktop) and draws the donut's empty track, so the real ring lands on it. \`dot\` is the 12px disc of a legend entry. None of them reads \`lines\` or \`height\`.
 
 #### When to use
 
@@ -63,7 +63,7 @@ screen sizes the box (200 on the phone, 300 and more on the desktop). \`ring\` t
     size: {
       control: { type: 'number', min: 40, max: 400 },
       description:
-        'Diameter in pixels, `shape="ring"` only. 232 on the phone, 240 on the desktop; the band is always 30px.',
+        'Diameter in pixels, `shape="ring"` only. 232 on the phone, 240 on the desktop; the band scales with it, like the donut.',
     },
     height: {
       control: { type: 'number', min: 4, max: 240 },

@@ -1,7 +1,7 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { Component, computed, input, output, signal } from '@angular/core';
 
-import { RADIUS, RING_WIDTH, positionSlices } from './internal/donut-geometry';
+import { ACTIVE_RING_WIDTH, RADIUS, RING_WIDTH, positionSlices } from './internal/donut-geometry';
 import { type DonutSlice, type Ramp, type RankedSlice, rankSlices, shareSlices } from './internal/donut-slices';
 
 export type { DonutSlice };
@@ -13,7 +13,7 @@ const ROW_CLASSES =
   'flex w-full items-center gap-3 min-h-14 px-2 py-1 [font-variant-numeric:var(--numeric)] rounded-control text-left transition-[scale,background-color] [transition-duration:var(--duration-press),var(--duration-fast)] ease-out hover:bg-(--glow) active:bg-(--soft) active:scale-(--press-scale) focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring)';
 
 const SLICE_CLASSES =
-  'cursor-pointer origin-center [transform-box:view-box] transition-[scale,opacity] duration-(--duration-fast) ease-out';
+  'cursor-pointer transition-[stroke-width] duration-(--duration-press) ease-out motion-reduce:transition-none';
 
 const RAMP_DOT_CLASSES: Record<Ramp, string> = {
   1: 'bg-(--ramp-1)',
@@ -25,8 +25,9 @@ const RAMP_DOT_CLASSES: Record<Ramp, string> = {
 };
 
 /**
- * A ring chart with a legend: slices rank from largest to smallest, and hovering, focusing or
- * activating a legend row highlights its slice.
+ * A ring chart with a legend: slices rank from largest to smallest and the largest is selected first;
+ * hovering, focusing or activating a legend row (or its arc) selects it, and the selection stays when
+ * the pointer or the focus leaves.
  *
  * @example
  * <ui-donut [slices]="byAssetClass()" label="By asset class" othersLabel="Other" [valueFormat]="formatEur" [shareFormat]="formatShare" (sliceSelect)="goToHoldings($event)" />
@@ -53,17 +54,16 @@ const RAMP_DOT_CLASSES: Record<Ramp, string> = {
             [attr.r]="radius"
             [attr.stroke-dasharray]="slice.dash"
             [attr.stroke-dashoffset]="slice.offset"
-            [attr.stroke-width]="ringWidth"
-            [class]="sliceClasses(slice)"
+            [class]="sliceClasses"
             [style.stroke]="strokeColor(slice)"
+            [style.stroke-width.px]="sliceWidth(slice)"
             (click)="select(slice)"
-            (pointerenter)="highlight(slice.id)"
-            (pointerleave)="clearHighlight(slice.id)"
+            (pointerenter)="choose(slice.id)"
           />
         }
       </svg>
 
-      @if (active(); as slice) {
+      @if (selected(); as slice) {
         <div
           class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-12 text-center"
           data-testid="donut-centre"
@@ -85,11 +85,9 @@ const RAMP_DOT_CLASSES: Record<Ramp, string> = {
           <a
             [attr.href]="href"
             [class]="rowClasses(slice)"
-            (blur)="clearHighlight(slice.id)"
             (click)="follow($event, slice)"
-            (focus)="highlight(slice.id)"
-            (pointerenter)="highlight(slice.id)"
-            (pointerleave)="clearHighlight(slice.id)"
+            (focus)="choose(slice.id)"
+            (pointerenter)="choose(slice.id)"
           >
             <ng-container *ngTemplateOutlet="rowContent; context: { $implicit: slice }" />
           </a>
@@ -97,11 +95,9 @@ const RAMP_DOT_CLASSES: Record<Ramp, string> = {
           <button
             type="button"
             [class]="rowClasses(slice)"
-            (blur)="clearHighlight(slice.id)"
             (click)="select(slice)"
-            (focus)="highlight(slice.id)"
-            (pointerenter)="highlight(slice.id)"
-            (pointerleave)="clearHighlight(slice.id)"
+            (focus)="choose(slice.id)"
+            (pointerenter)="choose(slice.id)"
           >
             <ng-container *ngTemplateOutlet="rowContent; context: { $implicit: slice }" />
           </button>
@@ -139,14 +135,14 @@ export class UiDonut {
 
   readonly sliceSelect = output<DonutSlice['id']>();
 
-  protected readonly activeId = signal<string | null>(null);
+  protected readonly selectedId = signal<string | null>(null);
 
   protected readonly ranked = computed(() => rankSlices(this.slices(), this.othersLabel()));
   protected readonly positioned = computed(() => positionSlices(this.ranked()));
 
-  protected readonly active = computed<RankedSlice | null>(() => {
+  protected readonly selected = computed<RankedSlice | null>(() => {
     const ranked = this.ranked();
-    const id = this.activeId();
+    const id = this.selectedId();
 
     return ranked.find((slice) => slice.id === id) ?? ranked[0] ?? null;
   });
@@ -166,13 +162,10 @@ export class UiDonut {
     return `var(--ramp-${slice.ramp})`;
   }
 
-  protected sliceClasses(slice: RankedSlice): string {
-    const id = this.activeId();
-    if (id === null) {
-      return SLICE_CLASSES;
-    }
+  protected readonly sliceClasses = SLICE_CLASSES;
 
-    return `${SLICE_CLASSES} ${id === slice.id ? 'scale-104 motion-reduce:scale-100' : 'opacity-50'}`;
+  protected sliceWidth(slice: RankedSlice): number {
+    return this.isSelected(slice) ? ACTIVE_RING_WIDTH : RING_WIDTH;
   }
 
   protected dotClasses(slice: RankedSlice): string {
@@ -180,25 +173,19 @@ export class UiDonut {
   }
 
   protected rowClasses(slice: RankedSlice): string {
-    return `${ROW_CLASSES}${this.isActive(slice) ? ' bg-(--soft)' : ''}`;
+    return `${ROW_CLASSES}${this.isSelected(slice) ? ' bg-(--soft)' : ''}`;
   }
 
   protected subLabel(slice: RankedSlice): string {
     return slice.members.length > 0 ? slice.members.join(', ') : (slice.sublabel ?? '');
   }
 
-  protected isActive(slice: RankedSlice): boolean {
-    return this.active()?.id === slice.id;
+  protected isSelected(slice: RankedSlice): boolean {
+    return this.selected()?.id === slice.id;
   }
 
-  protected highlight(id: string): void {
-    this.activeId.set(id);
-  }
-
-  protected clearHighlight(id: string): void {
-    if (this.activeId() === id) {
-      this.activeId.set(null);
-    }
+  protected choose(id: string): void {
+    this.selectedId.set(id);
   }
 
   protected hrefFor(id: string): string | null {
@@ -214,7 +201,7 @@ export class UiDonut {
   }
 
   protected select(slice: RankedSlice): void {
-    this.activeId.set(slice.id);
+    this.selectedId.set(slice.id);
     this.sliceSelect.emit(slice.id);
   }
 }

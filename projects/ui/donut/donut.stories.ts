@@ -56,8 +56,8 @@ ramp (\`--ramp-1\` to \`--ramp-6\`). Beyond six slices, the five largest keep th
 merge into one “Other” slice on \`--ramp-6\`, whose legend sub-label lists the merged names, while the
 ring's \`aria-label\` still names every original slice.
 
-Hovering, focusing or touching a legend row (or its arc) grows that arc by 4 % around the ring center, dims the other arcs to half opacity, and shows its name, share
-and value at the center; activating a row (click or Enter) emits \`sliceSelect\` with its id, for the
+The largest slice is selected at first. Hovering, focusing or touching a legend row (or its arc) selects it instead: its arc thickens from 30 to 38 around the same radius, its row takes the soft surface, and the center shows its name, share
+and value. The selection stays when the pointer or the focus leaves; activating a row (click or Enter) emits \`sliceSelect\` with its id, for the
 caller to navigate with. With \`legendHref\`, rows are real links: a plain click is canceled and emitted as \`sliceSelect\` so a router can navigate, while Ctrl/Cmd/Shift-click and middle-click keep the browser's behavior. Formatting is the caller's business: \`valueFormat\` and \`shareFormat\` both
 arrive as inputs, so masking amounts is a matter of a formatter that returns bullets; shares stay
 visible either way.
@@ -166,17 +166,22 @@ export const SelectingARowEmitsSliceSelect: Story = {
   },
 };
 
-export const HighlightedSliceGrowsInPlace: Story = {
-  name: 'The highlighted slice grows in place and the others dim',
+export const SelectedSliceThickens: Story = {
+  name: 'The selected slice thickens and stays selected',
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-
-    await userEvent.hover(canvas.getByRole('button', { name: /Crypto/ }));
-
     const arcs = canvasElement.querySelectorAll<SVGCircleElement>('svg circle[data-slice]');
-    await expect(arcs[arcs.length - 1]).toHaveClass('scale-104');
-    await expect(arcs[0]).toHaveClass('opacity-50');
-    await expect(arcs[0]?.getAttribute('stroke-width')).toBe('30');
+    const last = arcs[arcs.length - 1];
+    const row = canvas.getByRole('button', { name: /Crypto/ });
+
+    await expect(arcs[0]?.style.strokeWidth).toBe('38px');
+
+    await userEvent.hover(row);
+    await userEvent.unhover(row);
+
+    await expect(last?.style.strokeWidth).toBe('38px');
+    await expect(arcs[0]?.style.strokeWidth).toBe('30px');
+    await expect(row).toHaveClass('bg-(--soft)');
   },
 };
 
