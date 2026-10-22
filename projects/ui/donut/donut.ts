@@ -26,8 +26,8 @@ const RAMP_DOT_CLASSES: Record<Ramp, string> = {
 
 /**
  * A ring chart with a legend: slices rank from largest to smallest and the largest is selected first;
- * hovering, focusing or activating a legend row (or its arc) selects it, and the selection stays when
- * the pointer or the focus leaves.
+ * hovering, focusing or activating a legend row, or hovering or tapping its arc, selects it, and the
+ * selection stays when the pointer or the focus leaves. Only a legend row emits `sliceSelect`.
  *
  * @example
  * <ui-donut [slices]="byAssetClass()" label="By asset class" othersLabel="Other" [valueFormat]="formatEur" [shareFormat]="formatShare" (sliceSelect)="goToHoldings($event)" />
@@ -57,7 +57,7 @@ const RAMP_DOT_CLASSES: Record<Ramp, string> = {
             [class]="sliceClasses"
             [style.stroke]="strokeColor(slice)"
             [style.stroke-width.px]="sliceWidth(slice)"
-            (click)="select(slice)"
+            (click)="choose(slice.id)"
             (pointerenter)="choose(slice.id)"
           />
         }

@@ -167,6 +167,21 @@ describe('UiDonut', () => {
     expect(arc.style.strokeWidth).toBe('38px');
   });
 
+  it('selects a clicked arc without emitting sliceSelect, so a tap shows the slice instead of leaving', async () => {
+    const onSelect = vi.fn();
+    const { fixture } = await render(
+      `<ui-donut [slices]="slices" label="By asset class" othersLabel="Other" (sliceSelect)="onSelect($event)" />`,
+      { imports: [UiDonut], componentProperties: { slices: threeSlices, onSelect } },
+    );
+    const arc = fixture.nativeElement.querySelectorAll('svg circle[data-slice]')[2] as SVGCircleElement;
+
+    await userEvent.click(arc);
+
+    expect(arc.style.strokeWidth).toBe('38px');
+    expect(screen.getByRole('button', { name: /Stocks/ })).toHaveClass('bg-(--soft)');
+    expect(onSelect).not.toHaveBeenCalled();
+  });
+
   it('emits sliceSelect with the slice id when a legend row is clicked', async () => {
     const onSelect = vi.fn();
     await render(
