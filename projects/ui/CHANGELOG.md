@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.12.1
+
+### Fixed
+
+- Clicking or tapping a `ui-donut` arc only selects its slice and no longer emits `sliceSelect`, which stays with the legend rows: on a phone, where there is no hover, a tap on the ring used to leave the page before the slice could be read.
+
 ## 0.12.0
 
 ### Changed

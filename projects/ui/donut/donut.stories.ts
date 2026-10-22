@@ -58,7 +58,7 @@ ring's \`aria-label\` still names every original slice.
 
 The largest slice is selected at first. Hovering, focusing or touching a legend row (or its arc) selects it instead: its arc thickens from 30 to 38 around the same radius, its row takes the soft surface, and the center shows its name, share
 and value. The selection stays when the pointer or the focus leaves; activating a row (click or Enter) emits \`sliceSelect\` with its id, for the
-caller to navigate with. With \`legendHref\`, rows are real links: a plain click is canceled and emitted as \`sliceSelect\` so a router can navigate, while Ctrl/Cmd/Shift-click and middle-click keep the browser's behavior. Formatting is the caller's business: \`valueFormat\` and \`shareFormat\` both
+caller to navigate with. Clicking or tapping an arc only selects it, so a phone, which has no hover, shows a slice's details without leaving the page. With \`legendHref\`, rows are real links: a plain click is canceled and emitted as \`sliceSelect\` so a router can navigate, while Ctrl/Cmd/Shift-click and middle-click keep the browser's behavior. Formatting is the caller's business: \`valueFormat\` and \`shareFormat\` both
 arrive as inputs, so masking amounts is a matter of a formatter that returns bullets; shares stay
 visible either way.
 
@@ -163,6 +163,21 @@ export const SelectingARowEmitsSliceSelect: Story = {
     await userEvent.click(canvas.getByRole('button', { name: /Stocks/ }));
 
     await expect(args.sliceSelect).toHaveBeenCalledWith('stocks');
+  },
+};
+
+export const ClickingAnArcOnlySelects: Story = {
+  name: 'Clicking an arc selects it without emitting sliceSelect',
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement);
+    const arcs = canvasElement.querySelectorAll<SVGCircleElement>('svg circle[data-slice]');
+    const last = arcs[arcs.length - 1] as SVGCircleElement;
+
+    await userEvent.click(last);
+
+    await expect(last.style.strokeWidth).toBe('38px');
+    await expect(canvas.getByRole('button', { name: /Crypto/ })).toHaveClass('bg-(--soft)');
+    await expect(args.sliceSelect).not.toHaveBeenCalled();
   },
 };
 
