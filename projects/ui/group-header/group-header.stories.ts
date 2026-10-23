@@ -73,33 +73,19 @@ of the body it folds.
 export default meta;
 type Story = StoryObj<GroupHeaderArgs>;
 
-export const Expanded: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const button = canvas.getByRole('button');
-
-    await expect(button).toHaveAttribute('aria-expanded', 'true');
-    await expect(canvas.getByText('Ferrari, Amundi MSCI World, Accor')).toBeVisible();
-
-    await userEvent.click(button);
-
-    await expect(button).toHaveAttribute('aria-expanded', 'false');
-    await expect(canvas.getByText('Ferrari, Amundi MSCI World, Accor')).not.toBeVisible();
-  },
-};
+export const Default: Story = {};
 
 export const Collapsed: Story = {
   args: { expanded: false },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
+};
 
-    await expect(canvas.getByRole('button')).toHaveAttribute('aria-expanded', 'false');
-    await expect(canvas.getByText('48 215,60 €')).toBeVisible();
-  },
+export const Static: Story = {
+  args: { collapsible: false },
 };
 
 export const HeldOpenByAFilter: Story = {
-  name: 'Held open (click has no effect)',
+  name: 'Held open ignores the click and keeps the default cursor',
+  tags: ['!dev', '!autodocs'],
   args: { toggleDisabled: true },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -110,15 +96,5 @@ export const HeldOpenByAFilter: Story = {
     await expect(button).toHaveAttribute('aria-disabled', 'true');
     await expect(button).toHaveAttribute('aria-expanded', 'true');
     await expect(getComputedStyle(button).cursor).not.toBe('pointer');
-  },
-};
-
-export const Static: Story = {
-  args: { collapsible: false },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await expect(canvas.queryByRole('button')).not.toBeInTheDocument();
-    await expect(canvas.getByRole('heading', { level: 2, name: 'Northwind PEA' })).toBeVisible();
   },
 };

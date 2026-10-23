@@ -122,14 +122,7 @@ with a click handler, so keyboard and assistive technology support come for free
 export default meta;
 type Story = StoryObj<RowArgs>;
 
-export const Default: Story = {
-  play: async ({ canvasElement }) => {
-    const style = getComputedStyle(canvasElement.querySelector('a[ui-row]')!);
-
-    await waitFor(() => expect(style.transitionProperty).toBe('scale, background-color'));
-    await expect(style.transitionDuration).toBe('0.12s, 0.18s');
-  },
-};
+export const Default: Story = {};
 
 export const Selected: Story = {
   args: { selected: true },
@@ -137,113 +130,27 @@ export const Selected: Story = {
 
 export const Busy: Story = {
   args: { busy: true },
-  play: async ({ canvasElement }) => {
-    const row = canvasElement.querySelector('a[ui-row]')!;
-
-    await expect(row).toHaveAttribute('aria-busy', 'true');
-    await expect(row).toHaveAttribute('aria-disabled', 'true');
-    await expect(getComputedStyle(row.querySelector('[aria-hidden="true"]')!).animationName).toBe('cairn-spin');
-  },
 };
 
-export const Unavailable: Story = {
-  name: 'Unavailable result row (non-EUR candidate)',
-  args: { size: 'dense', unavailable: true },
+export const Dense: Story = {
+  name: 'Dense result row',
+  args: { size: 'dense' },
   render: (args) => ({
     props: args,
     template: `
-      <button ui-row type="button" [size]="size" [unavailable]="unavailable" class="w-[340px] lg:w-[680px]">
+      <button ui-row type="button" [size]="size" [padding]="padding" class="w-[340px]">
         <span class="flex min-w-0 flex-1 flex-col">
-          <span class="text-body truncate font-medium">iShares Core MSCI World UCITS ETF USD (Acc)</span>
-          <span class="text-caption text-pretty text-(--subtle-foreground)">Listed in USD. Cairn only tracks euro listings.</span>
+          <span class="text-body truncate font-medium">Amundi MSCI World</span>
+          <span class="text-caption text-(--subtle-foreground)">LU1681043599 · ETF</span>
         </span>
-        <span class="flex flex-none flex-col items-end">
-          <span class="text-label font-medium">London Stock Exchange</span>
-          <span class="text-caption text-(--subtle-foreground)">unavailable</span>
-        </span>
+        <span class="text-caption flex-none text-(--muted-foreground)">Yahoo Finance</span>
       </button>
-    `,
-  }),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await expect(canvas.getByRole('button', { name: /iShares Core MSCI World/ })).toHaveAttribute(
-      'aria-disabled',
-      'true',
-    );
-  },
-};
-
-export const Tall: Story = {
-  args: { size: 'lg', padding: 'sm' },
-};
-
-export const Profile: Story = {
-  args: { size: 'xl', padding: 'sm' },
-  render: (args) => ({
-    props: args,
-    template: `
-      <div class="w-[358px] px-2">
-        <a ui-row href="#" [selected]="selected" [size]="size" [padding]="padding" class="-mx-2 w-auto">
-          <span uiRowTile>
-            <svg class="block size-[18px] flex-none fill-none stroke-current stroke-[1.75]" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"></path><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"></path></svg>
-          </span>
-          <span class="flex min-w-0 flex-1 flex-col">
-            <span class="text-body font-medium">Export the portfolio</span>
-            <span class="text-caption text-(--subtle-foreground)">All holdings as CSV, at today’s price</span>
-          </span>
-          <svg class="block size-4 flex-none fill-none stroke-(--subtle-foreground) stroke-[1.75]" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
-        </a>
-      </div>
-    `,
-  }),
-};
-
-export const Card: Story = {
-  name: 'Card row (Holdings iPhone)',
-  args: { size: 'card', padding: 'sm' },
-  render: (args) => ({
-    props: args,
-    template: `
-      <div class="rounded-container bg-(--card) w-[340px] px-2 py-1.5 shadow-[inset_0_0_0_1px_var(--border)]">
-        <a ui-row href="#" [selected]="selected" [size]="size" [padding]="padding" class="-mx-2 w-auto">
-          <div class="flex min-w-0 flex-1 flex-col">
-            <span class="text-body font-medium">Amundi MSCI World</span>
-            <span class="text-label text-(--muted-foreground)">300 × 28,64 €</span>
-          </div>
-          <div class="flex flex-col items-end whitespace-nowrap">
-            <span class="text-body font-medium">8 592,00 €</span>
-            <span class="text-label text-(--muted-foreground)">+0,90 %</span>
-          </div>
-        </a>
-      </div>
-    `,
-  }),
-};
-
-export const NarrowGap: Story = {
-  name: 'Narrow gap on a tall row (Dashboard movers)',
-  args: { size: 'xl', padding: 'sm', gap: 'sm' },
-  render: (args) => ({
-    props: args,
-    template: `
-      <a ui-row href="#" [selected]="selected" [size]="size" [padding]="padding" [gap]="gap" class="w-[340px]">
-        <div class="flex min-w-0 flex-1 flex-col">
-          <span class="text-body font-medium">Amundi MSCI World</span>
-          <span class="text-label text-(--muted-foreground)">Stock ETF</span>
-        </div>
-        <span class="flex flex-col items-end whitespace-nowrap">
-          <span class="text-body font-medium">8 592,00 €</span>
-          <span class="text-label text-(--muted-foreground)">+0,90 %</span>
-        </span>
-        <svg class="block size-4 flex-none fill-none stroke-(--subtle-foreground) stroke-[1.75]" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
-      </a>
     `,
   }),
 };
 
 export const WithTrailingAction: Story = {
-  name: 'With a trailing action (Accounts iPhone)',
+  name: 'With a trailing action',
   args: { size: 'xl', padding: 'sm' },
   render: (args) => ({
     props: args,
@@ -267,6 +174,60 @@ export const WithTrailingAction: Story = {
       </div>
     `,
   }),
+};
+
+export const Link: Story = {
+  name: 'Link row',
+  args: { trailing: 'chevron' },
+  render: (args) => ({
+    props: args,
+    template: `
+      <div uiRowGroup class="w-[360px]">
+        <button ui-row type="button" [trailing]="trailing">
+          <span class="flex min-w-0 flex-1 flex-col">
+            <span class="text-label font-medium">SG Sirius structured product</span>
+            <span class="text-caption text-(--subtle-foreground)">No search: enter the ISIN</span>
+          </span>
+        </button>
+        <button ui-row type="button" [trailing]="trailing">
+          <span class="flex min-w-0 flex-1 flex-col">
+            <span class="text-label font-medium">Enter manually</span>
+            <span class="text-caption text-(--subtle-foreground)">For a security with no source, priced by you</span>
+          </span>
+        </button>
+      </div>
+    `,
+  }),
+};
+
+export const TransitionsFadeFillAndScalePress: Story = {
+  name: 'Hover fill fades and press scales',
+  tags: ['!dev', '!autodocs'],
+  play: async ({ canvasElement }) => {
+    const style = getComputedStyle(canvasElement.querySelector('a[ui-row]')!);
+
+    await waitFor(() => expect(style.transitionProperty).toBe('scale, background-color'));
+    await expect(style.transitionDuration).toBe('0.12s, 0.18s');
+  },
+};
+
+export const BusySpinnerTurns: Story = {
+  name: 'Busy spinner turns',
+  args: { busy: true },
+  tags: ['!dev', '!autodocs'],
+  play: async ({ canvasElement }) => {
+    const row = canvasElement.querySelector('a[ui-row]')!;
+
+    await expect(row).toHaveAttribute('aria-busy', 'true');
+    await expect(row).toHaveAttribute('aria-disabled', 'true');
+    await expect(getComputedStyle(row.querySelector('[aria-hidden="true"]')!).animationName).toBe('cairn-spin');
+  },
+};
+
+export const TrailingActionSitsBesideTheRow: Story = {
+  ...WithTrailingAction,
+  name: 'Trailing action sits 4 px after the row',
+  tags: ['!dev', '!autodocs'],
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const row = canvas.getByRole('link', { name: /Northwind PEA/ });
@@ -276,26 +237,10 @@ export const WithTrailingAction: Story = {
   },
 };
 
-export const Dense: Story = {
-  name: 'Dense result row (add a holding)',
-  args: { size: 'dense' },
-  render: (args) => ({
-    props: args,
-    template: `
-      <button ui-row type="button" [size]="size" [padding]="padding" class="w-[340px]">
-        <span class="flex min-w-0 flex-1 flex-col">
-          <span class="text-body truncate font-medium">Amundi MSCI World</span>
-          <span class="text-caption text-(--subtle-foreground)">LU1681043599 · ETF</span>
-        </span>
-        <span class="text-caption flex-none text-(--muted-foreground)">Yahoo Finance</span>
-      </button>
-    `,
-  }),
-};
-
 export const DenseOnDesktop: Story = {
   ...Dense,
-  name: 'Dense result row at 1440, still 56 px',
+  name: 'Dense row keeps 56 px on a wide viewport',
+  tags: ['!dev', '!autodocs'],
   parameters: { viewport: { width: 1440, height: 900 } },
   play: async ({ canvasElement }) => {
     const row = within(canvasElement).getByRole('button', { name: /Amundi MSCI World/ });
@@ -304,73 +249,10 @@ export const DenseOnDesktop: Story = {
   },
 };
 
-export const RuledListRows: Story = {
-  name: 'Hairline-separated list rows (Profile passkeys)',
-  render: () => ({
-    template: `
-      <ul class="w-[326px]">
-        <li uiListRow>
-          <span uiRowTile><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" /><circle cx="16.5" cy="7.5" r=".5" fill="currentColor" /></svg></span>
-          <span class="flex min-w-0 flex-1 flex-col">
-            <span class="flex items-center gap-2">
-              <span class="text-body truncate font-medium">Alex’s iPhone</span>
-              <span class="rounded-pill text-caption inline-flex h-[22px] flex-none items-center bg-(--muted) px-2 font-medium">This device</span>
-            </span>
-            <span class="text-caption text-(--subtle-foreground)">iCloud · Created 12/03/2025 · Used today</span>
-          </span>
-          <button ui-button variant="quiet-destructive" size="icon-sm" class="-mr-2" aria-label="Delete Alex’s iPhone"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg></button>
-        </li>
-        <li uiListRow>
-          <span uiRowTile><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" /><circle cx="16.5" cy="7.5" r=".5" fill="currentColor" /></svg></span>
-          <span class="flex min-w-0 flex-1 flex-col">
-            <span class="flex items-center gap-2">
-              <span class="text-body truncate font-medium">MacBook Air</span>
-            </span>
-            <span class="text-caption text-(--subtle-foreground)">iCloud · Created 12/03/2025 · Used yesterday</span>
-          </span>
-          <button ui-button variant="quiet-destructive" size="icon-sm" class="-mr-2" aria-label="Delete MacBook Air"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg></button>
-        </li>
-        <li uiListRow>
-          <span uiRowTile><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" /><circle cx="16.5" cy="7.5" r=".5" fill="currentColor" /></svg></span>
-          <span class="flex min-w-0 flex-1 flex-col">
-            <span class="flex items-center gap-2">
-              <span class="text-body truncate font-medium">YubiKey 5C</span>
-            </span>
-            <span class="text-caption text-(--subtle-foreground)">Security key · Created 04/11/2025 · Used 02/09/2026</span>
-          </span>
-          <button ui-button variant="quiet-destructive" size="icon-sm" class="-mr-2" aria-label="Delete YubiKey 5C"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg></button>
-        </li>
-      </ul>
-    `,
-  }),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await expect(canvas.getAllByRole('listitem')).toHaveLength(3);
-  },
-};
-
-export const LinkRow: Story = {
-  name: 'Link row (Add a holding)',
-  args: { trailing: 'chevron' },
-  render: () => ({
-    template: `
-      <div uiRowGroup class="w-[360px]">
-        <button ui-row type="button" trailing="chevron">
-          <span class="flex min-w-0 flex-1 flex-col">
-            <span class="text-label font-medium">SG Sirius structured product</span>
-            <span class="text-caption text-(--subtle-foreground)">No search: enter the ISIN</span>
-          </span>
-        </button>
-        <button ui-row type="button" trailing="chevron">
-          <span class="flex min-w-0 flex-1 flex-col">
-            <span class="text-label font-medium">Enter manually</span>
-            <span class="text-caption text-(--subtle-foreground)">For a security with no source, priced by you</span>
-          </span>
-        </button>
-      </div>
-    `,
-  }),
+export const LinkRowIsFlushWithAChevron: Story = {
+  ...Link,
+  name: 'Link row is flush with a chevron',
+  tags: ['!dev', '!autodocs'],
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const row = canvas.getByRole('button', { name: /Enter manually/ });

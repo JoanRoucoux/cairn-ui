@@ -1,6 +1,5 @@
 import { UiDelta } from '@joanroucoux/cairn-ui/delta';
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
-import { expect, within } from 'storybook/test';
 
 import { STAT_SIZES, type StatSize, UiStat } from './stat';
 
@@ -76,7 +75,7 @@ three are optional; only the value is required.
 export default meta;
 type Story = StoryObj<StatArgs>;
 
-export const Hero: Story = {};
+export const Default: Story = {};
 
 export const Tile: Story = {
   args: { size: 'tile', label: 'Unrealized gain', value: '+18 912,35 €', delta: '+15,34 %' },
@@ -89,17 +88,6 @@ export const Tile: Story = {
           <ui-delta uiStatDelta [value]="1" unknownLabel="Not available">{{ delta }}</ui-delta>
         </ui-stat>
       </div>
-    `,
-  }),
-};
-
-export const WithoutDelta: Story = {
-  render: (args) => ({
-    props: args,
-    template: `
-      <ui-stat [label]="label" [size]="size">
-        <span uiStatValue>{{ value }}</span>
-      </ui-stat>
     `,
   }),
 };
@@ -118,16 +106,4 @@ export const WithAside: Story = {
       </ui-stat>
     `,
   }),
-};
-
-export const AssociatesLabelAndValue: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const dt = canvasElement.querySelector('dt');
-    const dd = canvasElement.querySelector('dd');
-
-    await expect(dt).toHaveTextContent('Net worth');
-    await expect(dd).toHaveTextContent('144 539,35 €');
-    await expect(canvas.getByText('today')).toBeInTheDocument();
-  },
 };

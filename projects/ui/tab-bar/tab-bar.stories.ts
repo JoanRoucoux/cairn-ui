@@ -68,6 +68,7 @@ type Story = StoryObj;
 export const Default: Story = {};
 
 export const ActiveChangeIsImmediate: Story = {
+  tags: ['!dev', '!autodocs'],
   name: 'Switching the active tab is immediate',
   render: () => ({
     props: { current: 'portfolio' },

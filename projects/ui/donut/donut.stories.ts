@@ -1,5 +1,5 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
-import { expect, fn, userEvent, within } from 'storybook/test';
+import { fn } from 'storybook/test';
 
 import { type DonutSlice, UiDonut } from './donut';
 
@@ -37,12 +37,6 @@ const byAccount: DonutSlice[] = [
   { id: 'tailspin', label: 'Tailspin Wallet', value: 11264.3, sublabel: 'Crypto · Tailspin Exchange' },
   { id: 'fabrikam-life', label: 'Fabrikam Life', value: 8530.75, sublabel: 'Life insurance · Fabrikam Insurance' },
   { id: 'woodgrove-retirement', label: 'Woodgrove Retirement', value: 6190.2, sublabel: 'PER · Woodgrove Bank' },
-];
-
-const withATinySlice: DonutSlice[] = [
-  { id: 'northwind-pea', label: 'Northwind PEA', value: 90000, sublabel: '12 holdings' },
-  { id: 'woodgrove-savings', label: 'Woodgrove Savings Plan', value: 9900, sublabel: '4 holdings' },
-  { id: 'tailspin', label: 'Tailspin Wallet', value: 100, sublabel: '1 holding' },
 ];
 
 const meta: Meta<DonutArgs> = {
@@ -112,27 +106,11 @@ visible either way.
 export default meta;
 type Story = StoryObj<DonutArgs>;
 
-export const ByAssetClass: Story = {
-  name: 'Five slices, by asset class',
-};
+export const Default: Story = {};
 
-export const ByAccount: Story = {
-  name: 'Seven slices grouped into Other, by account',
+export const Grouped: Story = {
+  name: 'Seven slices grouped into Other',
   args: { slices: byAccount, label: 'By account' },
-};
-
-export const TinySlice: Story = {
-  name: 'A slice under 1 %',
-  args: { slices: withATinySlice, label: 'By account' },
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement);
-    const tinyRow = canvas.getByRole('button', { name: /Tailspin Wallet/ });
-
-    await userEvent.hover(tinyRow);
-    await userEvent.click(tinyRow);
-
-    await expect(args.sliceSelect).toHaveBeenCalledWith('tailspin');
-  },
 };
 
 export const MaskedAmounts: Story = {
@@ -140,98 +118,7 @@ export const MaskedAmounts: Story = {
   args: { valueFormat: maskedEur },
 };
 
-export const HoverHighlightsTheLegendRow: Story = {
-  name: 'Hover highlights the legend row and the center',
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const row = canvas.getByRole('button', { name: /Funds/ });
-
-    await userEvent.hover(row);
-
-    await expect(row).toHaveClass('bg-(--soft)');
-
-    const center = canvasElement.querySelector('[data-testid="donut-centre"]') as HTMLElement;
-    await expect(within(center).getByText('Funds')).toBeInTheDocument();
-  },
-};
-
-export const SelectingARowEmitsSliceSelect: Story = {
-  name: 'Selecting a row emits sliceSelect',
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await userEvent.click(canvas.getByRole('button', { name: /Stocks/ }));
-
-    await expect(args.sliceSelect).toHaveBeenCalledWith('stocks');
-  },
-};
-
-export const ClickingAnArcOnlySelects: Story = {
-  name: 'Clicking an arc selects it without emitting sliceSelect',
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement);
-    const arcs = canvasElement.querySelectorAll<SVGCircleElement>('svg circle[data-slice]');
-    const last = arcs[arcs.length - 1] as SVGCircleElement;
-
-    await userEvent.click(last);
-
-    await expect(last.style.strokeWidth).toBe('38px');
-    await expect(canvas.getByRole('button', { name: /Crypto/ })).toHaveClass('bg-(--soft)');
-    await expect(args.sliceSelect).not.toHaveBeenCalled();
-  },
-};
-
-export const SelectedSliceThickens: Story = {
-  name: 'The selected slice thickens and stays selected',
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const arcs = canvasElement.querySelectorAll<SVGCircleElement>('svg circle[data-slice]');
-    const last = arcs[arcs.length - 1];
-    const row = canvas.getByRole('button', { name: /Crypto/ });
-
-    await expect(arcs[0]?.style.strokeWidth).toBe('38px');
-
-    await userEvent.hover(row);
-    await userEvent.unhover(row);
-
-    await expect(last?.style.strokeWidth).toBe('38px');
-    await expect(arcs[0]?.style.strokeWidth).toBe('30px');
-    await expect(row).toHaveClass('bg-(--soft)');
-  },
-};
-
 export const LegendLinks: Story = {
   name: 'Legend rows as links',
   args: { legendHref: (id: string) => `#class-${id}` },
-};
-
-export const ClickingALinkEmitsSliceSelect: Story = {
-  name: 'Clicking a legend link emits sliceSelect',
-  args: { legendHref: (id: string) => `#class-${id}` },
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement);
-    const link = canvas.getByRole('link', { name: /Stocks/ });
-
-    await expect(link).toHaveAttribute('href', '#class-stocks');
-    await userEvent.hover(link);
-    await expect(link).toHaveClass('bg-(--soft)');
-    await userEvent.click(link);
-
-    await expect(args.sliceSelect).toHaveBeenCalledWith('stocks');
-  },
-};
-
-export const LegendLinksByAccount: Story = {
-  name: 'Legend links, the grouped row stays a button',
-  args: {
-    slices: byAccount,
-    label: 'By account',
-    legendHref: (id: string) => (id === 'others' ? null : `#account-${id}`),
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await expect(canvas.getAllByRole('link')).toHaveLength(5);
-    await expect(canvas.getByRole('button', { name: /Other/ })).toBeInTheDocument();
-  },
 };

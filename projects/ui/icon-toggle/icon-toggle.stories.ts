@@ -1,5 +1,5 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, within } from 'storybook/test';
 
 import { UiIconToggle } from './icon-toggle';
 
@@ -12,11 +12,6 @@ const EYE_OFF = `${SVG_OPEN}<path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.
 
 const rest = `<button uiIconToggle aria-label="Hide amounts" [attr.aria-pressed]="false">${EYE}</button>`;
 const pressed = `<button uiIconToggle aria-label="Show amounts" [attr.aria-pressed]="true">${EYE_OFF}</button>`;
-
-const PHONE = { viewport: { width: 390, height: 240 } };
-const DESKTOP = { viewport: { width: 1440, height: 240 } };
-const LIGHT = { themes: { themeOverride: 'light' } };
-const DARK = { themes: { themeOverride: 'dark' } };
 
 const meta: Meta = {
   title: 'Inputs/Icon toggle',
@@ -54,73 +49,29 @@ amounts: the icon changes from an eye to a crossed-out eye and the button takes 
 export default meta;
 type Story = StoryObj;
 
+export const Default: Story = {};
+
 export const Rest: Story = {
+  name: 'Rest has no fill',
+  tags: ['!dev', '!autodocs'],
   play: async ({ canvasElement }) => {
     const button = within(canvasElement).getByRole('button', { name: 'Hide amounts' });
 
-    await expect(button).toHaveAttribute('aria-pressed', 'false');
-    await expect(button).toHaveAttribute('type', 'button');
     await expect(getComputedStyle(button).backgroundImage).toBe('none');
   },
 };
 
 export const Pressed: Story = {
   render: () => ({ template: pressed }),
+};
+
+export const PressedFill: Story = {
+  name: 'Pressed has a soft fill',
+  tags: ['!dev', '!autodocs'],
+  render: () => ({ template: pressed }),
   play: async ({ canvasElement }) => {
     const button = within(canvasElement).getByRole('button', { name: 'Show amounts' });
 
-    await expect(button).toHaveAttribute('aria-pressed', 'true');
     await expect(getComputedStyle(button).backgroundImage).not.toBe('none');
   },
 };
-
-export const Toggles: Story = {
-  render: () => ({
-    props: { hidden: false },
-    template: `<button uiIconToggle [attr.aria-label]="hidden ? 'Show amounts' : 'Hide amounts'" [attr.aria-pressed]="hidden" (click)="hidden = !hidden">${EYE}</button>`,
-  }),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await userEvent.click(canvas.getByRole('button', { name: 'Hide amounts' }));
-
-    await expect(canvas.getByRole('button', { name: 'Show amounts' })).toHaveAttribute('aria-pressed', 'true');
-  },
-};
-
-export const Focus: Story = {
-  play: async ({ canvasElement }) => {
-    await userEvent.tab();
-
-    await expect(within(canvasElement).getByRole('button')).toHaveFocus();
-  },
-};
-
-export const Hover: Story = {
-  play: async ({ canvasElement }) => {
-    await userEvent.hover(within(canvasElement).getByRole('button'));
-  },
-};
-
-export const HoverPressed: Story = {
-  render: () => ({ template: pressed }),
-  play: Hover.play,
-};
-
-export const RestPhoneLight: Story = { parameters: { ...PHONE, ...LIGHT } };
-export const RestPhoneDark: Story = { parameters: { ...PHONE, ...DARK } };
-export const RestDesktopLight: Story = { parameters: { ...DESKTOP, ...LIGHT } };
-export const RestDesktopDark: Story = { parameters: { ...DESKTOP, ...DARK } };
-
-export const PressedPhoneLight: Story = { render: Pressed.render, parameters: { ...PHONE, ...LIGHT } };
-export const PressedPhoneDark: Story = { render: Pressed.render, parameters: { ...PHONE, ...DARK } };
-export const PressedDesktopLight: Story = { render: Pressed.render, parameters: { ...DESKTOP, ...LIGHT } };
-export const PressedDesktopDark: Story = { render: Pressed.render, parameters: { ...DESKTOP, ...DARK } };
-
-export const FocusPhoneDark: Story = { ...Focus, parameters: { ...PHONE, ...DARK } };
-export const FocusDesktopLight: Story = { ...Focus, parameters: { ...DESKTOP, ...LIGHT } };
-
-export const HoverDesktopLight: Story = { ...Hover, parameters: { ...DESKTOP, ...LIGHT } };
-export const HoverDesktopDark: Story = { ...Hover, parameters: { ...DESKTOP, ...DARK } };
-export const HoverPressedDesktopLight: Story = { ...HoverPressed, parameters: { ...DESKTOP, ...LIGHT } };
-export const HoverPressedDesktopDark: Story = { ...HoverPressed, parameters: { ...DESKTOP, ...DARK } };

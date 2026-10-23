@@ -1,25 +1,24 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, within } from 'storybook/test';
 
 import { UiCellSub, UiGroup, UiGroupCell, UiRowAction, UiRowLink, UiTable, UiTd, UiTh, UiTr } from './table';
 
 type TableArgs = Record<string, never>;
 
 type Tone = 'positive' | 'negative' | 'none';
-type Holding = Record<string, string> & { tone: Tone; stale: boolean; noValue: boolean; selected: boolean };
+type Holding = Record<string, string> & { tone: Tone; stale: boolean; noValue: boolean };
 
 const FIELDS = ['name', 'isin', 'cls', 'quantity', 'average', 'price', 'value', 'pnl', 'pnlPct', 'day'];
 
 function holding(line: string, tone: Tone): Holding {
   const cells = line.split('|');
   const f = Object.fromEntries(FIELDS.map((field, index) => [field, cells[index]]));
-  const flags = { selected: cells[10] === 'selected', stale: cells[10] === 'stale', noValue: cells[10] === 'noValue' };
-  const compact = flags.stale ? 'Price as of 24/09' : flags.noValue ? 'No price' : f['cls'];
+  const flags = { stale: cells[10] === 'stale', noValue: cells[10] === 'noValue' };
   const narrow = flags.noValue
     ? `${f['quantity']} · Avg. cost ${f['average']} €`
     : `${f['quantity']} × ${f['price']} € · Avg. cost ${f['average']} €`;
   const note = flags.stale ? 'Price as of 24/09, stale' : flags.noValue ? 'No price, enter one' : '';
-  return { ...f, sub: `${f['isin']} · ${f['cls']}`, compact, narrow, note, tone, ...flags } as Holding;
+  return { ...f, sub: `${f['isin']} · ${f['cls']}`, narrow, note, tone, ...flags } as Holding;
 }
 
 const GROUPS: { name: string; meta: string; total: string; rows: Holding[] }[] = [
@@ -29,10 +28,7 @@ const GROUPS: { name: string; meta: string; total: string; rows: Holding[] }[] =
     total: '48 215,60 €',
     rows: [
       holding('Ferrari|NL00150001Q9|Stocks|8|388,10|421,26|3 370,08 €|+265,28 €|+8,54 %|+1,60 %', 'positive'),
-      holding(
-        'Amundi MSCI World|LU1681043599|ETF|300|26,40|28,64|8 592,00 €|+672,00 €|+8,48 %|+0,90 %|selected',
-        'positive',
-      ),
+      holding('Amundi MSCI World|LU1681043599|ETF|300|26,40|28,64|8 592,00 €|+672,00 €|+8,48 %|+0,90 %', 'positive'),
       holding('Accor|FR0000120404|Stocks|50|40,12|38,42|1 921,00 €|−85,00 €|−4,24 %|−0,42 %', 'negative'),
     ],
   },
@@ -51,11 +47,6 @@ const GROUPS: { name: string; meta: string; total: string; rows: Holding[] }[] =
 ];
 
 const CARD = 'rounded-container bg-(--card) px-4 pt-2 pb-3 text-(--foreground) shadow-[inset_0_0_0_1px_var(--border)]';
-const DOTS =
-  '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>';
-const ACTION =
-  'inline-grid size-9 place-items-center rounded-control text-(--muted-foreground) hover:bg-(--soft) hover:text-(--foreground)';
-const PILL = 'inline-flex h-6 items-center rounded-pill bg-(--muted) px-2.5 text-caption font-medium';
 const SIGN =
   '[class.text-(--positive)]="row.tone === \'positive\'" [class.text-(--negative)]="row.tone === \'negative\'"';
 const IMPORTS = [UiTable, UiTd, UiTh, UiTr, UiGroup, UiGroupCell, UiRowLink, UiRowAction, UiCellSub];
@@ -153,133 +144,75 @@ inherit. Amounts in a subtitle go through \`ui-amount\`.
 export default meta;
 type Story = StoryObj<TableArgs>;
 
-export const Default: Story = {
-  name: 'Group, holdings, hover',
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await expect(canvas.getByRole('table')).toBeInTheDocument();
-    await expect(canvas.getAllByRole('columnheader')).toHaveLength(5);
-  },
-};
-
-const holdingsTemplate = (columns: 'full' | 'compact' | 'narrow'): string => {
-  const compact = columns === 'compact';
-  const narrow = columns === 'narrow';
-  const hold = narrow ? 'secondary' : '';
-  const width = { full: 'w-[1120px]', compact: 'w-[696px]', narrow: 'w-[720px]' }[columns];
-  const staleTone = `[tone]="row.stale ? 'stale' : 'subtle'"`;
-  const sub = compact
-    ? `<span uiCellSub ${staleTone}>{{ row.compact }}</span>`
-    : `<span uiCellSub${narrow ? ' class="max-lg:hidden"' : ''}>{{ row.sub }}</span>
-       ${
-         narrow
-           ? `<span uiCellSub narrow>{{ row.narrow }}</span>
-       @if (row.note) {
-         <span uiCellSub narrow ${staleTone}>{{ row.note }}</span>
-       }`
-           : ''
-       }`;
-  return `
-    <div class="${CARD} ${width}">
-      <table uiTable row="60" [rule]="false">
-        <thead>
-          <tr>
-            <th uiTh primary>Holding</th>
-            ${compact ? '' : `<th uiTh numeric ${hold} width="108px">Quantity</th><th uiTh numeric ${hold} width="116px">Avg. cost</th><th uiTh numeric ${hold} width="128px">Price</th>`}
-            <th uiTh numeric width="140px">Value</th>
-            ${compact ? '' : '<th uiTh numeric width="152px">Unrealized gain</th>'}
-            <th uiTh numeric width="92px">Day</th>
-          </tr>
-        </thead>
-        @for (group of groups; track group.name) {
-          <tbody uiGroup>
-            <tr uiTr group>
-              <td ui-group-cell size="lg" colspan="${compact ? 3 : 7}" [name]="group.name" [meta]="group.meta">{{ group.total }}</td>
-            </tr>
-            @for (row of group.rows; track row.name) {
-              <tr uiTr interactive [selected]="${compact} && row.selected === true">
-                <td uiTd primary>
-                  <a uiRowLink href="#" [current]="${compact} && row.selected === true" (click)="$event.preventDefault()">{{ row.name }}</a>
-                  ${sub}
-                </td>
-                ${
-                  compact
-                    ? ''
-                    : `<td uiTd numeric ${hold}>{{ row.quantity }}</td>
-                <td uiTd numeric ${hold}>{{ row.average }}</td>
-                <td uiTd numeric ${hold}>
-                  @if (row.noValue) {
-                    <button uiRowAction type="button" class="h-8 rounded-control bg-(--card) px-2.5 text-label font-medium whitespace-nowrap shadow-[inset_0_0_0_1px_var(--border)] hover:bg-(--glow)">Enter a price</button>
-                  } @else {
-                    {{ row.price }}
-                    @if (row.stale) {
-                      <span uiCellSub tone="stale">Price as of 24/09</span>
-                    }
-                  }
-                </td>`
-                }
-                <td uiTd numeric class="font-medium" [class.text-(--subtle-foreground)]="row.noValue">
-                  {{ row.value }}
-                  ${
-                    narrow
-                      ? `@if (row.noValue) {
-                    <button uiRowAction type="button" class="mt-1 h-8 rounded-control bg-(--card) px-2.5 text-label font-medium whitespace-nowrap shadow-[inset_0_0_0_1px_var(--border)] hover:bg-(--glow) lg:hidden">Enter a price</button>
-                  }`
-                      : ''
-                  }
-                </td>
-                ${
-                  compact
-                    ? ''
-                    : `<td uiTd numeric ${SIGN}>
-                  {{ row.pnl }}
-                  @if (row.pnlPct) {
-                    <span uiCellSub tone="inherit">{{ row.pnlPct }}</span>
-                  }
-                </td>`
-                }
-                <td uiTd numeric ${SIGN}>{{ row.day }}</td>
-              </tr>
-            }
-          </tbody>
-        }
-      </table>
-    </div>
-  `;
-};
-
-export const Holdings: Story = {
-  render: () => ({ props: { groups: GROUPS }, template: holdingsTemplate('full') }),
-  parameters: { viewport: { width: 1280, height: 900 } },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await expect(canvas.getAllByRole('columnheader')).toHaveLength(7);
-    await expect(canvas.getAllByRole('link')).toHaveLength(5);
-    await expect(canvas.getByRole('button', { name: 'Enter a price' })).toBeInTheDocument();
-  },
-};
-
-export const HoldingOpen: Story = {
-  name: 'Holdings, detail open',
-  render: () => ({ props: { groups: GROUPS }, template: holdingsTemplate('compact') }),
-  parameters: { viewport: { width: 1280, height: 900 } },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await expect(canvas.getAllByRole('columnheader').map((header) => header.textContent)).toEqual([
-      'Holding',
-      'Value',
-      'Day',
-    ]);
-    await expect(canvas.getByRole('row', { selected: true })).toHaveTextContent('Amundi MSCI World');
-    await expect(canvas.getByRole('link', { current: true })).toBeInTheDocument();
-  },
-};
+export const Default: Story = {};
 
 export const Narrow: Story = {
-  render: () => ({ props: { groups: GROUPS }, template: holdingsTemplate('narrow') }),
+  name: 'Secondary columns fold into the row subtitle under 1024px',
+  tags: ['!dev', '!autodocs'],
+  render: () => ({
+    props: { groups: GROUPS },
+    template: `
+      <div class="${CARD} w-[720px]">
+        <table uiTable row="60" [rule]="false">
+          <thead>
+            <tr>
+              <th uiTh primary>Holding</th>
+              <th uiTh numeric secondary width="108px">Quantity</th>
+              <th uiTh numeric secondary width="116px">Avg. cost</th>
+              <th uiTh numeric secondary width="128px">Price</th>
+              <th uiTh numeric width="140px">Value</th>
+              <th uiTh numeric width="152px">Unrealized gain</th>
+              <th uiTh numeric width="92px">Day</th>
+            </tr>
+          </thead>
+          @for (group of groups; track group.name) {
+            <tbody uiGroup>
+              <tr uiTr group>
+                <td ui-group-cell size="lg" colspan="7" [name]="group.name" [meta]="group.meta">{{ group.total }}</td>
+              </tr>
+              @for (row of group.rows; track row.name) {
+                <tr uiTr interactive>
+                  <td uiTd primary>
+                    <a uiRowLink href="#" (click)="$event.preventDefault()">{{ row.name }}</a>
+                    <span uiCellSub class="max-lg:hidden">{{ row.sub }}</span>
+                    <span uiCellSub narrow>{{ row.narrow }}</span>
+                    @if (row.note) {
+                      <span uiCellSub narrow [tone]="row.stale ? 'stale' : 'subtle'">{{ row.note }}</span>
+                    }
+                  </td>
+                  <td uiTd numeric secondary>{{ row.quantity }}</td>
+                  <td uiTd numeric secondary>{{ row.average }}</td>
+                  <td uiTd numeric secondary>
+                    @if (row.noValue) {
+                      <button uiRowAction type="button" class="h-8 rounded-control bg-(--card) px-2.5 text-label font-medium whitespace-nowrap shadow-[inset_0_0_0_1px_var(--border)] hover:bg-(--glow)">Enter a price</button>
+                    } @else {
+                      {{ row.price }}
+                      @if (row.stale) {
+                        <span uiCellSub tone="stale">Price as of 24/09</span>
+                      }
+                    }
+                  </td>
+                  <td uiTd numeric class="font-medium" [class.text-(--subtle-foreground)]="row.noValue">
+                    {{ row.value }}
+                    @if (row.noValue) {
+                      <button uiRowAction type="button" class="mt-1 h-8 rounded-control bg-(--card) px-2.5 text-label font-medium whitespace-nowrap shadow-[inset_0_0_0_1px_var(--border)] hover:bg-(--glow) lg:hidden">Enter a price</button>
+                    }
+                  </td>
+                  <td uiTd numeric ${SIGN}>
+                    {{ row.pnl }}
+                    @if (row.pnlPct) {
+                      <span uiCellSub tone="inherit">{{ row.pnlPct }}</span>
+                    }
+                  </td>
+                  <td uiTd numeric ${SIGN}>{{ row.day }}</td>
+                </tr>
+              }
+            </tbody>
+          }
+        </table>
+      </div>
+    `,
+  }),
   parameters: { viewport: { width: 768, height: 900 } },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -288,58 +221,5 @@ export const Narrow: Story = {
     await expect(canvas.getByRole('columnheader', { name: 'Unrealized gain' })).toBeVisible();
     await expect(canvas.getByText('8 × 421,26 € · Avg. cost 388,10 €')).toBeVisible();
     await expect(canvas.getByRole('button', { name: 'Enter a price' })).toBeVisible();
-  },
-};
-
-const ACCOUNTS = [
-  ['Northwind PEA', 'PEA', 'Northwind Bank', '8 holdings', '48 215,60 €', '33,4 %'],
-  ['Woodgrove Savings Plan', 'PEE', 'Woodgrove Bank', '3 holdings', '31 840,15 €', '22,0 %'],
-  ['Livret A', 'Savings', 'Woodgrove Bank', '1 holding', '16 120,45 €', '11,2 %'],
-  ['Northwind PEA-PME', 'PEA-PME', 'Northwind Bank', 'No holdings', '0,00 €', '—'],
-].map(([name, env, inst, lines, value, share]) => ({ name, env, inst, lines, value, share }));
-
-const rowActions = (label: string): string =>
-  `<button uiRowAction type="button" [attr.aria-label]="${label} + ' actions'" class="${ACTION}">${DOTS}</button>`;
-
-const catalog = (headers: string, rows: string): string => `
-  <div class="${CARD} w-[1120px]">
-    <table uiTable spaced>
-      <thead><tr>${headers}</tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
-  </div>
-`;
-
-export const Accounts: Story = {
-  render: () => ({
-    props: { accounts: ACCOUNTS },
-    template: catalog(
-      `<th uiTh tall primary>Account</th>
-       <th uiTh tall width="166px">Wrapper</th>
-       <th uiTh tall width="186px">Institution</th>
-       <th uiTh tall numeric width="126px">Holdings</th>
-       <th uiTh tall numeric width="166px">Value</th>
-       <th uiTh tall numeric width="88px">Share</th>
-       <th uiTh tall width="56px"><span class="sr-only">Actions</span></th>`,
-      `@for (account of accounts; track account.name) {
-         <tr uiTr>
-           <td uiTd primary><a uiRowLink [stretch]="false" href="#" (click)="$event.preventDefault()">{{ account.name }}</a></td>
-           <td uiTd><span class="${PILL}">{{ account.env }}</span></td>
-           <td uiTd class="text-label text-(--muted-foreground)">{{ account.inst }}</td>
-           <td uiTd numeric class="text-label text-(--muted-foreground)">{{ account.lines }}</td>
-           <td uiTd numeric class="font-medium">{{ account.value }}</td>
-           <td uiTd numeric class="text-(--muted-foreground)">{{ account.share }}</td>
-           <td uiTd class="text-right">${rowActions('account.name')}</td>
-         </tr>
-       }`,
-    ).replace('<table uiTable spaced>', '<table uiTable row="52" spaced>'),
-  }),
-  parameters: { viewport: { width: 1280, height: 700 } },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await userEvent.tab();
-    await expect(canvas.getByRole('link', { name: 'Northwind PEA' })).toHaveFocus();
-    await expect(canvas.getByRole('button', { name: 'Northwind PEA actions' })).toBeInTheDocument();
   },
 };

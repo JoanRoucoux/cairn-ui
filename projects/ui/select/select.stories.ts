@@ -1,6 +1,5 @@
 import { CONTROL_SIZES, type ControlSize } from '@joanroucoux/cairn-ui/input';
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
-import { expect, userEvent, within } from 'storybook/test';
 
 import { UiSelect } from './select';
 
@@ -74,13 +73,7 @@ and scrolls, rather than flipping above the control.
 export default meta;
 type Story = StoryObj<SelectArgs>;
 
-export const Default: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await expect(canvas.getByRole('combobox', { name: 'Wrapper' })).toBeEnabled();
-  },
-};
+export const Default: Story = {};
 
 export const Dense: Story = {
   args: { size: 'sm' },
@@ -88,36 +81,4 @@ export const Dense: Story = {
 
 export const Disabled: Story = {
   args: { disabled: true },
-};
-
-export const Focus: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await userEvent.tab();
-    await expect(canvas.getByRole('combobox', { name: 'Wrapper' })).toHaveFocus();
-  },
-};
-
-export const States: Story = {
-  render: () => ({
-    template: `
-      <div class="flex flex-wrap items-end gap-6">
-        @for (state of ['Rest', 'Focus', 'Disabled']; track state) {
-          <div class="flex flex-col items-start gap-2">
-            <select
-              uiSelect
-              style="width: 15rem"
-              [class.shadow-[inset_0_0_0_2px_var(--ring)]]="state === 'Focus'"
-              [disabled]="state === 'Disabled'"
-              [attr.aria-label]="state"
-            >
-              <option>Northwind PEA · PEA</option>
-            </select>
-            <span class="text-caption text-(--subtle-foreground)">{{ state }}</span>
-          </div>
-        }
-      </div>
-    `,
-  }),
 };

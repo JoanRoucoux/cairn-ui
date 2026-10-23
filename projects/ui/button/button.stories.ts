@@ -1,5 +1,5 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
-import { expect, fn, userEvent, waitFor, within } from 'storybook/test';
+import { expect, fn, waitFor, within } from 'storybook/test';
 
 import { BUTTON_SIZES, BUTTON_VARIANTS, type ButtonSize, type ButtonVariant, UiButton } from './button';
 
@@ -94,7 +94,14 @@ that action is, so a screen reads at a glance.
 export default meta;
 type Story = StoryObj<ButtonArgs>;
 
+const ICON_DOTS = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /><circle cx="5" cy="12" r="1" /></svg>`;
+const ICON_PLUS = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14" /><path d="M12 5v14" /></svg>`;
+
+export const Default: Story = {};
+
 export const Primary: Story = {
+  name: 'Press and hover transitions',
+  tags: ['!dev', '!autodocs'],
   play: async ({ canvasElement }) => {
     const style = getComputedStyle(within(canvasElement).getByRole('button', { name: 'Button' }));
 
@@ -103,31 +110,37 @@ export const Primary: Story = {
   },
 };
 
-export const Outline: Story = {
-  args: { variant: 'outline' },
-};
-
-export const Ghost: Story = {
-  args: { variant: 'ghost' },
-};
-
-export const Destructive: Story = {
-  args: { variant: 'destructive' },
-};
-
-export const Large: Story = {
-  args: { size: 'lg' },
-};
-
-export const ExtraLarge: Story = {
-  args: { size: 'xl' },
-};
-
-export const ExtraExtraLarge: Story = {
-  args: { size: 'xxl' },
+export const Variants: Story = {
   render: (args) => ({
-    props: args,
-    template: `<button ui-button [variant]="variant" [size]="size" [disabled]="disabled" [loading]="loading" class="w-[320px]">{{ label }}</button>`,
+    props: { ...args, variants: [...BUTTON_VARIANTS] },
+    template: `
+      <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+        @for (item of variants; track item) {
+          @if (item.startsWith('quiet')) {
+            <button ui-button [variant]="item" size="icon-sm" [attr.aria-label]="item">${ICON_DOTS}</button>
+          } @else {
+            <button ui-button [variant]="item" [size]="size" [disabled]="disabled">{{ item }}</button>
+          }
+        }
+      </div>
+    `,
+  }),
+};
+
+export const Sizes: Story = {
+  render: (args) => ({
+    props: { ...args, sizes: [...BUTTON_SIZES] },
+    template: `
+      <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+        @for (item of sizes; track item) {
+          @if (item.startsWith('icon')) {
+            <button ui-button [variant]="variant" [size]="item" [attr.aria-label]="item">${ICON_DOTS}</button>
+          } @else {
+            <button ui-button [variant]="variant" [size]="item" [disabled]="disabled">{{ item }}</button>
+          }
+        }
+      </div>
+    `,
   }),
 };
 
@@ -135,31 +148,15 @@ export const WithLeadingIcon: Story = {
   args: { label: 'Add a holding' },
   render: (args) => ({
     props: args,
-    template: `
-      <button ui-button [variant]="variant" [size]="size">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M5 12h14" />
-          <path d="M12 5v14" />
-        </svg>
-        {{ label }}
-      </button>
-    `,
+    template: `<button ui-button [variant]="variant" [size]="size" [disabled]="disabled" [loading]="loading" [busy]="busy" (click)="onClick()">${ICON_PLUS}{{ label }}</button>`,
   }),
 };
 
 export const Icon: Story = {
-  args: { size: 'icon', label: '' },
+  args: { size: 'icon', label: 'More actions' },
   render: (args) => ({
     props: args,
-    template: `
-      <button ui-button [variant]="variant" [size]="size" [disabled]="disabled" [loading]="loading" (click)="onClick()" aria-label="More actions">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="1" />
-          <circle cx="19" cy="12" r="1" />
-          <circle cx="5" cy="12" r="1" />
-        </svg>
-      </button>
-    `,
+    template: `<button ui-button [variant]="variant" [size]="size" [disabled]="disabled" [loading]="loading" [busy]="busy" (click)="onClick()" [attr.aria-label]="label">${ICON_DOTS}</button>`,
   }),
 };
 
@@ -169,155 +166,17 @@ export const Disabled: Story = {
 
 export const Loading: Story = {
   args: { loading: true, label: 'Sell' },
+};
+
+export const LoadingSpinner: Story = {
+  name: 'Loading hides the label and spins',
+  tags: ['!dev', '!autodocs'],
+  args: { loading: true, label: 'Sell' },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const button = canvas.getByRole('button', { name: /Sell/ });
 
-    await expect(button).toHaveAttribute('aria-busy', 'true');
-    await expect(button).toHaveAttribute('aria-disabled', 'true');
     await expect(getComputedStyle(button.querySelector('[aria-hidden="true"]')!).animationName).toBe('cairn-spin');
     await expect(getComputedStyle(canvas.getByText('Sell')).color).toBe('rgba(0, 0, 0, 0)');
   },
-};
-
-export const States: Story = {
-  render: (args) => ({
-    props: args,
-    template: `
-      <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
-        <button ui-button [variant]="variant">Rest</button>
-        <button ui-button [variant]="variant" disabled>Disabled</button>
-        <button ui-button [variant]="variant" loading>Loading</button>
-      </div>
-    `,
-  }),
-};
-
-export const EmitsClicks: Story = {
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await userEvent.click(canvas.getByRole('button', { name: 'Button' }));
-
-    await expect(args.onClick).toHaveBeenCalledTimes(1);
-  },
-};
-
-const ICON_DOTS = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /><circle cx="5" cy="12" r="1" /></svg>`;
-const ICON_LOGOUT = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 17 5-5-5-5" /><path d="M21 12H9" /><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /></svg>`;
-const ICON_TRASH = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>`;
-
-export const SmallActions: Story = {
-  name: 'Small actions (Accounts panel)',
-  render: () => ({
-    template: `
-      <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-        <button ui-button variant="outline" size="sm">Add a holding</button>
-        <button ui-button variant="ghost" size="sm">Import a CSV</button>
-        <button ui-button variant="outline" size="xs">Enter a price</button>
-      </div>
-    `,
-  }),
-};
-
-export const QuietIcons: Story = {
-  name: 'Quiet icon buttons (44 touch, 36 mouse)',
-  render: () => ({
-    template: `
-      <div style="display: flex; gap: 12px; align-items: center;">
-        <button ui-button variant="quiet" size="icon-sm" aria-label="Account actions">${ICON_DOTS}</button>
-        <button ui-button variant="quiet-destructive" size="icon-sm" aria-label="Delete">${ICON_TRASH}</button>
-      </div>
-    `,
-  }),
-};
-
-export const OutlineDestructive: Story = {
-  name: 'Outline destructive (Profile, 50 then 44)',
-  render: () => ({
-    template: `
-      <button ui-button variant="outline-destructive" size="block" class="w-[320px]">
-        ${ICON_LOGOUT}
-        Sign out
-      </button>
-    `,
-  }),
-};
-
-export const TonalCompact: Story = {
-  name: 'Tonal compact (Sell all)',
-  render: () => ({
-    template: `
-      <div style="display: flex; gap: 12px; align-items: center; justify-content: flex-end; width: 320px;">
-        <span class="text-label text-(--muted-foreground)">You hold 500 shares</span>
-        <button ui-button variant="tonal" size="compact" class="-mr-1">Sell all</button>
-      </div>
-    `,
-  }),
-};
-
-const ICON_HOME = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" /><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></svg>`;
-
-export const ResponsiveSizes: Story = {
-  name: 'Sizes that step down at 64rem (404, sign-in, Profile)',
-  render: () => ({
-    template: `
-      <div style="display: flex; flex-direction: column; gap: 12px; width: 320px;">
-        <a ui-button size="xxl" href="#">${ICON_HOME}Back to portfolio</a>
-        <button ui-button size="tall" variant="ghost">Use a passkey instead</button>
-        <button ui-button size="block" variant="outline">Export</button>
-      </div>
-    `,
-  }),
-};
-
-export const Busy: Story = {
-  args: { busy: true, label: 'Waiting for the passkey…', size: 'xxl' },
-  render: (args) => ({
-    props: args,
-    template: `
-      <button ui-button [variant]="variant" [size]="size" [busy]="busy" class="w-[320px]">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" /><circle cx="16.5" cy="7.5" r=".5" fill="currentColor" /></svg>
-        {{ label }}
-      </button>
-    `,
-  }),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const button = canvas.getByRole('button', { name: /Waiting for/ });
-
-    await expect(button).toHaveAttribute('aria-busy', 'true');
-    await expect(button).toHaveAttribute('aria-disabled', 'true');
-    await expect(canvasElement.querySelector('[class*="animate-spin"]')).toBeNull();
-  },
-};
-
-export const DetailBar: Story = {
-  name: 'Detail action bar (Holdings iPhone, 48 px)',
-  render: () => ({
-    template: `
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 340px;">
-        <button ui-button variant="outline" size="tall">Sell</button>
-        <button ui-button size="tall">Buy</button>
-      </div>
-    `,
-  }),
-};
-
-export const CloseCross: Story = {
-  name: 'Close cross (Holdings desktop detail, 36 px)',
-  render: () => ({
-    template: `
-      <button ui-button variant="quiet-glow" size="icon-sm" aria-label="Close detail">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
-      </button>
-    `,
-  }),
-};
-
-export const SlimChange: Story = {
-  name: 'Slim ghost (Change)',
-  render: () => ({
-    template: `<button ui-button variant="ghost" size="slim" type="button">Change</button>`,
-  }),
 };

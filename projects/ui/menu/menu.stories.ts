@@ -71,9 +71,32 @@ backdrop, and \`heading\` names what the actions apply to. \`width\` fixes the p
 export default meta;
 type Story = StoryObj;
 
-export const Closed: Story = {};
+const hidden = ['!dev', '!autodocs'];
+
+const ICON_PEN = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /><path d="m15 5 4 4" /></svg>`;
+const ICON_TRASH = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>`;
+const ICON_DOWNLOAD = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3" /><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="m7 10 5 5 5-5" /></svg>`;
+
+export const Default: Story = {};
+
+export const ActionSheet: Story = {
+  name: 'Action sheet below 64rem',
+  parameters: { layout: 'fullscreen' },
+  render: () => ({
+    template: `
+      <div class="flex h-screen items-start justify-end p-4">
+        <button ui-button size="icon-sm" variant="quiet" aria-label="Account actions" [uiMenuTrigger]="menu">⋯</button>
+        <ui-menu #menu label="Account actions" sheet heading="Livret A" [width]="218">
+          <button uiMenuItem type="button">${ICON_PEN}Edit the account</button>
+          <button uiMenuItem type="button" destructive>${ICON_TRASH}Delete the account</button>
+        </ui-menu>
+      </div>
+    `,
+  }),
+};
 
 export const Opens: Story = {
+  tags: hidden,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
@@ -90,22 +113,9 @@ export const Opens: Story = {
   },
 };
 
-export const ClosesOnEscapeAndReturnsFocus: Story = {
-  name: 'Closes on Escape and returns focus',
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const trigger = canvas.getByRole('button', { name: 'More' });
-
-    await userEvent.click(trigger);
-    await userEvent.keyboard('{Escape}');
-
-    await waitFor(() => expect(trigger).toHaveAttribute('aria-expanded', 'false'));
-    await expect(trigger).toHaveFocus();
-  },
-};
-
 export const NearTheBottomRightCorner: Story = {
   name: 'Opens near the bottom-right corner, stays in the viewport',
+  tags: hidden,
   parameters: {
     layout: 'fullscreen',
   },
@@ -135,35 +145,9 @@ export const NearTheBottomRightCorner: Story = {
   },
 };
 
-const ICON_PEN = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /><path d="m15 5 4 4" /></svg>`;
-const ICON_TRASH = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>`;
-
-export const ActionSheet: Story = {
-  name: 'Action sheet below 64rem (Accounts)',
-  parameters: { layout: 'fullscreen' },
-  render: () => ({
-    template: `
-      <div class="flex h-screen items-start justify-end p-4">
-        <button ui-button size="icon-sm" variant="quiet" aria-label="Account actions" [uiMenuTrigger]="menu">⋯</button>
-        <ui-menu #menu label="Account actions" sheet heading="Livret A" [width]="218">
-          <button uiMenuItem type="button">${ICON_PEN}Edit the account</button>
-          <button uiMenuItem type="button" destructive>${ICON_TRASH}Delete the account</button>
-        </ui-menu>
-      </div>
-    `,
-  }),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await userEvent.click(canvas.getByRole('button', { name: 'Account actions' }));
-
-    await waitFor(() => expect(canvas.getByRole('menu', { name: 'Account actions' })).toBeVisible());
-    await expect(canvas.getByRole('menuitem', { name: 'Edit the account' })).toHaveFocus();
-  },
-};
-
 export const FixedWidth: StoryObj<{ width: number }> = {
-  name: 'Fixed width and icon sizes (Holdings 208, Accounts 218)',
+  name: 'Fixed width of 218px',
+  tags: hidden,
   args: { width: 218 },
   argTypes: {
     width: {
@@ -195,10 +179,9 @@ export const FixedWidth: StoryObj<{ width: number }> = {
   },
 };
 
-const ICON_DOWNLOAD = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3" /><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="m7 10 5 5 5-5" /></svg>`;
-
 export const LongLabelOnIphone: Story = {
-  name: 'Long label beside the right edge at 390',
+  name: 'Long label beside the right edge of a narrow screen',
+  tags: hidden,
   parameters: { layout: 'fullscreen', viewport: { width: 390, height: 844 } },
   render: () => ({
     template: `

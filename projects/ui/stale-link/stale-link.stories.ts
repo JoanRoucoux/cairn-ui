@@ -51,7 +51,19 @@ const meta: Meta<StaleLinkArgs> = {
 export default meta;
 type Story = StoryObj<StaleLinkArgs>;
 
-export const Default: Story = {
+export const Default: Story = {};
+
+export const WithChevron: Story = {
+  args: { chevron: true, label: '1 holding without a price, not counted' },
+};
+
+export const LabelSize: Story = {
+  name: 'Label size',
+  args: { chevron: true, label: '1 stale price', size: 'label' },
+};
+
+export const HitAreaExtendsAroundText: Story = {
+  tags: ['!dev', '!autodocs'],
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
@@ -67,12 +79,8 @@ export const Default: Story = {
   },
 };
 
-export const WithChevron: Story = {
-  args: { chevron: true, label: '1 holding without a price, not counted' },
-};
-
-export const LabelSize: Story = {
-  name: 'Label size (dashboard total)',
+export const LabelSizeMetrics: Story = {
+  tags: ['!dev', '!autodocs'],
   args: { chevron: true, label: '1 stale price', size: 'label' },
   play: async ({ canvasElement }) => {
     const link = within(canvasElement).getByRole('link', { name: '1 stale price' });

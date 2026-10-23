@@ -50,7 +50,7 @@ type Story = StoryObj;
 
 const ROWS = ['Livret A', 'LDDS', 'PEA', 'Life insurance'];
 
-export const AfterAnAction: Story = {
+const afterAnAction: Story = {
   render: () => ({
     props: {
       rows: ROWS,
@@ -69,6 +69,13 @@ export const AfterAnAction: Story = {
       </div>
     `,
   }),
+};
+
+export const Default: Story = afterAnAction;
+
+export const HighlightsTheRowAfterAnAction: Story = {
+  ...afterAnAction,
+  tags: ['!dev', '!autodocs'],
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const row = canvas.getByTestId('PEA');
@@ -83,6 +90,7 @@ export const AfterAnAction: Story = {
 };
 
 export const OnTableRowAndGroupHeading: Story = {
+  tags: ['!dev', '!autodocs'],
   render: () => ({
     props: {
       token: null as unknown,
@@ -117,6 +125,7 @@ export const OnTableRowAndGroupHeading: Story = {
 };
 
 export const EnterThenHighlight: Story = {
+  tags: ['!dev', '!autodocs'],
   render: () => ({
     props: {
       rows: ['Livret A', 'LDDS'],
@@ -164,6 +173,7 @@ export const EnterThenHighlight: Story = {
 };
 
 export const ScrollThenHighlight: Story = {
+  tags: ['!dev', '!autodocs'],
   parameters: { layout: 'fullscreen' },
   render: () => ({
     props: {
@@ -195,6 +205,7 @@ export const ScrollThenHighlight: Story = {
 };
 
 export const AnnounceWhenItStarts: Story = {
+  tags: ['!dev', '!autodocs'],
   name: 'Announce once the flash starts',
   parameters: { layout: 'fullscreen' },
   render: () => ({
