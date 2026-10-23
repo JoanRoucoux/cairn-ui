@@ -19,7 +19,7 @@ const meta: Meta<BackLinkArgs> = {
 #### When to use
 
 * On a detail or form screen reached from a list, to return to that list.
-* \`md\` heads a screen on iPhone; \`sm\` is the quieter desktop breadcrumb in a header.
+* \`md\` heads a screen on a phone; \`sm\` is the quieter desktop breadcrumb in a header.
 
 #### When not to use
 
@@ -47,7 +47,7 @@ const meta: Meta<BackLinkArgs> = {
       control: 'inline-radio',
       options: [...BACK_LINK_SIZES],
       description:
-        '`md` is 44 px high in the foreground color (screen header on iPhone); `sm` is 36 px, muted, with a hover glow (desktop header); `header` has the `md` metrics with a 24 px chevron and a focus ring drawn inside (a screen header); `inline` is the 14 px 500 muted back step of a form, 44 px high (36 px with a mouse), 18 px chevron, hover to the foreground color, on a `button`, with its own outset at the top of a form column.',
+        '`md` is 44 px high in the foreground color (screen header on a phone); `sm` is 36 px, muted, with a hover glow (desktop header); `header` has the `md` metrics with a 24 px chevron and a focus ring drawn inside (a screen header); `inline` is the 14 px 500 muted back step of a form, 44 px high (36 px with a mouse), 18 px chevron, hover to the foreground color, on a `button`, with its own outset at the top of a form column.',
     },
     label: { control: 'text', description: 'Projected text: the name of the destination.' },
   },

@@ -58,7 +58,7 @@ const meta: Meta<AvatarArgs> = {
       control: 'select',
       options: [...AVATAR_SIZES],
       description:
-        'Disc diameter: `sm` 32 px, `md` 34 px (iPhone header), `lg` 56 px (Profil), `auto` 34 px then 32 px from 64rem (the app header).',
+        'Disc diameter: `sm` 32 px, `md` 34 px (a phone header), `lg` 56 px (a profile header), `auto` 34 px then 32 px from 64rem (an app header).',
     },
   },
 };

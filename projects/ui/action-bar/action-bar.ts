@@ -4,7 +4,7 @@ import { Component, DestroyRef, ElementRef, afterNextRender, inject } from '@ang
 const HEIGHT_PROPERTY = '--action-bar-height';
 
 /**
- * Bar of actions fixed above the tab bar on iPhone, hidden from `64rem`, where the same actions
+ * Bar of actions fixed above the tab bar on a phone, hidden from `64rem`, where the same actions
  * live in the page itself. Its children share the width equally. While it is on the page it
  * publishes its height as `--action-bar-height` on the root element, which `ui-toaster` clears.
  *
