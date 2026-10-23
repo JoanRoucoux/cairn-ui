@@ -5,8 +5,6 @@
   </picture>
 </p>
 
-<br>
-
 <div align="center">
 
 A monochrome, accessible Angular design system, built for Cairn.
