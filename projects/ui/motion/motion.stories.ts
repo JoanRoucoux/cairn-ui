@@ -45,7 +45,10 @@ export default meta;
 
 type Story = StoryObj;
 
-export const EnterAndLeave: Story = {
+export const Default: Story = {};
+
+export const EnterAndLeaveAnimations: Story = {
+  tags: ['!dev', '!autodocs'],
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const animationOf = (id: string): string => getComputedStyle(canvas.getByTestId(id)).animationName;

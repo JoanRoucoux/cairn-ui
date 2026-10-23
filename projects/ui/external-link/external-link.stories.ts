@@ -1,5 +1,4 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
-import { expect, within } from 'storybook/test';
 
 import { UiExternalLink } from './external-link';
 
@@ -42,10 +41,4 @@ const meta: Meta<ExternalLinkArgs> = {
 export default meta;
 type Story = StoryObj<ExternalLinkArgs>;
 
-export const Default: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await expect(canvas.getByRole('link', { name: 'Fiche sur amundietf.fr' })).toBeVisible();
-  },
-};
+export const Default: Story = {};

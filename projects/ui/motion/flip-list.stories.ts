@@ -59,7 +59,7 @@ const slideOf = (element: Element): number | null => {
   return null;
 };
 
-export const RemoveThenReinsert: Story = {
+const removeThenReinsert: Story = {
   render: () => ({
     props: {
       all: ['Livret A', 'LDDS', 'PEA', 'Life insurance'],
@@ -89,6 +89,13 @@ export const RemoveThenReinsert: Story = {
       </div>
     `,
   }),
+};
+
+export const Default: Story = removeThenReinsert;
+
+export const SlidesAfterRemoveThenReinsert: Story = {
+  ...removeThenReinsert,
+  tags: ['!dev', '!autodocs'],
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const pea = canvas.getByTestId('PEA');
@@ -144,6 +151,7 @@ const withoutRow = (accounts: Account[], name: string): Account[] =>
   accounts.map((account) => ({ ...account, rows: account.rows.filter((row) => row.name !== name) }));
 
 export const AcrossGroups: Story = {
+  tags: ['!dev', '!autodocs'],
   render: () => ({
     props: {
       accounts: ACCOUNTS,
@@ -197,6 +205,7 @@ export const AcrossGroups: Story = {
 };
 
 export const AcrossCards: Story = {
+  tags: ['!dev', '!autodocs'],
   render: () => ({
     props: {
       accounts: ACCOUNTS,
@@ -247,6 +256,7 @@ export const AcrossCards: Story = {
 };
 
 export const AfterTheListMoved: Story = {
+  tags: ['!dev', '!autodocs'],
   render: () => ({
     props: {
       items: ['Livret A', 'LDDS', 'PEA', 'Life insurance'],

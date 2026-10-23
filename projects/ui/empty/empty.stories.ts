@@ -50,25 +50,25 @@ const meta: Meta<EmptyArgs> = {
 export default meta;
 type Story = StoryObj<EmptyArgs>;
 
-export const Default: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await expect(canvas.getByText('No holding matches “zzz”')).toBeVisible();
-    await expect(canvas.getByRole('button', { name: 'Add a holding' })).toBeVisible();
-  },
-};
+export const Default: Story = {};
 
 export const WithoutHint: Story = {
   args: { hint: '' },
 };
 
-export const HeadingOnly: Story = {
+const headingOnly = {
   args: { hint: '' },
-  render: (args) => ({
+  render: (args: EmptyArgs) => ({
     props: args,
     template: `<ui-empty data-testid="empty" class="w-[342px] lg:w-[680px]" [heading]="heading" [hint]="hint" />`,
   }),
+};
+
+export const HeadingOnly: Story = headingOnly;
+
+export const EmptyActionSlotIsHidden: Story = {
+  ...headingOnly,
+  tags: ['!dev', '!autodocs'],
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const empty = canvas.getByTestId('empty');

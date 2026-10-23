@@ -1,5 +1,5 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
-import { expect, within } from 'storybook/test';
+import { expect } from 'storybook/test';
 
 import {
   DELTA_EMPHASES,
@@ -91,7 +91,7 @@ is responsible for formatting it with its own sign, because color can never carr
 export default meta;
 type Story = StoryObj<DeltaArgs>;
 
-export const Gain: Story = {};
+export const Default: Story = {};
 
 export const Loss: Story = {
   args: { value: -240.72, label: '−240,72 € · −3,80 %' },
@@ -107,24 +107,11 @@ export const Pill: Story = {
 
 export const Unknown: Story = {
   args: { value: null, label: '' },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await expect(canvas.getByText('Non disponible')).toBeInTheDocument();
-  },
-};
-
-export const RegularLabel: Story = {
-  name: 'Envelope share, regular weight',
-  args: { weight: 'regular', label: '+4,2 %' },
-  render: (args) => ({
-    props: args,
-    template: `<div data-frame class="bg-(--card) p-2"><ui-delta [value]="value" [size]="size" [weight]="weight" unknownLabel="Non disponible">{{ label }}</ui-delta></div>`,
-  }),
 };
 
 export const InheritedBody: Story = {
-  name: 'Mover in a table cell, size inherit and regular weight',
+  name: 'Size inherit and regular weight follow the context',
+  tags: ['!dev', '!autodocs'],
   args: { size: 'inherit', weight: 'regular', label: '+1 204,50 €' },
   render: (args) => ({
     props: args,

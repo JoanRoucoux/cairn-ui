@@ -75,25 +75,7 @@ screen sizes the box (200 on the phone, 300 and more on the desktop). \`ring\` t
 export default meta;
 type Story = StoryObj<SkeletonArgs>;
 
-export const Paragraph: Story = {};
-
-export const SingleBar: Story = {
-  args: { lines: 1, height: 16 },
-};
-
-export const Figure: Story = {
-  args: { shape: 'figure' },
-  render: (args) => ({
-    props: args,
-    template: `
-      <div class="flex flex-col gap-2">
-        <ui-skeleton class="w-[84px]" [height]="14" />
-        <ui-skeleton [shape]="shape" />
-        <ui-skeleton class="w-[180px]" [height]="14" />
-      </div>
-    `,
-  }),
-};
+export const Default: Story = {};
 
 export const Row: Story = {
   args: { shape: 'row' },
@@ -117,38 +99,6 @@ export const Chart: Story = {
   }),
 };
 
-export const ChartFillsItsHost: Story = {
-  args: { shape: 'chart' },
-  render: (args) => ({
-    props: args,
-    template: `<div class="flex h-[340px] w-[688px] flex-col"><ui-skeleton class="flex-1" [shape]="shape" /></div>`,
-  }),
-};
-
 export const Ring: Story = {
   args: { shape: 'ring' },
-};
-
-export const RingDesktop: Story = {
-  args: { shape: 'ring', size: 240 },
-};
-
-export const Dot: Story = {
-  name: 'Legend dot',
-  args: { shape: 'dot' },
-  render: (args) => ({
-    props: args,
-    template: `<div data-frame class="w-fit bg-(--card) p-2"><ui-skeleton [shape]="shape" /></div>`,
-  }),
-};
-
-export const LegendEntry: Story = {
-  name: 'Legend entry, dot and label',
-  render: () => ({
-    template: `
-      <div class="flex w-[280px] items-center gap-3 bg-(--card) p-2">
-        <ui-skeleton shape="dot" class="flex-none" />
-        <ui-skeleton class="w-[140px]" [height]="16" />
-      </div>`,
-  }),
 };

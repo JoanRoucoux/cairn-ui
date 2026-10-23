@@ -47,6 +47,7 @@ const tracking = (canvasElement: HTMLElement, text: string): string =>
   getComputedStyle(within(canvasElement).getByText(text)).letterSpacing;
 
 export const SwitchedToLabelOnDesktop: Story = {
+  tags: ['!dev', '!autodocs'],
   name: 'Caption then label at 1440, tracking normal',
   parameters: { viewport: { width: 1440, height: 900 } },
   play: async ({ canvasElement }) => {
@@ -56,6 +57,7 @@ export const SwitchedToLabelOnDesktop: Story = {
 };
 
 export const CaptionOnIphone: Story = {
+  tags: ['!dev', '!autodocs'],
   name: 'Caption at 390, tracking 0.01em',
   parameters: { viewport: { width: 390, height: 844 } },
   play: async ({ canvasElement }) => {

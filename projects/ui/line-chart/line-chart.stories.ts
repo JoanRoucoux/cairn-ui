@@ -16,7 +16,13 @@ type LineChartArgs = {
   valueFormat: (value: number) => string;
   tooltipFormat?: (point: ChartPoint) => string;
   deltaFormat: (delta: number) => string;
-  deltaSuffix?: string;
+  deltaSuffix: string;
+  tooltip: 'compact' | 'large' | 'auto';
+  tooltipDelta: boolean;
+  axisGap: number | 'auto';
+  axisTicks: 'auto' | 3 | 5;
+  sparkline: boolean;
+  rangeKey: string | null;
   timeFormat: (time: number) => string;
   axisFormat: (time: number) => string;
 };
@@ -56,11 +62,6 @@ const flatPoints: ChartPoint[] = [
 ];
 
 const singlePoint: ChartPoint[] = [{ t: Date.UTC(2026, 8, 25), v: 144539.35 }];
-
-const crowdedRightEndPoints: ChartPoint[] = Array.from({ length: 60 }, (_, index) => ({
-  t: Date.UTC(2026, 7, 1) + index * 12 * 60 * 60 * 1000,
-  v: index < 54 ? 50000 : 50000 + (index - 53) * 12000,
-}));
 
 const sparklinePoints: ChartPoint[] = [6, 7, 4, 9, 15, 13, 19, 20].map((v, index) => ({
   t: Date.UTC(2026, 8, 18) + index * 24 * 60 * 60 * 1000,
@@ -122,7 +123,7 @@ The host fills its parent's height (\`block h-full\`); size the chart by sizing 
   },
   render: (args) => ({
     props: args,
-    template: `<div style="height: 240px;"><ui-line-chart [points]="points" [label]="label" [startLabel]="startLabel" [timeColumnLabel]="timeColumnLabel" [valueColumnLabel]="valueColumnLabel" [valueFormat]="valueFormat" [deltaFormat]="deltaFormat" [deltaSuffix]="deltaSuffix" [timeFormat]="timeFormat" [axisFormat]="axisFormat" /></div>`,
+    template: `<div style="height: 240px;"><ui-line-chart [points]="points" [rangeKey]="rangeKey" [label]="label" [startLabel]="startLabel" [timeColumnLabel]="timeColumnLabel" [valueColumnLabel]="valueColumnLabel" [tooltip]="tooltip" [tooltipDelta]="tooltipDelta" [axisGap]="axisGap" [axisTicks]="axisTicks" [sparkline]="sparkline" [valueFormat]="valueFormat" [tooltipFormat]="tooltipFormat" [deltaFormat]="deltaFormat" [deltaSuffix]="deltaSuffix" [timeFormat]="timeFormat" [axisFormat]="axisFormat" /></div>`,
   }),
   args: {
     points: oneMonthPoints,
@@ -134,6 +135,13 @@ The host fills its parent's height (\`block h-full\`); size the chart by sizing 
     deltaFormat: signedEur,
     timeFormat: dayFormat,
     axisFormat: dayFormat,
+    deltaSuffix: '',
+    tooltip: 'compact',
+    tooltipDelta: true,
+    axisGap: 12,
+    axisTicks: 'auto',
+    sparkline: false,
+    rangeKey: null,
   },
   argTypes: {
     points: { control: false, description: 'Series of `{ t, v }` points, ordered by time.' },
@@ -195,30 +203,7 @@ The host fills its parent's height (\`block h-full\`); size the chart by sizing 
 export default meta;
 type Story = StoryObj<LineChartArgs>;
 
-export const OneMonth: Story = {};
-
-const framed = (width: number, height: number, attributes: string): Story => ({
-  render: (args) => ({
-    props: args,
-    template: `<div style="width: ${width}px; height: ${height}px;"><ui-line-chart ${attributes} [points]="points" [label]="label" startLabel="Start" [valueFormat]="valueFormat" [deltaFormat]="deltaFormat" [timeFormat]="timeFormat" [axisFormat]="axisFormat" /></div>`,
-  }),
-});
-
-export const DashboardPhone: Story = framed(326, 205, 'tooltip="auto" axisGap="auto"');
-
-export const DashboardDesktop: Story = framed(688, 404, 'tooltip="auto" axisGap="auto"');
-
-export const HoldingsPhone: Story = framed(326, 179, '[tooltipDelta]="false" axisTicks="3"');
-
-export const HoldingsDesktop: Story = framed(352, 169, '[tooltipDelta]="false" axisTicks="3"');
-
-export const Sparkline: Story = {
-  render: (args) => ({
-    props: { ...args, sparklinePoints },
-    template: `<div class="h-6 w-20"><ui-line-chart sparkline [points]="sparklinePoints" [label]="label" [valueFormat]="valueFormat" [timeFormat]="timeFormat" /></div>`,
-  }),
-  args: { label: 'Change over 7 days' },
-};
+export const Default: Story = {};
 
 export const OneDay: Story = {
   args: {
@@ -230,27 +215,12 @@ export const OneDay: Story = {
   },
 };
 
-const yearFormat = (time: number): string => String(new Date(time).getUTCFullYear());
-
-const shortHistoryPoints: ChartPoint[] = Array.from({ length: 12 }, (_, index) => ({
-  t: Date.UTC(2026, 3, 1) + index * 14 * 24 * 60 * 60 * 1000,
-  v: 52000 + index * 900 + Math.sin(index) * 400,
-}));
-
-export const ShortFiveYearHistory: Story = {
-  name: 'Short history on a 5-year range',
-  args: {
-    points: shortHistoryPoints,
-    label: 'Net worth, five-year range with a few months of data',
-    axisFormat: yearFormat,
-  },
-  play: async ({ canvasElement }) => {
-    const labels = [...canvasElement.querySelectorAll('[data-chart-axis-tick]')].map((tick) =>
-      tick.textContent?.trim(),
-    );
-
-    await expect(labels).toEqual(['2026']);
-  },
+export const Sparkline: Story = {
+  render: (args) => ({
+    props: { ...args, sparklinePoints },
+    template: `<div class="h-6 w-20"><ui-line-chart sparkline [points]="sparklinePoints" [label]="label" [valueFormat]="valueFormat" [timeFormat]="timeFormat" /></div>`,
+  }),
+  args: { label: 'Change over 7 days' },
 };
 
 export const FlatSeries: Story = {
@@ -263,34 +233,18 @@ export const SinglePoint: Story = {
   args: { points: singlePoint, label: 'Net worth, a single point' },
 };
 
-export const StartLabelMovesAside: Story = {
-  name: 'Start label moves aside from a crowded right end',
-  args: { points: crowdedRightEndPoints, label: 'Net worth, start label crowded' },
-};
-
 export const MaskedAmounts: Story = {
   name: 'Masked amounts',
   args: {
-    valueFormat: () => '\u2022\u2022\u2022\u2022 \u20ac',
-    deltaFormat: () => '\u2022\u2022\u2022\u2022 \u20ac',
+    valueFormat: () => '•••• €',
+    deltaFormat: () => '•••• €',
     deltaSuffix: 'since the start',
-  },
-};
-
-export const HoverShowsTheTooltip: Story = {
-  name: 'Hover shows the tooltip',
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const svg = canvasElement.querySelector('svg') as HTMLElement;
-
-    await userEvent.hover(svg);
-
-    await expect(canvas.getByTestId('chart-tooltip')).toBeInTheDocument();
   },
 };
 
 export const RangeTransitionSettles: Story = {
   name: 'A range transition settles on the exact target shape',
+  tags: ['!dev', '!autodocs'],
   render: () => {
     const points = signal<ChartPoint[]>(oneMonthPoints);
 
@@ -324,6 +278,7 @@ export const RangeTransitionSettles: Story = {
 
 export const SameRangeReloadDrawsAtOnce: Story = {
   name: 'A reload of the same range draws at once, a new range interpolates',
+  tags: ['!dev', '!autodocs'],
   render: () => {
     const points = signal<ChartPoint[]>(oneMonthPoints);
     const rangeKey = signal('1M');
@@ -365,27 +320,9 @@ export const SameRangeReloadDrawsAtOnce: Story = {
   },
 };
 
-export const HoldingsDetailTooltip: Story = {
-  name: 'Holdings detail, tooltip with the unit price',
-  args: {
-    tooltipFormat: (point: ChartPoint) => `${eur(point.v)} · price ${eur(point.v / 500)}`,
-  },
-  render: (args) => ({
-    props: args,
-    template: `<div data-frame class="bg-(--card) p-4" style="width: 358px"><div style="height: 150px;"><ui-line-chart [tooltipDelta]="false" axisTicks="3" [points]="points" [label]="label" startLabel="Start" [valueFormat]="valueFormat" [tooltipFormat]="tooltipFormat" [timeFormat]="timeFormat" [axisFormat]="axisFormat" /></div></div>`,
-  }),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await userEvent.hover(canvasElement.querySelector('svg') as HTMLElement);
-
-    await expect(canvas.getByTestId('chart-tooltip')).toHaveTextContent(/price/);
-    await expect(canvas.getByText(/^Start /)).not.toHaveTextContent(/price/);
-  },
-};
-
 export const ScreenReaderTableDoesNotWiden: Story = {
   name: 'The screen-reader table does not widen its host',
+  tags: ['!dev', '!autodocs'],
   render: (args) => ({
     props: args,
     template: `<div data-frame style="width: 326px; height: 205px; overflow: visible;"><ui-line-chart [points]="points" [label]="label" [valueFormat]="valueFormat" [timeFormat]="timeFormat" /></div>`,

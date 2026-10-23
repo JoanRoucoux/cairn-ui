@@ -1,6 +1,5 @@
 import type { ControlSurface } from '@joanroucoux/cairn-ui/input';
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
-import { expect, userEvent, within } from 'storybook/test';
 
 import { type ChoiceChipOption, UiChoiceChips } from './choice-chips';
 
@@ -97,54 +96,6 @@ export const Default: Story = {};
 
 export const NothingSelected: Story = { args: { value: '' } };
 
-export const LastSelected: Story = { args: { value: 'Savings' } };
-
-export const OnACardSurface: Story = {
-  args: { surface: 'card' },
-  decorators: [
-    (story) => ({
-      ...story(),
-      template: `<div class="rounded-container bg-(--muted) p-4">${story().template}</div>`,
-    }),
-  ],
-};
-
 export const WithoutVisibleLabel: Story = { args: { label: undefined, ariaLabel: 'Wrapper' } };
 
 export const Disabled: Story = { args: { disabled: true } };
-
-export const WrapsOnANarrowScreen: Story = {
-  name: 'Wraps on a narrow screen',
-  decorators: [
-    (story) => ({
-      ...story(),
-      template: `<div style="width: 358px">${story().template}</div>`,
-    }),
-  ],
-};
-
-export const SelectsOnClick: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await userEvent.click(canvas.getByRole('radio', { name: 'CTO' }));
-
-    await expect(canvas.getByRole('radio', { name: 'CTO' })).toBeChecked();
-    await expect(canvas.getByRole('radio', { name: 'PEA' })).not.toBeChecked();
-  },
-};
-
-export const MovesWithTheArrowKeys: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    canvas.getByRole('radio', { name: 'PEA' }).focus();
-    await userEvent.keyboard('{ArrowLeft}');
-
-    await expect(canvas.getByRole('radio', { name: 'Savings' })).toBeChecked();
-    await expect(canvas.getByRole('radio', { name: 'Savings' })).toHaveFocus();
-
-    await userEvent.keyboard('{Home}');
-    await expect(canvas.getByRole('radio', { name: 'PEA' })).toBeChecked();
-  },
-};

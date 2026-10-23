@@ -64,7 +64,7 @@ and colors it (Lucide, stroke 1.75, following the active state's text color thro
 export default meta;
 type Story = StoryObj<NavItemArgs>;
 
-export const Rest: Story = {};
+export const Default: Story = {};
 
 export const Active: Story = {
   args: { active: true },
@@ -85,6 +85,7 @@ const transitionsDuring = async (element: Element, act: () => Promise<void>): Pr
 };
 
 export const ActiveChangeIsImmediate: Story = {
+  tags: ['!dev', '!autodocs'],
   name: 'Becoming active is immediate, the hover fill still fades',
   render: () => ({
     props: { current: 'portfolio' },
