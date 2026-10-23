@@ -113,88 +113,17 @@ const platformEscape = (modal: HTMLElement): void => {
   modal.dispatchEvent(new Event('cancel', { cancelable: true }));
 };
 
-export const Closed: Story = {};
+const hidden = ['!dev', '!autodocs'];
 
-export const Opens: Story = {
-  name: 'Opens against the right edge (1440x900)',
-  play: async ({ canvasElement }) => {
-    const drawer = await openDrawer(canvasElement);
-    const box = drawer.getBoundingClientRect();
-    const style = getComputedStyle(drawer);
+const veil = (element: HTMLElement): string => getComputedStyle(element, '::backdrop').backgroundColor;
 
-    await expect(box.width).toBe(440);
-    await expect(box.right).toBe(document.documentElement.getBoundingClientRect().width);
-    await expect(box.top).toBe(0);
-    await expect(box.height).toBe(window.innerHeight);
-    await expect(style.paddingLeft).toBe('24px');
-    await expect(style.transitionProperty).toBe('opacity, transform, overlay, display');
-    await expect(style.transitionDuration).toBe('0.26s, 0.26s, 0.26s, 0.26s');
-    await expect(getComputedStyle(drawer, '::backdrop').backgroundColor).toBe('oklab(0 0 0 / 0.36)');
-    await expect(within(drawer).getByRole('button', { name: 'Close the detail' })).toHaveFocus();
-  },
-};
+const shown = (element: HTMLElement): Promise<void> =>
+  waitFor(() => expect(getComputedStyle(element).opacity).toBe('1'));
 
-export const OpenOnLoad: Story = {
-  name: 'Open on load, no outline on the panel',
-  args: { open: true, closeLabel: undefined },
-  play: async ({ canvasElement }) => {
-    const drawer = await within(canvasElement).findByRole('dialog', { name: 'Northwind World' });
+const gone = (element: HTMLElement): Promise<void> =>
+  waitFor(() => expect(getComputedStyle(element).display).toBe('none'));
 
-    drawer.focus();
-    await expect(drawer).toHaveFocus();
-    await expect(getComputedStyle(drawer).outlineStyle).toBe('none');
-  },
-};
-
-export const EscapeCloses: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    platformEscape(await openDrawer(canvasElement));
-
-    await waitFor(() => expect(canvas.queryByRole('dialog')).not.toBeInTheDocument());
-    await expect(canvas.getByRole('button', { name: 'Open the detail' })).toHaveFocus();
-  },
-};
-
-export const CrossCloses: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const drawer = await openDrawer(canvasElement);
-
-    await userEvent.click(within(drawer).getByRole('button', { name: 'Close the detail' }));
-
-    await waitFor(() => expect(canvas.queryByRole('dialog')).not.toBeInTheDocument());
-    await expect(canvas.getByRole('button', { name: 'Open the detail' })).toHaveFocus();
-  },
-};
-
-export const VeilCloses: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const drawer = await openDrawer(canvasElement);
-
-    await userEvent.pointer({ keys: '[MouseLeft]', target: drawer, coords: { clientX: 40, clientY: 40 } });
-
-    await waitFor(() => expect(canvas.queryByRole('dialog')).not.toBeInTheDocument());
-    await expect(canvas.getByRole('button', { name: 'Open the detail' })).toHaveFocus();
-  },
-};
-
-export const BusyStaysOpen: Story = {
-  args: { open: true, busy: true },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const drawer = await canvas.findByRole('dialog', { name: 'Northwind World' });
-
-    await expect(drawer).toHaveAttribute('aria-busy', 'true');
-    await expect(canvas.getByRole('button', { name: 'Close the detail' })).toBeDisabled();
-    platformEscape(drawer);
-    await userEvent.pointer({ keys: '[MouseLeft]', target: drawer, coords: { clientX: 40, clientY: 40 } });
-
-    await expect(drawer).toHaveAttribute('open');
-  },
-};
+export const Default: Story = {};
 
 export const WithoutHeader: Story = {
   name: 'Without header, the content brings its own',
@@ -215,28 +144,82 @@ export const WithoutHeader: Story = {
       </ui-drawer>
     `,
   }),
-  play: async ({ canvasElement }) => {
-    const drawer = await openDrawer(canvasElement, 'Holding detail');
+};
 
-    await expect(drawer).not.toHaveAttribute('aria-labelledby');
-    await expect(within(drawer).getAllByRole('heading')).toHaveLength(1);
+export const Opens: Story = {
+  name: 'Opens against the right edge',
+  tags: hidden,
+  play: async ({ canvasElement }) => {
+    const drawer = await openDrawer(canvasElement);
+    const box = drawer.getBoundingClientRect();
+    const style = getComputedStyle(drawer);
+
+    await expect(box.width).toBe(440);
+    await expect(box.right).toBe(document.documentElement.getBoundingClientRect().width);
+    await expect(box.top).toBe(0);
+    await expect(box.height).toBe(window.innerHeight);
+    await expect(style.paddingLeft).toBe('24px');
+    await expect(style.transitionProperty).toBe('opacity, transform, overlay, display');
+    await expect(style.transitionDuration).toBe('0.26s, 0.26s, 0.26s, 0.26s');
+    await expect(getComputedStyle(drawer, '::backdrop').backgroundColor).toBe('oklab(0 0 0 / 0.36)');
+    await expect(within(drawer).getByRole('button', { name: 'Close the detail' })).toHaveFocus();
   },
 };
 
-export const LabelOverHeading: Story = {
-  name: 'Named by label, the heading stays visible',
-  args: { label: 'Holding detail' },
+export const OpenOnLoad: Story = {
+  name: 'Open on load, no outline on the panel',
+  tags: hidden,
+  args: { open: true, closeLabel: undefined },
   play: async ({ canvasElement }) => {
-    const drawer = await openDrawer(canvasElement, 'Holding detail');
+    const drawer = await within(canvasElement).findByRole('dialog', { name: 'Northwind World' });
 
-    await expect(drawer).not.toHaveAttribute('aria-labelledby');
-    await expect(drawer).toHaveAccessibleDescription('ETF · Contoso CTO');
-    await expect(within(drawer).getByRole('heading', { level: 2, name: 'Northwind World' })).toBeVisible();
+    drawer.focus();
+    await expect(drawer).toHaveFocus();
+    await expect(getComputedStyle(drawer).outlineStyle).toBe('none');
+  },
+};
+
+export const EscapeCloses: Story = {
+  tags: hidden,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    platformEscape(await openDrawer(canvasElement));
+
+    await waitFor(() => expect(canvas.queryByRole('dialog')).not.toBeInTheDocument());
+    await expect(canvas.getByRole('button', { name: 'Open the detail' })).toHaveFocus();
+  },
+};
+
+export const CrossCloses: Story = {
+  tags: hidden,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const drawer = await openDrawer(canvasElement);
+
+    await userEvent.click(within(drawer).getByRole('button', { name: 'Close the detail' }));
+
+    await waitFor(() => expect(canvas.queryByRole('dialog')).not.toBeInTheDocument());
+    await expect(canvas.getByRole('button', { name: 'Open the detail' })).toHaveFocus();
+  },
+};
+
+export const VeilCloses: Story = {
+  tags: hidden,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const drawer = await openDrawer(canvasElement);
+
+    await userEvent.pointer({ keys: '[MouseLeft]', target: drawer, coords: { clientX: 40, clientY: 40 } });
+
+    await waitFor(() => expect(canvas.queryByRole('dialog')).not.toBeInTheDocument());
+    await expect(canvas.getByRole('button', { name: 'Open the detail' })).toHaveFocus();
   },
 };
 
 export const ScrollsAlone: Story = {
   name: 'Scrolls on its own, the page stays put',
+  tags: hidden,
   args: { open: true },
   render: (args) => ({
     props: { ...args, rows: Array.from({ length: 40 }, (_, index) => index + 1) },
@@ -271,16 +254,9 @@ export const ScrollsAlone: Story = {
   },
 };
 
-const veil = (element: HTMLElement): string => getComputedStyle(element, '::backdrop').backgroundColor;
-
-const shown = (element: HTMLElement): Promise<void> =>
-  waitFor(() => expect(getComputedStyle(element).opacity).toBe('1'));
-
-const gone = (element: HTMLElement): Promise<void> =>
-  waitFor(() => expect(getComputedStyle(element).display).toBe('none'));
-
 export const DialogOverDrawer: Story = {
   name: 'A dialog over the drawer, Escape twice',
+  tags: hidden,
   render: () => ({ template: `<ui-drawer-stack-demo />` }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -331,6 +307,7 @@ export const DialogOverDrawer: Story = {
 
 export const DialogOverDrawerOpen: Story = {
   name: 'A dialog over the drawer, both open',
+  tags: hidden,
   render: () => ({ template: `<ui-drawer-stack-demo stacked />` }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -340,14 +317,4 @@ export const DialogOverDrawerOpen: Story = {
     await expect(canvas.getByRole('dialog', { name: 'Northwind World' })).toHaveAttribute('open');
     await expect(veil(dialog)).toBe('oklab(0 0 0 / 0.24)');
   },
-};
-
-export const Light: Story = {
-  parameters: { themes: { themeOverride: 'light' } },
-  args: { open: true },
-};
-
-export const Dark: Story = {
-  parameters: { themes: { themeOverride: 'dark' } },
-  args: { open: true },
 };

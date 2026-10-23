@@ -58,7 +58,11 @@ While it is on the page the bar publishes its height as \`--action-bar-height\` 
 export default meta;
 type Story = StoryObj;
 
-export const Default: Story = {
+export const Default: Story = {};
+
+export const ShownBelowTheDesktopBreakpoint: Story = {
+  name: 'Shown on a narrow viewport',
+  tags: ['!dev', '!autodocs'],
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 

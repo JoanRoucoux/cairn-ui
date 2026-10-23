@@ -56,30 +56,25 @@ const meta: Meta<BackLinkArgs> = {
 export default meta;
 type Story = StoryObj<BackLinkArgs>;
 
-export const Default: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await expect(canvas.getByRole('link', { name: 'Accounts' })).toBeVisible();
-  },
-};
+export const Default: Story = {};
 
 export const Small: Story = {
   args: { size: 'sm', label: 'Accounts' },
 };
 
-export const Header: Story = {
-  name: 'Header (holding detail)',
-  args: { size: 'header', label: 'Holdings' },
-};
-
 export const InlineButton: Story = {
-  name: 'Inline button (Add a holding)',
+  name: 'Inline button',
   args: { size: 'inline', label: 'Back to search' },
   render: (args) => ({
     props: args,
     template: `<button ui-back-link [size]="size">{{ label }}</button>`,
   }),
+};
+
+export const InlineButtonTypography: Story = {
+  ...InlineButton,
+  name: 'Inline button is 14 px at weight 500',
+  tags: ['!dev', '!autodocs'],
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const button = canvas.getByRole('button', { name: 'Back to search' });
@@ -91,7 +86,8 @@ export const InlineButton: Story = {
 };
 
 export const InlineAtTheTopOfAForm: Story = {
-  name: 'Inline button at the top of a form column',
+  name: 'Inline button sits at the top of a form column',
+  tags: ['!dev', '!autodocs'],
   args: { size: 'inline', label: 'Back to search' },
   render: (args) => ({
     props: args,

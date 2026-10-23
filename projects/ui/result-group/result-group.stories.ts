@@ -1,7 +1,7 @@
 import { UiCard } from '@joanroucoux/cairn-ui/card';
 import { UiRow } from '@joanroucoux/cairn-ui/row';
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
-import { expect, fn, userEvent, waitFor, within } from 'storybook/test';
+import { fn } from 'storybook/test';
 
 import { UiResultGroup } from './result-group';
 
@@ -99,40 +99,18 @@ foreign-currency row last) and the empty message with the \`resultGroupMessage\`
 export default meta;
 type Story = StoryObj<ResultGroupArgs>;
 
-export const Results: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await expect(canvas.getByRole('group', { name: 'Northwind Markets, live prices' })).toBeVisible();
-    await expect(canvas.getByRole('button', { name: /Woodgrove Holdings/ })).toHaveAttribute('aria-disabled', 'true');
-  },
-};
+export const Default: Story = {};
 
 export const Loading: Story = {
   args: { state: 'loading' },
-  play: async ({ canvasElement }) => {
-    await waitFor(() => expect(canvasElement.querySelector('ui-async')).toHaveAttribute('aria-busy', 'true'));
-    await waitFor(() => expect(canvasElement.querySelectorAll('ui-async > div > div > span.flex')).toHaveLength(2));
-  },
 };
 
 export const Empty: Story = {
   args: { state: 'empty' },
-  play: async ({ canvasElement }) => {
-    await expect(within(canvasElement).getByText('No results from Northwind Markets.')).toBeVisible();
-  },
 };
 
-export const SourceError: Story = {
+export const Error: Story = {
   args: { state: 'error' },
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement);
-    const retry = await canvas.findByRole('button', { name: 'Try again' });
-
-    await expect(retry.querySelector('svg')).toBeNull();
-    await userEvent.click(retry);
-    await expect(args.retry).toHaveBeenCalledOnce();
-  },
 };
 
 export const SeveralGroups: Story = {

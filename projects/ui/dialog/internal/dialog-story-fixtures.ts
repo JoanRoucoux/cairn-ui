@@ -167,6 +167,8 @@ export const defaultTemplate = `
         [description]="description"
         [closeLabel]="closeLabel"
         [width]="width"
+        [variant]="variant"
+        [sheet]="sheet"
         [open]="open"
         [busy]="busy"
         (dismissed)="open = false"

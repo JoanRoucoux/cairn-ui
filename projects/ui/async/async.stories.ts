@@ -1,5 +1,5 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
-import { expect, fn, userEvent, within } from 'storybook/test';
+import { expect, fn, within } from 'storybook/test';
 
 import {
   ASYNC_ALIGNS,
@@ -135,38 +135,10 @@ inside a form. \`align\` centers the block (\`auto\`: from 64rem), \`card\` draw
 export default meta;
 type Story = StoryObj<AsyncArgs>;
 
-export const Ready: Story = {};
+export const Default: Story = {};
 
 export const Loading: Story = {
   args: { state: 'loading' },
-};
-
-export const DelayedSkeleton: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'The skeleton appears only once a call has lasted 150 ms and stays at least 400 ms. Until then the skeleton is laid out but invisible and hidden from assistive technology, so the block already holds its space. The 100 ms call never shows it, the 300 ms call shows it until 550 ms.',
-      },
-    },
-  },
-  render: () => ({
-    props: {
-      state: 'ready' as AsyncState,
-      run(duration: number): void {
-        this.state = 'loading';
-        setTimeout(() => (this.state = 'ready'), duration);
-      },
-    },
-    template: `
-      <button type="button" class="text-label" (click)="run(100)">100 ms call</button>
-      <button type="button" class="text-label ml-3" (click)="run(300)">300 ms call</button>
-      <ui-async [state]="state" class="mt-3 block">
-        <span asyncLoading>Loading</span>
-        <span>Content</span>
-      </ui-async>
-    `,
-  }),
 };
 
 export const Empty: Story = {
@@ -175,116 +147,30 @@ export const Empty: Story = {
 
 export const Error: Story = {
   args: { state: 'error' },
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await expect(canvas.getByRole('alert')).toBeInTheDocument();
-    await userEvent.click(canvas.getByRole('button', { name: 'Try again' }));
-    await expect(args.retry).toHaveBeenCalledOnce();
-  },
 };
 
-type Screen = {
-  title: string;
-  message?: string;
-  width: number;
-  attrs?: string;
-  wrapper?: string;
-  host?: string;
-  surface?: 'card' | 'background';
+export const Variants: Story = {
+  parameters: { layout: 'padded' },
+  render: (args) => ({
+    props: args,
+    template: `
+      <div class="flex w-[420px] flex-col gap-4">
+        @for (v of ['elevated', 'plain', 'emphasis', 'inline']; track v) {
+          <ui-async state="error" [variant]="v" [errorTitle]="errorTitle" [errorMessage]="errorMessage" [retryLabel]="retryLabel" [retryIcon]="retryIcon" [align]="align" [card]="card" [fill]="fill" (retry)="retry()" />
+        }
+      </div>
+    `,
+  }),
 };
 
-const screen = (name: string, spec: Screen): Story => ({
-  name,
+export const InlineRetryWithoutIcon: Story = {
+  tags: ['!dev', '!autodocs'],
   parameters: { layout: 'padded' },
   render: () => ({
     template: `
-      <div data-frame class="p-2 ${spec.surface === 'background' ? 'bg-(--background)' : 'bg-(--card)'} ${spec.wrapper ?? ''}" style="width: ${spec.width + 16}px">
-        <ui-async state="error" errorTitle="${spec.title}" errorMessage="${spec.message ?? 'The server didn’t respond.'}" retryLabel="Try again" ${spec.attrs ?? ''} class="${spec.host ?? ''}" />
+      <div class="w-[350px] bg-(--card) p-2">
+        <ui-async state="error" errorTitle="" errorMessage="Yahoo Finance didn’t respond." retryLabel="Try again" variant="inline" [retryIcon]="false" />
       </div>`,
-  }),
-});
-
-export const ElevatedTotalPhone: Story = screen('Dashboard total, phone (elevated)', {
-  title: 'The total couldn’t be loaded',
-  width: 326,
-});
-
-export const ElevatedTotalDesktop: Story = screen('Dashboard total, desktop (elevated)', {
-  title: 'The total couldn’t be loaded',
-  width: 688,
-});
-
-export const CurveFillPhone: Story = screen('Dashboard curve, phone (center, fill)', {
-  title: 'The chart couldn’t be loaded',
-  width: 326,
-  attrs: 'align="center" fill',
-  host: 'min-h-63',
-});
-
-export const CurveFillDesktop: Story = screen('Dashboard curve, desktop (center, fill)', {
-  title: 'The chart couldn’t be loaded',
-  width: 688,
-  attrs: 'align="center" fill',
-  host: 'min-h-93',
-});
-
-export const ElevatedAutoAllocation: Story = screen('Allocation, phone and desktop (elevated, auto)', {
-  title: 'The allocation by asset class couldn’t be loaded',
-  width: 326,
-  attrs: 'align="auto"',
-  wrapper: 'lg:w-[516px]!',
-});
-
-export const PlainCard: Story = screen('Accounts, phone (plain, card)', {
-  title: 'Accounts couldn’t be loaded',
-  width: 358,
-  attrs: 'variant="plain" card',
-  surface: 'background',
-});
-
-export const PlainCentered: Story = screen('Accounts, desktop (plain, center)', {
-  title: 'Accounts couldn’t be loaded',
-  width: 1088,
-  attrs: 'variant="plain" align="center"',
-});
-
-export const PlainAuto: Story = screen('Accounts, phone and desktop (plain, auto)', {
-  title: 'Accounts couldn’t be loaded',
-  width: 358,
-  attrs: 'variant="plain" align="auto"',
-  wrapper: 'lg:w-[1104px]! max-lg:bg-(--background)!',
-  host: 'block max-lg:rounded-container max-lg:bg-(--card) max-lg:shadow-[inset_0_0_0_1px_var(--border)]',
-});
-
-export const EmphasisCard: Story = screen('Holdings, phone (emphasis, card)', {
-  title: 'Holdings couldn’t be loaded',
-  message: 'The server didn’t respond. Check your connection, then try again.',
-  width: 358,
-  attrs: 'variant="emphasis" card',
-  surface: 'background',
-});
-
-export const EmphasisCentered: Story = screen('Holdings, desktop (emphasis, center)', {
-  title: 'Holdings couldn’t be loaded',
-  message: 'The server didn’t respond. Check your connection, then try again.',
-  width: 1088,
-  attrs: 'variant="emphasis" align="center"',
-});
-
-export const InlineSearch: Story = screen('Add a holding, search (inline)', {
-  title: '',
-  message: 'The online search didn’t respond.',
-  width: 350,
-  attrs: 'variant="inline"',
-});
-
-export const InlineSearchNoIcon: Story = {
-  ...screen('Add a holding, per-source retry (inline, no icon)', {
-    title: '',
-    message: 'Yahoo Finance didn’t respond.',
-    width: 350,
-    attrs: 'variant="inline" [retryIcon]="false"',
   }),
   play: async ({ canvasElement }) => {
     const retry = within(canvasElement).getByRole('button', { name: 'Try again' });

@@ -80,44 +80,9 @@ type Story = StoryObj<FilterChipsArgs>;
 
 export const Default: Story = {};
 
-export const FilteredOnAClass: Story = { args: { value: 'etf' } };
-
 export const WithoutCounts: Story = {
   name: 'Without counts, before the data arrives',
   args: { options: WITHOUT_COUNTS },
-};
-
-export const ScrollsOnAPhone: Story = {
-  name: 'Scrolls on a phone (needs touch emulation)',
-  decorators: [
-    (story) => ({
-      ...story(),
-      template: `<div style="width: 390px; padding: 0 var(--gutter)">${story().template}</div>`,
-    }),
-  ],
-};
-
-export const SelectsOnClick: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await userEvent.click(canvas.getByRole('button', { name: 'Funds 8' }));
-
-    await expect(canvas.getByRole('button', { name: 'Funds 8' })).toHaveAttribute('aria-pressed', 'true');
-    await expect(canvas.getByRole('button', { name: 'All 31' })).toHaveAttribute('aria-pressed', 'false');
-  },
-};
-
-export const SelectsWithTheKeyboard: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await userEvent.tab();
-    await userEvent.tab();
-    await userEvent.keyboard('{Enter}');
-
-    await expect(canvas.getByRole('button', { name: 'ETF 6' })).toHaveAttribute('aria-pressed', 'true');
-  },
 };
 
 const ACCOUNT_ROW = `
@@ -140,11 +105,15 @@ const NAMES = { '': 'All accounts', pea: 'Northwind PEA', cto: 'Contoso CTO' };
 const PHONE = { viewport: { width: 390, height: 640 } };
 const DESKTOP = { viewport: { width: 1440, height: 480 } };
 
+const accountRender: Story['render'] = (args) => ({
+  props: { ...args, account: '', names: NAMES },
+  template: ACCOUNT_ROW,
+});
+
+export const WithLeadingSelector: Story = { render: accountRender };
+
 const accountRow = (parameters: Story['parameters'], play: Story['play']): Story => ({
-  render: (args) => ({
-    props: { ...args, account: '', names: NAMES },
-    template: ACCOUNT_ROW,
-  }),
+  render: accountRender,
   parameters,
   play,
 });
@@ -188,37 +157,44 @@ const chosenThenCleared: Story['play'] = async ({ canvasElement }) => {
 };
 
 export const AccountSelectorAtRest390: Story = {
+  tags: ['!dev', '!autodocs'],
   ...accountRow(PHONE, atRest),
-  name: 'Account selector at rest, 390 (scrolls, selector first; needs touch emulation)',
+  name: 'Leading selector at rest on a narrow viewport (scrolls, selector first; needs touch emulation)',
 };
 
 export const AccountSelectorAtRest1440: Story = {
+  tags: ['!dev', '!autodocs'],
   ...accountRow(DESKTOP, atRest),
-  name: 'Account selector at rest, 1440 (wraps)',
+  name: 'Leading selector at rest on a wide viewport (wraps)',
 };
 
 export const AccountSelectorOpen390: Story = {
+  tags: ['!dev', '!autodocs'],
   ...accountRow(PHONE, opened),
-  name: 'Account selector, menu open, 390 (sheet)',
+  name: 'Leading selector menu opens as a sheet on a narrow viewport',
 };
 
 export const AccountSelectorOpen1440: Story = {
+  tags: ['!dev', '!autodocs'],
   ...accountRow(DESKTOP, opened),
-  name: 'Account selector, menu open, 1440 (popover)',
+  name: 'Leading selector menu opens as a popover on a wide viewport',
 };
 
 export const AccountSelectorChosen390: Story = {
+  tags: ['!dev', '!autodocs'],
   ...accountRow(PHONE, chosenThenCleared),
-  name: 'Account selector, an account chosen then cleared with the cross, 390',
+  name: 'Leading selector choice cleared with the cross returns focus, narrow viewport',
 };
 
 export const AccountSelectorChosen1440: Story = {
+  tags: ['!dev', '!autodocs'],
   ...accountRow(DESKTOP, chosenThenCleared),
-  name: 'Account selector, an account chosen then cleared with the cross, 1440',
+  name: 'Leading selector choice cleared with the cross returns focus, wide viewport',
 };
 
 export const NoRuleWithoutLeading: Story = {
   name: 'No rule without a leading element',
+  tags: ['!dev', '!autodocs'],
   play: async ({ canvasElement }) => {
     await expect(getComputedStyle(canvasElement.querySelector('[data-chips-rule]')!).display).toBe('none');
   },

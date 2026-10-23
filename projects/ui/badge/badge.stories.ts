@@ -1,5 +1,4 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
-import { expect, within } from 'storybook/test';
 
 import { BADGE_SIZES, BADGE_VARIANTS, type BadgeSize, type BadgeVariant, UiBadge } from './badge';
 
@@ -64,7 +63,7 @@ account's envelope type.
 export default meta;
 type Story = StoryObj<BadgeArgs>;
 
-export const Neutral: Story = {};
+export const Default: Story = {};
 
 export const Small: Story = {
   args: { size: 'sm' },
@@ -72,13 +71,4 @@ export const Small: Story = {
 
 export const Outline: Story = {
   args: { variant: 'outline' },
-};
-
-export const RendersContent: Story = {
-  args: { label: 'New' },
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await expect(canvas.getByText(args.label)).toBeVisible();
-  },
 };

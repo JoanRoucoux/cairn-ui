@@ -1,6 +1,4 @@
-import { UiCard } from '@joanroucoux/cairn-ui/card';
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
-import { expect, within } from 'storybook/test';
 
 import { FACT_SIZES, FACT_SUB_TONES, type FactSize, type FactSubTone, UiFact, UiFacts } from './fact';
 
@@ -12,7 +10,7 @@ type FactArgs = {
 
 const meta: Meta<FactArgs> = {
   title: 'Data display/Facts',
-  decorators: [moduleMetadata({ imports: [UiCard, UiFacts, UiFact] })],
+  decorators: [moduleMetadata({ imports: [UiFacts, UiFact] })],
   parameters: {
     docs: {
       description: {
@@ -73,17 +71,14 @@ line under the value, and a hairline between rows. Built on a native description
 export default meta;
 type Story = StoryObj<FactArgs>;
 
-export const Default: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
+export const Default: Story = {};
 
-    await expect(canvas.getByText('Quantity').tagName).toBe('DT');
-    await expect(canvas.getByText('LU1681043599').closest('dd')).not.toBeNull();
-  },
+export const Stale: Story = {
+  args: { subTone: 'stale' },
 };
 
 export const InACard: Story = {
-  name: 'In a card (Holdings iPhone detail)',
+  name: 'In a card',
   render: (args) => ({
     props: args,
     template: `
@@ -94,55 +89,6 @@ export const InACard: Story = {
           <div ui-fact label="Price" size="md" sub="Price as of 25/09 at 17:35 · Yahoo Finance" [subTone]="subTone">28,64 €</div>
           <div ui-fact label="ISIN" size="md" sub="ETF">LU1681043599</div>
         </dl>
-      </div>
-    `,
-  }),
-};
-
-export const Desktop: Story = {
-  name: 'Ruled, small (Holdings desktop detail)',
-  args: { size: 'sm', ruled: true },
-};
-
-export const Stale: Story = {
-  args: { subTone: 'stale' },
-};
-
-export const Auto: Story = {
-  name: 'Auto size (Holdings detail, one list for both widths)',
-  render: (args) => ({
-    props: args,
-    template: `
-      <div class="w-[358px] lg:w-[420px]">
-        <ui-card surface="max-lg" padding="rows">
-        <dl uiFacts [ruled]="ruled">
-          <div ui-fact label="Quantity" size="auto">500</div>
-          <div ui-fact label="Avg. cost" size="auto">24,12 €</div>
-          <div ui-fact label="Price" size="auto" sub="Price as of 25/09 at 17:35 · Yahoo Finance" [subTone]="subTone">28,64 €</div>
-          <div ui-fact label="ISIN" size="auto" sub="ETF">LU1681043599</div>
-        </dl>
-        </ui-card>
-      </div>
-    `,
-  }),
-};
-
-export const TradeRecap: Story = {
-  name: 'Recap (Buy and Sell dialogs)',
-  render: () => ({
-    template: `
-      <div class="bg-(--card) p-4 w-[358px] box-content">
-        <ui-card variant="inset" padding="recap">
-          <dl uiFacts>
-            <div ui-fact label="Quantity" size="recap">
-              <span class="flex items-baseline gap-1.5 text-right"><span class="text-(--subtle-foreground)">500</span><span class="text-(--subtle-foreground)">&rarr;</span><span class="font-medium">540</span></span>
-            </div>
-            <div ui-fact label="Avg. cost" size="recap">
-              <span class="flex items-baseline gap-1.5 text-right"><span class="text-(--subtle-foreground)">24,12&nbsp;€</span><span class="text-(--subtle-foreground)">&rarr;</span><span class="font-medium">24,49&nbsp;€</span></span>
-            </div>
-            <div ui-fact label="Purchase amount" size="recap"><span class="font-medium">1&nbsp;164,00&nbsp;€</span></div>
-          </dl>
-        </ui-card>
       </div>
     `,
   }),

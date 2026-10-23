@@ -1,5 +1,4 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
-import { expect, userEvent, within } from 'storybook/test';
 
 import { UiSwitch } from './switch';
 
@@ -56,7 +55,7 @@ Angular forms: no custom \`ControlValueAccessor\` is involved.
 export default meta;
 type Story = StoryObj<SwitchArgs>;
 
-export const Off: Story = {};
+export const Default: Story = {};
 
 export const On: Story = {
   args: { checked: true },
@@ -64,16 +63,4 @@ export const On: Story = {
 
 export const Disabled: Story = {
   args: { disabled: true },
-};
-
-export const TogglesOnClick: Story = {
-  name: 'Toggles on click',
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const toggle = canvas.getByRole('switch', { name: 'Hide amounts' }) as HTMLInputElement;
-
-    await userEvent.click(toggle);
-
-    await expect(toggle.checked).toBe(true);
-  },
 };

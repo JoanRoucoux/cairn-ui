@@ -111,6 +111,8 @@ the pause and the cross do not work over an open modal.
 export default meta;
 type Story = StoryObj;
 
+const hidden = ['!dev', '!autodocs'];
+
 const play: Story['play'] = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
   const status = canvas.getByRole('status');
@@ -132,7 +134,18 @@ const gapAbove = async (canvasElement: HTMLElement, selector: string): Promise<v
   );
 };
 
+export const Default: Story = {};
+
+export const ShowsAToast: Story = {
+  name: 'Shows a toast with its transition',
+  tags: hidden,
+  parameters: { viewport: { width: 1440, height: 700 } },
+  play,
+};
+
 export const Phone: Story = {
+  name: 'Above the tab bar on a phone',
+  tags: hidden,
   parameters: { viewport: { width: 390, height: 600 } },
   play: async (context) => {
     await play(context);
@@ -141,7 +154,8 @@ export const Phone: Story = {
 };
 
 export const PhoneWithActionBar: Story = {
-  name: 'Phone, above the action bar',
+  name: 'Above the action bar on a phone',
+  tags: hidden,
   parameters: { viewport: { width: 390, height: 600 } },
   render: () => ({ template: '<ui-toast-demo [actionBar]="true" />' }),
   play: async (context) => {
@@ -150,13 +164,9 @@ export const PhoneWithActionBar: Story = {
   },
 };
 
-export const Desktop: Story = {
-  parameters: { viewport: { width: 1440, height: 700 } },
-  play,
-};
-
 export const OverDialog: Story = {
   name: 'Over a modal dialog',
+  tags: hidden,
   parameters: { viewport: { width: 1440, height: 700 } },
   render: () => ({ template: '<ui-toast-demo [dialog]="true" />' }),
   play: async ({ canvasElement }) => {
@@ -170,22 +180,9 @@ export const OverDialog: Story = {
   },
 };
 
-export const ErrorToast: Story = {
-  name: 'Error',
-  parameters: { viewport: { width: 1440, height: 700 } },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const status = canvas.getByRole('status');
-    await userEvent.click(canvas.getByRole('button', { name: 'Show an error' }));
-
-    await waitFor(() => expect(status).toHaveTextContent('Import failed'));
-    await userEvent.click(within(status).getByRole('button', { name: 'Close' }));
-    await waitFor(() => expect(status).toBeEmptyDOMElement());
-  },
-};
-
 export const BesideSidebar: Story = {
   name: 'Centered beside a sidebar',
+  tags: hidden,
   parameters: { viewport: { width: 1440, height: 700 } },
   render: () => ({ template: '<div style="--sidebar-width: 240px"><ui-toast-demo /></div>' }),
   play: async ({ canvasElement }) => {

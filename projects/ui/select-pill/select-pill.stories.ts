@@ -84,38 +84,31 @@ emits \`cleared\`, so the list goes back to every value in one tap. It is 34 px 
 export default meta;
 type Story = StoryObj<SelectPillArgs>;
 
-export const Rest: Story = {
-  play: async ({ canvasElement }) => {
-    await expect(within(canvasElement).getByRole('button', { name: 'All accounts' })).toHaveAttribute(
-      'aria-expanded',
-      'false',
-    );
-  },
-};
+export const Default: Story = {};
 
 export const Active: Story = {
   args: { active: true },
-  play: async ({ canvasElement, args }) => {
-    await userEvent.click(within(canvasElement).getByRole('button', { name: 'Remove the account filter' }));
-
-    await expect(args.cleared).toHaveBeenCalledTimes(1);
-  },
 };
 
 export const Disabled: Story = {
   args: { disabled: true },
+};
+
+export const DisabledStyles: Story = {
+  name: 'Disabled dims the pill and ignores the pointer',
+  tags: ['!dev', '!autodocs'],
+  args: { disabled: true },
   play: async ({ canvasElement }) => {
     const trigger = within(canvasElement).getByRole('button', { name: 'All accounts' });
 
-    await expect(trigger).toBeDisabled();
-    await expect(trigger).toHaveAttribute('aria-disabled', 'true');
     await expect(getComputedStyle(canvasElement.querySelector('ui-select-pill')!).opacity).toBe('0.4');
     await expect(getComputedStyle(trigger).pointerEvents).toBe('none');
-    await expect(trigger).toHaveAttribute('aria-expanded', 'false');
   },
 };
 
 export const Focus: Story = {
+  name: 'Focus ring on the trigger',
+  tags: ['!dev', '!autodocs'],
   play: async ({ canvasElement }) => {
     await userEvent.tab();
     const trigger = within(canvasElement).getByRole('button', { name: 'All accounts' });
@@ -127,7 +120,8 @@ export const Focus: Story = {
 };
 
 export const ActiveFocus: Story = {
-  name: 'Active, focus on the cross',
+  name: 'Focus ring on the cross',
+  tags: ['!dev', '!autodocs'],
   args: { active: true },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);

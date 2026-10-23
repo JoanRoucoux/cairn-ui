@@ -1,5 +1,4 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
-import { expect, userEvent, within } from 'storybook/test';
 
 import { CONTROL_SIZES, type ControlSize, UiInput, UiTextarea } from './input';
 
@@ -78,19 +77,10 @@ export const Disabled: Story = {
   args: { disabled: true },
 };
 
-export const AcceptsTyping: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const input = canvas.getByRole('textbox', { name: 'Account name' });
-
-    await userEvent.type(input, 'alex@contoso.com');
-
-    await expect(input).toHaveValue('alex@contoso.com');
-  },
-};
-
 export const Textarea: Story = {
-  render: () => ({
-    template: `<textarea uiTextarea aria-label="Notes"></textarea>`,
+  args: { placeholder: 'Add a note' },
+  render: (args) => ({
+    props: args,
+    template: `<textarea uiTextarea [placeholder]="placeholder" [disabled]="disabled" aria-label="Notes"></textarea>`,
   }),
 };

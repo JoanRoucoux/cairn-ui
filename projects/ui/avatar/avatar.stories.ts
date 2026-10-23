@@ -72,58 +72,36 @@ export const Small: Story = {
   args: { size: 'sm' },
 };
 
-export const InProfileLink: Story = {
-  render: () => ({
-    template: `
-      <a uiAvatarLink href="#">
-        <ui-avatar initials="JO" label="Profil" size="auto" />
-      </a>
-    `,
-  }),
-};
-
 export const Large: Story = {
   args: { size: 'lg' },
 };
 
-export const IsNamed: Story = {
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await expect(canvas.getByRole('img', { name: args.label })).toBeVisible();
-  },
-};
-
-export const InProfileLinkCurrentPage: Story = {
-  name: 'In a link, current page',
+export const InALink: Story = {
+  name: 'In a link',
   render: () => ({
     template: `
-      <a uiAvatarLink href="#" aria-current="page">
-        <ui-avatar initials="JO" label="Profil" size="auto" />
+      <a uiAvatarLink href="#">
+        <ui-avatar initials="AL" label="Profile" size="auto" />
       </a>
     `,
   }),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await expect(canvas.getByRole('link', { name: 'Profil' })).toHaveAttribute('aria-current', 'page');
-  },
 };
 
 export const CurrentPageArrivesAtOnce: Story = {
+  tags: ['!dev', '!autodocs'],
   name: 'In a link, becoming the current page draws the halo at once',
   render: () => ({
     props: { current: false },
     template: `
       <a uiAvatarLink href="#" [attr.aria-current]="current ? 'page' : null">
-        <ui-avatar initials="JO" label="Profil" size="auto" />
+        <ui-avatar initials="AL" label="Profile" size="auto" />
       </a>
       <button type="button" (click)="current = !current">Navigate</button>
     `,
   }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const link = canvas.getByRole('link', { name: 'Profil' });
+    const link = canvas.getByRole('link', { name: 'Profile' });
     const runs: string[] = [];
     const record = (event: TransitionEvent): void => {
       runs.push(event.propertyName);

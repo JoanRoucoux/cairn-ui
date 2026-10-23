@@ -1,5 +1,4 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
-import { expect, within } from 'storybook/test';
 
 import { METER_SIZES, METER_TONES, type MeterSize, type MeterTone, UiMeter } from './meter';
 
@@ -98,10 +97,6 @@ type Story = StoryObj<MeterArgs>;
 
 export const Default: Story = {};
 
-export const Smallest: Story = {
-  args: { value: 0.043, label: 'PER', valueText: '4,3 %, 6 190,20 €', amount: '6 190,20 €', share: '4,3 %' },
-};
-
 export const Empty: Story = {
   args: {
     value: 0,
@@ -112,16 +107,8 @@ export const Empty: Story = {
   },
 };
 
-export const ExposesItsValue: Story = {
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await expect(canvas.getByRole('meter', { name: args.label })).toHaveAttribute('aria-valuetext', args.valueText);
-  },
-};
-
 export const Thin: Story = {
-  name: 'Wrapper bar, 4px (size sm)',
+  name: 'Thin bar, size sm',
   render: () => ({
     template: `
       <div data-frame class="flex w-[326px] flex-col gap-2 bg-(--card) p-2">

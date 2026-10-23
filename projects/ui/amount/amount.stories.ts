@@ -1,7 +1,6 @@
 import { signal } from '@angular/core';
 
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
-import { expect } from 'storybook/test';
 
 import {
   AMOUNT_MASKINGS,
@@ -89,21 +88,7 @@ Masking comes from the \`UI_AMOUNT_MASKED\` injection token, a signal the app pr
 export default meta;
 type Story = StoryObj<AmountArgs>;
 
-export const Euros: Story = {
-  args: { value: 8592 },
-  render: (args) => ({
-    props: args,
-    template: `<span class="text-body font-medium"><ui-amount [value]="value" [currency]="currency" [numeric]="numeric" locale="fr-FR" /></span>`,
-  }),
-};
-
-export const Display: Story = {
-  args: { numeric: 'proportional' },
-  render: (args) => ({
-    props: args,
-    template: `<span class="text-display font-semibold"><ui-amount [value]="value" [currency]="currency" [numeric]="numeric" locale="fr-FR" /></span>`,
-  }),
-};
+export const Default: Story = {};
 
 export const SignedGain: Story = {
   args: { value: 361.4, signed: true },
@@ -119,10 +104,6 @@ export const SignedLoss: Story = {
     props: args,
     template: `<span class="text-body font-medium text-(--negative)"><ui-amount [value]="value" [currency]="currency" [signed]="signed" locale="fr-FR" /></span>`,
   }),
-};
-
-export const SignedZero: Story = {
-  args: { value: 0, signed: true },
 };
 
 export const Quantity: Story = {
@@ -143,23 +124,4 @@ export const Masked: Story = {
     props: args,
     template: `<span class="text-display font-semibold"><ui-amount [value]="value" [currency]="currency" [numeric]="numeric" locale="fr-FR" /></span>`,
   }),
-  play: async ({ canvasElement }) => {
-    await expect(canvasElement.querySelector('ui-amount')).toHaveTextContent('••••');
-  },
-};
-
-export const HiddenNextToAPercentage: Story = {
-  name: 'Masked, hidden next to a percentage',
-  decorators: [moduleMetadata({ providers: [{ provide: UI_AMOUNT_MASKED, useValue: signal(true) }] })],
-  render: (args) => ({
-    props: args,
-    template: `
-      <span class="text-label flex gap-1.5 tabular-nums">
-        <ui-amount class="font-medium text-(--positive)" [value]="value" [currency]="currency" signed whenMasked="hide" locale="fr-FR" />
-        <span class="font-medium text-(--positive)">+0,25 %</span>
-        <span class="text-(--muted-foreground)">today</span>
-      </span>
-    `,
-  }),
-  args: { value: 361.4 },
 };

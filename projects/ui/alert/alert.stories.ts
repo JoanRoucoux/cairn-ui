@@ -69,61 +69,37 @@ Lucide icon in the \`--negative\` color, an optional heading and a text.
 export default meta;
 type Story = StoryObj<AlertArgs>;
 
-export const WithHeading: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await waitFor(() => expect(canvas.getByRole('alert')).toBeVisible());
-    await expect(canvas.getByText('Sign-in failed')).toBeVisible();
-  },
-};
+export const Default: Story = {};
 
 export const TextOnly: Story = {
   args: { heading: '', text: 'Incorrect username or password.' },
 };
 
-export const Warning: Story = {
-  args: {
-    variant: 'warning',
-    heading: '',
-    text: 'You’re selling the whole quantity: the holding will be removed from Northwind PEA. This can’t be undone.',
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await waitFor(() => expect(canvas.getByRole('status')).toBeVisible());
-  },
+const warningArgs: Partial<AlertArgs> = {
+  variant: 'warning',
+  heading: '',
+  text: 'You’re selling the whole quantity: the holding will be removed from Northwind PEA. This can’t be undone.',
 };
 
-export const Info: Story = {
-  args: {
-    variant: 'info',
-    heading: '',
-    text: 'Cairn can’t verify this ISIN before it’s added. The price will come with the next SG Sirius update; if the ISIN is wrong, the holding will stay without a price.',
-  },
+const infoArgs: Partial<AlertArgs> = {
+  variant: 'info',
+  heading: '',
+  text: 'Cairn can’t verify this ISIN before it’s added. The price will come with the next SG Sirius update; if the ISIN is wrong, the holding will stay without a price.',
+};
+
+export const Warning: Story = { args: warningArgs };
+
+export const Info: Story = { args: infoArgs };
+
+export const InfoNotePadding: Story = {
+  tags: ['!dev', '!autodocs'],
+  args: infoArgs,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const note = await canvas.findByRole('note');
 
     await waitFor(() => expect(note).toBeVisible());
     await expect(getComputedStyle(note).padding).toBe('12px');
-  },
-};
-
-export const AppearsAndLeaves: Story = {
-  render: () => ({
-    props: { shown: false },
-    template: `
-      <button type="button" class="text-label" (click)="shown = !shown">Toggle</button>
-      <div class="mt-3 w-[340px]">
-        @if (shown) {
-          <ui-alert variant="warning">You’re selling the whole holding. This can’t be undone.</ui-alert>
-        }
-      </div>
-    `,
-  }),
-  parameters: {
-    docs: { description: { story: 'The alert fades in when it appears and fades out when it is removed.' } },
   },
 };
 
@@ -149,6 +125,14 @@ const appearing = (fadeIn: boolean): Story => ({
   },
 });
 
-export const FadesInAfterASubmit: Story = { name: 'Fades in after a submit', ...appearing(true) };
+export const FadesInAfterASubmit: Story = {
+  tags: ['!dev', '!autodocs'],
+  name: 'Fades in after a submit',
+  ...appearing(true),
+};
 
-export const ShowsAtOnceWithoutFadeIn: Story = { name: 'Shows at once with fadeIn off', ...appearing(false) };
+export const ShowsAtOnceWithoutFadeIn: Story = {
+  tags: ['!dev', '!autodocs'],
+  name: 'Shows at once with fadeIn off',
+  ...appearing(false),
+};

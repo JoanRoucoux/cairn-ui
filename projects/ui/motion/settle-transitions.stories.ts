@@ -94,6 +94,7 @@ export default meta;
 type Story = StoryObj;
 
 export const NothingAnimatesOnMount: Story = {
+  tags: ['!dev', '!autodocs'],
   name: 'A page opened after a layout read starts no transition',
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -113,6 +114,7 @@ export const NothingAnimatesOnMount: Story = {
 };
 
 export const TransitionsRunAfterMount: Story = {
+  tags: ['!dev', '!autodocs'],
   name: 'Transitions still run on a later change',
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);

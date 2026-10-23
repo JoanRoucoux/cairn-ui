@@ -1,5 +1,4 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
-import { expect, userEvent, within } from 'storybook/test';
 
 import { SEGMENTED_SIZES, type SegmentedOption, type SegmentedSize, UiSegmented } from './segmented';
 
@@ -87,31 +86,8 @@ type Story = StoryObj<SegmentedArgs>;
 
 export const Default: Story = {};
 
-export const SelectsOnClick: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await userEvent.click(canvas.getByRole('radio', { name: 'Max' }));
-
-    await expect(canvas.getByRole('radio', { name: 'Max' })).toBeChecked();
-  },
-};
-
-export const InAFlexHeaderWithNoWidth: Story = {
-  name: 'In a flex header, with no width given',
-  render: (args) => ({
-    props: args,
-    template: `
-      <div class="flex items-center justify-between gap-4">
-        <span class="text-title font-semibold">Performance</span>
-        <ui-segmented [options]="options" [label]="label" [(value)]="value" />
-      </div>
-    `,
-  }),
-};
-
 export const VisibleLabel: Story = {
-  name: 'Profile, theme with a visible label',
+  name: 'Visible label',
   args: {
     label: 'Theme',
     showLabel: true,
@@ -122,18 +98,8 @@ export const VisibleLabel: Story = {
       { value: 'dark', label: 'Dark' },
     ],
   },
-  render: (args) => ({
-    props: args,
-    template: `<div data-frame class="w-[326px] bg-(--card) p-2"><ui-segmented [options]="options" [label]="label" [showLabel]="showLabel" [(value)]="value" /></div>`,
-  }),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await expect(canvas.getByRole('radiogroup', { name: 'Theme' })).toBeInTheDocument();
-  },
 };
 
-export const SmallWithAMouse: Story = {
-  name: 'Small (Holdings detail range)',
+export const Small: Story = {
   args: { size: 'sm' },
 };

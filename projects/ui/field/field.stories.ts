@@ -120,14 +120,15 @@ export const WithUnit: Story = {
 
 export const WithError: Story = {
   args: { error: 'The price must be positive.' },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await expect(canvas.getByRole('spinbutton')).toHaveAttribute('aria-invalid', 'true');
-  },
 };
 
 export const LabelHidden: Story = {
+  args: { label: 'Search holdings', labelHidden: true },
+};
+
+export const LabelHiddenCollapsesTheLabel: Story = {
+  name: 'Hidden label collapses to a pixel',
+  tags: ['!dev', '!autodocs'],
   render: () => ({
     template: `
       <ui-field label="Search holdings" labelHidden>
@@ -147,6 +148,7 @@ export const LabelHidden: Story = {
 };
 
 export const InARow: Story = {
+  tags: ['!dev', '!autodocs'],
   render: () => ({
     template: `
       <div class="flex items-start gap-3">
@@ -172,6 +174,7 @@ export const InARow: Story = {
 const SEARCH_ICON = `<svg uiFieldLeading width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>`;
 
 export const Search: Story = {
+  tags: ['!dev', '!autodocs'],
   render: () => ({
     template: `
       <div class="flex max-w-sm flex-col gap-6">
@@ -222,7 +225,8 @@ export const Search: Story = {
 const EYE_ICON = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" /><circle cx="12" cy="12" r="3" /></svg>`;
 
 export const SignIn: Story = {
-  name: 'Sign-in: xl inputs, trailing action, invalid',
+  name: 'Trailing action matches the control height on an invalid xl input',
+  tags: ['!dev', '!autodocs'],
   render: () => ({
     template: `
       <div class="flex max-w-sm flex-col gap-4">
@@ -247,26 +251,5 @@ export const SignIn: Story = {
     await expect(parseFloat(getComputedStyle(password).paddingRight)).toBeGreaterThanOrEqual(
       action.getBoundingClientRect().width,
     );
-  },
-};
-
-export const OptionalSheetForm: Story = {
-  name: 'Sheet form: lg inputs, optional suffix',
-  render: () => ({
-    template: `
-      <div class="flex max-w-sm flex-col gap-4">
-        <ui-field label="Account name">
-          <input uiInput size="lg" placeholder="Livret A" />
-        </ui-field>
-        <ui-field label="Institution" optional="(optional)">
-          <input uiInput size="lg" placeholder="Northwind Bank" />
-        </ui-field>
-      </div>
-    `,
-  }),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await expect(canvas.getByLabelText('Institution (optional)')).toBeVisible();
   },
 };

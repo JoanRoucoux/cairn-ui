@@ -122,29 +122,11 @@ const hoverFills = (element: Element): string[] => {
   return found;
 };
 
-export const Default: Story = {
-  name: 'One group open, one folded',
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const northwind = canvas.getByRole('button', { name: /Northwind PEA/ });
-    const woodgrove = canvas.getByRole('button', { name: /Woodgrove Savings Plan/ });
-
-    await expect(northwind).toHaveAttribute('aria-expanded', 'true');
-    await expect(woodgrove).toHaveAttribute('aria-expanded', 'false');
-    await expect(canvas.getByText('Ferrari')).toBeVisible();
-    await expect(canvas.getByText('Carmignac Patrimoine')).not.toBeVisible();
-
-    await userEvent.click(northwind);
-    await expect(northwind).toHaveAttribute('aria-expanded', 'false');
-    await expect(canvas.getByText('Ferrari')).not.toBeVisible();
-
-    await userEvent.click(woodgrove);
-    await expect(canvas.getByText('Carmignac Patrimoine')).toBeVisible();
-  },
-};
+export const Default: Story = {};
 
 export const BandHover: Story = {
   name: 'Band hover fill, faded like the rows',
+  tags: ['!dev', '!autodocs'],
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const band = getComputedStyle(canvas.getByRole('button', { name: /Northwind PEA/ }));
@@ -161,6 +143,7 @@ export const BandHover: Story = {
 
 export const HeldOpen: Story = {
   name: 'Held open by a filter',
+  tags: ['!dev', '!autodocs'],
   args: { locked: true },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);

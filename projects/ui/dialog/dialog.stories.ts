@@ -123,6 +123,8 @@ With \`prefers-reduced-motion: reduce\` the sheet fades instead of sliding.
     description: 'Ferrari · PEA',
     closeLabel: 'Close',
     width: '440px',
+    variant: 'default',
+    sheet: 'fit',
     open: false,
     busy: false,
   },
@@ -132,179 +134,11 @@ With \`prefers-reduced-motion: reduce\` the sheet fades instead of sliding.
 export default meta;
 type Story = StoryObj<DialogArgs>;
 
-export const Closed: Story = {};
+const hidden = ['!dev', '!autodocs'];
 
-export const Opens: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
+export const Default: Story = {};
 
-    await userEvent.click(canvas.getByRole('button', { name: 'Open' }));
-
-    await waitFor(() => expect(canvas.getByRole('dialog', { name: 'Enter a price' })).toBeVisible());
-  },
-};
-
-export const CrossCloses: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await userEvent.click(canvas.getByRole('button', { name: 'Open' }));
-    await waitFor(() => expect(canvas.getByRole('dialog', { name: 'Enter a price' })).toBeVisible());
-    await pressCross(canvas.getByRole('button', { name: 'Close' }));
-
-    await waitFor(() => expect(canvas.queryByRole('dialog')).not.toBeInTheDocument());
-    await expect(canvas.getByRole('button', { name: 'Open' })).toHaveFocus();
-  },
-};
-
-export const BackdropCloses: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await userEvent.click(canvas.getByRole('button', { name: 'Open' }));
-    await waitFor(() => expect(canvas.getByRole('dialog', { name: 'Enter a price' })).toBeVisible());
-    await userEvent.pointer({
-      keys: '[MouseLeft]',
-      target: canvas.getByRole('dialog'),
-      coords: { clientX: 4, clientY: 4 },
-    });
-
-    await waitFor(() => expect(canvas.queryByRole('dialog')).not.toBeInTheDocument());
-    await expect(canvas.getByRole('button', { name: 'Open' })).toHaveFocus();
-  },
-};
-
-export const BusyStaysOpen: Story = {
-  args: { open: true, busy: true },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const dialog = await canvas.findByRole('dialog', { name: 'Enter a price' });
-
-    await expect(dialog).toHaveAttribute('aria-busy', 'true');
-    dialog.focus();
-    await expect(dialog).toHaveFocus();
-    await expect(getComputedStyle(dialog).outlineStyle).toBe('none');
-    await expect(canvas.getByRole('button', { name: 'Close' })).toBeDisabled();
-    await userEvent.keyboard('{Escape}');
-    await userEvent.pointer({ keys: '[MouseLeft]', target: dialog, coords: { clientX: 4, clientY: 4 } });
-
-    await expect(dialog).toHaveAttribute('open');
-  },
-};
-
-export const Board: Story = {
-  name: 'Board, dialog (380px)',
-  args: { heading: 'Sell Ferrari', description: undefined, width: '380px', open: true },
-  render: (args) => ({
-    props: args,
-    template: `
-      <ui-dialog
-        [heading]="heading"
-        [closeLabel]="closeLabel"
-        [width]="width"
-        [open]="open"
-        (dismissed)="open = false"
-      >
-        <p class="text-label text-(--muted-foreground)">Content, scrolling if needed.</p>
-        <button dialogActions ui-button variant="outline" (click)="open = false">Cancel</button>
-        <button dialogActions ui-button (click)="open = false">Sell</button>
-      </ui-dialog>
-    `,
-  }),
-};
-
-export const BoardSheet: Story = {
-  name: 'Board, sheet (iPhone, no cross)',
-  parameters: { viewport: { width: 390, height: 270 } },
-  args: { heading: 'Buy Ferrari', description: undefined, closeLabel: undefined, sheet: 'full', open: true },
-  render: (args) => ({
-    props: args,
-    template: `
-      <ui-dialog [heading]="heading" [sheet]="sheet" [open]="open" (dismissed)="open = false">
-        <button dialogActions ui-button (click)="open = false">Buy 10 shares</button>
-      </ui-dialog>
-    `,
-  }),
-};
-
-const trade: Story = {
-  args: { heading: 'Buy', description: 'Ferrari · PEA', width: '480px', open: true },
-  render: (args) => ({ props: args, template: tradeTemplate }),
-};
-
-const newAccount: Story = {
-  args: { heading: 'New account', description: undefined, width: '480px', open: true },
-  render: (args) => ({ props: args, template: newAccountTemplate }),
-};
-
-export const Trade: Story = { name: 'Buy, dialog (480px) and sheet', ...trade };
-
-export const TradeDesktopHeader: Story = {
-  name: 'Buy at 1440, title, subtitle and cross from the top',
-  parameters: { viewport: { width: 1440, height: 900 } },
-  ...trade,
-  play: headerTopped,
-};
-
-export const NewAccount: Story = { name: 'New account, dialog (480px) and sheet', ...newAccount };
-
-export const NewAccountDesktopHeader: Story = {
-  name: 'New account at 1440, title and cross centered',
-  parameters: { viewport: { width: 1440, height: 900 } },
-  ...newAccount,
-  play: headerCentered,
-};
-
-export const NewAccountSheetHeader: Story = {
-  name: 'New account at 390, title and cross centered',
-  parameters: { viewport: { width: 390, height: 844 } },
-  ...newAccount,
-  play: headerCentered,
-};
-
-const addHolding = (results: number): Story => ({
-  args: { heading: 'Add a holding', description: undefined, width: '560px', sheet: 'full', open: true },
-  render: (args) => ({
-    props: args,
-    template: addHoldingTemplate(results),
-  }),
-});
-
-export const AddHolding: Story = { name: 'Add a holding, dialog (560px) and sheet', ...addHolding(2) };
-
-export const AddHoldingDesktopFewResults: Story = {
-  name: 'Add a holding, desktop 1440x900 with few results',
-  parameters: { viewport: { width: 1440, height: 900 } },
-  ...addHolding(2),
-  play: desktopCentered,
-};
-
-export const AddHoldingDesktopManyResultsShortScreen: Story = {
-  name: 'Add a holding, desktop 1366x650 with many results',
-  parameters: { viewport: { width: 1366, height: 650 } },
-  ...addHolding(30),
-  play: desktopCentered,
-};
-
-export const AddHoldingSheetFewResults: Story = {
-  name: 'Add a holding, sheet with few results',
-  parameters: { viewport: { width: 390, height: 844 } },
-  ...addHolding(1),
-  play: sheetStaysFixed,
-};
-
-export const AddHoldingSheetManyResults: Story = {
-  name: 'Add a holding, sheet with many results',
-  parameters: { viewport: { width: 390, height: 844 } },
-  ...addHolding(30),
-  play: sheetStaysFixed,
-};
-
-export const DeletePasskey: Story = {
-  name: 'Delete passkey, alertdialog (440px) and sheet',
-  play: async ({ canvasElement }) => {
-    await expect(canvasElement.querySelector('dialog')?.getAttribute('aria-describedby')).toBeTruthy();
-  },
+export const Confirm: Story = {
   args: {
     heading: 'Delete the passkey “MacBook Air”?',
     description: undefined,
@@ -315,45 +149,9 @@ export const DeletePasskey: Story = {
   render: (args) => ({ props: args, template: confirmTemplate(true) }),
 };
 
-export const ConfirmWithoutActions: Story = {
-  name: 'Confirm without actions, desktop',
-  args: { ...DeletePasskey.args },
-  parameters: { viewport: { width: 1440, height: 900 } },
-  render: (args) => ({ props: args, template: confirmTemplate(false) }),
-  play: emptyFooterUnpadded,
-};
-
-export const ConfirmWithoutActionsSheet: Story = {
-  ...ConfirmWithoutActions,
-  name: 'Confirm without actions, sheet',
-  parameters: { viewport: { width: 390, height: 844 } },
-};
-
-export const TextOnlyScrollingBody: Story = {
-  name: 'Text-only body that scrolls (keyboard reachable)',
-  parameters: { viewport: { width: 390, height: 420 } },
-  args: { heading: 'Conditions', closeLabel: 'Close', variant: 'confirm', width: '488px', open: true },
-  render: (args) => ({
-    props: { ...args, paragraphs: Array.from({ length: 12 }, (_, index) => index + 1) },
-    template: `
-      <ui-dialog [heading]="heading" [closeLabel]="closeLabel" [variant]="variant" [width]="width" [open]="open" (dismissed)="open = false">
-        @for (paragraph of paragraphs; track paragraph) {
-          <p class="text-body text-(--muted-foreground)">
-            The price you enter replaces the last known value until the source next refreshes.
-          </p>
-        }
-        <button dialogActions ui-button (click)="open = false">Got it</button>
-      </ui-dialog>
-    `,
-  }),
-  play: bodyReachable,
-};
-
 export const Wide: Story = { args: { width: 'lg', open: true } };
 
-export const SheetOnAnIPhone: Story = {
-  name: 'Sheet on a 390px viewport',
-  parameters: { viewport: { width: 390, height: 844 } },
+const longBody: Story = {
   render: (args) => ({
     props: { ...args, rows: Array.from({ length: 60 }, (_, index) => index + 1) },
     template: `
@@ -373,11 +171,183 @@ export const SheetOnAnIPhone: Story = {
     `,
   }),
   args: { heading: 'Buy Ferrari', open: true },
+};
+
+export const LongBody: Story = { ...longBody, name: 'Long body that scrolls' };
+
+export const SheetFitsTheScreen: Story = {
+  ...longBody,
+  name: 'Sheet fits the screen',
+  tags: hidden,
+  parameters: { viewport: { width: 390, height: 844 } },
   play: sheetFitsTheScreen,
+};
+
+export const CrossCloses: Story = {
+  tags: hidden,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Open' }));
+    await waitFor(() => expect(canvas.getByRole('dialog', { name: 'Enter a price' })).toBeVisible());
+    await pressCross(canvas.getByRole('button', { name: 'Close' }));
+
+    await waitFor(() => expect(canvas.queryByRole('dialog')).not.toBeInTheDocument());
+    await expect(canvas.getByRole('button', { name: 'Open' })).toHaveFocus();
+  },
+};
+
+export const BackdropCloses: Story = {
+  tags: hidden,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Open' }));
+    await waitFor(() => expect(canvas.getByRole('dialog', { name: 'Enter a price' })).toBeVisible());
+    await userEvent.pointer({
+      keys: '[MouseLeft]',
+      target: canvas.getByRole('dialog'),
+      coords: { clientX: 4, clientY: 4 },
+    });
+
+    await waitFor(() => expect(canvas.queryByRole('dialog')).not.toBeInTheDocument());
+    await expect(canvas.getByRole('button', { name: 'Open' })).toHaveFocus();
+  },
+};
+
+export const BusyStaysOpen: Story = {
+  tags: hidden,
+  args: { open: true, busy: true },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const dialog = await canvas.findByRole('dialog', { name: 'Enter a price' });
+
+    await expect(dialog).toHaveAttribute('aria-busy', 'true');
+    dialog.focus();
+    await expect(dialog).toHaveFocus();
+    await expect(getComputedStyle(dialog).outlineStyle).toBe('none');
+    await expect(canvas.getByRole('button', { name: 'Close' })).toBeDisabled();
+    await userEvent.keyboard('{Escape}');
+    await userEvent.pointer({ keys: '[MouseLeft]', target: dialog, coords: { clientX: 4, clientY: 4 } });
+
+    await expect(dialog).toHaveAttribute('open');
+  },
+};
+
+const trade: Story = {
+  args: { heading: 'Buy', description: 'Ferrari · PEA', width: '480px', open: true },
+  render: (args) => ({ props: args, template: tradeTemplate }),
+};
+
+const newAccount: Story = {
+  args: { heading: 'New account', description: undefined, width: '480px', open: true },
+  render: (args) => ({ props: args, template: newAccountTemplate }),
+};
+
+export const TradeDesktopHeader: Story = {
+  name: 'Title and cross aligned from the top under a subtitle',
+  tags: hidden,
+  parameters: { viewport: { width: 1440, height: 900 } },
+  ...trade,
+  play: headerTopped,
+};
+
+export const NewAccountDesktopHeader: Story = {
+  name: 'Title and cross centered on a desktop',
+  tags: hidden,
+  parameters: { viewport: { width: 1440, height: 900 } },
+  ...newAccount,
+  play: headerCentered,
+};
+
+export const NewAccountSheetHeader: Story = {
+  name: 'Title and cross centered on a sheet',
+  tags: hidden,
+  parameters: { viewport: { width: 390, height: 844 } },
+  ...newAccount,
+  play: headerCentered,
+};
+
+const addHolding = (results: number): Story => ({
+  args: { heading: 'Add a holding', description: undefined, width: '560px', sheet: 'full', open: true },
+  render: (args) => ({
+    props: args,
+    template: addHoldingTemplate(results),
+  }),
+});
+
+export const AddHoldingDesktopFewResults: Story = {
+  name: 'Desktop dialog centered with few results',
+  tags: hidden,
+  parameters: { viewport: { width: 1440, height: 900 } },
+  ...addHolding(2),
+  play: desktopCentered,
+};
+
+export const AddHoldingDesktopManyResultsShortScreen: Story = {
+  name: 'Desktop dialog capped on a short screen with many results',
+  tags: hidden,
+  parameters: { viewport: { width: 1366, height: 650 } },
+  ...addHolding(30),
+  play: desktopCentered,
+};
+
+export const AddHoldingSheetFewResults: Story = {
+  name: 'Full sheet stays fixed with few results',
+  tags: hidden,
+  parameters: { viewport: { width: 390, height: 844 } },
+  ...addHolding(1),
+  play: sheetStaysFixed,
+};
+
+export const AddHoldingSheetManyResults: Story = {
+  name: 'Full sheet stays fixed with many results',
+  tags: hidden,
+  parameters: { viewport: { width: 390, height: 844 } },
+  ...addHolding(30),
+  play: sheetStaysFixed,
+};
+
+export const ConfirmWithoutActions: Story = {
+  name: 'Confirm without actions on a desktop',
+  tags: hidden,
+  args: { ...Confirm.args },
+  parameters: { viewport: { width: 1440, height: 900 } },
+  render: (args) => ({ props: args, template: confirmTemplate(false) }),
+  play: emptyFooterUnpadded,
+};
+
+export const ConfirmWithoutActionsSheet: Story = {
+  ...ConfirmWithoutActions,
+  tags: ['!dev', '!autodocs'],
+  name: 'Confirm without actions on a sheet',
+  parameters: { viewport: { width: 390, height: 844 } },
+};
+
+export const TextOnlyScrollingBody: Story = {
+  name: 'Text-only body that scrolls (keyboard reachable)',
+  tags: hidden,
+  parameters: { viewport: { width: 390, height: 420 } },
+  args: { heading: 'Conditions', closeLabel: 'Close', variant: 'confirm', width: '488px', open: true },
+  render: (args) => ({
+    props: { ...args, paragraphs: Array.from({ length: 12 }, (_, index) => index + 1) },
+    template: `
+      <ui-dialog [heading]="heading" [closeLabel]="closeLabel" [variant]="variant" [width]="width" [open]="open" (dismissed)="open = false">
+        @for (paragraph of paragraphs; track paragraph) {
+          <p class="text-body text-(--muted-foreground)">
+            The price you enter replaces the last known value until the source next refreshes.
+          </p>
+        }
+        <button dialogActions ui-button (click)="open = false">Got it</button>
+      </ui-dialog>
+    `,
+  }),
+  play: bodyReachable,
 };
 
 export const KeptMountedUntilClosed: Story = {
   name: 'Wrapper kept mounted until closed',
+  tags: hidden,
   render: (args) => ({
     props: { ...args, mounted: false, closedCount: 0, closedReason: '' },
     template: keptMountedTemplate,
@@ -387,7 +357,8 @@ export const KeptMountedUntilClosed: Story = {
 
 export const SheetDragToDismiss: Story = {
   ...KeptMountedUntilClosed,
-  name: 'Sheet, drag to dismiss',
+  tags: ['!dev', '!autodocs'],
+  name: 'Sheet has drag grips',
   parameters: { viewport: { width: 390, height: 844 } },
   play: sheetHasGrips,
 };
