@@ -7,8 +7,6 @@
 
 <div align="center">
 
-A monochrome, accessible Angular design system, built for Cairn.
-
 [![npm version](https://img.shields.io/npm/v/@joanroucoux/cairn-ui?logo=npm)](https://www.npmjs.com/package/@joanroucoux/cairn-ui)
 [![CI](https://github.com/JoanRoucoux/cairn-ui/actions/workflows/ci.yml/badge.svg)](https://github.com/JoanRoucoux/cairn-ui/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
