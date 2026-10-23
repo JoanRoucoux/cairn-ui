@@ -108,7 +108,7 @@ const PADDING_CLASSES: Record<CardPadding, Record<CardSurface, string>> = {
  * <ui-card variant="elevated" padding="sm">Total</ui-card>
  * <ui-card variant="inset" border="hairline" padding="xs">Results</ui-card>
  * <ui-card padding="none" clip>Table that touches the edges, clipped to the corners</ui-card>
- * <ui-card surface="max-lg">Card on an iPhone, plain on a desktop</ui-card>
+ * <ui-card surface="max-lg">Card on a phone, plain on a desktop</ui-card>
  */
 @Component({
   selector: 'ui-card',

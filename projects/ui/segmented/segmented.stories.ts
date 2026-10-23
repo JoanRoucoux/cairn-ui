@@ -75,7 +75,7 @@ mode. The selection is a \`model()\`, bound with \`[(value)]\`.
       control: 'inline-radio',
       options: [...SEGMENTED_SIZES],
       description:
-        'Option height: `md` is 40 px on touch and 32 px with a mouse (Dashboard, Profile); `sm` is 40 px, then 30 px with a mouse (the Holdings detail range).',
+        'Option height: `md` is 40 px on touch and 32 px with a mouse; `sm` is 40 px, then 30 px with a mouse (a compact range picker beside a chart).',
     },
     options: { control: false, description: 'Ordered `{ value, label }` list of choices.' },
   },

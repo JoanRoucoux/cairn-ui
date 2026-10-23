@@ -33,7 +33,7 @@ const meta: Meta<CardArgs> = {
 
 * To draw a boundary around content that belongs together and can be read on its own.
 * With \`padding="none"\` when the content manages its own spacing, which is what a table does.
-* With \`surface="lg"\` or \`"max-lg"\` when the same block is a card at one width only, such as a detail that is a card beside the list on a desktop and a plain screen on an iPhone.
+* With \`surface="lg"\` or \`"max-lg"\` when the same block is a card at one width only, such as a detail that is a card beside the list on a desktop and a plain screen on a phone.
 
 #### When not to use
 
@@ -88,7 +88,7 @@ const meta: Meta<CardArgs> = {
       control: 'inline-radio',
       options: [...CARD_SURFACES],
       description:
-        'Where the fill, the border, the radius and the padding apply: `always` (default), `lg` (from 64rem, plain below), or `max-lg` (below 64rem, plain from it). The block stays one element, so a detail screen can be a card on a desktop and a plain page on an iPhone.',
+        'Where the fill, the border, the radius and the padding apply: `always` (default), `lg` (from 64rem, plain below), or `max-lg` (below 64rem, plain from it). The block stays one element, so a detail screen can be a card on a desktop and a plain page on a phone.',
     },
     label: { control: 'text', description: 'Projected content.' },
   },

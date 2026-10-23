@@ -52,11 +52,11 @@ a lighter \`rgb(0 0 0 / 0.24)\` over that one's, with nothing to set.
 
 The header carries the title, an optional subtitle (\`description\`) and a close cross, which exists
 only when the consumer passes \`closeLabel\`. The width is set by the consumer: \`md\`, \`lg\` or any CSS
-length (Add a holding 560px, Buy and New account 480px, a confirmation 440px).
+length (560px for a search with results, 480px for a form, 440px for a confirmation).
 
 Every dialog has the same three zones. The header (title, optional subtitle, cross) is padded 16px 16px 16px 24px, with the title and the cross centered on each other, or lined up at the top under a subtitle; the body 20px 24px and is the only zone that scrolls, the footer 16px 24px. On a sheet they are 0 8px 12px 16px, 16px and 12px 16px plus the safe area, under a drag handle. A hairline runs under the header and above the footer, and both come with the cross: without \`closeLabel\` there is no cross and no hairlines. On a desktop the dialog is centered and never taller than \`100dvh - 96px\`.
 
-The \`variant\` input is \`default\` or \`confirm\`: a confirmation (deleting a passkey) is announced as an alertdialog, has no cross and no hairlines, one 24px padding and a 440px width unless \`width\` says otherwise. The \`sheet\` input is \`fit\` (the sheet is as tall as its content) or \`full\` (it fills the screen below 58px, so the footer stays pinned while the content changes, as in Add a holding). \`truncateDescription\` keeps the subtitle on one ellipsized line instead of wrapping. A click that starts and ends on the backdrop closes the dialog, like Escape.
+The \`variant\` input is \`default\` or \`confirm\`: a confirmation (deleting a passkey) is announced as an alertdialog, has no cross and no hairlines, one 24px padding and a 440px width unless \`width\` says otherwise. The \`sheet\` input is \`fit\` (the sheet is as tall as its content) or \`full\` (it fills the screen below 58px, so the footer stays pinned while the content changes, as in a search whose results come and go). \`truncateDescription\` keeps the subtitle on one ellipsized line instead of wrapping. A click that starts and ends on the backdrop closes the dialog, like Escape.
 
 Content goes in two slots: the default one for the body, and \`[dialogActions]\` for the footer
 buttons. Put the dismissing action first. On a desktop the footer is right-aligned; on a sheet the

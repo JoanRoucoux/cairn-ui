@@ -59,18 +59,18 @@ const meta: Meta<TableArgs> = {
       description: {
         component: `Styled native \`<table>\`. The rows and cells stay plain \`<tr>\` and \`<td>\`, with \`uiTable\`,
 \`uiTh\`, \`uiTd\` and \`uiTr\` applied as attributes. The header caption reads once, centered, in the subtle color.
-Table options: \`row\` (48, 52 or 60px body rows), \`[rule]="false"\` (no hairline under the header, as on Holdings)
-and \`spaced\` (4px between the header and the first row, as on Accounts). A row glows on hover;
+Table options: \`row\` (48, 52 or 60px body rows), \`[rule]="false"\` (no hairline under the header)
+and \`spaced\` (4px between the header and the first row). A row glows on hover;
 \`selected\` takes the soft fill.
 
 \`numeric\` right aligns a column and lines its digits up, on the \`<th>\` and on every \`<td>\`. \`primary\` marks the
 one column that absorbs the free width and truncates; give the others a \`width\` on their header.
-\`td[ui-group-cell]\` is the muted band that opens a group (\`size="lg"\` is the 48px band of Holdings); wrap the
+\`td[ui-group-cell]\` is the muted band that opens a group (\`size="lg"\` is the 48px band); wrap the
 group in \`<tbody uiGroup>\` for its 4px tail. Its total is a \`ui-amount\`. Its heading takes focus with no ring: \`h2[data-group-heading]\`.
 
-\`a[uiRowLink]\` or \`button[uiRowLink]\` in the first cell makes the whole row one target, with a row-wide ring
-(Holdings). \`[stretch]="false"\` keeps the target on the name, underlined on hover with its own ring
-(Accounts). \`current\` sets \`aria-current\`. A control in another cell takes \`uiRowAction\`. A row
+\`a[uiRowLink]\` or \`button[uiRowLink]\` in the first cell makes the whole row one target, with a row-wide ring.
+\`[stretch]="false"\` keeps the target on the name, underlined on hover with its own ring.
+\`current\` sets \`aria-current\`. A control in another cell takes \`uiRowAction\`. A row
 that opens something is \`interactive\` (it presses to the soft fill); one with no action keeps a plain name,
 \`<td uiTd primary class="truncate font-medium">\`.
 
