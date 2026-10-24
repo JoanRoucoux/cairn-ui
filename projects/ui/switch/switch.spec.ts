@@ -10,6 +10,16 @@ describe('UiSwitch', () => {
     expect(screen.getByRole('switch', { name: 'Hide amounts' })).toBeInTheDocument();
   });
 
+  it('draws the off track in the control border and keeps a forced-colors border', async () => {
+    await render('<input type="checkbox" uiSwitch aria-label="Hide amounts" />', { imports: [UiSwitch] });
+
+    expect(screen.getByRole('switch', { name: 'Hide amounts' })).toHaveClass(
+      'bg-(--control-border)',
+      'forced-colors:border',
+      'forced-colors:checked:bg-[color:Highlight]',
+    );
+  });
+
   it('toggles on click', async () => {
     await render('<input type="checkbox" uiSwitch aria-label="Hide amounts" />', { imports: [UiSwitch] });
     const toggle = screen.getByRole('switch', { name: 'Hide amounts' }) as HTMLInputElement;

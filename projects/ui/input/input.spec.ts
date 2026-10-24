@@ -12,7 +12,7 @@ describe('UiInput', () => {
     await render('<input uiInput aria-label="Email" />', { imports: [UiInput] });
 
     const input = screen.getByRole('textbox', { name: 'Email' });
-    expect(input).toHaveClass('shadow-[inset_0_0_0_1px_var(--border)]', 'text-body');
+    expect(input).toHaveClass('shadow-[inset_0_0_0_1px_var(--control-border)]', 'text-body');
 
     await user.type(input, 'alex@contoso.com');
     expect(input).toHaveValue('alex@contoso.com');
@@ -127,7 +127,7 @@ describe('UiTextarea', () => {
     await render('<textarea uiTextarea aria-label="Notes"></textarea>', { imports: [UiTextarea] });
 
     const textarea = screen.getByRole('textbox', { name: 'Notes' });
-    expect(textarea).toHaveClass('shadow-[inset_0_0_0_1px_var(--border)]', 'min-h-24');
+    expect(textarea).toHaveClass('shadow-[inset_0_0_0_1px_var(--control-border)]', 'min-h-24');
 
     await user.type(textarea, 'A tracker on the S&P 500.');
     expect(textarea).toHaveValue('A tracker on the S&P 500.');

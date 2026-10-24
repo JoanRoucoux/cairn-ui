@@ -35,6 +35,7 @@ mode. The selection is a \`model()\`, bound with \`[(value)]\`.
 
 #### Accessibility
 
+* The selected option sits on a thumb ringed with \`--control-border\` (3:1). In forced colors the track gets a border and the thumb takes the \`Highlight\` / \`HighlightText\` pair.
 * Implements the [ARIA radio group pattern](https://www.w3.org/WAI/ARIA/apg/patterns/radio/), since
   no native element covers this.
 * A roving \`tabindex\` keeps a single stop in the tab order: the selected option, or the first one

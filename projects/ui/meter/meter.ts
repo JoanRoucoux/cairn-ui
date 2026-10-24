@@ -32,7 +32,7 @@ const TONE_CLASSES: Record<MeterTone, string> = {
   selector: 'ui-meter',
   template: `
     <div
-      class="rounded-pill w-full overflow-hidden bg-(--muted)"
+      class="rounded-pill w-full overflow-hidden bg-(--muted) forced-colors:border"
       role="meter"
       [attr.aria-label]="label()"
       [attr.aria-valuemax]="1"
@@ -56,5 +56,8 @@ export class UiMeter {
 
   protected readonly percent = computed(() => Math.min(100, Math.max(0, this.value() * 100)));
 
-  protected readonly fillClasses = computed(() => `h-full rounded-pill ${TONE_CLASSES[this.tone()]}`);
+  protected readonly fillClasses = computed(
+    () =>
+      `h-full rounded-pill forced-colors:forced-color-adjust-none forced-colors:bg-[color:CanvasText] ${TONE_CLASSES[this.tone()]}`,
+  );
 }

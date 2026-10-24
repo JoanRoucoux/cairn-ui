@@ -7,6 +7,7 @@
   --card-foreground: light-dark(#111414, #edefee);
   --elevated: light-dark(#f1f3f2, #101111);
   --border: light-dark(#e2e5e4, #242726);
+  --control-border: light-dark(#868d8b, #656c6a);
   --hairline: light-dark(#edefee, #1e2020);
 
   --muted-foreground: light-dark(#5c6462, #989d9b);

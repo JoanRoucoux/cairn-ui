@@ -20,11 +20,12 @@ export type ChoiceChipOption = {
 };
 
 const CHIP_CLASSES =
-  'h-10 px-3.5 pointer-fine:h-8 pointer-fine:px-3 rounded-pill text-label font-medium cursor-pointer transition-transform duration-(--duration-press) ease-out active:scale-(--press-scale) disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring)';
+  'h-10 px-3.5 pointer-fine:h-8 pointer-fine:px-3 rounded-pill forced-colors:border text-label font-medium cursor-pointer transition-transform duration-(--duration-press) ease-out active:scale-(--press-scale) disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring)';
 
-const SELECTED_CLASSES = 'bg-(--primary) text-(--primary-foreground)';
+const SELECTED_CLASSES =
+  'forced-colors:focus-visible:outline-[color:CanvasText] bg-(--primary) text-(--primary-foreground) forced-colors:forced-color-adjust-none forced-colors:bg-[color:Highlight]! forced-colors:text-[color:HighlightText]!';
 
-const UNSELECTED_CLASSES = 'text-(--foreground) shadow-[inset_0_0_0_1px_var(--border)]';
+const UNSELECTED_CLASSES = 'text-(--foreground) shadow-[inset_0_0_0_1px_var(--control-border)]';
 
 const nextId = (() => {
   let count = 0;

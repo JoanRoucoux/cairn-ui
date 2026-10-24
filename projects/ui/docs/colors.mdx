@@ -76,6 +76,17 @@ export const contrastTokens = [
   </tbody>
 </table>
 
+## Non-text contrast
+
+WCAG 1.4.11 asks 3:1 for the boundary of an interactive control and for the focus indicator. `--control-border` and `--ring` clear it against `--background`, `--card`, `--elevated` and `--muted`; the table gives the worst ground, and `tokens.spec.ts` fails below 3:1. `--border` stays a quiet divider for cards and separators and is not meant to carry a control. A selected, current or pressed state that only differs by `--soft` adds an inset 1px `--control-border` ring.
+
+| Token              | Light   | Dark    |
+| ------------------ | ------- | ------- |
+| `--control-border` | 3.04:1  | 3.05:1  |
+| `--ring`           | 15.88:1 | 14.82:1 |
+
+In forced colors (`forced-colors: active`) the browser drops box shadows and background colors, so every edge is also drawn as a 1px border and a selected, current or pressed state switches to a system `Highlight` indicator (the `Highlight` and `HighlightText` fill pair, an outline or text).
+
 `--positive`, `--negative` and `--stale` are **darker in light mode than in dark mode**. This is not an
 inconsistency: a mid-tone green that reads at 8.5:1 on a near-black ground only reaches 4.07:1 on white, which
 fails. The role is what stays fixed across schemes, never the hex.
@@ -93,9 +104,10 @@ export const tokens = [
   ['card', 'Card and panel surface'],
   ['card-foreground', 'Text on card'],
   ['elevated', 'Raised surface: menu, chart tooltip, elevated card'],
-  ['border', 'Borders and dividers'],
+  ['border', 'Card borders and dividers'],
+  ['control-border', 'Boundary of an interactive control: input, select, outline button, chip, switch off track'],
   ['hairline', 'Row separators inside a card'],
-  ['muted', 'Neutral fill: avatar, badge, group band, meter track, switch track, skeleton, segmented track'],
+  ['muted', 'Neutral fill: avatar, badge, group band, meter track, skeleton, segmented track'],
   ['muted-foreground', 'Secondary text'],
   ['subtle-foreground', 'Tertiary text and unknown values'],
   ['primary', 'Primary actions and active states'],

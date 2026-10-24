@@ -206,7 +206,7 @@ export class UiDialog {
 
   protected readonly headerClasses = computed(
     () =>
-      `flex ${this.description() ? 'items-start' : 'items-center'} gap-2 pl-4 max-lg:touch-none lg:gap-3 ${this.spec().header} ${this.closeLabel() ? 'pr-2 lg:pr-4' : 'pr-4 lg:pr-6'} ${this.hairlines() ? 'shadow-[inset_0_-1px_0_var(--hairline)]' : ''}`,
+      `flex ${this.description() ? 'items-start' : 'items-center'} gap-2 pl-4 max-lg:touch-none lg:gap-3 ${this.spec().header} ${this.closeLabel() ? 'pr-2 lg:pr-4' : 'pr-4 lg:pr-6'} ${this.hairlines() ? 'shadow-[inset_0_-1px_0_var(--hairline)] forced-colors:border-b' : ''}`,
   );
 
   protected readonly crossClasses =
@@ -214,12 +214,12 @@ export class UiDialog {
 
   protected readonly footerClasses = computed(
     () =>
-      `max-lg:[&>[ui-button]]:text-body flex justify-end gap-2 px-4 pb-[calc(8px+env(safe-area-inset-bottom))] max-lg:flex-col-reverse max-lg:[&>[ui-button]]:h-[50px] max-lg:[&>[ui-button]]:w-full lg:px-6 ${this.spec().footer} ${this.hairlines() ? 'shadow-[inset_0_1px_0_var(--hairline)]' : ''}`,
+      `max-lg:[&>[ui-button]]:text-body flex justify-end gap-2 px-4 pb-[calc(8px+env(safe-area-inset-bottom))] max-lg:flex-col-reverse max-lg:[&>[ui-button]]:h-[50px] max-lg:[&>[ui-button]]:w-full lg:px-6 ${this.spec().footer} ${this.hairlines() ? 'shadow-[inset_0_1px_0_var(--hairline)] forced-colors:border-t' : ''}`,
   );
 
   protected readonly classes = computed(
     () =>
-      `open:flex w-full flex-col overflow-hidden m-auto mt-auto max-lg:max-h-[calc(100dvh-2rem-env(safe-area-inset-top))] lg:max-h-[calc(100dvh-96px)] max-lg:mb-0 max-lg:max-w-none max-lg:rounded-b-none lg:max-w-(--dialog-width) rounded-container bg-(--card) text-(--foreground) outline-none shadow-[0_0_0_1px_var(--border),0_24px_64px_rgb(0_0_0/0.24)] max-lg:shadow-[0_-1px_0_var(--border),0_-12px_32px_rgb(0_0_0/0.16)] ${this.stacked() ? 'backdrop:bg-black/[0.24]' : 'backdrop:bg-black/[0.36]'} ${this.sheet() === 'full' ? 'max-lg:h-[calc(100dvh-58px)]' : ''}`,
+      `open:flex w-full flex-col overflow-hidden m-auto mt-auto max-lg:max-h-[calc(100dvh-2rem-env(safe-area-inset-top))] lg:max-h-[calc(100dvh-96px)] max-lg:mb-0 max-lg:max-w-none max-lg:rounded-b-none lg:max-w-(--dialog-width) rounded-container forced-colors:border bg-(--card) text-(--foreground) outline-none shadow-[0_0_0_1px_var(--border),0_24px_64px_rgb(0_0_0/0.24)] max-lg:shadow-[0_-1px_0_var(--border),0_-12px_32px_rgb(0_0_0/0.16)] ${this.stacked() ? 'backdrop:bg-black/[0.24]' : 'backdrop:bg-black/[0.36]'} ${this.sheet() === 'full' ? 'max-lg:h-[calc(100dvh-58px)]' : ''}`,
   );
 
   readonly #host = inject<ElementRef<HTMLElement>>(ElementRef);

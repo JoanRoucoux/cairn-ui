@@ -20,19 +20,19 @@ const BASE_CLASSES = 'block';
 
 const VARIANT_CLASSES: Record<CardVariant, Record<CardSurface, string>> = {
   default: {
-    always: 'rounded-container bg-(--card) text-(--card-foreground)',
-    lg: 'lg:rounded-container lg:bg-(--card) lg:text-(--card-foreground)',
-    'max-lg': 'max-lg:rounded-container max-lg:bg-(--card) max-lg:text-(--card-foreground)',
+    always: 'rounded-container bg-(--card) text-(--card-foreground) forced-colors:border',
+    lg: 'lg:rounded-container lg:bg-(--card) lg:text-(--card-foreground) lg:forced-colors:border',
+    'max-lg': 'max-lg:rounded-container max-lg:bg-(--card) max-lg:text-(--card-foreground) max-lg:forced-colors:border',
   },
   elevated: {
-    always: 'rounded-container bg-(--elevated) text-(--foreground)',
-    lg: 'lg:rounded-container lg:bg-(--elevated) lg:text-(--foreground)',
-    'max-lg': 'max-lg:rounded-container max-lg:bg-(--elevated) max-lg:text-(--foreground)',
+    always: 'rounded-container bg-(--elevated) text-(--foreground) forced-colors:border',
+    lg: 'lg:rounded-container lg:bg-(--elevated) lg:text-(--foreground) lg:forced-colors:border',
+    'max-lg': 'max-lg:rounded-container max-lg:bg-(--elevated) max-lg:text-(--foreground) max-lg:forced-colors:border',
   },
   inset: {
-    always: 'rounded-control bg-(--background) text-(--foreground)',
-    lg: 'lg:rounded-control lg:bg-(--background) lg:text-(--foreground)',
-    'max-lg': 'max-lg:rounded-control max-lg:bg-(--background) max-lg:text-(--foreground)',
+    always: 'rounded-control bg-(--background) text-(--foreground) forced-colors:border',
+    lg: 'lg:rounded-control lg:bg-(--background) lg:text-(--foreground) lg:forced-colors:border',
+    'max-lg': 'max-lg:rounded-control max-lg:bg-(--background) max-lg:text-(--foreground) max-lg:forced-colors:border',
   },
 };
 

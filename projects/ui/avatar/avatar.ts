@@ -48,7 +48,7 @@ export class UiAvatar {
   selector: 'a[uiAvatarLink], button[uiAvatarLink]',
   host: {
     class:
-      'rounded-pill grid size-11 lg:size-10 place-items-center cursor-pointer select-none touch-manipulation transition-[scale,background-color] [transition-duration:var(--duration-press),var(--duration-fast)] ease-out hover:bg-(--glow) aria-[current=page]:bg-transparent aria-[current=page]:bg-[image:linear-gradient(var(--soft),var(--soft))] active:scale-(--press-scale) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring)',
+      'rounded-pill grid size-11 lg:size-10 place-items-center cursor-pointer select-none touch-manipulation transition-[scale,background-color] [transition-duration:var(--duration-press),var(--duration-fast)] ease-out hover:bg-(--glow) aria-[current=page]:bg-transparent aria-[current=page]:bg-[image:linear-gradient(var(--soft),var(--soft))] aria-[current=page]:shadow-[inset_0_0_0_1px_var(--control-border)] forced-colors:aria-[current=page]:outline-2 forced-colors:aria-[current=page]:outline-[color:Highlight] active:scale-(--press-scale) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring)',
   },
 })
 export class UiAvatarLink {}

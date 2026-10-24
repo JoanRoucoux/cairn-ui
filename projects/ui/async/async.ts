@@ -17,10 +17,10 @@ export const ASYNC_ALIGNS = ['start', 'center', 'auto'] as const;
 export type AsyncAlign = (typeof ASYNC_ALIGNS)[number];
 
 const RETRY_BASE_CLASSES =
-  'relative inline-flex items-center justify-center rounded-control font-medium whitespace-nowrap cursor-pointer select-none touch-manipulation transition-[scale,background-color] [transition-duration:var(--duration-press),var(--duration-fast)] ease-out active:scale-(--press-scale) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring) text-label';
+  'relative inline-flex items-center justify-center rounded-control forced-colors:border font-medium whitespace-nowrap cursor-pointer select-none touch-manipulation transition-[scale,background-color] [transition-duration:var(--duration-press),var(--duration-fast)] ease-out active:scale-(--press-scale) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring) text-label';
 
 const RETRY_OUTLINE_CLASSES =
-  'bg-(--card) text-(--foreground) shadow-[inset_0_0_0_1px_var(--border)] hover:bg-(--glow)';
+  'bg-(--card) text-(--foreground) shadow-[inset_0_0_0_1px_var(--control-border)] hover:bg-(--glow)';
 
 const RETRY_PRIMARY_CLASSES = 'bg-(--primary) text-(--primary-foreground) hover:bg-(--primary-to)';
 
@@ -34,7 +34,8 @@ const RETRY_INLINE_TEXT_CLASSES = 'px-3';
 
 const ELEVATED_SURFACE_CLASSES = 'rounded-control bg-(--elevated)';
 
-const CARD_SURFACE_CLASSES = 'rounded-container bg-(--card) shadow-[inset_0_0_0_1px_var(--border)]';
+const CARD_SURFACE_CLASSES =
+  'rounded-container bg-(--card) shadow-[inset_0_0_0_1px_var(--border)] forced-colors:border';
 
 type BlockSpec = {
   surface: string;

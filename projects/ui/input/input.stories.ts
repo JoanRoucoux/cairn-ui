@@ -34,6 +34,7 @@ textarea grows from a floor instead of sitting at a fixed height.
 
 #### Accessibility
 
+* The boundary is \`--control-border\` (3:1 against the page). In forced colors it becomes a real border, 2px wide when \`aria-invalid\` is set, since shadows are dropped.
 * The control always needs an accessible name, either from the label of a surrounding
   \`<ui-field>\` or from an explicit \`aria-label\`.
 * A placeholder is not a label. It disappears as soon as the user types.

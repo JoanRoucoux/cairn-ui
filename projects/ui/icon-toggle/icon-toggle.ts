@@ -13,7 +13,7 @@ import { Directive } from '@angular/core';
   host: {
     type: 'button',
     class:
-      'rounded-pill grid size-11 lg:size-10 place-items-center text-(--foreground) cursor-pointer select-none touch-manipulation transition-[scale] duration-(--duration-press) ease-out pointer-fine:hover:bg-(--glow) aria-pressed:bg-[image:linear-gradient(var(--soft),var(--soft))] active:scale-(--press-scale) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring)',
+      'rounded-pill grid size-11 lg:size-10 place-items-center text-(--foreground) cursor-pointer select-none touch-manipulation transition-[scale] duration-(--duration-press) ease-out pointer-fine:hover:bg-(--glow) aria-pressed:bg-[image:linear-gradient(var(--soft),var(--soft))] aria-pressed:shadow-[inset_0_0_0_1px_var(--control-border)] forced-colors:border forced-colors:aria-pressed:forced-color-adjust-none forced-colors:aria-pressed:focus-visible:outline-[color:CanvasText] forced-colors:aria-pressed:bg-none forced-colors:aria-pressed:bg-[color:Highlight]! forced-colors:aria-pressed:text-[color:HighlightText]! active:scale-(--press-scale) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring)',
   },
 })
 export class UiIconToggle {}

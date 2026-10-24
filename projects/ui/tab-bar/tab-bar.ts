@@ -10,7 +10,8 @@ const TAB_CLASSES =
 
 const INACTIVE_TAB_CLASSES = 'font-medium text-(--muted-foreground)';
 
-const ACTIVE_TAB_CLASSES = 'font-semibold text-(--foreground)';
+const ACTIVE_TAB_CLASSES =
+  'font-semibold text-(--foreground) forced-colors:forced-color-adjust-none forced-colors:text-[color:Highlight] forced-colors:underline forced-colors:decoration-2 forced-colors:underline-offset-4';
 
 /**
  * Bottom navigation bar for phones. While it is on the page it publishes its height as
@@ -27,7 +28,7 @@ const ACTIVE_TAB_CLASSES = 'font-semibold text-(--foreground)';
   template: '<ng-content />',
   host: {
     class:
-      'grid grid-flow-col auto-cols-fr items-stretch bg-(--background)/90 backdrop-blur [@media(prefers-reduced-transparency:reduce)]:bg-(--background) shadow-[inset_0_1px_0_var(--hairline)] pb-[env(safe-area-inset-bottom)]',
+      'grid grid-flow-col auto-cols-fr items-stretch bg-(--background)/90 backdrop-blur [@media(prefers-reduced-transparency:reduce)]:bg-(--background) shadow-[inset_0_1px_0_var(--hairline)] forced-colors:border-t pb-[env(safe-area-inset-bottom)]',
   },
 })
 export class UiTabBar {

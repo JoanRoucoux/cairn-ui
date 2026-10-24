@@ -7,6 +7,7 @@ const PALETTE = {
     card: '#ffffff',
     elevated: '#f1f3f2',
     border: '#e2e5e4',
+    controlBorder: '#868d8b',
     mutedForeground: '#5c6462',
     primary: '#161918',
   },
@@ -16,6 +17,7 @@ const PALETTE = {
     card: '#151717',
     elevated: '#101111',
     border: '#242726',
+    controlBorder: '#656c6a',
     mutedForeground: '#989d9b',
     primary: '#f2f4f3',
   },
@@ -52,12 +54,12 @@ export const cairnStorybookTheme = (scheme: 'light' | 'dark'): ThemeVars => {
     barSelectedColor: palette.foreground,
 
     buttonBg: palette.elevated,
-    buttonBorder: palette.border,
+    buttonBorder: palette.controlBorder,
     booleanBg: palette.elevated,
     booleanSelectedBg: palette.card,
 
     inputBg: palette.card,
-    inputBorder: palette.border,
+    inputBorder: palette.controlBorder,
     inputTextColor: palette.foreground,
     inputBorderRadius: 6,
 

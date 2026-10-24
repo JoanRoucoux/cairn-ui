@@ -5,7 +5,8 @@ import { holdTransitionsUntilRendered } from '@joanroucoux/cairn-ui/motion';
 const BASE_CLASSES =
   'flex items-center gap-3 h-10 px-3 rounded-control text-label leading-normal font-medium transition-[scale,background-color] [transition-duration:var(--duration-press),var(--duration-fast)] ease-out active:scale-(--press-scale) hover:bg-(--glow) hover:text-(--foreground) focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring)';
 
-const ACTIVE_CLASSES = 'bg-[image:linear-gradient(var(--soft),var(--soft))] text-(--foreground)';
+const ACTIVE_CLASSES =
+  'bg-[image:linear-gradient(var(--soft),var(--soft))] text-(--foreground) shadow-[inset_0_0_0_1px_var(--control-border)] forced-colors:bg-none forced-colors:forced-color-adjust-none forced-colors:bg-[color:Highlight]! forced-colors:text-[color:HighlightText]! forced-colors:[&_*]:text-[color:HighlightText] forced-colors:[&_*]:bg-transparent forced-colors:focus-visible:outline-[color:HighlightText]';
 
 const IDLE_CLASSES = 'text-(--muted-foreground) active:bg-(--soft)';
 

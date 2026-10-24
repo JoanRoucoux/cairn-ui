@@ -19,7 +19,7 @@ describe('UiSelect', () => {
     await render(`<select uiSelect aria-label="Wrapper">${OPTIONS}</select>`, { imports: [UiSelect] });
 
     const select = screen.getByRole('combobox', { name: 'Wrapper' });
-    expect(select).toHaveClass('shadow-[inset_0_0_0_1px_var(--border)]');
+    expect(select).toHaveClass('shadow-[inset_0_0_0_1px_var(--control-border)]');
     expect(select).not.toHaveClass('bg-(--elevated)');
 
     await user.selectOptions(select, 'pea');

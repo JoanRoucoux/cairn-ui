@@ -106,7 +106,9 @@ export class UiTr {
     }
     return [
       'relative [&>td:first-child]:rounded-l-control [&>td:last-child]:rounded-r-control',
-      this.selected() ? '[&>td]:bg-(--soft)' : '',
+      this.selected()
+        ? '[&>td]:bg-(--soft) [&>td]:shadow-[inset_0_1px_0_var(--control-border),inset_0_-1px_0_var(--control-border)] [&>td:first-child]:shadow-[inset_0_1px_0_var(--control-border),inset_0_-1px_0_var(--control-border),inset_1px_0_0_var(--control-border)] [&>td:last-child]:shadow-[inset_0_1px_0_var(--control-border),inset_0_-1px_0_var(--control-border),inset_-1px_0_0_var(--control-border)] [&>td:only-child]:shadow-[inset_0_0_0_1px_var(--control-border)] forced-colors:[&>td]:forced-color-adjust-none forced-colors:[&>td]:bg-[color:Highlight]! forced-colors:[&>td]:text-[color:HighlightText]! forced-colors:[&>td_*]:text-[color:HighlightText] forced-colors:[&>td_*]:bg-transparent'
+        : '',
       'hover:[&>td]:bg-(--glow) [&>td]:transition-colors [&>td]:duration-(--duration-fast) [&>td]:ease-out',
       this.interactive()
         ? 'active:[&>td]:bg-(--soft) transition-transform duration-(--duration-press) ease-out active:scale-(--press-scale)'
@@ -221,7 +223,7 @@ export type GroupSize = (typeof GROUP_SIZES)[number];
     @if (collapsible()) {
       <h2 class="m-0 font-normal">
         <button
-          class="rounded-control flex w-full items-center justify-between gap-4 bg-(--muted) px-2 text-left transition-[background-color] duration-(--duration-fast) ease-out not-aria-disabled:cursor-pointer not-aria-disabled:hover:bg-(--soft) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring)"
+          class="rounded-control flex w-full items-center justify-between gap-4 bg-(--muted) px-2 text-left transition-[background-color] duration-(--duration-fast) ease-out not-aria-disabled:cursor-pointer not-aria-disabled:hover:bg-(--soft) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring) forced-colors:border"
           data-group-heading
           type="button"
           [attr.aria-controls]="controls() || null"
@@ -259,7 +261,7 @@ export type GroupSize = (typeof GROUP_SIZES)[number];
       </h2>
     } @else {
       <div
-        class="rounded-control flex items-center justify-between gap-4 bg-(--muted) px-2"
+        class="rounded-control flex items-center justify-between gap-4 bg-(--muted) px-2 forced-colors:border"
         [class]="size() === 'lg' ? 'min-h-12' : 'min-h-11'"
       >
         <div class="flex min-w-0 items-baseline gap-3">

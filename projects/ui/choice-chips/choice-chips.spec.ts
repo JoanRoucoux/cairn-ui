@@ -62,7 +62,7 @@ describe('UiChoiceChips', () => {
     expect(screen.getByRole('radio', { name: 'PEA' })).toHaveClass(
       'bg-(--background)',
       'text-(--foreground)',
-      'shadow-[inset_0_0_0_1px_var(--border)]',
+      'shadow-[inset_0_0_0_1px_var(--control-border)]',
     );
   });
 
