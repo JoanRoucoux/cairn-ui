@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.12.2
+
+### Changed
+
+- Component descriptions (Storybook Docs, JSDoc, and so the MCP manifest) describe each size and option by its use instead of naming the screens of an app, and say "phone" instead of "iPhone".
+
 ## 0.12.1
 
 ### Fixed
