@@ -9,7 +9,13 @@ export type AmountFormatOptions = {
   fractionDigits?: number;
 };
 
-/** Formats a number or an amount for the locale. A missing value is an em dash, a masked one four bullets. */
+/**
+ * Formats a number or an amount for the locale, for the eye. A missing value is an em dash, a masked one four
+ * bullets: use `speakAmount` or `UiAmountText` for assistive text.
+ *
+ * @example
+ * formatAmount(1204.37, { locale: 'fr-FR', currency: 'EUR' });
+ */
 export function formatAmount(value: number | null | undefined, options: AmountFormatOptions, masked = false): string {
   if (value === null || value === undefined || Number.isNaN(value)) {
     return EM_DASH;

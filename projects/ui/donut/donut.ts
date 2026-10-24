@@ -1,5 +1,7 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, computed, input, output, signal } from '@angular/core';
+import { Component, computed, inject, input, output, signal } from '@angular/core';
+
+import { UI_AMOUNT_LABELS, UiAmountText, speakAmount } from '@joanroucoux/cairn-ui/amount';
 
 import { ACTIVE_RING_WIDTH, RADIUS, RING_WIDTH, positionSlices } from './internal/donut-geometry';
 import { type DonutSlice, type Ramp, type RankedSlice, rankSlices, shareSlices } from './internal/donut-slices';
@@ -72,9 +74,9 @@ const RAMP_DOT_CLASSES: Record<Ramp, string> = {
             slice.label
           }}</span>
           <span class="text-heading font-semibold tracking-(--tracking-display)">{{ shareFormat()(slice.share) }}</span>
-          <span class="text-caption tracking-normal text-(--muted-foreground) [font-variant-numeric:var(--numeric)]">{{
-            valueFormat()(slice.value)
-          }}</span>
+          <span class="text-caption tracking-normal text-(--muted-foreground) [font-variant-numeric:var(--numeric)]"
+            ><ui-amount-text [text]="valueFormat()(slice.value)"
+          /></span>
         </div>
       }
     </div>
@@ -108,18 +110,21 @@ const RAMP_DOT_CLASSES: Record<Ramp, string> = {
     <ng-template #rowContent let-slice>
       <span [class]="dotClasses(slice)"></span>
       <span class="flex min-w-0 flex-1 flex-col">
-        <span class="text-body truncate font-medium">{{ slice.label }}</span>
-        <span class="text-caption truncate tracking-(--tracking-caption) text-(--subtle-foreground)">{{
-          subLabel(slice)
-        }}</span>
+        <span class="text-body min-w-0 font-medium text-pretty break-words">{{ slice.label }}</span>
+        <span
+          class="text-caption min-w-0 tracking-(--tracking-caption) text-pretty break-words text-(--subtle-foreground)"
+          >{{ subLabel(slice) }}</span
+        >
       </span>
       <span class="flex flex-none flex-col items-end whitespace-nowrap">
         <span class="text-body font-medium">{{ shareFormat()(slice.share) }}</span>
-        <span class="text-caption tracking-normal text-(--muted-foreground)">{{ valueFormat()(slice.value) }}</span>
+        <span class="text-caption tracking-normal text-(--muted-foreground)"
+          ><ui-amount-text [text]="valueFormat()(slice.value)"
+        /></span>
       </span>
     </ng-template>
   `,
-  imports: [NgTemplateOutlet],
+  imports: [NgTemplateOutlet, UiAmountText],
   host: {
     class: 'flex flex-col items-center gap-3 sm:flex-row sm:items-center sm:gap-8',
   },
@@ -135,6 +140,8 @@ export class UiDonut {
 
   readonly sliceSelect = output<DonutSlice['id']>();
 
+  readonly #labels = inject(UI_AMOUNT_LABELS);
+
   protected readonly selectedId = signal<string | null>(null);
 
   protected readonly ranked = computed(() => rankSlices(this.slices(), this.othersLabel()));
@@ -149,7 +156,7 @@ export class UiDonut {
 
   protected readonly ariaLabel = computed(() => {
     const detail = shareSlices(this.slices())
-      .map((slice) => `${slice.label} ${this.shareFormat()(slice.share)}`)
+      .map((slice) => `${slice.label} ${speakAmount(this.shareFormat()(slice.share), this.#labels())}`)
       .join(', ');
 
     return detail ? `${this.label()}: ${detail}` : this.label();

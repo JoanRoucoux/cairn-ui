@@ -43,7 +43,7 @@ describe('UiLineChart touch and delta suffix', () => {
     await userEvent.keyboard('{End}');
 
     expect(screen.getByTestId('chart-tooltip').querySelector('[data-chart-delta]')).toHaveTextContent(
-      '•••• € since the start',
+      '•••• €Hidden amount since the start',
     );
   });
 

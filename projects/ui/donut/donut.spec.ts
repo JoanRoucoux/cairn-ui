@@ -145,7 +145,7 @@ describe('UiDonut', () => {
 
     expect(center.getByText('ETF')).toHaveClass('text-label', 'font-medium', 'text-(--muted-foreground)');
     expect(center.getByText('60%')).toHaveClass('text-heading', 'font-semibold');
-    expect(center.getByText('60')).toHaveClass('text-caption', 'text-(--muted-foreground)');
+    expect(center.getByText('60').parentElement).toHaveClass('text-caption', 'text-(--muted-foreground)');
   });
 
   it('hovering an arc highlights its legend row and leaving it keeps the highlight', async () => {

@@ -58,7 +58,7 @@ describe('UiGroupHeader', () => {
       await render(Host);
 
       expect(screen.getByText('Northwind PEA')).toHaveClass('text-title', 'font-semibold');
-      expect(screen.getByText('PEA · 2 holdings')).toHaveClass('text-label', 'text-(--muted-foreground)');
+      expect(screen.getByText('PEA · 2 holdings').parentElement).toHaveClass('text-label', 'text-(--muted-foreground)');
       expect(screen.getByText('48 215,60 €')).toHaveClass('text-title', 'font-semibold', 'tabular-nums');
     });
 
@@ -156,5 +156,20 @@ describe('UiGroupHeader', () => {
       expect(screen.getByRole('heading')).toHaveTextContent('A');
       expect(screen.getByRole('heading').parentElement?.children).toHaveLength(1);
     });
+  });
+});
+
+describe('UiGroupHeader assistive meta', () => {
+  it('speaks a masked amount in the meta', async () => {
+    await render('<ui-group-header name="Northwind PEA" meta="•••• €" />', { imports: [UiGroupHeader] });
+
+    expect(screen.getByText('•••• €')).toHaveAttribute('aria-hidden', 'true');
+    expect(screen.getByText('Hidden amount')).toHaveClass('sr-only');
+  });
+
+  it('speaks a masked amount in the meta of a collapsible header', async () => {
+    await render('<ui-group-header collapsible name="Northwind PEA" meta="—" />', { imports: [UiGroupHeader] });
+
+    expect(screen.getByText('Not available')).toHaveClass('sr-only');
   });
 });
