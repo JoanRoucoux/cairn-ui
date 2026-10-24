@@ -1,6 +1,6 @@
 {
   "name": "@joanroucoux/cairn-ui-mcp",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "MCP server for Cairn UI: lets coding agents look up its components, tokens and setup.",
   "keywords": [
     "mcp",

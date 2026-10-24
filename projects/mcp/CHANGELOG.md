@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2
+
+### Changed
+
+- The bundled snapshot describes `@joanroucoux/cairn-ui` 0.13.0 instead of 0.12.2.
+
 ## 0.1.1
 
 ### Changed
