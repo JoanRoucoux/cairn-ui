@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.14.0
+
+### Added
+
+- `@joanroucoux/cairn-ui/announcer`: `UiAnnouncer.announce(message)` speaks a message through one hidden polite live region, moved into the open modal dialog when there is one.
+- `UI_AMOUNT_LABELS` (English defaults `Hidden amount`, `Not available`; provide translated labels), `UiAmountText` (`ui-amount-text`) and `speakAmount`: masked and missing amounts are read by their label instead of "bullet bullet bullet bullet" or "em dash".
+- `announce` on `ui-empty`, to speak an empty state that appears after a search or a filter.
+- `busyLabel` on `a[ui-row]` and `button[ui-row]` (default `Loading`), read while the row is busy.
+
+### Changed
+
+- On a sheet, the `ui-dialog` footer stacks its actions in DOM order: the dismissing action on top, the primary at the bottom. The Tab order now follows what is shown.
+- Tab and Shift+Tab in `ui-menu` close it and move focus on from the trigger, instead of keeping focus on the trigger.
+- A `warning` `ui-alert` has no `role="status"` any more; when it appears after the page opened, it announces its heading and message once.
+- `ui-field` announces its error once, when the control turns touched or the `error` input changes, instead of re-announcing every validation change while the user types. The error paragraph is no longer `role="alert"`.
+- `ui-amount`, the `ui-donut` values and ring label, the `ui-line-chart` tooltip, data table and status region, and the `ui-group-header` meta speak masked and missing amounts by their label.
+- `ui-donut` legend labels and sub-labels wrap instead of being truncated.
+- `ui-result-group` announces its empty message.
+
 ## 0.13.0
 
 ### Added
