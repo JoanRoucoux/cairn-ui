@@ -104,7 +104,6 @@ jobs:
             exit 1
           fi
 
-      # --latest=false keeps the "Latest" badge on the library's own releases.
       - name: Create the GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}

@@ -1,7 +1,5 @@
 import type { SheriffConfig } from '@softarc/sheriff-core';
 
-// Sheriff has no test-only lens: a grant added so a spec or story can render a sibling component
-// also opens the production import surface.
 export const config: SheriffConfig = {
   entryFile: 'projects/ui/src/public-api.ts',
   enableBarrelLess: true,

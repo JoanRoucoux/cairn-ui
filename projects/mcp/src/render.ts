@@ -64,7 +64,6 @@ export function renderEntry(entry: Entry): string {
     sections.push(`## Import\n\n\`\`\`ts\nimport { ${symbols.join(', ')} } from '${entry.importPath}';\n\`\`\``);
   }
 
-  // A story control describes the input of the same name, when a single declaration has one.
   const controls = entry.docs.flatMap((docs) => docs.args);
   const ownerOf = (name: string): Declaration | undefined => {
     const owners = entry.declarations.filter((declaration) => declaration.inputs.some((input) => input.name === name));
