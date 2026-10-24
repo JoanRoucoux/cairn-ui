@@ -1,6 +1,5 @@
 import { type ThemeVars, create } from 'storybook/theming';
 
-// Copied from projects/ui/styles/tokens.css: no test catches a drift, edit both.
 const PALETTE = {
   light: {
     background: '#f7f8f8',

@@ -7,7 +7,6 @@ import { parseArgs } from 'node:util';
 import { loadManifest } from './load.ts';
 import { createServer } from './server.ts';
 
-// stdout carries the protocol: everything else goes to stderr.
 const { values } = parseArgs({ options: { manifest: { type: 'string' } } });
 const { version } = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')) as {
   version: string;
