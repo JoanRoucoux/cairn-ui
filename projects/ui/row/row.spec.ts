@@ -143,7 +143,11 @@ describe('UiRow', () => {
 
     const row = screen.getByRole('link', { name: 'Row' });
     expect(row).toHaveAttribute('aria-current', 'true');
-    expect(row).toHaveClass('bg-(--soft)');
+    expect(row).toHaveClass(
+      'bg-(--soft)',
+      'shadow-[inset_0_0_0_1px_var(--control-border)]',
+      'forced-colors:bg-[color:Highlight]!',
+    );
   });
 
   it('carries no aria-current when not selected', async () => {

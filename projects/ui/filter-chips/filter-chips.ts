@@ -10,11 +10,12 @@ const CHIP_CLASSES =
   'flex-none flex h-11 items-center rounded-pill border-0 bg-transparent p-0 font-[inherit] cursor-pointer transition-transform duration-(--duration-press) ease-out active:scale-(--press-scale) focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring) pointer-fine:h-8 pointer-fine:focus-visible:outline-offset-2';
 
 const PILL_CLASSES =
-  'flex h-[34px] items-center gap-1.5 rounded-pill px-3.5 text-label font-medium whitespace-nowrap pointer-fine:h-8 pointer-fine:px-3 pointer-fine:group-hover/chip:shadow-[inset_0_0_0_1px_var(--muted-foreground)]';
+  'flex h-[34px] items-center gap-1.5 rounded-pill forced-colors:border px-3.5 text-label font-medium whitespace-nowrap pointer-fine:h-8 pointer-fine:px-3 pointer-fine:group-hover/chip:shadow-[inset_0_0_0_1px_var(--muted-foreground)]';
 
-const SELECTED_PILL_CLASSES = 'bg-(--primary) text-(--primary-foreground)';
+const SELECTED_PILL_CLASSES =
+  'bg-(--primary) text-(--primary-foreground) forced-colors:forced-color-adjust-none forced-colors:bg-[color:Highlight]! forced-colors:text-[color:HighlightText]!';
 
-const UNSELECTED_PILL_CLASSES = 'bg-(--card) text-(--foreground) shadow-[inset_0_0_0_1px_var(--border)]';
+const UNSELECTED_PILL_CLASSES = 'bg-(--card) text-(--foreground) shadow-[inset_0_0_0_1px_var(--control-border)]';
 
 /**
  * A row of single-choice filter pills, each with an optional count, that narrows a list in place.

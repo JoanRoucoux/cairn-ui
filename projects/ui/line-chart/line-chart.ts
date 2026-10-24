@@ -166,7 +166,7 @@ type EndRef = ElementRef<SVGCircleElement>;
 
       @if (active(); as point) {
         <div
-          class="rounded-container pointer-events-none absolute bg-(--elevated) py-2 whitespace-nowrap [font-variant-numeric:var(--numeric)] shadow-[0_4px_16px_rgb(0_0_0/0.12),inset_0_0_0_1px_var(--border)]"
+          class="rounded-container pointer-events-none absolute bg-(--elevated) py-2 whitespace-nowrap [font-variant-numeric:var(--numeric)] shadow-[0_4px_16px_rgb(0_0_0/0.12),inset_0_0_0_1px_var(--border)] forced-colors:border"
           data-testid="chart-tooltip"
           role="status"
           [class]="tooltipClasses().box"

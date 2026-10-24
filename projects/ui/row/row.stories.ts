@@ -58,6 +58,7 @@ with a click handler, so keyboard and assistive technology support come for free
 
 #### Accessibility
 
+* A selected row adds an inset \`--control-border\` ring to its soft fill, so the state does not rely on a faint tint. In forced colors it takes the \`Highlight\` / \`HighlightText\` pair.
 * \`selected\` sets \`aria-current="true"\`, for the row whose detail is open next to it.
 * \`busy\` sets \`aria-busy\` and \`aria-disabled\`, shows a spinner in the trailing slot and swallows the clicks while the row keeps its focus.
 * \`unavailable\` sets \`aria-disabled="true"\`, grays the row to half opacity, shows a not-allowed cursor, drops hover and press, and swallows the clicks. The row stays focusable, so a screen reader finds it and reads why it cannot be picked: put the reason in the row.

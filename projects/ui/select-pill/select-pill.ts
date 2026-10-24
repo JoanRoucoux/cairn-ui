@@ -21,12 +21,13 @@ const TRIGGER_CLASSES =
 const PILL_CLASSES =
   'flex h-[34px] items-center rounded-pill pr-[30px] pl-3 text-label font-medium whitespace-nowrap forced-colors:border pointer-fine:h-8';
 
-const REST_PILL_CLASSES = 'bg-(--card) text-(--foreground) shadow-[inset_0_0_0_1px_var(--border)]';
+const REST_PILL_CLASSES = 'bg-(--card) text-(--foreground) shadow-[inset_0_0_0_1px_var(--control-border)]';
 
-const ACTIVE_PILL_CLASSES = 'bg-(--primary) text-(--primary-foreground)';
+const ACTIVE_PILL_CLASSES =
+  'bg-(--primary) text-(--primary-foreground) forced-colors:forced-color-adjust-none forced-colors:bg-[color:Highlight]! forced-colors:text-[color:HighlightText]!';
 
 const CLEAR_CLASSES =
-  'absolute end-0 flex size-[34px] cursor-pointer items-center justify-center rounded-pill border-0 bg-transparent p-0 text-(--primary-foreground) focus-visible:outline-2 focus-visible:-outline-offset-7 focus-visible:outline-(--primary-foreground) pointer-fine:size-8 pointer-fine:focus-visible:-outline-offset-6 after:absolute after:-inset-[5px] pointer-fine:after:-inset-0.5';
+  'absolute end-0 flex size-[34px] cursor-pointer items-center justify-center rounded-pill border-0 bg-transparent p-0 text-(--primary-foreground) focus-visible:outline-2 focus-visible:-outline-offset-7 focus-visible:outline-(--primary-foreground) pointer-fine:size-8 pointer-fine:focus-visible:-outline-offset-6 after:absolute after:-inset-[5px] pointer-fine:after:-inset-0.5 forced-colors:forced-color-adjust-none forced-colors:text-[color:HighlightText] forced-colors:focus-visible:outline-[color:HighlightText]';
 
 /**
  * A pill that opens a `ui-menu` of exclusive choices, to head a row of filter chips: outlined at rest with a

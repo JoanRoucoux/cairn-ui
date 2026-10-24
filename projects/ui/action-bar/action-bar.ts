@@ -19,7 +19,7 @@ const HEIGHT_PROPERTY = '--action-bar-height';
   template: '<ng-content />',
   host: {
     class:
-      'fixed inset-x-0 bottom-[var(--tab-bar-height,calc(52px+env(safe-area-inset-bottom)))] z-40 grid grid-flow-col auto-cols-fr gap-2 bg-(--background) px-(--gutter) py-3 shadow-[0_-1px_0_var(--hairline)] lg:hidden',
+      'fixed inset-x-0 bottom-[var(--tab-bar-height,calc(52px+env(safe-area-inset-bottom)))] z-40 grid grid-flow-col auto-cols-fr gap-2 bg-(--background) px-(--gutter) py-3 shadow-[0_-1px_0_var(--hairline)] forced-colors:border-t lg:hidden',
   },
 })
 export class UiActionBar {

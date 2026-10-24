@@ -18,7 +18,7 @@ describe('UiButton', () => {
 
   it.each<[ButtonVariant, string]>([
     ['primary', 'bg-(--primary)'],
-    ['outline', 'shadow-[inset_0_0_0_1px_var(--border)]'],
+    ['outline', 'shadow-[inset_0_0_0_1px_var(--control-border)]'],
     ['ghost', 'bg-transparent'],
     ['destructive', 'bg-(--destructive)'],
     ['tonal', 'bg-(--muted)'],
@@ -32,7 +32,7 @@ describe('UiButton', () => {
     ['quiet-destructive', 'hover:text-(--negative)'],
     ['quiet-destructive', 'hover:bg-(--glow)'],
     ['outline-destructive', 'text-(--negative)'],
-    ['outline-destructive', 'shadow-[inset_0_0_0_1px_var(--border)]'],
+    ['outline-destructive', 'shadow-[inset_0_0_0_1px_var(--control-border)]'],
   ])('applies the %s variant', async (variant, expectedClass) => {
     await render('<button ui-button [variant]="variant">Save</button>', {
       imports: [UiButton],

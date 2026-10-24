@@ -100,6 +100,28 @@ describe('text contrast', () => {
   });
 });
 
+describe('non-text contrast', () => {
+  const GROUNDS = ['--background', '--card', '--elevated', '--muted'];
+
+  it.each(['light', 'dark'] as const)('keeps --control-border and --ring at 3:1 or more in %s', (scheme) => {
+    const failures: string[] = [];
+
+    for (const token of ['--control-border', '--ring']) {
+      const color = parseColor(colorOf(token, scheme)).rgb;
+
+      for (const ground of GROUNDS) {
+        const ratio = contrast(color, parseColor(colorOf(ground, scheme)).rgb);
+
+        if (ratio < 3) {
+          failures.push(`${token} on ${ground}: ${ratio.toFixed(2)}`);
+        }
+      }
+    }
+
+    expect(failures).toEqual([]);
+  });
+});
+
 describe('design tokens', () => {
   it.each([
     '--background',
@@ -108,6 +130,7 @@ describe('design tokens', () => {
     '--card-foreground',
     '--elevated',
     '--border',
+    '--control-border',
     '--hairline',
     '--muted',
     '--muted-foreground',

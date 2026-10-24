@@ -29,6 +29,7 @@ Angular forms: no custom \`ControlValueAccessor\` is involved.
 
 #### Accessibility
 
+* The off track is drawn in \`--control-border\`, which keeps 3:1 against the page (WCAG 1.4.11). In forced colors the track gets a border, the checked track takes \`Highlight\` and the thumb \`CanvasText\`, or \`HighlightText\` when on.
 * \`role="switch"\` overrides the native checkbox role; the checked state stays native, so a screen
   reader announces it the same way it would a real switch.
 * Always give it an accessible name, either \`aria-label\` or a \`<label>\` referencing its \`id\`.

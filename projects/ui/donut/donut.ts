@@ -169,11 +169,11 @@ export class UiDonut {
   }
 
   protected dotClasses(slice: RankedSlice): string {
-    return `size-3 flex-none rounded-pill shadow-[inset_0_0_0_1px_var(--border)] ${RAMP_DOT_CLASSES[slice.ramp]}`;
+    return `size-3 flex-none rounded-pill forced-colors:forced-color-adjust-none shadow-[inset_0_0_0_1px_var(--border)] ${RAMP_DOT_CLASSES[slice.ramp]}`;
   }
 
   protected rowClasses(slice: RankedSlice): string {
-    return `${ROW_CLASSES}${this.isSelected(slice) ? ' bg-(--soft)' : ''}`;
+    return `${ROW_CLASSES}${this.isSelected(slice) ? ` bg-(--soft) shadow-[inset_0_0_0_1px_var(--control-border)] forced-colors:forced-color-adjust-none forced-colors:bg-[color:Highlight]! forced-colors:text-[color:HighlightText]! forced-colors:[&_*]:text-[color:HighlightText] forced-colors:focus-visible:outline-[color:HighlightText]` : ''}`;
   }
 
   protected subLabel(slice: RankedSlice): string {

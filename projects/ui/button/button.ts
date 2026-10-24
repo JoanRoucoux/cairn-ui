@@ -34,11 +34,11 @@ export const BUTTON_SIZES = [
 export type ButtonSize = (typeof BUTTON_SIZES)[number];
 
 const BASE_CLASSES =
-  'relative inline-flex items-center justify-center rounded-control font-medium whitespace-nowrap cursor-pointer select-none touch-manipulation transition-[scale,background-color] [transition-duration:var(--duration-press),var(--duration-fast)] ease-out active:scale-(--press-scale) focus-visible:outline-2 focus-visible:outline-(--ring) disabled:pointer-events-none disabled:opacity-40 aria-disabled:not-aria-busy:opacity-40';
+  'relative inline-flex items-center justify-center rounded-control forced-colors:border font-medium whitespace-nowrap cursor-pointer select-none touch-manipulation transition-[scale,background-color] [transition-duration:var(--duration-press),var(--duration-fast)] ease-out active:scale-(--press-scale) focus-visible:outline-2 focus-visible:outline-(--ring) disabled:pointer-events-none disabled:opacity-40 aria-disabled:not-aria-busy:opacity-40';
 
 const RING_OUTSIDE = 'focus-visible:outline-offset-2';
 const RING_INSIDE = 'focus-visible:-outline-offset-2';
-const OUTLINE = 'bg-(--card) shadow-[inset_0_0_0_1px_var(--border)] hover:bg-(--glow) active:bg-(--soft)';
+const OUTLINE = 'bg-(--card) shadow-[inset_0_0_0_1px_var(--control-border)] hover:bg-(--glow) active:bg-(--soft)';
 
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   primary: `${RING_OUTSIDE} bg-(--primary) text-(--primary-foreground) hover:bg-(--primary-to)`,

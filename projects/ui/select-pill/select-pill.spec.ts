@@ -48,7 +48,7 @@ describe('UiSelectPill', () => {
     expect(pill).toHaveClass(
       'bg-(--card)',
       'text-(--foreground)',
-      'shadow-[inset_0_0_0_1px_var(--border)]',
+      'shadow-[inset_0_0_0_1px_var(--control-border)]',
       'rounded-pill',
     );
     expect(pill).not.toHaveClass('bg-(--primary)');

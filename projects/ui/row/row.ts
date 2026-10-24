@@ -39,7 +39,8 @@ const CHEVRON_INTERACTIVE_CLASSES =
 
 const UNAVAILABLE_CLASSES = 'opacity-50 cursor-not-allowed';
 
-const SELECTED_CLASSES = 'bg-(--soft)';
+const SELECTED_CLASSES =
+  'bg-(--soft) shadow-[inset_0_0_0_1px_var(--control-border)] forced-colors:forced-color-adjust-none forced-colors:bg-[color:Highlight]! forced-colors:text-[color:HighlightText]! forced-colors:[&_*]:text-[color:HighlightText] forced-colors:[&_*]:bg-transparent forced-colors:focus-visible:outline-[color:HighlightText]';
 
 /**
  * Clickable row of a list: a holding, an account, a search result. With `trailing="chevron"` it is a
@@ -57,7 +58,7 @@ const SELECTED_CLASSES = 'bg-(--soft)';
     @if (trailing() === 'chevron') {
       <svg
         aria-hidden="true"
-        class="block flex-none fill-none stroke-(--subtle-foreground)"
+        class="block flex-none fill-none stroke-(--subtle-foreground) forced-colors:stroke-current"
         height="16"
         stroke-linecap="round"
         stroke-linejoin="round"
@@ -156,7 +157,7 @@ export class UiListRow {
 
   protected readonly classes = computed(() =>
     this.ruled()
-      ? 'flex min-h-18 items-center gap-3 py-1.5 lg:min-h-17 shadow-[inset_0_-1px_0_var(--hairline)]'
+      ? 'flex min-h-18 items-center gap-3 py-1.5 lg:min-h-17 shadow-[inset_0_-1px_0_var(--hairline)] forced-colors:border-b'
       : 'flex min-h-18 items-center gap-3 py-1.5 lg:min-h-17',
   );
 }
@@ -172,7 +173,7 @@ export class UiListRow {
  */
 @Directive({
   selector: '[uiRowGroup]',
-  host: { class: 'flex flex-col pt-1 shadow-[inset_0_1px_0_var(--hairline)]' },
+  host: { class: 'flex flex-col pt-1 shadow-[inset_0_1px_0_var(--hairline)] forced-colors:border-t' },
 })
 export class UiRowGroup {}
 

@@ -24,7 +24,8 @@ const SIZE_CLASSES: Record<SegmentedSize, string> = {
   sm: 'h-10 pointer-fine:h-[30px]',
 };
 
-const SELECTED_CLASSES = 'text-(--foreground)';
+const SELECTED_CLASSES =
+  'text-(--foreground) forced-colors:forced-color-adjust-none forced-colors:text-[color:HighlightText] forced-colors:focus-visible:outline-[color:HighlightText]';
 
 const UNSELECTED_CLASSES = 'text-(--muted-foreground) hover:text-(--foreground)';
 
@@ -44,7 +45,7 @@ const UNSELECTED_CLASSES = 'text-(--muted-foreground) hover:text-(--foreground)'
         }}</span>
       }
       <div
-        class="rounded-control relative grid bg-(--muted) p-0.5"
+        class="rounded-control relative grid bg-(--muted) p-0.5 forced-colors:border"
         role="radiogroup"
         [attr.aria-label]="showLabel() ? null : label()"
         [attr.aria-labelledby]="showLabel() ? labelId : null"
@@ -53,7 +54,7 @@ const UNSELECTED_CLASSES = 'text-(--muted-foreground) hover:text-(--foreground)'
         @if (thumbIndex(); as index) {
           <span
             aria-hidden="true"
-            class="absolute top-0.5 bottom-0.5 left-0.5 rounded-[calc(var(--radius-control)-2px)] bg-(--card) shadow-[0_1px_2px_rgb(0_0_0/0.08),inset_0_0_0_1px_var(--border)] transition-transform duration-(--duration-fast) ease-out"
+            class="absolute top-0.5 bottom-0.5 left-0.5 rounded-[calc(var(--radius-control)-2px)] bg-(--card) shadow-[0_1px_2px_rgb(0_0_0/0.08),inset_0_0_0_1px_var(--control-border)] transition-transform duration-(--duration-fast) ease-out forced-colors:bg-[color:Highlight] forced-colors:forced-color-adjust-none"
             data-thumb
             [style.transform]="'translateX(' + (index - 1) * 100 + '%)'"
             [style.width]="'calc((100% - 4px) / ' + options().length + ')'"

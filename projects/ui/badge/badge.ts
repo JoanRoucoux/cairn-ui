@@ -7,7 +7,7 @@ export type BadgeVariant = (typeof BADGE_VARIANTS)[number];
 export const BADGE_SIZES = ['md', 'sm'] as const;
 export type BadgeSize = (typeof BADGE_SIZES)[number];
 
-const BASE_CLASSES = 'inline-flex items-center rounded-pill text-caption font-medium';
+const BASE_CLASSES = 'inline-flex items-center rounded-pill forced-colors:border text-caption font-medium';
 
 const SIZE_CLASSES: Record<BadgeSize, string> = {
   md: 'h-6 px-2.5',

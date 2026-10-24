@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 
 const MENU_CLASSES =
-  'm-0 min-w-44 p-1 rounded-container bg-(--elevated) shadow-[0_8px_24px_rgb(0_0_0/0.16),inset_0_0_0_1px_var(--border)] text-(--foreground) transition-[opacity,scale,overlay,display] transition-discrete duration-(--duration-fast) not-open:duration-[120ms] ease-out starting:open:opacity-0 starting:open:scale-(--enter-scale) opacity-0 scale-(--enter-scale) open:opacity-100 open:scale-100';
+  'm-0 min-w-44 p-1 rounded-container forced-colors:border bg-(--elevated) shadow-[0_8px_24px_rgb(0_0_0/0.16),inset_0_0_0_1px_var(--border)] text-(--foreground) transition-[opacity,scale,overlay,display] transition-discrete duration-(--duration-fast) not-open:duration-[120ms] ease-out starting:open:opacity-0 starting:open:scale-(--enter-scale) opacity-0 scale-(--enter-scale) open:opacity-100 open:scale-100';
 
 const SHEET_CLASSES =
   'max-lg:fixed max-lg:inset-x-4 max-lg:top-auto max-lg:w-auto max-lg:bottom-[calc(76px+env(safe-area-inset-bottom))] max-lg:min-w-0 max-lg:p-1.5 max-lg:bg-(--card) max-lg:shadow-[0_12px_32px_rgb(0_0_0/0.2),inset_0_0_0_1px_var(--border)] max-lg:backdrop:bg-[rgb(0_0_0/0.36)] max-lg:transition-[opacity,translate,overlay,display] max-lg:scale-100 max-lg:translate-y-4 max-lg:open:translate-y-0 max-lg:starting:open:scale-100 max-lg:starting:open:translate-y-4 max-lg:motion-reduce:translate-y-0 max-lg:motion-reduce:starting:open:translate-y-0';
@@ -22,6 +22,9 @@ const SHEET_ITEM_CLASSES =
 
 const ITEM_CLASSES =
   'flex w-full items-center gap-3 pointer-fine:gap-2.5 min-h-11 pointer-fine:min-h-9 px-3 pointer-fine:px-2.5 rounded-[calc(var(--radius-container)-4px)] text-body pointer-fine:text-label text-left whitespace-nowrap hover:bg-(--glow) focus-visible:bg-(--glow) active:bg-(--soft) transition-[background-color] duration-(--duration-fast) ease-out focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring) [:where(&>svg)]:size-[18px] [:where(&>svg)]:flex-none pointer-fine:[:where(&>svg)]:size-4';
+
+const CHECKED_CLASSES =
+  'forced-colors:focus-visible:outline-[color:HighlightText] forced-colors:forced-color-adjust-none forced-colors:bg-[color:Highlight]! forced-colors:text-[color:HighlightText]!';
 
 const CHECK_CLASSES =
   "after:ms-auto after:block after:h-3 after:w-1.5 after:flex-none after:rotate-45 after:border-r-2 after:border-b-2 after:border-current after:content-['']";
@@ -61,7 +64,7 @@ export class UiMenuItem {
 
   protected readonly classes = computed(
     () =>
-      `${this.#menu.sheet() ? SHEET_ITEM_CLASSES : ITEM_CLASSES}${this.destructive() ? ' text-(--negative)' : ''}${this.checked() ? ` ${CHECK_CLASSES}` : ''}`,
+      `${this.#menu.sheet() ? SHEET_ITEM_CLASSES : ITEM_CLASSES}${this.destructive() ? ' text-(--negative)' : ''}${this.checked() ? ` ${CHECK_CLASSES} ${CHECKED_CLASSES}` : ''}`,
   );
 
   focus(): void {

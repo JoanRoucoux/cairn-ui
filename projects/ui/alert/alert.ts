@@ -6,9 +6,9 @@ export type AlertVariant = (typeof ALERT_VARIANTS)[number];
 const BASE_CLASSES = 'flex items-start gap-2.5 text-left text-label';
 
 const VARIANT_CLASSES: Record<AlertVariant, string> = {
-  error: 'rounded-control bg-(--card) px-3.5 py-3 shadow-[inset_0_0_0_1px_var(--border)]',
+  error: 'rounded-control bg-(--card) px-3.5 py-3 shadow-[inset_0_0_0_1px_var(--border)] forced-colors:border',
   warning: 'text-(--foreground)',
-  info: 'rounded-control bg-(--muted) p-3 text-(--foreground)',
+  info: 'rounded-control bg-(--muted) p-3 text-(--foreground) forced-colors:border',
 };
 
 const ROLES: Record<AlertVariant, string> = { error: 'alert', warning: 'status', info: 'note' };

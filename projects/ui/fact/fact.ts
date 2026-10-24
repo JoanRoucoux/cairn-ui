@@ -9,13 +9,19 @@ export const FACT_SUB_TONES = ['subtle', 'stale'] as const;
 export type FactSubTone = (typeof FACT_SUB_TONES)[number];
 
 const SIZE_CLASSES: Record<FactSize, { row: string; value: string }> = {
-  md: { row: 'gap-4 py-3 [&:not(:first-child)]:shadow-[inset_0_1px_0_var(--hairline)]', value: 'text-body' },
+  md: {
+    row: 'gap-4 py-3 [&:not(:first-child)]:shadow-[inset_0_1px_0_var(--hairline)] forced-colors:[&:not(:first-child)]:border-t',
+    value: 'text-body',
+  },
   sm: { row: 'gap-4 py-2.5', value: 'text-label' },
   auto: {
-    row: 'gap-4 py-3 lg:py-2.5 max-lg:[&:not(:first-child)]:shadow-[inset_0_1px_0_var(--hairline)]',
+    row: 'gap-4 py-3 lg:py-2.5 max-lg:[&:not(:first-child)]:shadow-[inset_0_1px_0_var(--hairline)] max-lg:forced-colors:[&:not(:first-child)]:border-t',
     value: 'text-body lg:text-label',
   },
-  recap: { row: 'gap-3 py-[9px] [&:not(:first-child)]:shadow-[inset_0_1px_0_var(--hairline)]', value: 'text-label' },
+  recap: {
+    row: 'gap-3 py-[9px] [&:not(:first-child)]:shadow-[inset_0_1px_0_var(--hairline)] forced-colors:[&:not(:first-child)]:border-t',
+    value: 'text-label',
+  },
 };
 
 const SUB_TONE_CLASSES: Record<FactSubTone, string> = {
@@ -40,7 +46,9 @@ export class UiFacts {
   readonly ruled = input(false, { transform: booleanAttribute });
 
   protected readonly classes = computed(() =>
-    this.ruled() ? 'm-0 flex flex-col shadow-[inset_0_1px_0_var(--hairline)]' : 'm-0 flex flex-col',
+    this.ruled()
+      ? 'm-0 flex flex-col shadow-[inset_0_1px_0_var(--hairline)] forced-colors:border-t'
+      : 'm-0 flex flex-col',
   );
 }
 
