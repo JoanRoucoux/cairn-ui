@@ -185,23 +185,23 @@ The host, the shared proxy and the monitoring are managed in [infra](https://git
 
 ## Tech stack
 
-| Tool                                  | Version                       | Role                                                     |
-| ------------------------------------- | ----------------------------- | -------------------------------------------------------- |
-| Angular                               | 22.2.3 (peer range `^22.0.0`) | Standalone, signal-based components                      |
-| TypeScript                            | 6.0.3                         | Language                                                 |
-| Tailwind CSS                          | 4.3.3                         | Utilities generated from the CSS tokens                  |
-| d3-scale, d3-shape                    | 4.0.2, 3.2.0                  | Scales and paths of the charts                           |
-| ng-packagr                            | 22.2.4                        | Angular Package Format build, one entry point per folder |
-| Storybook (`@storybook/angular-vite`) | 10.6.2                        | Development surface, documentation and interaction tests |
-| Storybook a11y addon (axe)            | 10.6.2                        | Accessibility check of every story                       |
-| Vitest                                | 5.0.5                         | Unit tests, with jsdom 30.1.3                            |
-| Angular Testing Library               | 19.6.0                        | Component tests by role and label                        |
-| Playwright                            | 1.64.1                        | Chromium for the Storybook test runner                   |
-| Model Context Protocol SDK            | 1.32.1                        | MCP server                                               |
-| Sheriff                               | 0.20.0                        | Module boundaries, enforced by lint                      |
-| ESLint                                | 10.13.0                       | Lint                                                     |
-| Prettier                              | 3.9.10                        | Formatting                                               |
-| pnpm                                  | 11.14.0                       | Package manager                                          |
+| Tool                                  | Version                   | Role                                                     |
+| ------------------------------------- | ------------------------- | -------------------------------------------------------- |
+| Angular                               | 22 (peer range `^22.0.0`) | Standalone, signal-based components                      |
+| TypeScript                            | 6                         | Language                                                 |
+| Tailwind CSS                          | 4                         | Utilities generated from the CSS tokens                  |
+| d3-scale, d3-shape                    | 4, 3                      | Scales and paths of the charts                           |
+| ng-packagr                            | 22                        | Angular Package Format build, one entry point per folder |
+| Storybook (`@storybook/angular-vite`) | 10                        | Development surface, documentation and interaction tests |
+| Storybook a11y addon (axe)            | 10                        | Accessibility check of every story                       |
+| Vitest                                | 5                         | Unit tests, with jsdom 30                                |
+| Angular Testing Library               | 19                        | Component tests by role and label                        |
+| Playwright                            | 1                         | Chromium for the Storybook test runner                   |
+| Model Context Protocol SDK            | 1                         | MCP server                                               |
+| Sheriff                               | 0.20                      | Module boundaries, enforced by lint                      |
+| ESLint                                | 10                        | Lint                                                     |
+| Prettier                              | 3                         | Formatting                                               |
+| pnpm                                  | 11                        | Package manager                                          |
 
 ## Quality and delivery
 

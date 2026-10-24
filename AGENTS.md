@@ -67,6 +67,7 @@ Before considering a change done, run the same pipeline as CI: `format:check`, `
 - Styling is Tailwind-in-template: arbitrary-value utilities consuming the tokens (`bg-(--primary)`, `border-(--border)`). Components never hardcode colors.
 - `verbatimModuleSyntax` is enabled: type-only imports must use `import type { X }` or `import { type X }`.
 - `console` is forbidden everywhere (ESLint).
+- Dependabot runs monthly with a 7-day cooldown. Minor and patch updates merge themselves through `.github/workflows/dependabot-auto-merge.yml` once the required checks pass, and majors are reviewed by hand. The README names major versions only, since the exact ones live in the manifests Dependabot bumps.
 
 ## Storybook
 
@@ -124,3 +125,4 @@ The Storybook is deployed to GitHub Pages by [storybook.yml](.github/workflows/s
 - Storybook reads a story's `tags` statically from its own object literal: tags that arrive through a spread (`...helper()`, `...OtherStory`) are ignored, and the story stays in the sidebar. Write `tags: ['!dev', '!autodocs']` in each hidden story, then check `storybook-static/index.json`.
 - `test-storybook` builds its tests from the local `*.stories.ts` files, then visits the stories in the served build: a story planted to prove a check fails must stay in the source until the run ends, or the run silently skips it.
 - Text tokens clear 4.5:1 on `--background`, `--card`, `--elevated`, `--muted` and on `--soft` over `--background` or `--card`; `tokens.spec.ts` computes it, so a token edit that breaks it fails the test (ratios in `docs/colors.mdx`).
+- A merge made with `GITHUB_TOKEN` triggers no `push` workflow, which is why `dependabot-auto-merge.yml` uses the `DEPENDABOT_MERGE_TOKEN` secret when it exists.
