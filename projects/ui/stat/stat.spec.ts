@@ -23,8 +23,8 @@ describe('UiStat', () => {
   it('pairs the label and the value as a term and its description', async () => {
     await renderStat();
 
-    expect(screen.getByText('Net worth').tagName).toBe('DT');
-    expect(screen.getByText('128,656 EUR').closest('dd')).not.toBeNull();
+    expect(screen.getByRole('term')).toHaveTextContent('Net worth');
+    expect(screen.getByRole('definition')).toHaveTextContent('128,656 EUR');
   });
 
   it('projects the value, delta, caption and aside slots', async () => {
