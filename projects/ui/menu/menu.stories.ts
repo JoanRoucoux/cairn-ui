@@ -1,6 +1,7 @@
 import { UiButton } from '@joanroucoux/cairn-ui/button';
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
+import { userEvent as realUser } from 'vitest/browser';
 
 import { UiMenu, UiMenuItem, UiMenuTrigger } from './menu';
 
@@ -46,6 +47,8 @@ backdrop, and \`heading\` names what the actions apply to. \`width\` fixes the p
   jump to the first and the last. Escape and a click outside close the menu. Focus returns to the
   trigger, unless a click outside landed on another focusable element such as a text field: that
   element keeps its focus.
+* Tab and Shift+Tab close the menu and move on from the trigger: focus lands on the element after
+  (or before) the trigger, as with any menu button, and is never trapped in the menu.
 * A destructive item is colored \`--negative\`, never conveyed by color alone: its label already
   says what it does (“Delete the holding”).`,
       },
@@ -227,5 +230,39 @@ export const LongLabelOnIphone: Story = {
     const rect = menu.getBoundingClientRect();
     await expect(rect.left).toBeGreaterThanOrEqual(8);
     await expect(rect.right).toBeLessThanOrEqual(document.documentElement.clientWidth - 8);
+  },
+};
+
+export const TabMovesOnFromTheTrigger: Story = {
+  name: 'Tab and Shift+Tab close the menu and move on from the trigger',
+  tags: hidden,
+  render: () => ({
+    template: `
+      <button ui-button variant="ghost">Before</button>
+      <button ui-button size="icon" variant="ghost" aria-label="More" [uiMenuTrigger]="menu">⋯</button>
+      <ui-menu #menu label="Holding actions">
+        <button uiMenuItem type="button">Edit</button>
+        <button uiMenuItem type="button" destructive>Delete the holding</button>
+      </ui-menu>
+      <button ui-button variant="ghost">After</button>
+    `,
+  }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const trigger = canvas.getByRole('button', { name: 'More' });
+
+    await userEvent.click(trigger);
+    await expect(canvas.getByRole('menuitem', { name: 'Edit' })).toHaveFocus();
+    await realUser.keyboard('{Tab}');
+
+    await expect(canvas.getByRole('button', { name: 'After' })).toHaveFocus();
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+
+    await userEvent.click(trigger);
+    await expect(canvas.getByRole('menuitem', { name: 'Edit' })).toHaveFocus();
+    await realUser.keyboard('{Shift>}{Tab}{/Shift}');
+
+    await expect(canvas.getByRole('button', { name: 'Before' })).toHaveFocus();
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false');
   },
 };

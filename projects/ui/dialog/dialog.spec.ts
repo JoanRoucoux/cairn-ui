@@ -132,7 +132,7 @@ describe('UiDialog', () => {
 
     expect(container.querySelector('[data-dialog-footer]')).toHaveClass(
       'justify-end',
-      'max-lg:flex-col-reverse',
+      'max-lg:flex-col',
       'max-lg:[&>[ui-button]]:h-[50px]',
       'max-lg:[&>[ui-button]]:w-full',
     );

@@ -88,7 +88,7 @@ The \`variant\` input is \`default\` or \`confirm\`: a confirmation (deleting a 
 
 Content goes in two slots: the default one for the body, and \`[dialogActions]\` for the footer
 buttons. Put the dismissing action first. On a desktop the footer is right-aligned; on a sheet the
-actions stack at full width and 50px, the primary on top, so hide Cancel there with
+actions stack at full width and 50px in the same order, the dismissing action on top and the primary at the bottom, next to the thumb, so the Tab order follows what the eye sees. Hide Cancel there with
 \`max-lg:hidden\` when the sheet has only the primary.
 
 Every way out goes through one close: Escape, the backdrop, the cross, a drag of the sheet and the
@@ -138,6 +138,8 @@ With \`prefers-reduced-motion: reduce\` the sheet fades instead of sliding.
   them by hand.
 * Follows the [W3C dialog pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/) through
   the native element, including the initial focus move and the focus return on close.
+* The footer keeps the DOM order on a sheet too (dismissing action on top, primary at the bottom), so
+  the Tab order matches what the eye sees. Never reverse it with \`flex-col-reverse\` or \`order-*\`.
 * The close cross is named by \`closeLabel\`, which the consumer translates. Without it there is no
   cross, and Escape stays the way out.
 * Every way out is handled the same: Escape, the cross, the backdrop, a drag of the sheet and the
