@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.1
+
+### Changed
+
+- The bundled snapshot describes `@joanroucoux/cairn-ui` 0.12.2 instead of 0.10.1.
+- `zod` 4.6.7.
+
 ## 0.1.0
 
 ### Added
