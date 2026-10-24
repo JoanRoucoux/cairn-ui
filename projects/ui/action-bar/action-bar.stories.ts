@@ -12,7 +12,7 @@ const meta: Meta = {
     viewport: { width: 390, height: 600 },
     docs: {
       description: {
-        component: `Bar of actions fixed above the tab bar on iPhone, such as Sell and Buy on a holding's
+        component: `Bar of actions fixed above the tab bar on a phone, such as Sell and Buy on a holding's
 detail: the primary actions, within thumb reach. It sits \`--tab-bar-height\` (52px plus the safe area) above the
 bottom edge, so it clears \`ui-tab-bar\`, draws a hairline on top over the page background, pads with the
 gutter, and splits its width equally between its children. It is hidden from \`64rem\`, where the same

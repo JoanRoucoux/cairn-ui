@@ -156,7 +156,7 @@ The host fills its parent's height (\`block h-full\`); size the chart by sizing 
       control: 'inline-radio',
       options: ['compact', 'large', 'auto'],
       description:
-        '`compact` (default) sits 12px above the plot with label and caption sizes; `large` is the desktop Dashboard tooltip, at the top of the plot with body and label sizes; `auto` is compact below 64rem and large from 64rem up, with no breakpoint in the consumer.',
+        '`compact` (default) sits 12px above the plot with label and caption sizes; `large` is the desktop tooltip of a large chart, at the top of the plot with body and label sizes; `auto` is compact below 64rem and large from 64rem up, with no breakpoint in the consumer.',
     },
     deltaSuffix: { control: 'text', description: 'Text after the tooltip change, kept when masked.' },
     tooltipDelta: {
@@ -166,13 +166,13 @@ The host fills its parent's height (\`block h-full\`); size the chart by sizing 
     axisGap: {
       control: 'number',
       description:
-        'Pixels between the plot and the axis row, 12 by default and 16 on the desktop Dashboard, or "auto" for 12 below 64rem and 16 from 64rem up. The box is plot + gap + 17.',
+        'Pixels between the plot and the axis row, 12 by default and 16 for a large chart on a desktop, or "auto" for 12 below 64rem and 16 from 64rem up. The box is plot + gap + 17.',
     },
     axisTicks: {
       control: 'inline-radio',
       options: ['auto', 3, 5],
       description:
-        '3 draws start, middle and end only (Holdings), 5 draws five labels, auto (default) draws 3 below 40rem and 5 above (Dashboard).',
+        '3 draws start, middle and end only, 5 draws five labels, auto (default) draws 3 below 40rem and 5 above.',
     },
     sparkline: {
       control: 'boolean',

@@ -32,9 +32,9 @@ line under the value, and a hairline between rows. Built on a native description
 * \`dl[uiFacts]\` holds \`div[ui-fact]\` children, each exposing a \`dt\` (the label) and a \`dd\` (the
   value and its sub-line), which is the markup assistive technologies expect for term and value pairs.
 * The sub-line color (\`stale\`) is never the only signal: the line says what is out of date.
-* \`size="auto"\` is \`md\` below 64rem and \`sm\` from it, as the Holdings detail does, so one list serves both widths.
-* \`size="md"\` (12 px rows, body value) is the iPhone detail inside a card; \`sm\` (10 px rows, label
-  value) is the desktop detail card. The card around the iPhone list is page layout.`,
+* \`size="auto"\` is \`md\` below 64rem and \`sm\` from it, so one list serves both widths.
+* \`size="md"\` (12 px rows, body value) is a phone detail inside a card; \`sm\` (10 px rows, label
+  value) is the desktop detail card. The card around the phone list is page layout.`,
       },
     },
   },
