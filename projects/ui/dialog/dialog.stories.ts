@@ -34,6 +34,34 @@ type DialogArgs = {
   busy?: boolean;
 };
 
+const PHONE = {
+  globals: { viewport: { value: '390x844', isRotated: false } },
+  parameters: {
+    viewport: { options: { '390x844': { name: '390 x 844', styles: { width: '390px', height: '844px' } } } },
+  },
+};
+
+const DESKTOP = {
+  globals: { viewport: { value: '1440x900', isRotated: false } },
+  parameters: {
+    viewport: { options: { '1440x900': { name: '1440 x 900', styles: { width: '1440px', height: '900px' } } } },
+  },
+};
+
+const DESKTOP_650 = {
+  globals: { viewport: { value: '1366x650', isRotated: false } },
+  parameters: {
+    viewport: { options: { '1366x650': { name: '1366 x 650', styles: { width: '1366px', height: '650px' } } } },
+  },
+};
+
+const PHONE_420 = {
+  globals: { viewport: { value: '390x420', isRotated: false } },
+  parameters: {
+    viewport: { options: { '390x420': { name: '390 x 420', styles: { width: '390px', height: '420px' } } } },
+  },
+};
+
 const meta: Meta<DialogArgs> = {
   title: 'Surfaces/Dialog',
   decorators: [moduleMetadata({ imports: [UiButton, UiDialog] })],
@@ -179,7 +207,7 @@ export const SheetFitsTheScreen: Story = {
   ...longBody,
   name: 'Sheet fits the screen',
   tags: hidden,
-  parameters: { viewport: { width: 390, height: 844 } },
+  ...PHONE,
   play: sheetFitsTheScreen,
 };
 
@@ -247,7 +275,7 @@ const newAccount: Story = {
 export const TradeDesktopHeader: Story = {
   name: 'Title and cross aligned from the top under a subtitle',
   tags: hidden,
-  parameters: { viewport: { width: 1440, height: 900 } },
+  ...DESKTOP,
   ...trade,
   play: headerTopped,
 };
@@ -255,7 +283,7 @@ export const TradeDesktopHeader: Story = {
 export const NewAccountDesktopHeader: Story = {
   name: 'Title and cross centered on a desktop',
   tags: hidden,
-  parameters: { viewport: { width: 1440, height: 900 } },
+  ...DESKTOP,
   ...newAccount,
   play: headerCentered,
 };
@@ -263,7 +291,7 @@ export const NewAccountDesktopHeader: Story = {
 export const NewAccountSheetHeader: Story = {
   name: 'Title and cross centered on a sheet',
   tags: hidden,
-  parameters: { viewport: { width: 390, height: 844 } },
+  ...PHONE,
   ...newAccount,
   play: headerCentered,
 };
@@ -279,7 +307,7 @@ const addHolding = (results: number): Story => ({
 export const AddHoldingDesktopFewResults: Story = {
   name: 'Desktop dialog centered with few results',
   tags: hidden,
-  parameters: { viewport: { width: 1440, height: 900 } },
+  ...DESKTOP,
   ...addHolding(2),
   play: desktopCentered,
 };
@@ -287,7 +315,7 @@ export const AddHoldingDesktopFewResults: Story = {
 export const AddHoldingDesktopManyResultsShortScreen: Story = {
   name: 'Desktop dialog capped on a short screen with many results',
   tags: hidden,
-  parameters: { viewport: { width: 1366, height: 650 } },
+  ...DESKTOP_650,
   ...addHolding(30),
   play: desktopCentered,
 };
@@ -295,7 +323,7 @@ export const AddHoldingDesktopManyResultsShortScreen: Story = {
 export const AddHoldingSheetFewResults: Story = {
   name: 'Full sheet stays fixed with few results',
   tags: hidden,
-  parameters: { viewport: { width: 390, height: 844 } },
+  ...PHONE,
   ...addHolding(1),
   play: sheetStaysFixed,
 };
@@ -303,7 +331,7 @@ export const AddHoldingSheetFewResults: Story = {
 export const AddHoldingSheetManyResults: Story = {
   name: 'Full sheet stays fixed with many results',
   tags: hidden,
-  parameters: { viewport: { width: 390, height: 844 } },
+  ...PHONE,
   ...addHolding(30),
   play: sheetStaysFixed,
 };
@@ -312,7 +340,7 @@ export const ConfirmWithoutActions: Story = {
   name: 'Confirm without actions on a desktop',
   tags: hidden,
   args: { ...Confirm.args },
-  parameters: { viewport: { width: 1440, height: 900 } },
+  ...DESKTOP,
   render: (args) => ({ props: args, template: confirmTemplate(false) }),
   play: emptyFooterUnpadded,
 };
@@ -321,13 +349,13 @@ export const ConfirmWithoutActionsSheet: Story = {
   ...ConfirmWithoutActions,
   tags: ['!dev', '!autodocs'],
   name: 'Confirm without actions on a sheet',
-  parameters: { viewport: { width: 390, height: 844 } },
+  ...PHONE,
 };
 
 export const TextOnlyScrollingBody: Story = {
   name: 'Text-only body that scrolls (keyboard reachable)',
   tags: hidden,
-  parameters: { viewport: { width: 390, height: 420 } },
+  ...PHONE_420,
   args: { heading: 'Conditions', closeLabel: 'Close', variant: 'confirm', width: '488px', open: true },
   render: (args) => ({
     props: { ...args, paragraphs: Array.from({ length: 12 }, (_, index) => index + 1) },
@@ -359,6 +387,6 @@ export const SheetDragToDismiss: Story = {
   ...KeptMountedUntilClosed,
   tags: ['!dev', '!autodocs'],
   name: 'Sheet has drag grips',
-  parameters: { viewport: { width: 390, height: 844 } },
+  ...PHONE,
   play: sheetHasGrips,
 };

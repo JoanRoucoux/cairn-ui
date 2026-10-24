@@ -4,6 +4,13 @@ import { expect, userEvent, waitFor, within } from 'storybook/test';
 
 import { UiMenu, UiMenuItem, UiMenuTrigger } from './menu';
 
+const PHONE = {
+  globals: { viewport: { value: '390x844', isRotated: false } },
+  parameters: {
+    viewport: { options: { '390x844': { name: '390 x 844', styles: { width: '390px', height: '844px' } } } },
+  },
+};
+
 const meta: Meta = {
   title: 'Surfaces/Menu',
   decorators: [moduleMetadata({ imports: [UiButton, UiMenu, UiMenuTrigger, UiMenuItem] })],
@@ -182,7 +189,8 @@ export const FixedWidth: StoryObj<{ width: number }> = {
 export const LongLabelOnIphone: Story = {
   name: 'Long label beside the right edge of a narrow screen',
   tags: hidden,
-  parameters: { layout: 'fullscreen', viewport: { width: 390, height: 844 } },
+  ...PHONE,
+  parameters: { ...PHONE.parameters, layout: 'fullscreen' },
   render: () => ({
     template: `
       <div class="flex items-start justify-end p-1">

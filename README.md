@@ -232,19 +232,19 @@ Storybook is the only development surface: there is no application.
 
 ### Scripts
 
-| Script                       | Description                                                |
-| ---------------------------- | ---------------------------------------------------------- |
-| `pnpm start`                 | Storybook dev server                                       |
-| `pnpm run build`             | Builds the library into `dist/ui` (Angular Package Format) |
-| `pnpm run build:mcp`         | Builds the MCP server into `dist/mcp`, after `build`       |
-| `pnpm run test:mcp`          | MCP server and manifest generator tests, with coverage     |
-| `pnpm run build-storybook`   | Static Storybook build (to `storybook-static/`)            |
-| `pnpm test`                  | Unit tests (Vitest)                                        |
-| `pnpm run test:coverage`     | Unit tests with coverage report and thresholds             |
-| `pnpm run test-storybook:ci` | Storybook interaction tests against the built Storybook    |
-| `pnpm run lint`              | Lint (ESLint, includes Sheriff module boundaries)          |
-| `pnpm run format`            | Format the whole project (Prettier)                        |
-| `pnpm run format:check`      | Check formatting without writing                           |
+| Script                     | Description                                                |
+| -------------------------- | ---------------------------------------------------------- |
+| `pnpm start`               | Storybook dev server                                       |
+| `pnpm run build`           | Builds the library into `dist/ui` (Angular Package Format) |
+| `pnpm run build:mcp`       | Builds the MCP server into `dist/mcp`, after `build`       |
+| `pnpm run test:mcp`        | MCP server and manifest generator tests, with coverage     |
+| `pnpm run build-storybook` | Static Storybook build (to `storybook-static/`)            |
+| `pnpm test`                | Unit tests (Vitest)                                        |
+| `pnpm run test:coverage`   | Unit tests with coverage report and thresholds             |
+| `pnpm run test:storybook`  | Story tests in Chromium (Vitest addon)                     |
+| `pnpm run lint`            | Lint (ESLint, includes Sheriff module boundaries)          |
+| `pnpm run format`          | Format the whole project (Prettier)                        |
+| `pnpm run format:check`    | Check formatting without writing                           |
 
 ## Documentation
 

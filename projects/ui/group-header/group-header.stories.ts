@@ -13,11 +13,17 @@ type GroupHeaderArgs = {
 
 const CARD = 'w-[390px] rounded-container bg-(--card) p-2 shadow-[inset_0_0_0_1px_var(--border)]';
 
+const PHONE = {
+  globals: { viewport: { value: '390x300', isRotated: false } },
+  parameters: {
+    viewport: { options: { '390x300': { name: '390 x 300', styles: { width: '390px', height: '300px' } } } },
+  },
+};
+
 const meta: Meta<GroupHeaderArgs> = {
   title: 'Data display/Group header',
   decorators: [moduleMetadata({ imports: [UiGroupHeader] })],
   parameters: {
-    viewport: { width: 390, height: 300 },
     docs: {
       description: {
         component: `The header of a grouped card on a phone: the name, its meta underneath, the total on the right
@@ -86,6 +92,7 @@ export const Static: Story = {
 export const HeldOpenByAFilter: Story = {
   name: 'Held open ignores the click and keeps the default cursor',
   tags: ['!dev', '!autodocs'],
+  ...PHONE,
   args: { toggleDisabled: true },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);

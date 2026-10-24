@@ -6,7 +6,4 @@ allowBuilds:
   msgpackr-extract: true
   unrs-resolver: true
 catalog:
-  '@playwright/test': 1.64.1
   playwright: 1.64.1
-overrides:
-  playwright: 'catalog:'

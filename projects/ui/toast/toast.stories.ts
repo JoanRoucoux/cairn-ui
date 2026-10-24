@@ -63,6 +63,20 @@ class ToastDemo {
   }
 }
 
+const DESKTOP = {
+  globals: { viewport: { value: '1440x700', isRotated: false } },
+  parameters: {
+    viewport: { options: { '1440x700': { name: '1440 x 700', styles: { width: '1440px', height: '700px' } } } },
+  },
+};
+
+const PHONE = {
+  globals: { viewport: { value: '390x600', isRotated: false } },
+  parameters: {
+    viewport: { options: { '390x600': { name: '390 x 600', styles: { width: '390px', height: '600px' } } } },
+  },
+};
+
 const meta: Meta = {
   title: 'Feedback/Toast',
   decorators: [moduleMetadata({ imports: [ToastDemo] })],
@@ -139,14 +153,14 @@ export const Default: Story = {};
 export const ShowsAToast: Story = {
   name: 'Shows a toast with its transition',
   tags: hidden,
-  parameters: { viewport: { width: 1440, height: 700 } },
+  ...DESKTOP,
   play,
 };
 
 export const Phone: Story = {
   name: 'Above the tab bar on a phone',
   tags: hidden,
-  parameters: { viewport: { width: 390, height: 600 } },
+  ...PHONE,
   play: async (context) => {
     await play(context);
     await gapAbove(context.canvasElement, '[ui-tab-bar]');
@@ -156,7 +170,7 @@ export const Phone: Story = {
 export const PhoneWithActionBar: Story = {
   name: 'Above the action bar on a phone',
   tags: hidden,
-  parameters: { viewport: { width: 390, height: 600 } },
+  ...PHONE,
   render: () => ({ template: '<ui-toast-demo [actionBar]="true" />' }),
   play: async (context) => {
     await play(context);
@@ -167,7 +181,7 @@ export const PhoneWithActionBar: Story = {
 export const OverDialog: Story = {
   name: 'Over a modal dialog',
   tags: hidden,
-  parameters: { viewport: { width: 1440, height: 700 } },
+  ...DESKTOP,
   render: () => ({ template: '<ui-toast-demo [dialog]="true" />' }),
   play: async ({ canvasElement }) => {
     const status = within(canvasElement).getByRole('status');
@@ -183,7 +197,7 @@ export const OverDialog: Story = {
 export const BesideSidebar: Story = {
   name: 'Centered beside a sidebar',
   tags: hidden,
-  parameters: { viewport: { width: 1440, height: 700 } },
+  ...DESKTOP,
   render: () => ({ template: '<div style="--sidebar-width: 240px"><ui-toast-demo /></div>' }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
