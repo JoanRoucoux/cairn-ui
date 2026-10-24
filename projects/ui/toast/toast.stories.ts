@@ -115,6 +115,7 @@ the pause and the cross do not work over an open modal.
 
 * The \`role="status"\` region is in the DOM while empty, so a screen reader announces the first message,
   error included.
+* Each message is rendered again when shown, so the same text shown twice in a row is announced twice.
 * Keep the sentence short: a confirmation disappears on its own. The error starts with the problem.`,
       },
     },

@@ -1,8 +1,20 @@
-import { Component, booleanAttribute, computed, input, output } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  afterRenderEffect,
+  booleanAttribute,
+  computed,
+  inject,
+  input,
+  numberAttribute,
+  output,
+} from '@angular/core';
 
 import { holdTransitionsUntilRendered } from '@joanroucoux/cairn-ui/motion';
 
 import { delayedState } from './delayed-state';
+
+const toHeadingLevel = (value: unknown): number => Math.min(6, Math.max(2, Math.round(numberAttribute(value, 2))));
 
 /** Available async block states. */
 export const ASYNC_STATES = ['loading', 'error', 'empty', 'ready'] as const;
@@ -118,18 +130,18 @@ const INLINE_BOX_CLASSES = 'flex-row items-center justify-between gap-3 pt-1.5 p
     } @else {
       @switch (shown()) {
         @case ('error') {
-          <div aria-live="polite" role="alert" [class]="boxClasses()">
+          <div role="alert" [class]="boxClasses()">
             @if (variant() === 'inline') {
               <span class="text-label text-(--muted-foreground)">{{ errorMessage() }}</span>
             } @else {
               @if (variant() === 'emphasis') {
-                <h2 [class]="titleClasses()">{{ errorTitle() }}</h2>
+                <h2 [attr.aria-level]="ariaLevel()" [class]="titleClasses()">{{ errorTitle() }}</h2>
               } @else {
                 <span [class]="titleClasses()">{{ errorTitle() }}</span>
               }
               <span class="text-(--muted-foreground)" [class]="messageClasses()">{{ errorMessage() }}</span>
             }
-            <button type="button" [class]="retryButtonClasses()" (click)="retry.emit()">
+            <button type="button" [class]="retryButtonClasses()" (click)="onRetry($event)">
               @if (retryIcon() || variant() !== 'inline') {
                 <svg
                   aria-hidden="true"
@@ -160,6 +172,7 @@ const INLINE_BOX_CLASSES = 'flex-row items-center justify-between gap-3 pt-1.5 p
   `,
   host: {
     '[attr.aria-busy]': "state() === 'loading' || null",
+    class: 'outline-none',
     '[class.flex]': 'filling()',
     '[class.flex-col]': 'filling()',
   },
@@ -175,9 +188,16 @@ export class UiAsync {
   readonly align = input<AsyncAlign>('start');
   readonly card = input(false, { transform: booleanAttribute });
   readonly fill = input(false, { transform: booleanAttribute });
+  /** Heading level, 2 to 6, of the error title of the `emphasis` variant. The element stays an `h2` and `aria-level` carries any other level. */
+  readonly headingLevel = input<number, unknown>(2, { transform: toHeadingLevel });
   readonly retry = output<void>();
 
   protected readonly shown = delayedState(this.state);
+
+  readonly #host = inject<ElementRef<HTMLElement>>(ElementRef);
+  #retryHadFocus = false;
+
+  protected readonly ariaLevel = computed(() => (this.headingLevel() === 2 ? null : this.headingLevel()));
 
   protected readonly filling = computed(() => this.fill() && this.shown() === 'error');
 
@@ -218,7 +238,40 @@ export class UiAsync {
     return `${RETRY_BASE_CLASSES} ${spec.retry} ${RETRY_BLOCK_CLASSES} ${spec.retryMargin[this.align()]}`;
   });
 
+  protected onRetry(event: Event): void {
+    this.#retryHadFocus = (event.currentTarget as HTMLElement).matches(':focus');
+    this.retry.emit();
+  }
+
   constructor() {
     holdTransitionsUntilRendered();
+
+    afterRenderEffect(() => {
+      const state = this.state();
+
+      if (this.shown() === 'error') {
+        if (state === 'error') {
+          this.#retryHadFocus = false;
+        }
+
+        return;
+      }
+
+      if (!this.#retryHadFocus) {
+        return;
+      }
+
+      this.#retryHadFocus = false;
+
+      const active = document.activeElement;
+
+      if (active === null || active === document.body) {
+        const host = this.#host.nativeElement;
+
+        host.setAttribute('tabindex', '-1');
+        host.addEventListener('blur', () => host.removeAttribute('tabindex'), { once: true });
+        host.focus();
+      }
+    });
   }
 }

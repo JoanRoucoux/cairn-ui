@@ -163,7 +163,12 @@ export class UiMenu {
 
   #applyClosed(): void {
     this.isOpen.set(false);
-    this.#trigger?.focus();
+    const active = document.activeElement;
+    const stays: (Element | null)[] = [null, document.body, this.#trigger];
+
+    if (stays.includes(active) || this.#host.contains(active)) {
+      this.#trigger?.focus();
+    }
     this.#trigger = null;
   }
 

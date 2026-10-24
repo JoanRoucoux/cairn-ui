@@ -61,6 +61,7 @@ of the group it folds.
 #### Accessibility
 
 * The button sits inside the heading and carries \`aria-expanded\`; \`aria-controls\` points at the group body.
+* The group heading is an \`h2\`; \`headingLevel\` (2 to 6) on \`td[ui-group-cell]\` sets its \`aria-level\`.
 * Folded rows are \`hidden\`, so assistive technology skips them.`,
       },
     },

@@ -1,5 +1,7 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, booleanAttribute, input, model } from '@angular/core';
+import { Component, booleanAttribute, computed, input, model, numberAttribute } from '@angular/core';
+
+const toHeadingLevel = (value: unknown): number => Math.min(6, Math.max(2, Math.round(numberAttribute(value, 2))));
 
 /**
  * Header of a card on a phone: the name, its meta underneath, the projected total on the right.
@@ -21,7 +23,7 @@ import { Component, booleanAttribute, input, model } from '@angular/core';
   template: `
     <ng-template #total><ng-content /></ng-template>
     @if (collapsible()) {
-      <h2 class="m-0 font-normal">
+      <h2 class="m-0 font-normal" [attr.aria-level]="ariaLevel()">
         <button
           class="rounded-control flex min-h-11 w-full items-end justify-between gap-3 px-1 pt-3 text-left transition-transform [transition-duration:var(--duration-press)] ease-out not-aria-disabled:cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring) not-aria-disabled:active:scale-(--press-scale)"
           type="button"
@@ -60,7 +62,7 @@ import { Component, booleanAttribute, input, model } from '@angular/core';
     } @else {
       <div class="flex min-h-11 w-full items-end justify-between gap-3 px-1 pt-3">
         <div class="flex min-w-0 flex-col">
-          <h2 class="text-title m-0 font-semibold">{{ name() }}</h2>
+          <h2 class="text-title m-0 font-semibold" [attr.aria-level]="ariaLevel()">{{ name() }}</h2>
           @if (meta()) {
             <span class="text-label text-(--muted-foreground)">{{ meta() }}</span>
           }
@@ -79,6 +81,10 @@ export class UiGroupHeader {
   readonly expanded = model(true);
   readonly toggleDisabled = input(false, { transform: booleanAttribute });
   readonly controls = input<string>();
+  /** Heading level, 2 to 6. The element stays an `h2` and `aria-level` carries any other level. */
+  readonly headingLevel = input<number, unknown>(2, { transform: toHeadingLevel });
+
+  protected readonly ariaLevel = computed(() => (this.headingLevel() === 2 ? null : this.headingLevel()));
 
   protected toggle(): void {
     if (!this.toggleDisabled()) {

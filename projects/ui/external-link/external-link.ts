@@ -28,7 +28,7 @@ import { Component } from '@angular/core';
   `,
   host: {
     class:
-      'inline-flex min-h-11 items-center gap-1.5 rounded-[4px] text-label leading-[17px] font-medium lg:min-h-0 hover:underline underline-offset-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring) [&>svg]:flex-none',
+      "relative inline-flex min-h-11 items-center gap-1.5 rounded-[4px] text-label leading-[17px] font-medium lg:min-h-0 hover:underline underline-offset-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring) [&>svg]:flex-none before:absolute before:inset-x-0 before:top-1/2 before:h-6 before:-translate-y-1/2 before:content-['']",
   },
 })
 export class UiExternalLink {}

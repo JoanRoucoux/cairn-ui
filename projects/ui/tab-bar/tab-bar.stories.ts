@@ -34,7 +34,9 @@ publishes that height as \`--tab-bar-height\` on the root element, so the app pa
 * The active tab carries \`aria-current="page"\` and is shown in 600 weight on \`--foreground\`; an
   inactive tab stays on \`--muted-foreground\`.
 * Renders on native \`<a>\` elements inside a \`<nav>\`, so keyboard focus and navigation come from the
-  platform.`,
+  platform.
+* Name the \`nav\` with an \`aria-label\` (for example “Main”) so a screen reader tells it from the other landmarks of the page.
+* Below \`64rem\` \`theme.css\` sets \`scroll-padding-bottom\` on the root from \`--tab-bar-height\` and \`--action-bar-height\`, so a focused element scrolls clear of the fixed bars instead of hiding under them.`,
       },
     },
   },

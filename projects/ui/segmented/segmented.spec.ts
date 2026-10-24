@@ -126,6 +126,15 @@ describe('UiSegmented', () => {
     expect(fixture.nativeElement.querySelector('[data-thumb]')).toBeNull();
   });
 
+  it('stops sliding the thumb under reduced motion', async () => {
+    const { fixture } = await renderSegmented('1m');
+
+    expect(fixture.nativeElement.querySelector('[data-thumb]')).toHaveClass(
+      'transition-transform',
+      'motion-reduce:transition-none',
+    );
+  });
+
   it('keeps only the selected option in the tab sequence', async () => {
     await renderSegmented('1m');
 

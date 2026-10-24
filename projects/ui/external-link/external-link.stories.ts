@@ -26,7 +26,7 @@ const meta: Meta<ExternalLinkArgs> = {
 * A native \`<a>\`. Add \`target="_blank"\` with \`rel="noopener"\` when it opens a new tab, and name the
   destination in the label ("Fiche sur amundietf.fr").
 * The icon is decorative and hidden from assistive technologies.
-* The target is 44 px high on touch and the text height with a mouse, which underlines on hover.`,
+* The target is 44 px high on touch. From 64rem the text is 17 px high and a transparent extension brings the pointer target to 24 px (WCAG 2.5.8) without moving the layout; the link underlines on hover.`,
       },
     },
   },

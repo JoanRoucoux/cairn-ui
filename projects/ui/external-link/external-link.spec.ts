@@ -35,4 +35,17 @@ describe('UiExternalLink', () => {
       'focus-visible:outline-offset-2',
     );
   });
+
+  it('extends its pointer target to 24 px without changing the layout', async () => {
+    await render('<a ui-external-link href="#">Fiche</a>', { imports: [UiExternalLink] });
+
+    expect(screen.getByRole('link', { name: 'Fiche' })).toHaveClass(
+      'relative',
+      'before:absolute',
+      'before:inset-x-0',
+      'before:top-1/2',
+      'before:h-6',
+      'before:-translate-y-1/2',
+    );
+  });
 });

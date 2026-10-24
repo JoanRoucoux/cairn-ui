@@ -305,6 +305,40 @@ describe('UiAsync skeleton timing', () => {
     expect(screen.getByText('skeleton')).toBeInTheDocument();
   });
 
+  describe('heading level', () => {
+    it('keeps the h2 without aria-level by default', async () => {
+      await render('<ui-async state="error" variant="emphasis" errorTitle="Title" retryLabel="Retry"></ui-async>', {
+        imports: [UiAsync],
+      });
+
+      expect(screen.getByRole('heading', { level: 2 })).not.toHaveAttribute('aria-level');
+    });
+
+    it('reads the static form and clamps it', async () => {
+      await render(
+        '<ui-async state="error" variant="emphasis" errorTitle="Title" retryLabel="Retry" headingLevel="12"></ui-async>',
+        { imports: [UiAsync] },
+      );
+
+      expect(screen.getByRole('heading')).toHaveAttribute('aria-level', '6');
+    });
+
+    it('sets aria-level when the level differs from 2', async () => {
+      await render(
+        '<ui-async state="error" variant="emphasis" errorTitle="Title" retryLabel="Retry" [headingLevel]="3"></ui-async>',
+        { imports: [UiAsync] },
+      );
+
+      expect(screen.getByRole('heading', { level: 3, name: 'Title' })).toHaveAttribute('aria-level', '3');
+    });
+  });
+
+  it('keeps aria-live off the alert, role alone announces it', async () => {
+    await render(template, { imports: [UiAsync], componentProperties: { state: 'error' } });
+
+    expect(screen.getByRole('alert')).not.toHaveAttribute('aria-live');
+  });
+
   it('stays marked busy as soon as the source is loading', async () => {
     const { fixture } = await render(template, { imports: [UiAsync], componentProperties: { state: 'loading' } });
 

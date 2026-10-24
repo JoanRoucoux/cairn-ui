@@ -169,6 +169,34 @@ describe('collapsible group band', () => {
     expect(screen.getByText('1')).toBeInTheDocument();
   });
 
+  it.each(['', 'collapsible'])('keeps h2 without aria-level by default (%s)', async (attrs) => {
+    await render(
+      `<table uiTable><tbody><tr uiTr group><td ui-group-cell ${attrs} name="A">1</td></tr></tbody></table>`,
+      { imports: [UiTable, UiTr, UiGroupCell] },
+    );
+
+    expect(screen.getByRole('heading')).not.toHaveAttribute('aria-level');
+  });
+
+  it.each(['', 'collapsible'])('sets aria-level from headingLevel (%s)', async (attrs) => {
+    await render(
+      `<table uiTable><tbody><tr uiTr group><td ui-group-cell ${attrs} [headingLevel]="3" name="A">1</td></tr></tbody></table>`,
+      { imports: [UiTable, UiTr, UiGroupCell] },
+    );
+
+    expect(screen.getByRole('heading', { level: 3 })).toBeInTheDocument();
+  });
+
+  it('reads the static form of headingLevel and clamps it', async () => {
+    await render(
+      `<table uiTable><tbody><tr uiTr group><td ui-group-cell headingLevel="4" name="A">1</td></tr><tr uiTr group><td ui-group-cell headingLevel="12" name="B">1</td></tr></tbody></table>`,
+      { imports: [UiTable, UiTr, UiGroupCell] },
+    );
+
+    expect(screen.getByRole('heading', { name: 'A' })).toHaveAttribute('aria-level', '4');
+    expect(screen.getByRole('heading', { name: 'B' })).toHaveAttribute('aria-level', '6');
+  });
+
   it('hides nothing outside a collapsed group', async () => {
     await render(`<table uiTable><tbody><tr uiTr><td uiTd>Ferrari</td></tr></tbody></table>`, {
       imports: [UiTable, UiTr, UiTd],
