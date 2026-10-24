@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.13.0
+
+### Added
+
+- `--control-border`, a token at 3:1 or more against every surface in both schemes, for the boundary of interactive controls.
+- `headingLevel` (2 to 6, default 2) on `ui-group-header`, `ui-async` and the table group cell: the heading stays an `h2` and `aria-level` carries any other level.
+- `UiControl.invalid`, an optional signal `ui-field` reads to mark the control invalid.
+- Windows forced colors: every boundary or divider drawn by a shadow or a fill becomes a real border in that mode, and selected, checked, pressed and current states take a system Highlight indicator.
+
+### Changed
+
+- Inputs, selects, textareas, the select-pill rest border, the switch off track, the segmented thumb ring, outline buttons and unselected chips are drawn with `--control-border` instead of `--border`. The selected row, active nav item, pressed icon toggle, current avatar link, selected table row and selected donut row add an inset `--control-border` ring to their soft fill.
+- Switch and segmented thumbs no longer slide under `prefers-reduced-motion`.
+- Below 64rem, `theme.css` sets the root `scroll-padding-bottom` from `--tab-bar-height` and `--action-bar-height`, so a focused element never ends under the fixed bars.
+
+### Fixed
+
+- Focus rings were invisible on menu items, the dialog and drawer crosses, the dialog scroll region, the error toast cross and the plain table row link (`outline-none` cancelled them). Inputs, selects and textareas add an outline beside their shadow ring, and the line chart gets the library ring.
+- `ui-field` keeps the ids a control already had in `aria-describedby`, describes the control with its unit, pads the input around the unit, and also wires a `role=radiogroup` control such as `ui-choice-chips`.
+- `ui-async` gives focus to its host when the focused retry button disappears, and its error block no longer mixes `role=alert` with `aria-live=polite`.
+- `ui-line-chart` announces the first point it shows, from a permanent status region.
+- `ui-menu` no longer takes focus back to its trigger after a click outside.
+- `ui-toaster` announces the same message shown twice in a row.
+- `ui-external-link` has a 24px pointer target from 64rem.
+
 ## 0.12.2
 
 ### Changed
