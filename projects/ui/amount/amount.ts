@@ -10,6 +10,7 @@ import {
   signal,
 } from '@angular/core';
 
+import { UiAmountText } from './amount-text';
 import { formatAmount } from './format-amount';
 
 /** App-wide "amounts are hidden" state. Defaults to never masked; the app overrides it. */
@@ -35,7 +36,8 @@ export type AmountMasking = (typeof AMOUNT_MASKINGS)[number];
  */
 @Component({
   selector: 'ui-amount',
-  template: '{{ text() }}',
+  imports: [UiAmountText],
+  template: '<ui-amount-text [text]="text()" />',
   host: {
     '[class]': 'classes()',
     '[attr.hidden]': 'hidden() || null',

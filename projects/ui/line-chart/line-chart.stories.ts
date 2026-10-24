@@ -118,6 +118,7 @@ The host fills its parent's height (\`block h-full\`); size the chart by sizing 
   \`valueColumnLabel\`, so the data survives without the SVG.
 * The visual tooltip is \`aria-hidden\`. A permanent \`sr-only\` \`role="status"\` element, outside the conditional tooltip, carries the same
   text, so the first point read is announced and not only the following ones.
+* A masked (\`••••\`) or missing (\`—\`) value in the tooltip, the status region and the table is read as the \`UI_AMOUNT_LABELS\` texts, through \`UiAmountText\` and \`speakAmount\`.
 * \`touch-none\` on the plot: a tap shows the tooltip and a drag moves it, while the page still scrolls
   everywhere else. Release or cancel hides it.`,
       },

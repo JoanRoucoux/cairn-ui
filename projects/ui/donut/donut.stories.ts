@@ -1,5 +1,5 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular-vite';
-import { fn } from 'storybook/test';
+import { expect, fn, within } from 'storybook/test';
 
 import { type DonutSlice, UiDonut } from './donut';
 
@@ -39,6 +39,13 @@ const byAccount: DonutSlice[] = [
   { id: 'woodgrove-retirement', label: 'Woodgrove Retirement', value: 6190.2, sublabel: 'PER · Woodgrove Bank' },
 ];
 
+const PHONE = {
+  globals: { viewport: { value: '320x640', isRotated: false } },
+  parameters: {
+    viewport: { options: { '320x640': { name: '320 x 640', styles: { width: '320px', height: '640px' } } } },
+  },
+};
+
 const meta: Meta<DonutArgs> = {
   title: 'Data display/Donut',
   decorators: [moduleMetadata({ imports: [UiDonut] })],
@@ -71,7 +78,9 @@ visible either way.
 * The \`<svg>\` is \`role="img"\`, named by \`label\` followed by every slice and its share, so the full
   detail survives even when several slices are grouped into “Other” visually.
 * Every legend row is a \`<button>\`, or a link when \`legendHref\` returns a URL for it: reachable by Tab, activated with Enter (and Space on a button), and its own text
-  already carries the name, the sub-label, the share and the value: nothing depends on color alone.`,
+  already carries the name, the sub-label, the share and the value: nothing depends on color alone.
+* Long labels and sub-labels wrap in the legend instead of being cut, so the full text is always there; only the centre label is truncated.
+* A masked (\`••••\`) or missing (\`—\`) value is read through \`UiAmountText\` with the \`UI_AMOUNT_LABELS\` texts, and the \`aria-label\` goes through \`speakAmount\`.`,
       },
     },
   },
@@ -121,4 +130,29 @@ export const MaskedAmounts: Story = {
 export const LegendLinks: Story = {
   name: 'Legend rows as links',
   args: { legendHref: (id: string) => `#class-${id}` },
+};
+
+export const LongLabelNarrow: Story = {
+  ...PHONE,
+  tags: ['!dev', '!autodocs'],
+  args: {
+    label: 'By account',
+    slices: [
+      {
+        id: 'long',
+        label: 'Woodgrove Retirement Savings Plan for Employees of Northwind Traders',
+        value: 31840.15,
+        sublabel: 'Employer sponsored plan managed by Contoso Securities and Woodgrove Bank',
+      },
+      { id: 'cash', label: 'Cash', value: 4120.4, sublabel: 'Balances' },
+    ],
+  },
+  play: async ({ canvasElement }) => {
+    const legend = within(canvasElement.querySelector<HTMLElement>('[data-testid="donut-legend"]')!);
+    const label = legend.getByText(/Woodgrove Retirement Savings Plan/);
+    const sublabel = legend.getByText(/Employer sponsored plan/);
+
+    await expect(label.scrollWidth).toBeLessThanOrEqual(label.clientWidth);
+    await expect(sublabel.scrollWidth).toBeLessThanOrEqual(sublabel.clientWidth);
+  },
 };

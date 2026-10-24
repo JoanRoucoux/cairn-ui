@@ -1,6 +1,8 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { Component, booleanAttribute, computed, input, model, numberAttribute } from '@angular/core';
 
+import { UiAmountText } from '@joanroucoux/cairn-ui/amount';
+
 const toHeadingLevel = (value: unknown): number => Math.min(6, Math.max(2, Math.round(numberAttribute(value, 2))));
 
 /**
@@ -18,7 +20,7 @@ const toHeadingLevel = (value: unknown): number => Math.min(6, Math.max(2, Math.
  */
 @Component({
   selector: 'ui-group-header',
-  imports: [NgTemplateOutlet],
+  imports: [NgTemplateOutlet, UiAmountText],
   host: { class: 'block' },
   template: `
     <ng-template #total><ng-content /></ng-template>
@@ -49,8 +51,8 @@ const toHeadingLevel = (value: unknown): number => Math.min(6, Math.max(2, Math.
             </svg>
             <span class="flex min-w-0 flex-col">
               <span class="text-title font-semibold">{{ name() }}</span>
-              @if (meta()) {
-                <span class="text-label text-(--muted-foreground)">{{ meta() }}</span>
+              @if (meta(); as metaText) {
+                <span class="text-label text-(--muted-foreground)"><ui-amount-text [text]="metaText" /></span>
               }
             </span>
           </span>
@@ -63,8 +65,8 @@ const toHeadingLevel = (value: unknown): number => Math.min(6, Math.max(2, Math.
       <div class="flex min-h-11 w-full items-end justify-between gap-3 px-1 pt-3">
         <div class="flex min-w-0 flex-col">
           <h2 class="text-title m-0 font-semibold" [attr.aria-level]="ariaLevel()">{{ name() }}</h2>
-          @if (meta()) {
-            <span class="text-label text-(--muted-foreground)">{{ meta() }}</span>
+          @if (meta(); as metaText) {
+            <span class="text-label text-(--muted-foreground)"><ui-amount-text [text]="metaText" /></span>
           }
         </div>
         <span class="text-title font-semibold whitespace-nowrap tabular-nums">

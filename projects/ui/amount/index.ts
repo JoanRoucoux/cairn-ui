@@ -7,3 +7,6 @@ export {
   type AmountNumeric,
 } from './amount';
 export { type AmountFormatOptions, formatAmount } from './format-amount';
+export { type AmountLabels, UI_AMOUNT_LABELS } from './amount-labels';
+export { UiAmountText } from './amount-text';
+export { speakAmount } from './speak-amount';

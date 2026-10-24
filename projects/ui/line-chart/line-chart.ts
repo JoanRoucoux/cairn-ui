@@ -13,6 +13,7 @@ import {
   viewChild,
 } from '@angular/core';
 
+import { UI_AMOUNT_LABELS, UiAmountText, speakAmount } from '@joanroucoux/cairn-ui/amount';
 import { injectReducedMotion } from '@joanroucoux/cairn-ui/motion';
 
 import { axisTicks, tickLabels } from './internal/chart-axis';
@@ -61,6 +62,7 @@ type EndRef = ElementRef<SVGCircleElement>;
  */
 @Component({
   selector: 'ui-line-chart',
+  imports: [UiAmountText],
   template: `
     <div class="relative h-full">
       <svg
@@ -173,11 +175,11 @@ type EndRef = ElementRef<SVGCircleElement>;
           [style]="tooltipStyle(point)"
         >
           <p class="font-medium text-(--foreground)" [class]="tooltipClasses().value">
-            {{ tooltipFormat()?.(point) ?? valueFormat()(point.v) }}
+            <ui-amount-text [text]="tooltipFormat()?.(point) ?? valueFormat()(point.v)" />
           </p>
           @if (tooltipDelta()) {
             <p data-chart-delta [class]="deltaClasses(point)">
-              {{ deltaFormat()(deltaFor(point)) }}{{ spacedDeltaSuffix() }}
+              <ui-amount-text [text]="deltaFormat()(deltaFor(point))" />{{ spacedDeltaSuffix() }}
             </p>
           }
           <p class="text-caption text-(--subtle-foreground)" data-chart-date>{{ timeFormat()(point.t) }}</p>
@@ -198,7 +200,7 @@ type EndRef = ElementRef<SVGCircleElement>;
               @for (point of points(); track point.t) {
                 <tr>
                   <td>{{ timeFormat()(point.t) }}</td>
-                  <td>{{ valueFormat()(point.v) }}</td>
+                  <td><ui-amount-text [text]="valueFormat()(point.v)" /></td>
                 </tr>
               }
             </tbody>
@@ -232,6 +234,7 @@ export class UiLineChart {
 
   #destroyRef = inject(DestroyRef);
   #host = inject<ElementRef<HTMLElement>>(ElementRef);
+  readonly #labels = inject(UI_AMOUNT_LABELS);
   #wide = wideViewport();
   #reducedMotion = injectReducedMotion();
   #motion = new ShapeMotion({
@@ -300,7 +303,7 @@ export class UiLineChart {
     const value = this.tooltipFormat()?.(point) ?? this.valueFormat()(point.v);
     const delta = this.tooltipDelta() ? `${this.deltaFormat()(this.deltaFor(point))}${this.spacedDeltaSuffix()}` : null;
 
-    return [value, delta, this.timeFormat()(point.t)].filter(Boolean).join(', ');
+    return speakAmount([value, delta, this.timeFormat()(point.t)].filter(Boolean).join(', '), this.#labels());
   });
 
   protected readonly startLabelInfo = computed(() => {

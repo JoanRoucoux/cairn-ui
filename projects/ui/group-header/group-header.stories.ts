@@ -49,7 +49,8 @@ of the body it folds.
 * The button sits inside the heading, so the heading structure survives. \`aria-expanded\` carries the state, and
   \`aria-disabled\` the held-open one, which keeps the button reachable by keyboard.
 * The name is an \`h2\`; \`headingLevel\` (2 to 6) sets \`aria-level\` so the card fits the outline of the page.
-* The chevron is decorative and hidden from assistive technology.`,
+* The chevron is decorative and hidden from assistive technology.
+* A masked (\`••••\`) or missing (\`—\`) amount in \`meta\` is read through \`UiAmountText\` as the \`UI_AMOUNT_LABELS\` texts.`,
       },
     },
   },
