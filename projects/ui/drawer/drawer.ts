@@ -55,7 +55,7 @@ const nextId = (() => {
 
           @if (closeLabel()) {
             <button
-              class="rounded-control -mt-1 -mr-2 grid size-9 flex-none cursor-pointer place-items-center text-(--muted-foreground) transition-[scale] duration-(--duration-press) ease-out outline-none hover:bg-(--glow) hover:text-(--foreground) focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring) active:scale-(--press-scale) disabled:pointer-events-none disabled:opacity-40"
+              class="rounded-control -mt-1 -mr-2 grid size-9 flex-none cursor-pointer place-items-center text-(--muted-foreground) transition-[scale] duration-(--duration-press) ease-out hover:bg-(--glow) hover:text-(--foreground) focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring) active:scale-(--press-scale) disabled:pointer-events-none disabled:opacity-40"
               type="button"
               [attr.aria-label]="closeLabel()"
               [disabled]="busy()"

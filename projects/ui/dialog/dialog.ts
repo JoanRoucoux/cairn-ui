@@ -148,7 +148,7 @@ const nextId = (() => {
       </div>
 
       <div
-        class="min-h-0 flex-1 overflow-y-auto px-4 outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring) lg:px-6"
+        class="min-h-0 flex-1 overflow-y-auto px-4 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ring) lg:px-6"
         data-dialog-body
         [attr.aria-labelledby]="scrollable() ? headingId : null"
         [attr.role]="scrollable() ? 'region' : null"
@@ -210,7 +210,7 @@ export class UiDialog {
   );
 
   protected readonly crossClasses =
-    'rounded-pill lg:rounded-control grid size-11 flex-none cursor-pointer place-items-center text-(--muted-foreground) transition-[scale,background-color,color] [transition-duration:var(--duration-press),var(--duration-fast),var(--duration-fast)] ease-out outline-none focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-(--ring) active:scale-(--press-scale) active:bg-(--soft) disabled:pointer-events-none disabled:opacity-40 lg:size-9 lg:hover:bg-(--glow) lg:hover:text-(--foreground)';
+    'rounded-pill lg:rounded-control grid size-11 flex-none cursor-pointer place-items-center text-(--muted-foreground) transition-[scale,background-color,color] [transition-duration:var(--duration-press),var(--duration-fast),var(--duration-fast)] ease-out focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-(--ring) active:scale-(--press-scale) active:bg-(--soft) disabled:pointer-events-none disabled:opacity-40 lg:size-9 lg:hover:bg-(--glow) lg:hover:text-(--foreground)';
 
   protected readonly footerClasses = computed(
     () =>

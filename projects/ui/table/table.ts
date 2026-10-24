@@ -318,7 +318,7 @@ export class UiRowLink {
   protected readonly classes = computed(() =>
     this.stretch()
       ? 'block max-w-full cursor-pointer truncate rounded-control text-left font-medium outline-none after:absolute after:inset-0 after:rounded-control after:content-[""] focus-visible:after:outline-2 focus-visible:after:-outline-offset-2 focus-visible:after:outline-(--ring)'
-      : 'block max-w-full cursor-pointer truncate rounded-sm text-left font-medium underline-offset-[3px] outline-none hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring)',
+      : 'block max-w-full cursor-pointer truncate rounded-sm text-left font-medium underline-offset-[3px] hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring)',
   );
 }
 
