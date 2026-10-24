@@ -119,6 +119,37 @@ describe('UiGroupHeader', () => {
       );
     });
 
+    it('sets aria-level on the static heading only when it differs from 2', async () => {
+      await render('<ui-group-header name="A" [headingLevel]="3">1</ui-group-header>', { imports: [UiGroupHeader] });
+
+      expect(screen.getByRole('heading', { level: 3, name: 'A' })).toHaveAttribute('aria-level', '3');
+    });
+
+    it('sets aria-level on the collapsible heading', async () => {
+      await render('<ui-group-header name="A" collapsible [headingLevel]="4">1</ui-group-header>', {
+        imports: [UiGroupHeader],
+      });
+
+      expect(screen.getByRole('heading', { level: 4 })).toBeInTheDocument();
+    });
+
+    it('reads the static form and clamps to 2..6', async () => {
+      await render(
+        '<ui-group-header name="A" headingLevel="9">1</ui-group-header><ui-group-header name="B" headingLevel="x">1</ui-group-header><ui-group-header name="C" headingLevel="1">1</ui-group-header>',
+        { imports: [UiGroupHeader] },
+      );
+
+      expect(screen.getByRole('heading', { name: 'A' })).toHaveAttribute('aria-level', '6');
+      expect(screen.getByRole('heading', { name: 'B' })).not.toHaveAttribute('aria-level');
+      expect(screen.getByRole('heading', { name: 'C' })).not.toHaveAttribute('aria-level');
+    });
+
+    it('leaves aria-level off at the default level', async () => {
+      await render('<ui-group-header name="A">1</ui-group-header>', { imports: [UiGroupHeader] });
+
+      expect(screen.getByRole('heading')).not.toHaveAttribute('aria-level');
+    });
+
     it('leaves out the meta when there is none', async () => {
       await render('<ui-group-header name="A">1</ui-group-header>', { imports: [UiGroupHeader] });
 

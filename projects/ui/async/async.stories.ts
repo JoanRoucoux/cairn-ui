@@ -22,6 +22,7 @@ type AsyncArgs = {
   align: AsyncAlign;
   card: boolean;
   fill: boolean;
+  headingLevel: number;
   retry: () => void;
 };
 
@@ -60,8 +61,11 @@ inside a form. \`align\` centers the block (\`auto\`: from 64rem), \`card\` draw
 #### Accessibility
 
 * The host carries \`aria-busy="true"\` while loading.
-* The error block is \`role="alert"\` inside an \`aria-live="polite"\` region, so assistive technology
-  announces it as soon as it appears.`,
+* The error block is \`role="alert"\`, which is already assertive and atomic, so assistive technology
+  announces it as soon as it appears.
+* When the retry button has focus and the error block leaves (the call restarts), focus moves to the
+  host so keyboard and screen reader users keep their place instead of falling back to the page.
+* The title of the \`emphasis\` variant is an \`h2\`. \`headingLevel\` (2 to 6) sets \`aria-level\` to fit the outline of the page.`,
       },
     },
   },
@@ -70,7 +74,7 @@ inside a form. \`align\` centers the block (\`auto\`: from 64rem), \`card\` draw
     template: `
       <div class="rounded-container box-content flex w-[300px] flex-col gap-2.5 bg-(--card) p-4 shadow-[inset_0_0_0_1px_var(--border)]">
         <span class="text-title font-semibold">{{ title }}</span>
-        <ui-async [state]="state" [errorTitle]="errorTitle" [errorMessage]="errorMessage" [retryLabel]="retryLabel" [retryIcon]="retryIcon" [variant]="variant" [align]="align" [card]="card" [fill]="fill" (retry)="retry()">
+        <ui-async [state]="state" [errorTitle]="errorTitle" [errorMessage]="errorMessage" [retryLabel]="retryLabel" [retryIcon]="retryIcon" [variant]="variant" [align]="align" [card]="card" [fill]="fill" [headingLevel]="headingLevel" (retry)="retry()">
           <div asyncLoading class="flex flex-col gap-2.5">
             <div class="flex justify-between py-1.5"><span class="rounded-control block h-4 bg-(--muted) w-30"></span><span class="rounded-control block h-4 bg-(--muted) w-[90px]"></span></div>
             <div class="flex justify-between py-1.5"><span class="rounded-control block h-4 bg-(--muted) w-[90px]"></span><span class="rounded-control block h-4 bg-(--muted) w-[90px]"></span></div>
@@ -96,6 +100,7 @@ inside a form. \`align\` centers the block (\`auto\`: from 64rem), \`card\` draw
     align: 'start',
     card: false,
     fill: false,
+    headingLevel: 2,
     retry: fn(),
   },
   argTypes: {
@@ -127,6 +132,11 @@ inside a form. \`align\` centers the block (\`auto\`: from 64rem), \`card\` draw
     fill: {
       control: 'boolean',
       description: 'The error block fills its host and centers vertically; the host sets the minimum height.',
+    },
+    headingLevel: {
+      control: { type: 'number', min: 2, max: 6 },
+      description:
+        'Heading level, 2 to 6, of the error title of the `emphasis` variant. The element stays an `h2` and `aria-level` carries any other level.',
     },
     retry: { description: 'Emitted when the retry button is pressed. Only that block reloads.' },
   },

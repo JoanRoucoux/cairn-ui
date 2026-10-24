@@ -27,7 +27,8 @@ its own projected content and wires the ARIA attributes onto it, instead of repl
 custom component that would have to reimplement every native forms behavior.
 
 \`unit\` renders a unit such as \`EUR\` or \`shares\` inside the control's right edge. It is decorative
-text, not part of the control's value.
+text, not part of the control's value: the input is padded on the right to clear it, and the unit joins
+the control's description so a screen reader reads it.
 
 \`uiFieldLeading\` marks an element, typically an 18px svg icon, as the control's leading content. It
 sits 12px from the left edge, in \`--muted-foreground\`, and the control's text is inset by 38px
@@ -55,7 +56,8 @@ validation state on its own, so a form field needs no binding here at all.
   the label focuses the control.
 * \`labelHidden\` hides the label from sight only: it stays in the accessibility tree and keeps
   naming the control. A placeholder is not a substitute for it, it disappears as soon as the user types.
-* \`hint\` and \`error\` are joined into the control's \`aria-describedby\`.
+* \`hint\`, \`error\` and \`unit\` are added to the control's \`aria-describedby\`. A static \`aria-describedby\` the app put on the control is kept, the field only adds and removes its own ids. A changing Angular binding on the same attribute would overwrite them.
+* A \`ui-choice-chips\` inside the field is wired on its \`radiogroup\` element (\`aria-describedby\`, \`aria-invalid\`), not through \`for\` and \`id\`: it names itself, so give it a \`label\` or \`ariaLabel\`.
 * A non empty \`error\` marks the control \`aria-invalid\` and renders the message with \`role="alert"\`,
   so a screen reader announces it as soon as it appears.
 * A control outside a field shows no message. It has nowhere to put one.`,

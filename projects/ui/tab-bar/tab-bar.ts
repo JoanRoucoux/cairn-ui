@@ -16,7 +16,7 @@ const ACTIVE_TAB_CLASSES =
 /**
  * Bottom navigation bar for phones. While it is on the page it publishes its height as
  * `--tab-bar-height` on the root element, which `ui-action-bar` and `ui-toaster` sit above: use it
- * for anything else that must clear the bar.
+ * for anything else that must clear the bar. Name the `nav` with an `aria-label`. `theme.css` turns the height into the root's `scroll-padding-bottom` below `64rem`.
  *
  * @example
  * <nav ui-tab-bar>

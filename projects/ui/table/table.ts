@@ -1,7 +1,9 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, Directive, booleanAttribute, computed, inject, input, model } from '@angular/core';
+import { Component, Directive, booleanAttribute, computed, inject, input, model, numberAttribute } from '@angular/core';
 
 import { holdTransitionsUntilRendered } from '@joanroucoux/cairn-ui/motion';
+
+const toHeadingLevel = (value: unknown): number => Math.min(6, Math.max(2, Math.round(numberAttribute(value, 2))));
 
 /** Breakpoints a secondary column can be held back until. */
 export const CELL_BREAKPOINTS = ['md', 'lg'] as const;
@@ -221,7 +223,7 @@ export type GroupSize = (typeof GROUP_SIZES)[number];
   template: `
     <ng-template #total><ng-content /></ng-template>
     @if (collapsible()) {
-      <h2 class="m-0 font-normal">
+      <h2 class="m-0 font-normal" [attr.aria-level]="ariaLevel()">
         <button
           class="rounded-control flex w-full items-center justify-between gap-4 bg-(--muted) px-2 text-left transition-[background-color] duration-(--duration-fast) ease-out not-aria-disabled:cursor-pointer not-aria-disabled:hover:bg-(--soft) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring) forced-colors:border"
           data-group-heading
@@ -265,7 +267,12 @@ export type GroupSize = (typeof GROUP_SIZES)[number];
         [class]="size() === 'lg' ? 'min-h-12' : 'min-h-11'"
       >
         <div class="flex min-w-0 items-baseline gap-3">
-          <h2 class="text-body m-0 font-semibold whitespace-nowrap outline-none" data-group-heading tabindex="-1">
+          <h2
+            class="text-body m-0 font-semibold whitespace-nowrap outline-none"
+            data-group-heading
+            tabindex="-1"
+            [attr.aria-level]="ariaLevel()"
+          >
             {{ name() }}
           </h2>
           @if (meta()) {
@@ -285,6 +292,10 @@ export class UiGroupCell {
   readonly expanded = model(true);
   readonly toggleDisabled = input(false, { transform: booleanAttribute });
   readonly controls = input<string>();
+  /** Heading level, 2 to 6. The element stays an `h2` and `aria-level` carries any other level. */
+  readonly headingLevel = input<number, unknown>(2, { transform: toHeadingLevel });
+
+  protected readonly ariaLevel = computed(() => (this.headingLevel() === 2 ? null : this.headingLevel()));
 
   protected readonly hostClasses = computed(
     () => `px-0 ${this.size() === 'lg' ? 'pt-3' : 'pt-2.5'} pb-1 align-middle text-body`,

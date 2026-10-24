@@ -43,8 +43,9 @@ backdrop, and \`heading\` names what the actions apply to. \`width\` fixes the p
   example “Actions for Northwind PEA”.
 * The trigger carries \`aria-haspopup="menu"\`, \`aria-expanded\` and \`aria-controls\`.
 * Opening moves focus to the first item; the arrow keys move between items and wrap; Home and End
-  jump to the first and the last. Escape and a click outside close the menu, and focus returns to
-  the trigger either way.
+  jump to the first and the last. Escape and a click outside close the menu. Focus returns to the
+  trigger, unless a click outside landed on another focusable element such as a text field: that
+  element keeps its focus.
 * A destructive item is colored \`--negative\`, never conveyed by color alone: its label already
   says what it does (“Delete the holding”).`,
       },

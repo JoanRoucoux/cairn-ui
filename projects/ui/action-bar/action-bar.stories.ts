@@ -41,6 +41,7 @@ While it is on the page the bar publishes its height as \`--action-bar-height\` 
 #### Accessibility
 
 * A plain container: the actions inside keep their native button semantics and focus order.
+* Below \`64rem\` \`theme.css\` sets \`scroll-padding-bottom\` on the root from \`--action-bar-height\` and \`--tab-bar-height\`, so a focused element scrolls clear of the bar. That padding assumes the app renders \`ui-tab-bar\` below \`64rem\`, since the bar sits above the tab bar.
 * Use \`size="tall"\` on the buttons so each reaches a 48px touch target.`,
       },
     },

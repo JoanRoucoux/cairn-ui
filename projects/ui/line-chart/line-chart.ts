@@ -166,9 +166,9 @@ type EndRef = ElementRef<SVGCircleElement>;
 
       @if (active(); as point) {
         <div
+          aria-hidden="true"
           class="rounded-container pointer-events-none absolute bg-(--elevated) py-2 whitespace-nowrap [font-variant-numeric:var(--numeric)] shadow-[0_4px_16px_rgb(0_0_0/0.12),inset_0_0_0_1px_var(--border)] forced-colors:border"
           data-testid="chart-tooltip"
-          role="status"
           [class]="tooltipClasses().box"
           [style]="tooltipStyle(point)"
         >
@@ -183,6 +183,7 @@ type EndRef = ElementRef<SVGCircleElement>;
           <p class="text-caption text-(--subtle-foreground)" data-chart-date>{{ timeFormat()(point.t) }}</p>
         </div>
       }
+      <div class="sr-only" data-chart-live role="status">{{ liveText() }}</div>
       @if (points().length > 0) {
         <div class="sr-only">
           <table>
@@ -287,6 +288,19 @@ export class UiLineChart {
     const index = this.activeIndex();
 
     return geometry && index !== null && !this.held() ? (geometry.points[index] as PlottedPoint) : null;
+  });
+
+  protected readonly liveText = computed(() => {
+    const point = this.active();
+
+    if (!point) {
+      return '';
+    }
+
+    const value = this.tooltipFormat()?.(point) ?? this.valueFormat()(point.v);
+    const delta = this.tooltipDelta() ? `${this.deltaFormat()(this.deltaFor(point))}${this.spacedDeltaSuffix()}` : null;
+
+    return [value, delta, this.timeFormat()(point.t)].filter(Boolean).join(', ');
   });
 
   protected readonly startLabelInfo = computed(() => {

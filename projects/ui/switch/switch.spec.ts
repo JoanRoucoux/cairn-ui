@@ -20,6 +20,15 @@ describe('UiSwitch', () => {
     );
   });
 
+  it('stops sliding the thumb under reduced motion', async () => {
+    await render('<input type="checkbox" uiSwitch aria-label="Hide amounts" />', { imports: [UiSwitch] });
+
+    expect(screen.getByRole('switch', { name: 'Hide amounts' })).toHaveClass(
+      'after:transition-transform',
+      'motion-reduce:after:transition-none',
+    );
+  });
+
   it('toggles on click', async () => {
     await render('<input type="checkbox" uiSwitch aria-label="Hide amounts" />', { imports: [UiSwitch] });
     const toggle = screen.getByRole('switch', { name: 'Hide amounts' }) as HTMLInputElement;

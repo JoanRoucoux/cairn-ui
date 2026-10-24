@@ -46,4 +46,51 @@ describe('UiLineChart touch and delta suffix', () => {
       '•••• € since the start',
     );
   });
+
+  describe('live region', () => {
+    const live = (container: HTMLElement): HTMLElement => container.querySelector('[data-chart-live]')!;
+
+    it('keeps a permanent status element, empty until a point is active', async () => {
+      const { container } = await render('<ui-line-chart label="x" [points]="points" />', {
+        imports: [UiLineChart],
+        componentProperties: { points },
+      });
+
+      expect(screen.getByRole('status')).toBe(live(container));
+      expect(live(container).textContent).toBe('');
+    });
+
+    it('fills it with the tooltip text and hides the visual tooltip', async () => {
+      const { fixture, container } = await render(
+        '<ui-line-chart label="x" [points]="points" [valueFormat]="fmt" [deltaFormat]="fmt" [timeFormat]="time" />',
+        { imports: [UiLineChart], componentProperties: { points, fmt, time } },
+      );
+      const svg: SVGSVGElement = fixture.nativeElement.querySelector('svg');
+
+      fireEvent.pointerDown(svg, { clientX: 99999 });
+      fixture.detectChanges();
+
+      expect(live(container)).toHaveTextContent('144539.35 EUR, 2418.60 EUR, 2026-09-25');
+      expect(screen.getByTestId('chart-tooltip')).toHaveAttribute('aria-hidden', 'true');
+      expect(screen.getByTestId('chart-tooltip')).not.toHaveAttribute('role');
+
+      fireEvent.pointerCancel(svg);
+      fixture.detectChanges();
+
+      expect(live(container).textContent).toBe('');
+    });
+
+    it('follows tooltipFormat and leaves out the change when tooltipDelta is false', async () => {
+      const { fixture, container } = await render(
+        '<ui-line-chart label="x" [tooltipDelta]="false" [points]="points" [tooltipFormat]="tip" [timeFormat]="time" />',
+        { imports: [UiLineChart], componentProperties: { points, time, tip: (p: ChartPoint) => `price ${p.v}` } },
+      );
+      const svg: SVGSVGElement = fixture.nativeElement.querySelector('svg');
+
+      fireEvent.pointerDown(svg, { clientX: 0 });
+      fixture.detectChanges();
+
+      expect(live(container)).toHaveTextContent(/^price 142120.75, 2026-08-25$/);
+    });
+  });
 });

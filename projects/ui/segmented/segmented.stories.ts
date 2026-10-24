@@ -38,6 +38,7 @@ mode. The selection is a \`model()\`, bound with \`[(value)]\`.
 * The selected option sits on a thumb ringed with \`--control-border\` (3:1). In forced colors the track gets a border and the thumb takes the \`Highlight\` / \`HighlightText\` pair.
 * Implements the [ARIA radio group pattern](https://www.w3.org/WAI/ARIA/apg/patterns/radio/), since
   no native element covers this.
+* Under reduced motion the thumb no longer slides: it jumps to the selected option.
 * A roving \`tabindex\` keeps a single stop in the tab order: the selected option, or the first one
   when nothing matches.
 * Arrow Left, Right, Up and Down move the selection and the focus together, wrapping at both ends.

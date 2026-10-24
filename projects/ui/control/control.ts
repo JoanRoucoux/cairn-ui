@@ -9,10 +9,12 @@ export type UiControlError = { readonly message?: string };
 export type UiControl = {
   readonly errors: Signal<readonly UiControlError[]>;
   readonly touched: Signal<boolean>;
+  readonly invalid?: Signal<boolean>;
 };
 
 /**
  * Resolves to the styled control projected into a field. A control provides it and declares the
- * `errors` and `touched` inputs that Angular's `[formField]` fills.
+ * `errors` and `touched` inputs that Angular's `[formField]` fills. A control that marks itself
+ * `aria-invalid` also exposes `invalid`, so the field keeps the attribute in step with it.
  */
 export const UI_CONTROL = new InjectionToken<UiControl>('UI_CONTROL');

@@ -94,7 +94,9 @@ export class UiFieldTrailing {}
         <ng-content />
         <ng-content select="[uiFieldTrailing]" />
         @if (unit()) {
-          <span class="text-label pointer-events-none absolute right-3 text-(--subtle-foreground)">{{ unit() }}</span>
+          <span class="text-label pointer-events-none absolute right-3 text-(--subtle-foreground)" [id]="unitId">{{
+            unit()
+          }}</span>
         }
       </div>
 
@@ -122,6 +124,7 @@ export class UiField {
   readonly #id = nextId();
   protected readonly hintId = `${this.#id}-hint`;
   protected readonly errorId = `${this.#id}-error`;
+  protected readonly unitId = `${this.#id}-unit`;
   readonly #host = inject<ElementRef<HTMLElement>>(ElementRef);
   protected readonly control = contentChild(UI_CONTROL);
   protected readonly leading = contentChild(UiFieldLeading);
@@ -133,6 +136,7 @@ export class UiField {
       'relative flex items-center',
       this.leading() ? '[&>input]:pl-[38px]' : '',
       this.trailing() ? '[&>input]:pr-12 lg:[&>input]:pr-11' : '',
+      !this.trailing() && this.unit() ? '[&>input]:pr-16' : '',
     ]
       .filter(Boolean)
       .join(' '),
@@ -162,16 +166,27 @@ export class UiField {
     let markedByField = false;
 
     afterRenderEffect(() => {
-      const control = this.#host.nativeElement.querySelector<HTMLElement>('input, select, textarea');
+      const control = this.#host.nativeElement.querySelector<HTMLElement>('input, select, textarea, [role=radiogroup]');
 
       if (!control) {
         return;
       }
 
-      control.id ||= this.#id;
-      this.#host.nativeElement.querySelector('label')!.htmlFor = control.id;
+      if (control.getAttribute('role') !== 'radiogroup') {
+        control.id ||= this.#id;
+        this.#host.nativeElement.querySelector('label')!.htmlFor = control.id;
+      }
 
-      const describedBy = [this.hint() ? this.hintId : null, this.message() ? this.errorId : null].filter(Boolean);
+      const own = [this.hintId, this.errorId, this.unitId];
+      const active = [
+        this.hint() ? this.hintId : null,
+        this.message() ? this.errorId : null,
+        this.unit() ? this.unitId : null,
+      ].filter((id): id is string => id !== null);
+      const foreign = (control.getAttribute('aria-describedby') ?? '')
+        .split(/\s+/)
+        .filter((id) => id !== '' && !own.includes(id));
+      const describedBy = [...foreign, ...active];
 
       if (describedBy.length > 0) {
         control.setAttribute('aria-describedby', describedBy.join(' '));
@@ -179,7 +194,9 @@ export class UiField {
         control.removeAttribute('aria-describedby');
       }
 
-      if (this.message() || this.invalid()) {
+      const controlInvalid = this.control()?.invalid?.() ?? false;
+
+      if (controlInvalid || this.message() || this.invalid()) {
         control.setAttribute('aria-invalid', 'true');
         markedByField = true;
       } else if (markedByField) {

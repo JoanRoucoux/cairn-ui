@@ -65,17 +65,30 @@ describe('UiToaster', () => {
     );
   });
 
-  it('replaces the current message in the same element', async () => {
+  it('replaces the current message inside the same box', async () => {
     const { toasts } = await setup();
 
     toasts.show('First');
     await flush();
-    const first = screen.getByText('First');
+    const box = screen.getByText('First').parentElement;
     toasts.show('Second');
     await flush();
 
     expect(screen.queryByText('First')).toBeNull();
-    expect(screen.getByText('Second')).toBe(first);
+    expect(screen.getByText('Second').parentElement).toBe(box);
+  });
+
+  it('renders the message again when the same text is shown twice, so it is announced again', async () => {
+    const { toasts } = await setup();
+
+    toasts.show('Purchase recorded');
+    await flush();
+    const first = screen.getByText('Purchase recorded');
+    toasts.show('Purchase recorded');
+    await flush();
+
+    expect(screen.getByText('Purchase recorded')).not.toBe(first);
+    expect(first).not.toBeInTheDocument();
   });
 
   it('dismisses after 5 s by default', async () => {
@@ -146,10 +159,11 @@ describe('UiToaster', () => {
     toasts.show('One');
     await flush();
     await vi.advanceTimersByTimeAsync(3000);
-    await user.hover(screen.getByText('One'));
+    const box = screen.getByText('One').parentElement!;
+    await user.hover(box);
     toasts.show('Two');
     await flush();
-    await user.unhover(screen.getByText('Two'));
+    await user.unhover(box);
     await vi.advanceTimersByTimeAsync(4999);
 
     expect(toasts.toast()?.text).toBe('Two');

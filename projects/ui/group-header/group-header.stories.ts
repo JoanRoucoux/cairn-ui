@@ -9,6 +9,7 @@ type GroupHeaderArgs = {
   collapsible: boolean;
   expanded: boolean;
   toggleDisabled: boolean;
+  headingLevel: number;
 };
 
 const CARD = 'w-[390px] rounded-container bg-(--card) p-2 shadow-[inset_0_0_0_1px_var(--border)]';
@@ -47,6 +48,7 @@ of the body it folds.
 
 * The button sits inside the heading, so the heading structure survives. \`aria-expanded\` carries the state, and
   \`aria-disabled\` the held-open one, which keeps the button reachable by keyboard.
+* The name is an \`h2\`; \`headingLevel\` (2 to 6) sets \`aria-level\` so the card fits the outline of the page.
 * The chevron is decorative and hidden from assistive technology.`,
       },
     },
@@ -57,6 +59,10 @@ of the body it folds.
     collapsible: { control: 'boolean', description: 'Makes the header a button that folds the group.' },
     expanded: { control: 'boolean', description: 'Two-way model: whether the group is open.' },
     toggleDisabled: { control: 'boolean', description: 'Keeps the button announced but ignores a click.' },
+    headingLevel: {
+      control: { type: 'number', min: 2, max: 6 },
+      description: 'Heading level, 2 to 6. The element stays an `h2` and `aria-level` carries any other level.',
+    },
   },
   args: {
     name: 'Northwind PEA',
@@ -64,12 +70,13 @@ of the body it folds.
     collapsible: true,
     expanded: true,
     toggleDisabled: false,
+    headingLevel: 2,
   },
   render: (args) => ({
     props: args,
     template: `
       <div class="${CARD}">
-        <ui-group-header [name]="name" [meta]="meta" [collapsible]="collapsible" [(expanded)]="expanded" [toggleDisabled]="toggleDisabled">48 215,60 €</ui-group-header>
+        <ui-group-header [name]="name" [meta]="meta" [collapsible]="collapsible" [(expanded)]="expanded" [toggleDisabled]="toggleDisabled" [headingLevel]="headingLevel">48 215,60 €</ui-group-header>
         <p class="m-0 px-1 pb-1 text-label text-(--muted-foreground)" [hidden]="!expanded">Ferrari, Amundi MSCI World, Accor</p>
       </div>
     `,

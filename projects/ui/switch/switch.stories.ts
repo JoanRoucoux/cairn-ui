@@ -33,6 +33,7 @@ Angular forms: no custom \`ControlValueAccessor\` is involved.
 * \`role="switch"\` overrides the native checkbox role; the checked state stays native, so a screen
   reader announces it the same way it would a real switch.
 * Always give it an accessible name, either \`aria-label\` or a \`<label>\` referencing its \`id\`.
+* Under reduced motion the thumb no longer slides: the state changes at once.
 * Toggles on a click and on Space, both native to the checkbox input.`,
       },
     },

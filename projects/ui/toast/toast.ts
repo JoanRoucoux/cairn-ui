@@ -57,7 +57,9 @@ const readDuration = (host: HTMLElement): number => {
             <path d="M20 6 9 17l-5-5" />
           }
         </svg>
-        <span class="min-w-0 flex-1 text-pretty">{{ toast.text }}</span>
+        @for (shown of [toast]; track shown.id) {
+          <span class="min-w-0 flex-1 text-pretty">{{ shown.text }}</span>
+        }
         @if (toast.kind === 'error') {
           <button type="button" [attr.aria-label]="toast.closeLabel" [class]="closeClasses" (click)="toasts.dismiss()">
             <svg

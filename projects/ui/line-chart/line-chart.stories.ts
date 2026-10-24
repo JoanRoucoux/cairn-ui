@@ -116,6 +116,8 @@ The host fills its parent's height (\`block h-full\`); size the chart by sizing 
   point one at a time, Home/End jump to the first/last point, Escape clears it.
 * Every point is also available as a \`sr-only\` \`<table>\`, headed by \`timeColumnLabel\` and
   \`valueColumnLabel\`, so the data survives without the SVG.
+* The visual tooltip is \`aria-hidden\`. A permanent \`sr-only\` \`role="status"\` element, outside the conditional tooltip, carries the same
+  text, so the first point read is announced and not only the following ones.
 * \`touch-none\` on the plot: a tap shows the tooltip and a drag moves it, while the page still scrolls
   everywhere else. Release or cancel hides it.`,
       },
