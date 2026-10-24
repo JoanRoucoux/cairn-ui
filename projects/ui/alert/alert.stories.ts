@@ -32,8 +32,9 @@ Lucide icon in the \`--negative\` color, an optional heading and a text.
 
 #### Accessibility
 
-* The \`error\` variant is \`role="alert"\`, announced as soon as it appears. The \`warning\` variant is
-  \`role="status"\`, announced politely.
+* The \`error\` variant is \`role="alert"\`, announced as soon as it appears. The \`warning\` variant has no
+  role: a live role inserted with its text is never read, so a warning that appears after the page
+  opened (\`fadeIn\`, the default) announces its heading and text once, politely, through a shared live region.
 * The \`info\` variant is \`role="note"\`: read in place, never announced.
 * The icon is decorative and hidden from assistive technology: the text carries the message.`,
       },

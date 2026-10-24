@@ -1,7 +1,11 @@
-import { Component, input } from '@angular/core';
+import { Component, booleanAttribute, effect, inject, input } from '@angular/core';
+
+import { UiAnnouncer } from '@joanroucoux/cairn-ui/announcer';
 
 /**
  * Centered empty state: a title, a hint and an action slot, such as a search that matches nothing.
+ * Set `announce` on an empty state that appears after a search or a filter, so a screen reader hears
+ * it: content inserted with its text is not read on its own.
  *
  * @example
  * <ui-empty heading="No holding matches “zzz”" hint="Search covers the name and the ISIN.">
@@ -22,4 +26,15 @@ import { Component, input } from '@angular/core';
 export class UiEmpty {
   readonly heading = input.required<string>();
   readonly hint = input('');
+  readonly announce = input(false, { transform: booleanAttribute });
+
+  constructor() {
+    const announcer = inject(UiAnnouncer);
+
+    effect(() => {
+      if (this.announce()) {
+        announcer.announce(this.hint() ? `${this.heading()}. ${this.hint()}` : this.heading());
+      }
+    });
+  }
 }

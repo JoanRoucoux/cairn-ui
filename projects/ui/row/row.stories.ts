@@ -21,6 +21,7 @@ import {
 type RowArgs = {
   selected: boolean;
   busy: boolean;
+  busyLabel: string;
   unavailable: boolean;
   size: RowSize;
   padding: RowPadding;
@@ -60,7 +61,7 @@ with a click handler, so keyboard and assistive technology support come for free
 
 * A selected row adds an inset \`--control-border\` ring to its soft fill, so the state does not rely on a faint tint. In forced colors it takes the \`Highlight\` / \`HighlightText\` pair.
 * \`selected\` sets \`aria-current="true"\`, for the row whose detail is open next to it.
-* \`busy\` sets \`aria-busy\` and \`aria-disabled\`, shows a spinner in the trailing slot and swallows the clicks while the row keeps its focus.
+* \`busy\` sets \`aria-busy\` and \`aria-disabled\`, shows a spinner in the trailing slot with a hidden \`busyLabel\` (default "Loading") so the name of the row says why it is disabled, and swallows the clicks while the row keeps its focus.
 * \`unavailable\` sets \`aria-disabled="true"\`, grays the row to half opacity, shows a not-allowed cursor, drops hover and press, and swallows the clicks. The row stays focusable, so a screen reader finds it and reads why it cannot be picked: put the reason in the row.
 * Follows the native element's own semantics: an \`<a>\` for navigation, a \`<button>\` for an action.`,
       },
@@ -69,7 +70,7 @@ with a click handler, so keyboard and assistive technology support come for free
   render: (args) => ({
     props: args,
     template: `
-      <a ui-row href="#" [selected]="selected" [busy]="busy" [unavailable]="unavailable" [size]="size" [padding]="padding" [gap]="gap" [trailing]="trailing" class="w-[340px]">
+      <a ui-row href="#" [selected]="selected" [busy]="busy" [busyLabel]="busyLabel" [unavailable]="unavailable" [size]="size" [padding]="padding" [gap]="gap" [trailing]="trailing" class="w-[340px]">
         <div class="flex min-w-0 flex-1 flex-col">
           <span class="text-body font-medium">Amundi MSCI World</span>
           <span class="text-label text-(--muted-foreground)">300 × 28,64 €</span>
@@ -84,6 +85,7 @@ with a click handler, so keyboard and assistive technology support come for free
   args: {
     selected: false,
     busy: false,
+    busyLabel: 'Loading',
     unavailable: false,
     size: 'md',
     padding: 'md',
@@ -92,6 +94,11 @@ with a click handler, so keyboard and assistive technology support come for free
   },
   argTypes: {
     selected: { control: 'boolean', description: 'Sets `aria-current="true"` and the soft background.' },
+    busyLabel: {
+      control: 'text',
+      description:
+        'Text read by assistive technologies while the row is busy, next to the spinner. Defaults to `Loading`.',
+    },
     busy: {
       control: 'boolean',
       description:

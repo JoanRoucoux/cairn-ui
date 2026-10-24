@@ -39,7 +39,7 @@ foreign-currency row last) and the empty message with the \`resultGroupMessage\`
 #### Accessibility
 
 * The host is \`role="group"\` named by its heading.
-* The loading state sets \`aria-busy\`; the error is \`role="alert"\` so a failing source is announced.`,
+* The loading state sets \`aria-busy\`; the error is \`role="alert"\` so a failing source is announced. When the state becomes \`empty\`, the text of the empty slot is spoken once through a shared live region.`,
       },
     },
   },

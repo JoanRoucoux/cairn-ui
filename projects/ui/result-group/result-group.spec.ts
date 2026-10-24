@@ -1,3 +1,4 @@
+import { UiAnnouncer } from '@joanroucoux/cairn-ui/announcer';
 import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
@@ -77,6 +78,55 @@ describe('UiResultGroup', () => {
       'empty:hidden',
     );
     expect(screen.queryByRole('button', { name: 'Contoso Global Equity' })).not.toBeInTheDocument();
+  });
+
+  describe('announce', () => {
+    const announce = vi.fn();
+    const drawWithSpy = (
+      state: string,
+      message = '<span resultGroupMessage>No results from Northwind Markets.</span>',
+    ): ReturnType<typeof render> =>
+      render(`<ui-result-group label="Northwind Markets" [state]="state">${message}</ui-result-group>`, {
+        imports: [UiResultGroup],
+        providers: [{ provide: UiAnnouncer, useValue: { announce } }],
+        componentProperties: { state },
+      });
+
+    beforeEach(() => announce.mockClear());
+
+    it('announces the empty message when the state is empty', async () => {
+      await drawWithSpy('empty');
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(announce).toHaveBeenCalledExactlyOnceWith('No results from Northwind Markets.');
+    });
+
+    it('announces when the state turns empty, not before', async () => {
+      const { fixture } = await drawWithSpy('loading');
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(announce).not.toHaveBeenCalled();
+
+      fixture.componentInstance.state = 'empty';
+      fixture.detectChanges();
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(announce).toHaveBeenCalledExactlyOnceWith('No results from Northwind Markets.');
+    });
+
+    it('stays silent when the empty slot has no text', async () => {
+      await drawWithSpy('empty', '');
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(announce).not.toHaveBeenCalled();
+    });
+
+    it('stays silent when ready', async () => {
+      await drawWithSpy('ready');
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(announce).not.toHaveBeenCalled();
+    });
   });
 
   it('shows the error with a text-only retry that emits retry', async () => {

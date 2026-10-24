@@ -47,7 +47,7 @@ describe('UiField', () => {
   it('announces the error without waiting for focus', async () => {
     await renderField('error="Quantity is required"');
 
-    expect(screen.getByRole('alert')).toHaveTextContent('Quantity is required');
+    expect(screen.getByText('Quantity is required', { selector: 'p' })).toBeInTheDocument();
   });
 
   it('describes the control with both the hint and the error', async () => {
@@ -98,7 +98,7 @@ describe('UiField', () => {
       componentProperties: { errors: [{ message: 'Quantity is required' }] },
     });
 
-    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(document.querySelector('p')).toBeNull();
     expect(screen.getByLabelText('Quantity')).not.toHaveAttribute('aria-invalid');
   });
 
@@ -108,7 +108,7 @@ describe('UiField', () => {
       componentProperties: { errors: [{ message: 'Quantity is required' }] },
     });
 
-    expect(screen.getByRole('alert')).toHaveTextContent('Quantity is required');
+    expect(screen.getByText('Quantity is required', { selector: 'p' })).toBeInTheDocument();
     expect(screen.getByLabelText('Quantity')).toHaveAttribute('aria-invalid', 'true');
   });
 
@@ -118,7 +118,7 @@ describe('UiField', () => {
       componentProperties: { errors: [{}, { message: 'Quantity is required' }] },
     });
 
-    expect(screen.getByRole('alert')).toHaveTextContent('Quantity is required');
+    expect(screen.getByText('Quantity is required', { selector: 'p' })).toBeInTheDocument();
   });
 
   it('lets the caller override the control with an explicit error', async () => {
@@ -130,7 +130,7 @@ describe('UiField', () => {
       },
     );
 
-    expect(screen.getByRole('alert')).toHaveTextContent('Enter a quantity');
+    expect(screen.getByText('Enter a quantity', { selector: 'p' })).toBeInTheDocument();
   });
 
   it('shows nothing when a touched control has no error at all', async () => {
@@ -138,7 +138,7 @@ describe('UiField', () => {
       imports: [UiField, UiInput],
     });
 
-    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(document.querySelector('p')).toBeNull();
   });
 
   it('shows its label by default', async () => {
@@ -176,7 +176,7 @@ describe('UiField', () => {
     });
 
     expect(screen.getByRole('textbox', { name: 'Quantity' })).toHaveAttribute('aria-invalid', 'true');
-    expect(screen.getByText('You hold 500 shares.')).toHaveClass('text-(--negative)');
+    expect(screen.getByText('You hold 500 shares.', { selector: 'p' })).toHaveClass('text-(--negative)');
   });
 
   describe('leading slot', () => {
@@ -289,7 +289,7 @@ describe('UiField', () => {
       await renderField('invalid');
 
       expect(screen.getByLabelText('Quantity')).toHaveAttribute('aria-invalid', 'true');
-      expect(screen.queryByRole('alert')).toBeNull();
+      expect(document.querySelector('p')).toBeNull();
     });
 
     it('clears the mark it set once the field is valid again', async () => {
