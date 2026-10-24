@@ -25,7 +25,8 @@ export const config: SheriffConfig = {
     'component:segmented': ['component:motion'],
     'component:switch': ['component:motion'],
     'component:table': ['component:motion'],
-    'component:empty': ['component:button'],
+    'component:alert': ['component:announcer'],
+    'component:empty': ['component:announcer', 'component:button'],
     'component:fact': ['component:card'],
     'component:dialog': ['component:button'],
     'component:drawer': ['component:button', 'component:dialog'],
@@ -46,6 +47,6 @@ export const config: SheriffConfig = {
     'component:line-chart': ['component:amount', 'component:motion'],
     'component:donut': ['component:amount'],
     'component:group-header': ['component:amount'],
-    'component:result-group': ['component:async', 'component:card', 'component:row'],
+    'component:result-group': ['component:announcer', 'component:async', 'component:card', 'component:row'],
   },
 };

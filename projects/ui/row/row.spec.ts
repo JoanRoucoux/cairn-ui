@@ -50,6 +50,26 @@ describe('UiRow', () => {
     expect(row.querySelector('[aria-hidden="true"]')).toHaveClass('animate-cairn-spin');
   });
 
+  it('names why a busy row is disabled with a hidden label, Loading by default', async () => {
+    await render('<button ui-row type="button" busy>Import</button>', { imports: [UiRow] });
+
+    expect(screen.getByRole('button', { name: /Imports*Loading/ })).toBeInTheDocument();
+    expect(screen.getByText('Loading')).toHaveClass('sr-only');
+  });
+
+  it('uses the busy label the caller gives', async () => {
+    await render('<button ui-row type="button" busy busyLabel="Importing">Import</button>', { imports: [UiRow] });
+
+    expect(screen.getByRole('button', { name: /Imports*Importing/ })).toBeInTheDocument();
+  });
+
+  it('adds no hidden label when not busy', async () => {
+    await render('<button ui-row type="button">Import</button>', { imports: [UiRow] });
+
+    expect(screen.getByRole('button', { name: 'Import' })).toBeInTheDocument();
+    expect(screen.queryByText('Loading')).toBeNull();
+  });
+
   it('swallows activation while busy and keeps the focus on the row', async () => {
     const clicked = vi.fn();
     await render('<button ui-row type="button" busy (click)="clicked()">Import</button>', {

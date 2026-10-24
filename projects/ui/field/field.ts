@@ -6,8 +6,10 @@ import {
   booleanAttribute,
   computed,
   contentChild,
+  effect,
   inject,
   input,
+  signal,
 } from '@angular/core';
 
 import { UI_CONTROL } from '@joanroucoux/cairn-ui/control';
@@ -60,7 +62,8 @@ export class UiFieldTrailing {}
 /**
  * Label, control, hint and error as one unit. The projected native control is found and wired with
  * the ARIA attributes. The message comes from `error`, which wins, or else from the control's own
- * validation state once touched.
+ * validation state once touched. The message is announced once, when the control is touched or the
+ * `error` input changes, never on every keystroke.
  *
  * @example
  * <ui-field label="Quantity" hint="Leave empty if unknown">
@@ -105,10 +108,12 @@ export class UiFieldTrailing {}
       }
 
       @if (message()) {
-        <p animate.enter="ui-enter-fade" class="text-label font-medium text-(--negative)" role="alert" [id]="errorId">
+        <p animate.enter="ui-enter-fade" class="text-label font-medium text-(--negative)" [id]="errorId">
           {{ message() }}
         </p>
       }
+
+      <span aria-live="polite" class="sr-only">{{ announced() }}</span>
     </div>
   `,
 })
@@ -162,8 +167,26 @@ export class UiField {
     return control.errors().find((error) => error.message)?.message;
   });
 
+  protected readonly announced = signal('');
+
   constructor() {
     let markedByField = false;
+    let wasTouched = false;
+    let lastExplicit: string | undefined;
+
+    effect(() => {
+      const explicit = this.error();
+      const touched = this.control()?.touched() ?? false;
+      const message = this.message();
+      const explicitChanged = !!explicit && explicit !== lastExplicit;
+      const turnedTouched = touched && !wasTouched && !explicit;
+
+      wasTouched = touched;
+      lastExplicit = explicit;
+      this.announced.update((current) =>
+        message && (explicitChanged || turnedTouched) ? message : current === message ? current : '',
+      );
+    });
 
     afterRenderEffect(() => {
       const control = this.#host.nativeElement.querySelector<HTMLElement>('input, select, textarea, [role=radiogroup]');

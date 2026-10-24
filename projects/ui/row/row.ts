@@ -74,6 +74,7 @@ const SELECTED_CLASSES =
         aria-hidden="true"
         class="rounded-pill animate-cairn-spin size-4 flex-none border-2 border-current border-r-transparent"
       ></span>
+      <span class="sr-only">{{ busyLabel() }}</span>
     }
   `,
   host: {
@@ -86,6 +87,7 @@ const SELECTED_CLASSES =
 export class UiRow {
   readonly selected = input(false, { transform: booleanAttribute });
   readonly busy = input(false, { transform: booleanAttribute });
+  readonly busyLabel = input('Loading');
   readonly unavailable = input(false, { transform: booleanAttribute });
   readonly size = input<RowSize>('md');
   readonly padding = input<RowPadding>('md');

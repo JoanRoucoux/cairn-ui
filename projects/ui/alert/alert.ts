@@ -1,4 +1,6 @@
-import { Component, booleanAttribute, computed, input } from '@angular/core';
+import { Component, ElementRef, afterNextRender, booleanAttribute, computed, inject, input } from '@angular/core';
+
+import { UiAnnouncer } from '@joanroucoux/cairn-ui/announcer';
 
 export const ALERT_VARIANTS = ['error', 'warning', 'info'] as const;
 export type AlertVariant = (typeof ALERT_VARIANTS)[number];
@@ -11,12 +13,13 @@ const VARIANT_CLASSES: Record<AlertVariant, string> = {
   info: 'rounded-control bg-(--muted) p-3 text-(--foreground) forced-colors:border',
 };
 
-const ROLES: Record<AlertVariant, string> = { error: 'alert', warning: 'status', info: 'note' };
+const ROLES: Record<AlertVariant, string | null> = { error: 'alert', warning: null, info: 'note' };
 
 /**
  * Inline message explaining a failure or a consequence, or static help with `info`: an icon, an optional heading and a text.
  * It fades in when it appears; set `[fadeIn]="false"` on an alert that is part of the page as it
- * opens.
+ * opens. A `warning` that appears after the page opened announces its text once, since a live role
+ * inserted with its content is not read.
  *
  * @example
  * <ui-alert heading="Sign-in failed">Try again.</ui-alert>
@@ -97,4 +100,24 @@ export class UiAlert {
   protected readonly classes = computed(
     () => `${BASE_CLASSES} ${VARIANT_CLASSES[this.variant()]}${this.fadeIn() ? ' ui-enter-fade' : ''}`,
   );
+
+  constructor() {
+    const announcer = inject(UiAnnouncer);
+    const host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+
+    afterNextRender(() => {
+      if (this.variant() !== 'warning' || !this.fadeIn()) {
+        return;
+      }
+
+      const text = Array.from(host.querySelectorAll(':scope > div > span'))
+        .map((span) => span.textContent?.trim())
+        .filter(Boolean)
+        .join('. ');
+
+      if (text) {
+        announcer.announce(text);
+      }
+    });
+  }
 }

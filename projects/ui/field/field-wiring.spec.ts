@@ -99,12 +99,12 @@ describe('UiField wiring', () => {
       group.errors.set([{ message: 'Pick a wrapper' }]);
       group.touched.set(true);
       await fixture.whenStable();
-      expect(screen.getByRole('alert')).toBeInTheDocument();
+      expect(document.querySelector('p')).not.toBeNull();
 
       group.touched.set(false);
       await fixture.whenStable();
 
-      expect(screen.queryByRole('alert')).toBeNull();
+      expect(document.querySelector('p')).toBeNull();
       expect(screen.getByRole('radiogroup')).toHaveAttribute('aria-invalid', 'true');
     });
 

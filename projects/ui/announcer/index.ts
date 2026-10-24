@@ -1,0 +1,1 @@
+export { UiAnnouncer } from './announcer';

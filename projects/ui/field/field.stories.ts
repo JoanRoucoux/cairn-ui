@@ -58,8 +58,8 @@ validation state on its own, so a form field needs no binding here at all.
   naming the control. A placeholder is not a substitute for it, it disappears as soon as the user types.
 * \`hint\`, \`error\` and \`unit\` are added to the control's \`aria-describedby\`. A static \`aria-describedby\` the app put on the control is kept, the field only adds and removes its own ids. A changing Angular binding on the same attribute would overwrite them.
 * A \`ui-choice-chips\` inside the field is wired on its \`radiogroup\` element (\`aria-describedby\`, \`aria-invalid\`), not through \`for\` and \`id\`: it names itself, so give it a \`label\` or \`ariaLabel\`.
-* A non empty \`error\` marks the control \`aria-invalid\` and renders the message with \`role="alert"\`,
-  so a screen reader announces it as soon as it appears.
+* A non empty \`error\` marks the control \`aria-invalid\` and shows the message under the control.
+* The message is spoken once through a persistent \`aria-live\` region of the field: when the control is touched (blur, or a submit that touches every control) or when \`error\` changes to a non empty value. It is not repeated while the user types, and stays in \`aria-describedby\` so it is read on focus.
 * A control outside a field shows no message. It has nowhere to put one.`,
       },
     },
@@ -91,7 +91,7 @@ validation state on its own, so a form field needs no binding here at all.
     error: {
       control: 'text',
       description:
-        'Optional validation message. When set, also marks the control `aria-invalid` and renders with `role="alert"`.',
+        'Optional validation message. When set, also marks the control `aria-invalid` and the message is announced once.',
     },
     optional: {
       control: 'text',

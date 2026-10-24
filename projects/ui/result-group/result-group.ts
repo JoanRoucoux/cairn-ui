@@ -1,5 +1,6 @@
-import { Component, computed, input, output } from '@angular/core';
+import { Component, ElementRef, afterRenderEffect, computed, inject, input, output } from '@angular/core';
 
+import { UiAnnouncer } from '@joanroucoux/cairn-ui/announcer';
 import { type AsyncState, UiAsync } from '@joanroucoux/cairn-ui/async';
 
 const PULSE_ANIMATION = 'cairn-pulse var(--pulse-duration) var(--ease-out) infinite alternate';
@@ -67,4 +68,21 @@ export class UiResultGroup {
 
   protected readonly name = computed(() => (this.hint() ? `${this.label()}, ${this.hint()}` : this.label()));
   protected readonly animation = PULSE_ANIMATION;
+
+  constructor() {
+    const announcer = inject(UiAnnouncer);
+    const host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+
+    afterRenderEffect(() => {
+      if (this.state() !== 'empty') {
+        return;
+      }
+
+      const message = host.querySelector('[resultGroupMessage]')?.textContent?.trim();
+
+      if (message) {
+        announcer.announce(message);
+      }
+    });
+  }
 }

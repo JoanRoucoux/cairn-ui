@@ -1,6 +1,14 @@
+import { UiAnnouncer } from '@joanroucoux/cairn-ui/announcer';
 import { render, screen } from '@testing-library/angular';
 
 import { UiAlert } from './alert';
+
+const renderWithSpy = async (template: string): Promise<ReturnType<typeof vi.fn>> => {
+  const announce = vi.fn();
+  await render(template, { imports: [UiAlert], providers: [{ provide: UiAnnouncer, useValue: { announce } }] });
+
+  return announce;
+};
 
 describe('UiAlert', () => {
   it('fades in when it appears', async () => {
@@ -53,15 +61,57 @@ describe('UiAlert', () => {
     expect(screen.getByText('Text')).not.toHaveClass('text-(--muted-foreground)');
   });
 
-  it('turns the warning variant into an inline status with the triangle icon', async () => {
-    await render('<ui-alert variant="warning">This can’t be undone.</ui-alert>', { imports: [UiAlert] });
+  it('turns the warning variant into a bare inline notice with the triangle icon and no live role', async () => {
+    const { container } = await render('<ui-alert variant="warning">This can’t be undone.</ui-alert>', {
+      imports: [UiAlert],
+    });
 
-    const status = screen.getByRole('status');
-    expect(status).not.toHaveClass('bg-(--card)');
+    const warning = container.querySelector('ui-alert')!;
+    expect(warning).not.toHaveClass('bg-(--card)');
+    expect(warning).not.toHaveAttribute('role');
     expect(screen.queryByRole('alert')).toBeNull();
-    expect(status.querySelector('svg')).toHaveClass('stroke-(--negative)');
-    expect(status.querySelector('circle')).toBeNull();
-    expect(status.querySelector('path')).not.toBeNull();
+    expect(screen.queryByRole('status')).toBeNull();
+    expect(warning.querySelector('svg')).toHaveClass('stroke-(--negative)');
+    expect(warning.querySelector('circle')).toBeNull();
+    expect(warning.querySelector('path')).not.toBeNull();
+  });
+
+  it('announces a warning once, heading then message, when it appears', async () => {
+    const announce = await renderWithSpy(
+      '<ui-alert variant="warning" heading="Irreversible">This can’t be undone.</ui-alert>',
+    );
+
+    expect(announce).toHaveBeenCalledExactlyOnceWith('Irreversible. This can’t be undone.');
+  });
+
+  it('reads nested markup in the message once', async () => {
+    const announce = await renderWithSpy('<ui-alert variant="warning">Sell <span>all 310 shares</span>.</ui-alert>');
+
+    expect(announce).toHaveBeenCalledExactlyOnceWith('Sell all 310 shares.');
+  });
+
+  it('announces a warning without a heading by its message alone', async () => {
+    const announce = await renderWithSpy('<ui-alert variant="warning">This can’t be undone.</ui-alert>');
+
+    expect(announce).toHaveBeenCalledExactlyOnceWith('This can’t be undone.');
+  });
+
+  it('stays silent for a warning present as the page opens', async () => {
+    const announce = await renderWithSpy('<ui-alert variant="warning" [fadeIn]="false">Text</ui-alert>');
+
+    expect(announce).not.toHaveBeenCalled();
+  });
+
+  it('stays silent for a warning with no text', async () => {
+    const announce = await renderWithSpy('<ui-alert variant="warning"></ui-alert>');
+
+    expect(announce).not.toHaveBeenCalled();
+  });
+
+  it('leaves the error to its own alert role and announces nothing', async () => {
+    const announce = await renderWithSpy('<ui-alert>Incorrect username or password.</ui-alert>');
+
+    expect(announce).not.toHaveBeenCalled();
   });
 });
 
@@ -77,6 +127,12 @@ describe('UiAlert info', () => {
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     expect(screen.queryByRole('status')).not.toBeInTheDocument();
     expect(note).toHaveTextContent('Cairn can’t verify this ISIN before it’s added.');
+  });
+
+  it('announces nothing', async () => {
+    const announce = await renderWithSpy('<ui-alert variant="info">Text</ui-alert>');
+
+    expect(announce).not.toHaveBeenCalled();
   });
 
   it('draws the 18 px circle-info icon in the current color, hidden from assistive technology', async () => {
