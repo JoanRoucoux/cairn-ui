@@ -6,23 +6,26 @@ import { defineConfig } from 'vitest/config';
 
 const dirname = fileURLToPath(new URL('.', import.meta.url));
 
+const storybookProject = (name: string, setupFile: string) => ({
+  extends: false as const,
+  plugins: [storybookAngularVitest({ zoneless: true }), storybookTest({ configDir: dirname })],
+  test: {
+    name,
+    setupFiles: [`${dirname}${setupFile}`],
+    browser: {
+      enabled: true,
+      headless: true,
+      provider: playwright(),
+      instances: [{ browser: 'chromium' as const }],
+    },
+  },
+});
+
 export default defineConfig({
   test: {
     projects: [
-      {
-        extends: false,
-        plugins: [storybookAngularVitest({ zoneless: true }), storybookTest({ configDir: dirname })],
-        test: {
-          name: 'storybook',
-          setupFiles: [`${dirname}vitest.setup.ts`],
-          browser: {
-            enabled: true,
-            headless: true,
-            provider: playwright(),
-            instances: [{ browser: 'chromium' }],
-          },
-        },
-      },
+      storybookProject('storybook', 'vitest.setup.ts'),
+      storybookProject('storybook-dark', 'vitest.setup.dark.ts'),
     ],
   },
 });

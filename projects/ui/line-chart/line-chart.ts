@@ -65,7 +65,7 @@ type EndRef = ElementRef<SVGCircleElement>;
     <div class="relative h-full">
       <svg
         #svgRef
-        class="block h-full w-full touch-none overflow-visible"
+        class="rounded-control block h-full w-full touch-none overflow-visible focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ring)"
         role="img"
         [attr.aria-label]="label()"
         [attr.height]="effectiveHeight()"

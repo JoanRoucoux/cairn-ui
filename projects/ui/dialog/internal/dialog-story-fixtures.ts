@@ -6,7 +6,7 @@ import { DIALOG_SHEETS, DIALOG_VARIANTS } from '../dialog';
 export const field = (label: string): string => `
   <label class="flex flex-col gap-1.5">
     <span class="text-label font-medium text-(--muted-foreground)">${label}</span>
-    <input class="rounded-control bg-(--background) shadow-[inset_0_0_0_1px_var(--border)] h-12 lg:h-10 px-3 text-body outline-none focus-visible:outline-2 focus-visible:outline-(--ring)" />
+    <input class="rounded-control bg-(--background) shadow-[inset_0_0_0_1px_var(--border)] h-12 lg:h-10 px-3 text-body focus-visible:outline-2 focus-visible:outline-(--ring)" />
   </label>`;
 
 export const result = (index: number): string => `
