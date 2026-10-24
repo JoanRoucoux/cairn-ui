@@ -102,8 +102,18 @@ const ACCOUNT_ROW = `
 
 const NAMES = { '': 'All accounts', pea: 'Northwind PEA', cto: 'Contoso CTO' };
 
-const PHONE = { viewport: { width: 390, height: 640 } };
-const DESKTOP = { viewport: { width: 1440, height: 480 } };
+const PHONE = {
+  globals: { viewport: { value: '390x640', isRotated: false } },
+  parameters: {
+    viewport: { options: { '390x640': { name: '390 x 640', styles: { width: '390px', height: '640px' } } } },
+  },
+};
+const DESKTOP = {
+  globals: { viewport: { value: '1440x480', isRotated: false } },
+  parameters: {
+    viewport: { options: { '1440x480': { name: '1440 x 480', styles: { width: '1440px', height: '480px' } } } },
+  },
+};
 
 const accountRender: Story['render'] = (args) => ({
   props: { ...args, account: '', names: NAMES },
@@ -112,9 +122,9 @@ const accountRender: Story['render'] = (args) => ({
 
 export const WithLeadingSelector: Story = { render: accountRender };
 
-const accountRow = (parameters: Story['parameters'], play: Story['play']): Story => ({
+const accountRow = (viewport: Pick<Story, 'globals' | 'parameters'>, play: Story['play']): Story => ({
   render: accountRender,
-  parameters,
+  ...viewport,
   play,
 });
 

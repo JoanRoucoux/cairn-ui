@@ -5,11 +5,17 @@ import { expect, within } from 'storybook/test';
 
 import { UiActionBar } from './action-bar';
 
+const PHONE = {
+  globals: { viewport: { value: '390x600', isRotated: false } },
+  parameters: {
+    viewport: { options: { '390x600': { name: '390 x 600', styles: { width: '390px', height: '600px' } } } },
+  },
+};
+
 const meta: Meta = {
   title: 'Surfaces/Action bar',
   decorators: [moduleMetadata({ imports: [UiActionBar, UiButton, UiTab, UiTabBar] })],
   parameters: {
-    viewport: { width: 390, height: 600 },
     docs: {
       description: {
         component: `Bar of actions fixed above the tab bar on a phone, such as Sell and Buy on a holding's
@@ -63,6 +69,7 @@ export const Default: Story = {};
 export const ShownBelowTheDesktopBreakpoint: Story = {
   name: 'Shown on a narrow viewport',
   tags: ['!dev', '!autodocs'],
+  ...PHONE,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 

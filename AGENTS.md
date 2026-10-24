@@ -12,22 +12,22 @@ Package manager: **pnpm** (version pinned in the `packageManager` field of packa
 
 ## Commands
 
-| Command                      | Purpose                                                                                                 |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `pnpm install`               | Install deps                                                                                            |
-| `pnpm start`                 | Storybook dev server (http://localhost:6006)                                                            |
-| `pnpm run test:coverage`     | Unit tests with coverage                                                                                |
-| `pnpm run build`             | Library build (ng-packagr → `dist/ui`), then `generate:manifest`                                        |
-| `pnpm run generate:manifest` | Writes `dist/ui/mcp-manifest.json`, or lists what keeps it from being complete and fails                |
-| `pnpm run test:mcp`          | Typecheck and unit tests of `projects/mcp`, with coverage                                               |
-| `pnpm run build:mcp`         | MCP server build (→ `dist/mcp`), bundling `dist/ui/mcp-manifest.json`: run `build` first                |
-| `pnpm run build-storybook`   | Static Storybook build (→ `storybook-static/`)                                                          |
-| `pnpm run test-storybook:ci` | Interaction tests against the built Storybook (needs Chromium: `pnpm exec playwright install chromium`) |
-| `pnpm run lint`              | ESLint (includes Sheriff module-boundary rules)                                                         |
-| `pnpm run format`            | Prettier write                                                                                          |
-| `pnpm run format:check`      | Prettier check                                                                                          |
+| Command                      | Purpose                                                                                                    |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `pnpm install`               | Install deps                                                                                               |
+| `pnpm start`                 | Storybook dev server (http://localhost:6006)                                                               |
+| `pnpm run test:coverage`     | Unit tests with coverage                                                                                   |
+| `pnpm run build`             | Library build (ng-packagr → `dist/ui`), then `generate:manifest`                                           |
+| `pnpm run generate:manifest` | Writes `dist/ui/mcp-manifest.json`, or lists what keeps it from being complete and fails                   |
+| `pnpm run test:mcp`          | Typecheck and unit tests of `projects/mcp`, with coverage                                                  |
+| `pnpm run build:mcp`         | MCP server build (→ `dist/mcp`), bundling `dist/ui/mcp-manifest.json`: run `build` first                   |
+| `pnpm run build-storybook`   | Static Storybook build (→ `storybook-static/`)                                                             |
+| `pnpm run test:storybook`    | Story tests in Chromium through the Vitest addon (needs Chromium: `pnpm exec playwright install chromium`) |
+| `pnpm run lint`              | ESLint (includes Sheriff module-boundary rules)                                                            |
+| `pnpm run format`            | Prettier write                                                                                             |
+| `pnpm run format:check`      | Prettier check                                                                                             |
 
-Before considering a change done, run the same pipeline as CI: `format:check`, `lint`, `test:coverage`, `test:mcp`, `build`, `build:mcp`, `build-storybook`, `test-storybook:ci`.
+Before considering a change done, run the same pipeline as CI: `format:check`, `lint`, `test:coverage`, `test:mcp`, `build`, `build:mcp`, `build-storybook`, `test:storybook`.
 
 ## Architecture
 
@@ -75,14 +75,14 @@ Before considering a change done, run the same pipeline as CI: `format:check`, `
 - Compodoc being off, Storybook infers no prose: every component carries a `parameters.docs.description.component` and every `argType` a `description`, or the Docs page ships an empty props table. Descriptions follow one shape, taken from `@grafana/ui`: a sentence saying what the component is, then **When to use**, **When not to use** and **Accessibility** as `####` sections.
 - Test utilities (`fn`, `userEvent`, `within`, `expect`) are imported from the **`storybook/test`** subpath.
 - `autodocs` is enabled globally via `tags` in `.storybook/preview.ts`: do not re-tag individual stories with it.
-- The sidebar is documentation: a `Default` story whose args drive every control, then a few main cases, none with a `play`. No story per viewport, theme or app screen: the toolbars cover those. A `play` that needs a real browser (layout, computed style, media queries, transitions, top layer, pointer drag) lives in a story tagged `['!dev', '!autodocs']`, hidden from the sidebar and Docs but still run by the test-runner. Behavior jsdom can check goes in the component spec, not in a story.
+- The sidebar is documentation: a `Default` story whose args drive every control, then a few main cases, none with a `play`. No story per viewport, theme or app screen: the toolbars cover those. A `play` that needs a real browser (layout, computed style, media queries, transitions, top layer, pointer drag) lives in a story tagged `['!dev', '!autodocs']`, hidden from the sidebar and Docs but still run by the Vitest addon. Behavior jsdom can check goes in the component spec, not in a story.
 - The theme control is `withThemeByDataAttribute` stamping `data-theme` on `<html>`; tokens resolve via `light-dark()`. Never bypass it with story-level colors. `system` is the default and maps to an **empty** attribute value, which is what lets `:root`'s own `color-scheme: light dark` decide.
 - That control only reaches the preview iframe. Storybook's own chrome (sidebar, toolbar, Docs prose and tables) is styled by Storybook, so `.storybook/theme.ts` restates the tokens as a `ThemeVars`, applied to the manager in `.storybook/manager.ts` and to Docs pages through `parameters.docs.theme`.
 - Both read `getPreferredColorScheme()` once at load, so **the chrome follows the OS and the toolbar drives the stories**. The two halves always agree with each other, which is the point: a light Docs page beside a dark sidebar is what this replaced. `@grafana/ui` splits it the same way.
 - **Do not try to make the chrome follow the toolbar.** It was measured, not assumed: once the manager is running neither `setConfig` nor `api.setOptions` re-themes it, and a Docs page never re-renders on a globals change, so even a getter on `docs.theme` is read only once. What is left is a custom `docs.container`, which is a React component this repo will not own and which would not fix the sidebar anyway, or reloading the window on every switch, which was tried and felt worse than the problem.
 - Should a globals listener ever be needed in the manager, it is `addons.register('id', (api) => api.on('updateGlobals', ...))`. `addons.getChannel().on('updateGlobals')` receives nothing there.
 - Editing a color in `styles/tokens.css` means editing its twin in `.storybook/theme.ts`, otherwise the chrome and the components drift apart.
-- Interaction tests are `play` functions, executed in CI by `@storybook/test-runner` against the built Storybook. The Storybook **Vitest addon is not an option**: it does not support Angular.
+- Interaction tests are `play` functions, run by `@storybook/addon-vitest` in Vitest browser mode (Chromium through Playwright, `.storybook/vitest.config.mts`, `.storybook/vitest.setup.ts`) on the stories sources, with no built Storybook needed. Every story tagged `test` (the default) is one test, hidden stories included, and an axe violation fails it (`a11y.test: 'error'`). `projects/ui/**/*.stories.ts` stays out of `ng test`, which only runs specs.
 - Foundations MDX pages live in `projects/ui/docs/` and use `Meta` from `@storybook/addon-docs/blocks`. `Overview` is the landing page and is pinned first by `storySort`.
 
 ## Testing
@@ -123,7 +123,9 @@ The Storybook is deployed to GitHub Pages by [storybook.yml](.github/workflows/s
 - The root `package.json` is private and its version is not used: the library's version lives in `projects/ui/package.json` and is bumped manually, with `projects/ui/CHANGELOG.md`, in the release PR (see Release). `projects/ui/CHANGELOG.md` is listed in `ng-package.json` assets and ignored by Prettier.
 - Angular's zoneless scheduler calls `requestAnimationFrame` itself during bootstrap: assert on the rendered output, never on a count of animation frames.
 - Storybook reads a story's `tags` statically from its own object literal: tags that arrive through a spread (`...helper()`, `...OtherStory`) are ignored, and the story stays in the sidebar. Write `tags: ['!dev', '!autodocs']` in each hidden story, then check `storybook-static/index.json`.
-- `test-storybook` builds its tests from the local `*.stories.ts` files, then visits the stories in the served build: a story planted to prove a check fails must stay in the source until the run ends, or the run silently skips it.
+- A story's viewport is set by `globals.viewport` (`{ value: '<key>', isRotated: false }`) plus `parameters.viewport.options` declaring that key with `styles.width` and `styles.height`: the Vitest addon looks the key up and resizes the page, and falls back to 1200x900, without a word, when no viewport is selected or the key is missing from `options`. A bare `parameters.viewport: { width, height }` does nothing. Only hidden stories carry one, through a per-file constant named after the device (`PHONE`, `DESKTOP`, `TABLET`, `PHONE_420`...) spread into the story.
+- Under Vitest the preview layout is not applied: `.storybook/vitest.setup.ts` restores the 1rem body padding of `layout: 'padded'` and scrolls the page back to the top after each story, so a leftover smooth scroll cannot end inside the next one.
+- `.storybook/vitest.setup.ts` calls `setProjectAnnotations` itself, so the Vitest addon skips its automatic provisioning: an addon with preview annotations added to `.storybook/main.ts` must also join that list, or its behavior is missing from the story tests.
 - Tailwind finds classes by scanning for literal strings: write every class in full in the source, never build one by joining a prefix in code (the `pointer-fine:supports-[appearance:base-select]:` list of `select.ts` repeats its prefix on purpose).
 - `.storybook/preview-head.html` paints the preview background inline: `preview.css` arrives with the JS bundle, so without it every preview reload flashes white. Keep it in step with `--background`.
 - Text tokens clear 4.5:1 on `--background`, `--card`, `--elevated`, `--muted` and on `--soft` over `--background` or `--card`; `tokens.spec.ts` computes it, so a token edit that breaks it fails the test (ratios in `docs/colors.mdx`).

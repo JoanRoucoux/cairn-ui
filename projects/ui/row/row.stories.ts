@@ -28,6 +28,13 @@ type RowArgs = {
   trailing: RowTrailing;
 };
 
+const DESKTOP = {
+  globals: { viewport: { value: '1440x900', isRotated: false } },
+  parameters: {
+    viewport: { options: { '1440x900': { name: '1440 x 900', styles: { width: '1440px', height: '900px' } } } },
+  },
+};
+
 const meta: Meta<RowArgs> = {
   title: 'Data display/Row',
   decorators: [moduleMetadata({ imports: [UiButton, UiListRow, UiRow, UiRowGroup, UiRowItem, UiRowTile] })],
@@ -241,7 +248,7 @@ export const DenseOnDesktop: Story = {
   ...Dense,
   name: 'Dense row keeps 56 px on a wide viewport',
   tags: ['!dev', '!autodocs'],
-  parameters: { viewport: { width: 1440, height: 900 } },
+  ...DESKTOP,
   play: async ({ canvasElement }) => {
     const row = within(canvasElement).getByRole('button', { name: /Amundi MSCI World/ });
 

@@ -51,6 +51,13 @@ const SIGN =
   '[class.text-(--positive)]="row.tone === \'positive\'" [class.text-(--negative)]="row.tone === \'negative\'"';
 const IMPORTS = [UiTable, UiTd, UiTh, UiTr, UiGroup, UiGroupCell, UiRowLink, UiRowAction, UiCellSub];
 
+const TABLET = {
+  globals: { viewport: { value: '768x900', isRotated: false } },
+  parameters: {
+    viewport: { options: { '768x900': { name: '768 x 900', styles: { width: '768px', height: '900px' } } } },
+  },
+};
+
 const meta: Meta<TableArgs> = {
   title: 'Data display/Table',
   decorators: [moduleMetadata({ imports: IMPORTS })],
@@ -213,7 +220,7 @@ export const Narrow: Story = {
       </div>
     `,
   }),
-  parameters: { viewport: { width: 768, height: 900 } },
+  ...TABLET,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 

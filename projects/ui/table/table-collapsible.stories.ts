@@ -23,6 +23,13 @@ const GROUPS = [
   },
 ];
 
+const DESKTOP = {
+  globals: { viewport: { value: '1280x600', isRotated: false } },
+  parameters: {
+    viewport: { options: { '1280x600': { name: '1280 x 600', styles: { width: '1280px', height: '600px' } } } },
+  },
+};
+
 const meta: Meta<CollapsibleArgs> = {
   title: 'Data display/Table groups',
   decorators: [moduleMetadata({ imports: [UiTable, UiTh, UiTd, UiTr, UiGroup, UiGroupCell] })],
@@ -34,7 +41,6 @@ const meta: Meta<CollapsibleArgs> = {
     },
   },
   parameters: {
-    viewport: { width: 1280, height: 600 },
     docs: {
       description: {
         component: `Collapsible group bands of \`uiTable\`: \`td[ui-group-cell] collapsible\` is a button inside the heading
@@ -127,6 +133,7 @@ export const Default: Story = {};
 export const BandHover: Story = {
   name: 'Band hover fill, faded like the rows',
   tags: ['!dev', '!autodocs'],
+  ...DESKTOP,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const band = getComputedStyle(canvas.getByRole('button', { name: /Northwind PEA/ }));
@@ -144,6 +151,7 @@ export const BandHover: Story = {
 export const HeldOpen: Story = {
   name: 'Held open by a filter',
   tags: ['!dev', '!autodocs'],
+  ...DESKTOP,
   args: { locked: true },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);

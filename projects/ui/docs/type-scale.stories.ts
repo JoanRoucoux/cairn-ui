@@ -1,6 +1,20 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { expect, within } from 'storybook/test';
 
+const DESKTOP = {
+  globals: { viewport: { value: '1440x900', isRotated: false } },
+  parameters: {
+    viewport: { options: { '1440x900': { name: '1440 x 900', styles: { width: '1440px', height: '900px' } } } },
+  },
+};
+
+const PHONE = {
+  globals: { viewport: { value: '390x844', isRotated: false } },
+  parameters: {
+    viewport: { options: { '390x844': { name: '390 x 844', styles: { width: '390px', height: '844px' } } } },
+  },
+};
+
 const meta: Meta = {
   title: 'Foundations/Type scale',
   parameters: {
@@ -49,7 +63,7 @@ const tracking = (canvasElement: HTMLElement, text: string): string =>
 export const SwitchedToLabelOnDesktop: Story = {
   tags: ['!dev', '!autodocs'],
   name: 'Caption then label at 1440, tracking normal',
-  parameters: { viewport: { width: 1440, height: 900 } },
+  ...DESKTOP,
   play: async ({ canvasElement }) => {
     await expect(tracking(canvasElement, 'text-label')).toBe('normal');
     await expect(tracking(canvasElement, 'Caption under 64rem, label from 64rem')).toBe('normal');
@@ -59,7 +73,7 @@ export const SwitchedToLabelOnDesktop: Story = {
 export const CaptionOnIphone: Story = {
   tags: ['!dev', '!autodocs'],
   name: 'Caption at 390, tracking 0.01em',
-  parameters: { viewport: { width: 390, height: 844 } },
+  ...PHONE,
   play: async ({ canvasElement }) => {
     await expect(tracking(canvasElement, 'Caption under 64rem, label from 64rem')).toBe('0.12px');
   },

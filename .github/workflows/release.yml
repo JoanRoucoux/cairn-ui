@@ -75,7 +75,7 @@ jobs:
         run: pnpm exec playwright install --with-deps chromium
 
       - name: Storybook interaction tests
-        run: pnpm run test-storybook:ci
+        run: pnpm run test:storybook
 
       - name: Ensure npm supports trusted publishing
         run: |

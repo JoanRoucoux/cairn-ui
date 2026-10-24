@@ -15,11 +15,17 @@ type DrawerArgs = {
   busy: boolean;
 };
 
+const DESKTOP = {
+  globals: { viewport: { value: '1440x900', isRotated: false } },
+  parameters: {
+    viewport: { options: { '1440x900': { name: '1440 x 900', styles: { width: '1440px', height: '900px' } } } },
+  },
+};
+
 const meta: Meta<DrawerArgs> = {
   title: 'Surfaces/Drawer',
   decorators: [moduleMetadata({ imports: [UiButton, UiDrawer, DrawerStackDemo] })],
   parameters: {
-    viewport: { width: 1440, height: 900 },
     docs: {
       description: {
         component: `Modal side panel built on the native \`<dialog>\`, against the right edge of the window at full
@@ -149,6 +155,7 @@ export const WithoutHeader: Story = {
 export const Opens: Story = {
   name: 'Opens against the right edge',
   tags: hidden,
+  ...DESKTOP,
   play: async ({ canvasElement }) => {
     const drawer = await openDrawer(canvasElement);
     const box = drawer.getBoundingClientRect();
@@ -169,6 +176,7 @@ export const Opens: Story = {
 export const OpenOnLoad: Story = {
   name: 'Open on load, no outline on the panel',
   tags: hidden,
+  ...DESKTOP,
   args: { open: true, closeLabel: undefined },
   play: async ({ canvasElement }) => {
     const drawer = await within(canvasElement).findByRole('dialog', { name: 'Northwind World' });
@@ -181,6 +189,7 @@ export const OpenOnLoad: Story = {
 
 export const EscapeCloses: Story = {
   tags: hidden,
+  ...DESKTOP,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
@@ -193,6 +202,7 @@ export const EscapeCloses: Story = {
 
 export const CrossCloses: Story = {
   tags: hidden,
+  ...DESKTOP,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const drawer = await openDrawer(canvasElement);
@@ -206,6 +216,7 @@ export const CrossCloses: Story = {
 
 export const VeilCloses: Story = {
   tags: hidden,
+  ...DESKTOP,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const drawer = await openDrawer(canvasElement);
@@ -220,6 +231,7 @@ export const VeilCloses: Story = {
 export const ScrollsAlone: Story = {
   name: 'Scrolls on its own, the page stays put',
   tags: hidden,
+  ...DESKTOP,
   args: { open: true },
   render: (args) => ({
     props: { ...args, rows: Array.from({ length: 40 }, (_, index) => index + 1) },
@@ -257,6 +269,7 @@ export const ScrollsAlone: Story = {
 export const DialogOverDrawer: Story = {
   name: 'A dialog over the drawer, Escape twice',
   tags: hidden,
+  ...DESKTOP,
   render: () => ({ template: `<ui-drawer-stack-demo />` }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -308,6 +321,7 @@ export const DialogOverDrawer: Story = {
 export const DialogOverDrawerOpen: Story = {
   name: 'A dialog over the drawer, both open',
   tags: hidden,
+  ...DESKTOP,
   render: () => ({ template: `<ui-drawer-stack-demo stacked />` }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
