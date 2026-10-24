@@ -17,11 +17,11 @@ Package manager: **pnpm** (version pinned in the `packageManager` field of packa
 | `pnpm install`               | Install deps                                                                                               |
 | `pnpm start`                 | Storybook dev server (http://localhost:6006)                                                               |
 | `pnpm run test:coverage`     | Unit tests with coverage                                                                                   |
-| `pnpm run build`             | Library build (ng-packagr → `dist/ui`), then `generate:manifest`                                           |
+| `pnpm run build`             | Library build (ng-packagr -> `dist/ui`), then `generate:manifest`                                          |
 | `pnpm run generate:manifest` | Writes `dist/ui/mcp-manifest.json`, or lists what keeps it from being complete and fails                   |
 | `pnpm run test:mcp`          | Typecheck and unit tests of `projects/mcp`, with coverage                                                  |
-| `pnpm run build:mcp`         | MCP server build (→ `dist/mcp`), bundling `dist/ui/mcp-manifest.json`: run `build` first                   |
-| `pnpm run build-storybook`   | Static Storybook build (→ `storybook-static/`)                                                             |
+| `pnpm run build:mcp`         | MCP server build (-> `dist/mcp`), bundling `dist/ui/mcp-manifest.json`: run `build` first                  |
+| `pnpm run build-storybook`   | Static Storybook build (-> `storybook-static/`)                                                            |
 | `pnpm run test:storybook`    | Story tests in Chromium through the Vitest addon (needs Chromium: `pnpm exec playwright install chromium`) |
 | `pnpm run lint`              | ESLint (includes Sheriff module-boundary rules)                                                            |
 | `pnpm run format`            | Prettier write                                                                                             |
@@ -33,15 +33,15 @@ Before considering a change done, run the same pipeline as CI: `format:check`, `
 
 - `projects/ui/<component>/`: one folder per component, `<name>.ts` + `<name>.spec.ts` + `<name>.stories.ts` co-located, no `.component`/`.directive` suffixes.
 - **One folder, one ng-packagr entry point.** Each component folder holds an `ng-package.json` (`{ "lib": { "entryFile": "index.ts" } }`) and an `index.ts` exporting its public symbols. Consumers import `@joanroucoux/cairn-ui/<folder>`; a new component gets its own `ng-package.json` + `index.ts`. Cross-entry imports in production code, specs and stories go through the package path (`@joanroucoux/cairn-ui/motion`, resolved by `paths` in the root `tsconfig.json`), never a relative `../<folder>/...`. Imports inside a folder, `./internal/...` included, stay relative. A symbol another entry needs must be exported from `index.ts`, so it becomes public.
-- `projects/ui/src/public-api.ts` — the primary entry point, required by ng-packagr, which **exports nothing** on purpose: a root barrel (or a single fesm) forces every component into the consumer's initial chunk, defeating esbuild's per-module splitting. Never export an entry from it.
-- `projects/ui/styles/tokens.css` — the design tokens, shipped as a package asset (`dist/ui/styles/tokens.css`). It must stay a **pure token sheet**: no resets, no element styles. Preview-only chrome belongs in `.storybook/preview.css`.
-- `projects/ui/docs/` — Storybook "Foundations" MDX pages (overview, colors, motion, typography).
+- `projects/ui/src/public-api.ts`: the primary entry point, required by ng-packagr, which **exports nothing** on purpose: a root barrel (or a single fesm) forces every component into the consumer's initial chunk, defeating esbuild's per-module splitting. Never export an entry from it.
+- `projects/ui/styles/tokens.css`: the design tokens, shipped as a package asset (`dist/ui/styles/tokens.css`). It must stay a **pure token sheet**: no resets, no element styles. Preview-only chrome belongs in `.storybook/preview.css`.
+- `projects/ui/docs/`: Storybook "Foundations" MDX pages (overview, colors, motion, typography).
 - `projects/ui/README.md`: the README shown on the npm page. ng-packagr copies it into `dist/ui`, so it uses absolute URLs (npm does not resolve relative links) and must stay consistent with the root README's Setup section.
 - `docs/github/banner-light.png`, `banner-dark.png`: the README banner (from the Cairn design handoff, cairn-ui variant).
 - Module boundaries are enforced at lint time by Sheriff ([sheriff.config.ts](sheriff.config.ts)): **components never import each other**, shared building blocks get their own module. Each module's `index.ts` is its public surface and the ng-packagr entry (not an import shortcut inside the folder); private files go in an `internal/` subdirectory. Two kinds of `depRules` exceptions exist: shared building blocks (`control` for the token and error shape, `input` for the control classes reused by `select` and `choice-chips`, `motion` for `injectReducedMotion` and `holdTransitionsUntilRendered`), and grants so a spec or story can render a sibling component. Sheriff has no test-only lens, so the latter also open the production import surface.
 - The palette is **monochrome**: `--primary` carries no hue, which leaves `--positive`,
   `--negative` and `--stale` as the only colors in the interface. Their light values are darker
-  than their dark values on purpose - a green that reads at 7.76:1 on near-black only reaches
+  than their dark values on purpose: a green that reads at 7.76:1 on near-black only reaches
   4.07:1 on white. The role is fixed across schemes, never the hex. Measured ratios live in
   `projects/ui/docs/colors.mdx`; `projects/ui/src/tokens.spec.ts` guards the token names.
 
@@ -87,9 +87,9 @@ Before considering a change done, run the same pipeline as CI: `format:check`, `
 
 ## Testing
 
-- Component tests use Angular Testing Library (`render`, `screen`, `userEvent`) with template-string rendering (`render('<button ui-button>…</button>', { imports: [UiButton] })`): query by role or label, not by CSS selectors. jest-dom matchers are set up in `projects/ui/src/test-setup.ts`.
-- Cover every variant/size branch of the class-record maps — that is what keeps coverage at 100%.
-- Lines and branches are at 100% and must stay there; statements and functions sit just under it, because Angular attributes some generated code — the `forwardRef` arrows in decorator metadata, the `contentChild` query factory — to source positions no test can reach. A drop in **lines** is a real gap; a drop in statements alone, with lines still at 100%, is not. `coverageThresholds` in angular.json enforces statements 85, branches 80, functions 70, lines 85. `*.stories.ts` files are excluded from coverage (`coverageExclude` in angular.json).
+- Component tests use Angular Testing Library (`render`, `screen`, `userEvent`) with template-string rendering (`render('<button ui-button>...</button>', { imports: [UiButton] })`): query by role or label, not by CSS selectors. jest-dom matchers are set up in `projects/ui/src/test-setup.ts`.
+- Cover every variant/size branch of the class-record maps: that is what keeps coverage at 100%.
+- Lines and branches are at 100% and must stay there; statements and functions sit just under it, because Angular attributes some generated code (the `forwardRef` arrows in decorator metadata, the `contentChild` query factory) to source positions no test can reach. A drop in **lines** is a real gap; a drop in statements alone, with lines still at 100%, is not. `coverageThresholds` in angular.json enforces statements 85, branches 80, functions 70, lines 85. `*.stories.ts` files are excluded from coverage (`coverageExclude` in angular.json).
 
 ## Release
 
@@ -108,16 +108,16 @@ The Storybook is deployed to GitHub Pages by [storybook.yml](.github/workflows/s
 
 ## Gotchas
 
-- `typescript` is pinned to `~6.0.2`: TypeScript 7 breaks `typescript-eslint` (via `ts-api-utils`). Do not bump until typescript-eslint supports TS 7. (This is also why the Storybook framework is `@storybook/angular-vite` — the webpack `@storybook/angular` peer range only allows TS ≤5.)
-- `pnpm-workspace.yaml` `allowBuilds` is required for native postinstall scripts (esbuild, ...) — do not remove it.
+- `typescript` is pinned to `~6.0.2`: TypeScript 7 breaks `typescript-eslint` (via `ts-api-utils`). Do not bump until typescript-eslint supports TS 7. (This is also why the Storybook framework is `@storybook/angular-vite`: the webpack `@storybook/angular` peer range only allows TS <= 5.)
+- `pnpm-workspace.yaml` `allowBuilds` is required for native postinstall scripts (esbuild, ...): do not remove it.
 - `fonts.css` must be loaded by the consumer's own build (a Vite import in `.storybook/preview.ts`, an `angular.json` `styles` entry in an app), never through Tailwind's `@import`, which does not rebase its `url()`s.
 - jsdom ships the Popover API's default stylesheet (`[popover]:not(:popover-open) { display: none }`) but neither its JS methods nor the `:popover-open` pseudo-class those rules key off; `test-setup.ts` shims `showPopover`/`hidePopover` by flipping an inline `display` instead, which wins over that UA rule regardless of the pseudo-class.
 - Since jsdom 30.1.2, `focus()` is a no-op inside a `display: none` subtree, as in a browser. A spec that removes `showPopover` to simulate a browser without the Popover API must also set `display: block` on the popover host, because jsdom's `[popover]` UA rule keeps hiding it.
 - jsdom parses `:modal` but never matches it. `test-setup.ts` records the dialogs its `showModal()` shim opened and answers `dialog.matches(':modal')` from that record; `querySelector('dialog:modal')` still finds nothing in a spec, so code asks `matches` on each open dialog.
 - `UiMenu.close()` only calls `hidePopover()` when the menu was open: `hidePopover()` throws on a closed popover, and it fires the `toggle` event that calls `close()` again.
 - The required status check `ci` is the gate job at the end of `ci.yml`, not a build job: a new CI job must be added to its `needs`, or its failure will not block a merge.
-- GitHub Actions in `.github/workflows/` are pinned by commit SHA (Dependabot keeps them updated) — when adding one, pin it the same way.
-- npm consumers of the published library must add `@source '../node_modules/<pkg>'` to their Tailwind CSS — templates in `node_modules` are not scanned by default. Keep this documented in both READMEs (root and `projects/ui/README.md`).
+- GitHub Actions in `.github/workflows/` are pinned by commit SHA (Dependabot keeps them updated). When adding one, pin it the same way.
+- npm consumers of the published library must add `@source '../node_modules/<pkg>'` to their Tailwind CSS: templates in `node_modules` are not scanned by default. Keep this documented in both READMEs (root and `projects/ui/README.md`).
 - `projects/mcp/package.json` repeats, for npm, the exact versions of `@modelcontextprotocol/sdk` and `zod` the root installs. Dependabot only bumps the root: `src/package.spec.ts` fails until the copy follows.
 - Nothing in `projects/mcp/src` may write to stdout: it carries the MCP protocol, and `console` is forbidden anyway. Report through `process.stderr.write`.
 - The root `package.json` is private and its version is not used: the library's version lives in `projects/ui/package.json` and is bumped manually, with `projects/ui/CHANGELOG.md`, in the release PR (see Release). `projects/ui/CHANGELOG.md` is listed in `ng-package.json` assets and ignored by Prettier.
