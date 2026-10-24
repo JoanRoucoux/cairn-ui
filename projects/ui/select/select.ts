@@ -6,7 +6,6 @@ import { CONTROL_BASE_CLASSES, CONTROL_SIZE_CLASSES, type ControlSize } from '@j
 const SELECT_CLASSES =
   'cursor-pointer appearance-none pr-10 bg-(image:--chevron-down) bg-no-repeat bg-[position:right_0.75rem_center] bg-[size:1.125rem]';
 
-// Tailwind scans for literal strings: build no class by prefixing in code.
 const PICKER_CLASSES = [
   'pointer-fine:supports-[appearance:base-select]:[appearance:base-select]',
   'pointer-fine:supports-[appearance:base-select]:items-center',

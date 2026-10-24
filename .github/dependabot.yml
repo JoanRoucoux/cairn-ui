@@ -7,7 +7,6 @@ updates:
     cooldown:
       default-days: 7
     ignore:
-      # TypeScript 7 breaks typescript-eslint: see AGENTS.md Gotchas.
       - dependency-name: 'typescript'
         versions: ['>=7']
     groups:
