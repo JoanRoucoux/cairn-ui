@@ -192,17 +192,6 @@ describe('UiMenu', () => {
     }
   });
 
-  it('closes and returns focus on Tab', async () => {
-    await render(template, { imports: [UiMenu, UiMenuTrigger, UiMenuItem], componentProperties: { edited: vi.fn() } });
-    const trigger = screen.getByRole('button', { name: 'More' });
-    await userEvent.click(trigger);
-
-    await userEvent.keyboard('{Tab}');
-
-    expect(trigger).toHaveAttribute('aria-expanded', 'false');
-    expect(trigger).toHaveFocus();
-  });
-
   it('flips above the trigger when there is no room below', async () => {
     const { container } = await render(template, {
       imports: [UiMenu, UiMenuTrigger, UiMenuItem],

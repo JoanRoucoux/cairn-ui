@@ -179,7 +179,12 @@ export class UiMenu {
   }
 
   protected onKeydown(event: KeyboardEvent): void {
-    if (event.key === 'Tab' || event.key === 'Escape') {
+    if (event.key === 'Tab') {
+      this.close();
+      return;
+    }
+
+    if (event.key === 'Escape') {
       event.preventDefault();
       this.close();
       return;

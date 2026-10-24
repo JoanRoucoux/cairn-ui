@@ -214,7 +214,7 @@ export class UiDialog {
 
   protected readonly footerClasses = computed(
     () =>
-      `max-lg:[&>[ui-button]]:text-body flex justify-end gap-2 px-4 pb-[calc(8px+env(safe-area-inset-bottom))] max-lg:flex-col-reverse max-lg:[&>[ui-button]]:h-[50px] max-lg:[&>[ui-button]]:w-full lg:px-6 ${this.spec().footer} ${this.hairlines() ? 'shadow-[inset_0_1px_0_var(--hairline)] forced-colors:border-t' : ''}`,
+      `max-lg:[&>[ui-button]]:text-body flex justify-end gap-2 px-4 pb-[calc(8px+env(safe-area-inset-bottom))] max-lg:flex-col max-lg:[&>[ui-button]]:h-[50px] max-lg:[&>[ui-button]]:w-full lg:px-6 ${this.spec().footer} ${this.hairlines() ? 'shadow-[inset_0_1px_0_var(--hairline)] forced-colors:border-t' : ''}`,
   );
 
   protected readonly classes = computed(
